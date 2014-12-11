@@ -12,7 +12,7 @@
 typedef struct Ability
 {
 	int unlocked;
-	int goldcost;
+	int cost;
 	
 }Ability;
 
