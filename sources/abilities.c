@@ -5,14 +5,15 @@
 #include "../includes/gameProperties.h"
 #include <string.h>
 
-void init_abilities(Ability *psx, Ability *kill, Ability *killall)
+void init_abilities()
 {
-	psx->unlocked = 1;
-	psx->cost = PSX_COST;
-	kill->unlocked = 0;
-	kill->cost = KILL_COST;
-	killall->unlocked = 0;
-	killall->cost = KILLALL_COST;
+	static Ability psx, kill, killall;
+	psx.unlocked = 1;
+	psx.cost = PSX_COST;
+	kill.unlocked = 0;
+	kill.cost = KILL_COST;
+	killall.unlocked = 0;
+	killall.cost = KILLALL_COST;
 }
 	
 void unlock_ability(Ability *abilityx)
@@ -40,17 +41,37 @@ void psx_ability(Ability *psx)
 	char healthstr[10];
 	char clear[500] = {'\0'};
 	int enemy_number = getNumberOfEnemies();
-	int health = 0, ID = 0, i;
+	int health = 0, ID = 0, i, j, tmp = 0, tmp2 = 0;
+	int healtha[200] = {0};
+	int enemyIDa[200] = {0};
 	if(is_available_ability(psx) == 1)
 	{
+		for(j = 1; j <= enemy_number; j++)
+		{
+			if(healtha[j] <= getEnemyHealth(j))
+			{
+				tmp = healtha[j];
+				healtha[j] = getEnemyHealth(j);
+				healtha[j+1] = tmp;
+				tmp2 = enemyIDa[j];
+				enemyIDa[j+1] = tmp2;
+				enemyIDa[j] = j;
+				
+			}
+			else
+			{
+				healtha[j+1] = getEnemyHealth(j);
+				enemyIDa[j+1] = j;
+			}
+		}
 		strcat(psxlist, template);
 		for(i = 1; i <= enemy_number; i++)
 		{
 			strcpy(psxlist, template);
 			if(!isDead(i))
 			{
-				ID = i;
-				health = getEnemyHealth(ID);
+				ID = enemyIDa[i];
+				health = healtha[i];
 				sprintf(IDstr, "%d ", ID);
 				sprintf(healthstr, "%d", health); 
 				strcat(psxlist, newline);

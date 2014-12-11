@@ -34,8 +34,7 @@ int main(int argc, char ** argv)
 	int started = 0;
     addMemory(100);
     int steps=0;
-	Ability psx, kill, killall;
-	init_abilities(&psx, &kill, &killall);
+	init_abilities();
     //init_sound();
     //playBackgroundSound();
 
