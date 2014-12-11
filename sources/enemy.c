@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "../includes/sput.h"
 #include <math.h>
+#include <string.h>
 
 #include "../includes/enemy.h"
 
@@ -53,7 +54,7 @@ void createLevelPaths()
     int numberOfPaths = 2;
     
     assignMemoryForPaths(numberOfPaths);
-    layPaths(numberOfPaths);
+    layPaths(numberOfPaths, 1); // currently 1 as only one level
   
 }
 
@@ -85,70 +86,73 @@ void freePath(Path p)
 /*
 * creates the specified number of path structures within the level paths structure
 */
-void layPaths(int numberOfPaths)
+void layPaths(int numberOfPaths, int levelNum)
 {
   
     LevelPaths lP = getLevelPaths(NULL);
-    switch(numberOfPaths) {
-        case 1 :
-            createHorizontalPath(lP->paths[0]);
-            break;
-        case 2 :
-            createHorizontalPath(lP->paths[0]);
-            createDogLegPath(lP->paths[1]);
-            break;
-          
-        default :
-            fprintf(stderr,"****ERROR failed to read the number of required paths****\n");
-            exit(2);
+    for(int i = 1; i <= numberOfPaths; i++) {
+      readInPath(levelNum, i);
     }
 }
 
-/*
-* creates a straight path all the way across the middle of the map
-*/
-void createHorizontalPath(Path P)
-{
-  P->pathLength = 0;
-  P->pathCoords = (int **) malloc(sizeof(int *) * MAP_WIDTH);
-  for(int i = 0; i < MAP_WIDTH; i++) {
-    P->pathCoords[i] = (int *)malloc(sizeof(int) * 2);
-    P->pathCoords[i][0] = i;
-    P->pathCoords[i][1] = MAP_HEIGHT/2;
-    P->pathLength++;
-  }
-}
-
-/*
-* creates a path that moves down a quarter of the map height when enemy is a quarter of the way along the map.
-*/
-void createDogLegPath(Path P)
-{
-  //create path that goes up from the centre and carries along a route above the middle of the screen
-    P->pathLength = 0;
-    P->pathCoords = (int **) malloc(sizeof(int *) * (MAP_WIDTH + (MAP_HEIGHT/4))); //length of path should be width and a quarter of height
-      // go right for a quarter of the map width
-    for (int i = 0; i < MAP_WIDTH/4; i++) {
-        P->pathCoords[P->pathLength] = (int *)malloc(sizeof(int) * 2);
-        P->pathCoords[P->pathLength][0] = i;
-        P->pathCoords[P->pathLength][1] = MAP_HEIGHT/2;
-        P->pathLength++;
-    }
-      // go down for a quarter of the map height
-    for(int i = MAP_HEIGHT/2; i < 3*MAP_HEIGHT/4; i++) {
-        P->pathCoords[P->pathLength] = (int *)malloc(sizeof(int) * 2);
-        P->pathCoords[P->pathLength][0] = P->pathCoords[P->pathLength-1][0];
-        P->pathCoords[P->pathLength][1] = i;
-        P->pathLength++;
-    }
+void readInPath(int levelNum, int pathNum) {
   
-      // carry on right for the rest of the map width
-    for(int i = MAP_WIDTH/4; i < MAP_WIDTH; i++) {
-        P->pathCoords[P->pathLength] = (int *)malloc(sizeof(int) * 2);
-        P->pathCoords[P->pathLength][0] = i;
-        P->pathCoords[P->pathLength][1] = P->pathCoords[P->pathLength-1][1];
-        P->pathLength++;
-    }
+  char *filePath = getFilePath(levelNum, pathNum);
+  FILE *fp = fopen(filePath, "r");
+  if(fp == NULL) {
+    fprintf(stderr,"Unable to open path file at '%s'\n", filePath);
+    exit(1);
+  }
+  LevelPaths lP = getLevelPaths(NULL);
+  Path P = lP->paths[pathNum-1];
+  
+  P->pathLength = 4;
+  
+  int backW = getBackgroundWidth();
+  int backH = getBackgroundHeight();
+  int x, y;
+  fscanf(fp,"%d\n",&P->pathLength);
+  
+  P->pathCoords = (int **) malloc(sizeof(int *) * P->pathLength);
+  for(int i = 0; i < P->pathLength; i++) {
+    fscanf(fp,"%d,%d\n", &x, &y);
+    
+    x = (int)((double) x * ((double) SCREEN_WIDTH_GLOBAL/ (double) backW) );
+    y = (int)((double) y * ((double) SCREEN_HEIGHT_GLOBAL/ (double) backH) );
+  //printf("here\n");
+    P->pathCoords[i] = (int *)malloc(sizeof(int) * 2);
+    P->pathCoords[i][0] = x;
+    P->pathCoords[i][1] = y;
+  }
+  
+  fclose(fp);
+  
+}
+
+/*
+** returns file path of .txt to be opened and read to make a path
+*/
+char *getFilePath(int levelNum, int pathNum) {
+  
+  char levelNumStr[10];
+  sprintf(levelNumStr, "%d", levelNum);
+  
+  char pathNumStr[10];
+  sprintf(pathNumStr, "%d", pathNum);
+  
+  char *filePath = calloc((strlen("../data/levels/lvl_") + strlen(levelNumStr) + strlen("/paths/path_") +strlen(pathNumStr) + strlen(".txt") ), sizeof(char) );
+  if(filePath == NULL) {
+    fprintf(stderr,"Unable to calloc space for path filePath\n");
+    exit(1);
+  }
+  
+  strcat(filePath, "../data/levels/lvl_");
+  strcat(filePath, levelNumStr);
+  strcat(filePath, "/paths/path_");
+  strcat(filePath, pathNumStr);
+  strcat(filePath, ".txt");
+  
+  return filePath;
 }
 
 /*
@@ -271,7 +275,7 @@ void initialiseEnemy(Enemy newEnemy)
     newEnemy->pathProgress = 0;
     newEnemy->x = newEnemy->enemyPath->pathCoords[0][0];
     newEnemy->y = newEnemy->enemyPath->pathCoords[0][1];
-    newEnemy->maxHealth = 100;
+    newEnemy->maxHealth = 1000;
     newEnemy->health = newEnemy->maxHealth;
     newEnemy->armour = 0;
     newEnemy->speed = 2;

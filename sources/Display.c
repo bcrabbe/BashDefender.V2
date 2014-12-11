@@ -75,6 +75,8 @@ void drawRange(Display d, double cx, double cy, double r);
 void init_pic(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture, char *pic_name);
 void check_load_images(SDL_Surface *surface, char *pic_name);
 void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, int frames, int pic_width, int pic_height, int anim_speed);
+int getBackgroundWidth();
+int getBackgroundHeight();
 
 Display init_SDL(){
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");
@@ -130,6 +132,17 @@ Display init_SDL(){
     
     return d;
 }
+
+int getBackgroundWidth() {
+  Display d =getDisplayPointer(NULL);
+  return d->backgroundSurface->w;
+}
+
+int getBackgroundHeight() {
+  Display d =getDisplayPointer(NULL);
+  return d->backgroundSurface->h;
+}
+
 
 /*call fucntion in the while loop to present all the animations*/
 void presentAnimation(){
