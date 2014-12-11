@@ -99,8 +99,9 @@ void updateStatsBar(char *outputString);
 char *strdup2(char * s);
 
 
-int terminal_window(Display d, char *pass, char *clear, char* inputCommand);
+int terminal_window(Display d, char *pass, char *clear);
 void display_text(Display d, char *pass);
+void menu_screen(Display d, int *started);
 
 #endif
 

@@ -15,6 +15,7 @@
 
 #include <SDL2_mixer/SDL_mixer.h>
 
+
 struct sound{
     Mix_Music *background_music;
     Mix_Chunk *tower_sound;

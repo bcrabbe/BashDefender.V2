@@ -7,7 +7,6 @@
 
 #include "../includes/Display.h"
 #include "../includes/parser.h"
-#include "../includes/tower.h"
 #include <stdbool.h>
 
 #define HEALTHBAR 80
@@ -32,6 +31,22 @@ struct display {
     SDL_Rect  towerMonitorTextureRect;
     TTF_Font *towerMonitorFont;
     SDL_Color towerMonitorFontColour;
+
+	//Menu Screen Objects
+	SDL_Surface *backgroundsurface;
+	SDL_Texture *backgroundtexture;
+	SDL_Rect startbutton;
+	SDL_Surface *startsurface;
+	SDL_Texture *starttexture;
+
+	//Terminal Window objects
+	SDL_Rect dstrect;
+	SDL_Rect imagerect;
+    SDL_Surface *text;
+	SDL_Surface	*imagesurface;
+    SDL_Texture *newtexture;
+	SDL_Texture *imagetexture;
+	SDL_Color text_color;
     
     //Stats bar objects
     SDL_Rect statsBarRect;
@@ -383,51 +398,14 @@ void updateStatsBar(char *outputString) {
 
 
 //Terminal functions
-int processEvents(Display d){
-
-    int done = 0;
-    
-    while(SDL_PollEvent(&d->event))
-    {
-        switch(d->event.type)
-        {
-            case SDL_WINDOWEVENT_CLOSE:
-            {
-                if(d->window)
-                {
-                    SDL_DestroyWindow(d->window);
-                    d->window = NULL;
-                    done = 1;
-                }
-            }
-                break;
-            case
-            SDL_KEYDOWN:
-            {
-                switch(d->event.key.keysym.sym)
-                {
-                    case SDLK_ESCAPE:
-                        done = 1;
-                        break;
-                }
-            }
-                break;
-            case SDL_QUIT:
-                //quit out of the game
-                done = 1;
-                break;
-        }
-    }
-    return done;
-}
-
-
-int terminal_window(Display d, char *pass, char *clear, char * inputCommand)
+/*
+	terminal_window detects input from SDL and calls display_text
+*/
+int terminal_window(Display d, char *pass, char *clear)
 {
-    //inputCommand=NULL;
-    int done = 0;
+	int done = 0;
     char *pass2;
-    
+    //Keeps text on screen
     display_text(d, pass);
     
     int check = 0;
@@ -437,6 +415,7 @@ int terminal_window(Display d, char *pass, char *clear, char * inputCommand)
     {
         switch (event->type)
         {
+			//Detects input and appends to a string
             case SDL_TEXTINPUT:
             {
                 strcat(pass, event->text.text);
@@ -445,19 +424,23 @@ int terminal_window(Display d, char *pass, char *clear, char * inputCommand)
             }
             case SDL_KEYDOWN:
             {
+				/*
+				If return key is pressed, clears string and sends desired
+				input to parser
+				*/		
                 if(event->key.keysym.sym == SDLK_RETURN)
                 {
                     if(strcmp(pass, clear) != 0)
                     {
                         display_text(d, pass);
                     }
-                    // inputCommand = strdup2(pass);
                     
                     pass2 = pass + 2;
                     parse(pass2);
                     
                     strcpy(pass, clear);
                 }
+				//If backspace key is pressed, removes end char of string
 				if(event->key.keysym.sym == SDLK_BACKSPACE)
 				{
 					if(pass[strlen(pass) - 1] != '>')
@@ -475,54 +458,89 @@ int terminal_window(Display d, char *pass, char *clear, char * inputCommand)
                 }
                 break;
             }
-                //            case SDL_TEXTEDITING:
-                //            {
-                //                strcpy(event->edit.text, pass);
-                //                event->edit.start = pass;
-                //                event->edit.length = 32;
-                //            }
-                //default: printf("Event code = %d\n", event->type);
         }
     }
     return done;
 }
-
+/*
+	display_text builds textures from surfaces and calls renderer
+	to output them to screen. Also displays back image
+*/
 void display_text(Display d, char *pass)
 {
-    int texW = 200, texH = 50;
-    SDL_Rect dstrect = { 5, 5, texW, texH };
-	SDL_Rect imagerect = {TERMINAL_WINDOW_X, TERMINAL_WINDOW_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT};
-    SDL_Surface *text, *imagesurface;
-    SDL_Texture *newtexture, *imagetexture;
-    SDL_Color text_color = {0, 255, 0};
-    dstrect.x = TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10);
-    dstrect.y = TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7));
-    
-	imagesurface = IMG_Load("terminalwindow.png");
-	imagetexture = SDL_CreateTextureFromSurface(d->renderer, imagesurface);
-    text = TTF_RenderText_Solid(d->towerMonitorFont, pass, text_color);
-    newtexture = SDL_CreateTextureFromSurface(d->renderer, text);
-    if(newtexture == NULL)
+	//Initialise rects and color
+    d->dstrect = (SDL_Rect) { TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10), TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), 0, 0};
+	d->imagerect = (SDL_Rect) {TERMINAL_WINDOW_X, TERMINAL_WINDOW_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT};
+    d->text_color = (SDL_Color) {0, 255, 0};
+
+	//Build textures from surfaces
+	d->imagesurface = IMG_Load("terminalwindow.png");
+	d->imagetexture = SDL_CreateTextureFromSurface(d->renderer, d->imagesurface);
+    d->text = TTF_RenderText_Solid(d->towerMonitorFont, pass, d->text_color);
+    d->newtexture = SDL_CreateTextureFromSurface(d->renderer, d->text);
+    if(d->newtexture == NULL)
     {
         printf("Panic\n");	
     }
-    dstrect.w = text->w;
-    dstrect.h = text->h;
-    SDL_FreeSurface(text);
-    SDL_QueryTexture(newtexture, NULL, NULL, &texW, &texH);
-	SDL_RenderCopy(d->renderer, imagetexture, NULL, &imagerect);
-    SDL_RenderCopy(d->renderer, newtexture, NULL, &dstrect);
-	SDL_DestroyTexture(newtexture);
-	SDL_DestroyTexture(imagetexture);
+    d->dstrect.w = d->text->w;
+    d->dstrect.h = d->text->h;
+    SDL_FreeSurface(d->text);
+	SDL_FreeSurface(d->imagesurface);
+	//Display what is necessary using renderer
+	SDL_RenderCopy(d->renderer, d->imagetexture, NULL, &d->imagerect);
+    SDL_RenderCopy(d->renderer, d->newtexture, NULL, &d->dstrect);
+	//Destroy textures to save memory
+	SDL_DestroyTexture(d->newtexture);
+	SDL_DestroyTexture(d->imagetexture);
 }
 
-/* duplicates a string */
-char *strdup2(char * s)
+void menu_screen(Display d, int *started)
 {
-    size_t len = 1+strlen(s);//gets the size of s
-    char *p = malloc(len);//allocates a block big enough to hold s
-    
-    return p ? memcpy(p, s, len) : NULL;//if p is non 0 ie malloc worked, then copy everything in s into p and return p. if p is NULL malloc didnt work so return NULL
+	d->startbutton = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
+
+	d->backgroundsurface = IMG_Load("menu_screen5.png");
+	d->backgroundtexture = SDL_CreateTextureFromSurface(d->renderer, d->backgroundsurface);
+	
+	d->startsurface = IMG_Load("startbutton.png");
+	d->starttexture = SDL_CreateTextureFromSurface(d->renderer, d->startsurface);
+
+	SDL_FreeSurface(d->backgroundsurface);
+	SDL_FreeSurface(d->startsurface);
+
+	SDL_RenderCopy(d->renderer, d->backgroundtexture, NULL, NULL);
+    SDL_RenderCopy(d->renderer, d->starttexture, NULL, &d->startbutton);
+	SDL_RenderPresent(d->renderer);
+
+	int check = 0;
+    SDL_Event event;
+    check = (SDL_PollEvent(&event));
+    if(check != 0)
+    {
+		switch(event.type)
+		{
+			case SDL_MOUSEBUTTONDOWN:
+			{
+				if(event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) && event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 && 
+					event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 &&  event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)
+				{
+					if(event.button.button == SDL_BUTTON_LEFT)
+					{
+						*started = 1;
+					}
+				}
+			}
+			case SDL_KEYDOWN:
+			{
+				if(event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					SDL_Quit();
+					exit(1);
+				}
+			}
+		}
+	}
+	SDL_DestroyTexture(d->starttexture);
+	SDL_DestroyTexture(d->backgroundtexture);
 }
 //End of terminal functions
 

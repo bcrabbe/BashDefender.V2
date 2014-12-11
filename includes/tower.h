@@ -8,7 +8,15 @@
 
 typedef struct tower *tower;
 typedef struct towerGroup *TowerGroup;
+typedef struct towerPos *TowerPos;
+typedef struct towerPosNode *TowerPosNode;
 
+void createTowerPos();
+int getSpecifiedTowerPosY(int postion);
+int getSpecifiedTowerPosX(int postion);
+
+TowerPos getTowerPos(TowerPos tPos);
+void addTowerPosNode(int x, int y);
 tower createTower();
 void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY );
 int userCreateTower(int inputTowerPositionX, int inputTowerPositionY);
@@ -48,5 +56,10 @@ void testingTowerModule();
 void testGetTower();
 void testUpgradeTowerStat();
 void getStats(int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID);
+void freeAllTowerPositions();
+void testTowerCreation();
+void testingTowerPositions();
+void createTowerFromPositions(int position);
+void drawAllTowerPositions();
 #endif
 

@@ -15,31 +15,48 @@
 
 int main()
 
-{	
-
+{
     Display d = init_SDL();
     initLevel();
-    
-    // testing();
+//    //testing();
 
-    //Display d = init_SDL(); 
-    userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));//createEnemy();
-
+    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));//createEnemy();
+  	//createEnemy();
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
+	int started = 0;
     addGold(100);
     int steps=0;
+<<<<<<< HEAD
+	//createTowerFromPositions(1);
+	//createTowerFromPositions(2);
+    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
+    //init_sound();
+    //playBackgroundSound();
+
+    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
+    //init_sound();
+   // playBackgroundSound();
+	while(started == 0)
+	{
+		menu_screen(d, &started);
+	}
+    do{
+=======
     userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
     init_sound();
     playBackgroundSound();
        do{
+>>>>>>> vlads/master
         ++steps;
         startFrame(d);
+		levelQueueReader();
         drawBackground();
-        terminal_window(d, pass, clear,inputCommand);
+
+        terminal_window(d, pass, clear);
 		popToTower();
         if(inputCommand)
         {
@@ -50,7 +67,7 @@ int main()
         present_enemy(d);
         present_tower(d);
 
-		fire();
+    	fire();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             int move = moveEnemy(i);
@@ -58,62 +75,20 @@ int main()
         }
         if(steps%100 == 0)
         {
-            userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
-             createEnemy();
+        //    userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
+        //     createEnemy();
         }
-        //popToTower();
         presentAnimation();
-        drawTowerPosition(200, 200, 100, 100);
+		drawAllTowerPositions();
         endFrame(d);
+    } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear) && started == 1);
 
-    } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear, inputCommand));
     
-    //while(moveEnemy(1) != 1);
     shutSDL(d);
-    shutSound();
-    
-
-    
-//    char text[128] = {'>', '>'};
-//    char empty[128] = {'>', '>'};
-//    char *pass, *clear, *inputCommand=NULL;
-//    pass = text;
-//    clear = empty;
-//    addGold(100);
-//    int steps=0;
-//    do{
-//        ++steps;
-//        startFrame(d);
-//        terminal_window(d, pass, clear,inputCommand);
-//        if(inputCommand)
-//        {
-//            parse(inputCommand);
-//        }
-//        statsMonitor();
-//        towerMonitor(0, NULL);
-//        present_enemy(d);
-//        present_tower(d);
-//        popToTower()
-//	fire();
-//        for(int i=1; i<=getNumberOfEnemies(); ++i)
-//        {
-//            int move = moveEnemy(i);
-//           
-//        }
-//        if(steps%100 == 0)
-//        {
-//            userCreateTower(rand()% (int) MAP_WIDTH, rand()% (int) MAP_HEIGHT);
-//            createEnemy();
-//        }
-//        endFrame(d);
-//    } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear, inputCommand));
-//    
-//    //while(moveEnemy(1) != 1);
-//    shutSDL(d);
+    //shutSound();
 
     freeEnemyGroup();
     freeLevelPaths();
-
     return 0;
 }
 
@@ -122,6 +97,7 @@ int main()
 
 void testing()	{
 
+	testingTowerPositions();
     //testingGameStructure();
     //testingActionQueue();
     //parseToQueueTesting();

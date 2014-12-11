@@ -23,6 +23,115 @@ struct tower {
     int gunY;
 };
 
+struct towerPos	{
+
+	int numberOfPositions;
+	TowerPosNode *towerPositions;
+
+};
+
+struct towerPosNode	{
+
+	int x;
+	int y;
+
+};
+
+/*
+ * Creates structure holding array of allowed tower positions
+ */
+void createTowerPos()	{
+
+	TowerPos newPositions = (TowerPos) malloc(sizeof(*newPositions));
+	newPositions->numberOfPositions = 0;
+	newPositions->towerPositions = malloc(sizeof(TowerPosNode));
+	getTowerPos(newPositions);
+}
+
+/*
+ *Returns structure holding allowed tower positions
+ */
+TowerPos getTowerPos(TowerPos tPos)	{
+
+	static TowerPos currTPos;
+
+	if(tPos != NULL)	{
+		currTPos = tPos;
+	}
+
+	return currTPos;
+}
+
+/*
+ *Add a new tower position
+ */
+void addTowerPosNode(int x, int y)	{
+
+		TowerPos tPos = getTowerPos(NULL);
+		tPos->numberOfPositions++;
+		tPos->towerPositions = (TowerPosNode*) realloc(tPos->towerPositions, (tPos->numberOfPositions+1)*(sizeof(*(tPos->towerPositions))));
+		TowerPosNode newTower = (TowerPosNode) malloc(sizeof(*newTower));
+		newTower->x = x;
+		newTower->y = y;
+		tPos->towerPositions[tPos->numberOfPositions] = newTower;
+}
+
+void drawAllTowerPositions()	{
+
+	TowerPos tPos = getTowerPos(NULL);
+	int t;
+	for(t = 1; t <= tPos->numberOfPositions;t++)	{
+		drawTowerPosition(tPos->towerPositions[t]->x,tPos->towerPositions[t]->y,100,100);
+	}
+
+}
+void freeAllTowerPositions()	{
+	
+	TowerPos tPos = getTowerPos(NULL);
+	int positions;
+	for(positions = 1; positions <= tPos->numberOfPositions; positions++){
+		free(tPos->towerPositions[positions]);
+	}
+
+	free(tPos);
+
+}
+
+void testingTowerPositions()	{
+
+	sput_start_testing();
+	sput_set_output_stream(NULL);
+
+	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
+	sput_run_test(testTowerCreation);
+	sput_leave_suite();
+
+	sput_finish_testing();	
+
+}
+
+void testTowerCreation()	{
+
+	addTowerPosNode(100,200);
+	sput_fail_unless(getSpecifiedTowerPosX(1) == 100, "Tower position 1 x coord is 100");
+	sput_fail_unless(getSpecifiedTowerPosY(1) == 200, "Tower position 1 y coord is 200");
+	addTowerPosNode(300,500);
+	sput_fail_unless(getSpecifiedTowerPosX(2) == 300, "Tower position 2 x coord is 300");
+	sput_fail_unless(getSpecifiedTowerPosY(2) == 500, "Tower position 2 y coord is 500");
+}
+
+int getSpecifiedTowerPosX(int postion)	{
+
+	TowerPos tPos = getTowerPos(NULL);
+	return tPos->towerPositions[postion]->x;
+}
+
+int getSpecifiedTowerPosY(int postion)	{
+
+	TowerPos tPos = getTowerPos(NULL);
+	return tPos->towerPositions[postion]->y;
+}
+
 int getTowerRange(int towerID)	{
 	return getTowerID(towerID)->range;     
 }
@@ -103,6 +212,16 @@ tower createTower() {
     
 }
 
+/*
+ *Wrapper to pass in allowed tower positions to useCreateTower function
+ */
+void createTowerFromPositions(int position)	{
+	TowerPos tPos = getTowerPos(NULL);
+	printf("test\n");
+	iprint(tPos->towerPositions[position]->x);
+	userCreateTower(tPos->towerPositions[position]->x,tPos->towerPositions[position]->y);
+
+}
 
 /* called when create tower command input by player. Places a tower at the specified x y.
     returns total number of towers if succesful
@@ -171,35 +290,6 @@ TowerGroup getTowerGrp(TowerGroup Group)	{
 
 	return newGroup;
 }
-
-//commandType checkActQueue()
-//{
-//	commandType cmd;
-//	upgradeStat stat;
-//	int target;
-//	if (popFromQueue(getQueue(NULL),&cmd,&stat,&target,getGame(NULL),10))
-//    {
-//		switch (cmd)
-//        {
-//			case upgrade:
-//            {
-//					if( upgradeTowerStat(stat,target)!= -1 ) 	{
-//						return upgrade;
-//					}
-//                    else {
-//						return 0;
-//					}
-//            }
-//			case execute:
-//					return execute;
-//					break;
-//			default:	
-//					fprintf(stderr,"checkActQueue tower.c: unrecognised command\n");
-//					break;
-//		}
-//	}
-//	return 0;
-//}
 
 int upgradeDmg(int target)
 {

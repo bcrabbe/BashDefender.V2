@@ -233,8 +233,8 @@ void createEnemy()
 }
 
 /*
-* returns the number of enemies that currently exist (dead & alive)
-*/
+ * returns the number of enemies that currently exist (dead & alive)
+ */
 int getNumberOfEnemies()
 {
     return getEnemyGroup(NULL)->numberOfEnemies;
@@ -248,7 +248,6 @@ void Test_createEnemy()
 
     createLevelPaths();
     createEnemyGroup();
-
     
     createEnemy();
     sput_fail_unless(getNumberOfEnemies() == 1, "Valid: Number of enemies held in group is one.");
@@ -386,6 +385,7 @@ int moveEnemy(int enemyID )
         else {
             damageHealth(e->damage);
             e->dead = 1;
+			increaseDeathCnt();
             return 0;
         }
     }
