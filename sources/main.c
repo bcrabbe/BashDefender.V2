@@ -36,6 +36,8 @@ int main()
 	int started = 0;
     addGold(100);
     int steps=0;
+	Ability psx, kill, killall;
+	init_abilities(&psx, &kill, &killall);
     //init_sound();
     //playBackgroundSound();
 

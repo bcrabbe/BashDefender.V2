@@ -5,6 +5,7 @@
 #include "../includes/gameProperties.h"
 #include "../includes/enemy.h"
 #include "../includes/actionQueueDataStructure.h"
+#include "../includes/abilities.h"
 
 #define ENDOFSTRING '\0'
 #define READCHAR	'/'
