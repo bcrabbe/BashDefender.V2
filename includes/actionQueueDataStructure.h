@@ -36,5 +36,6 @@ void testcheckGold();
 void testingActionQueue();
 void testPopFromQueue();
 void testPushToQueue();
+char *getActionQueueString(void);
 
 #endif

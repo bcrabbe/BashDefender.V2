@@ -13,7 +13,8 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include <SDL2/SDL_mixer.h>
+#include <SDL2_mixer/SDL_mixer.h>
+
 
 struct sound{
     Mix_Music *background_music;
@@ -23,7 +24,7 @@ struct sound{
 };
 
 typedef struct sound *Sound;
-/*
+
 //internal functions
 Sound getSoundPointer(Sound s);
 void check_load_sound(void *music, char *sound_name);
@@ -54,7 +55,6 @@ void init_sound(){
 }
 
 void enemySound(int type){
-    SDL_Delay(20);
     static int cnt = 0;
     Sound s = getSoundPointer(NULL);
     switch (type) {
@@ -98,4 +98,3 @@ void shutSound(){
     Mix_CloseAudio();
     Mix_Quit();
 }
-*/

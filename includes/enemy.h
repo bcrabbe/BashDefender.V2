@@ -38,7 +38,7 @@ void present_enemy(Display d);
 void createLevelPaths();
 LevelPaths getLevelPaths(LevelPaths pathList);
 void assignMemoryForPaths(int numberOfPaths);
-void layPaths(int numberOfPaths, int levelNum);
+void layPaths(int numberOfPaths);
 char *getFilePath(int levelNum, int pathNum);
 void readInPath(int levelNum, int pathNum);
 

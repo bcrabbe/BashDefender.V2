@@ -20,15 +20,18 @@ struct gameClock	{
 
 	clock_t start_t; //! time game started.  Must be ran at startup. 
 	clock_t lastAction;
+	clock_t enemySpawned;
 };
 
 struct gameProperties {
 
 	int gold;
-	int WaveNo;
+	int currWaveNo;
+	int totalWaveNo;
 	int health;
     int costOfNewTower;
 	GameClock clock;
+	int deathCount;
 };
 
 /*---------- Functions ----------*/
@@ -54,6 +57,47 @@ clock_t delayGame(int delayN)	{
 int setlastAction(GameProperties Game)	{
 	Game->clock->lastAction = clock()/CLOCKS_PER_SEC;
 	return (int) Game->clock->lastAction;
+}
+
+void setEnemySpawned()	{
+
+		GameProperties game = getGame(NULL);
+		game->clock->enemySpawned = clock()/CLOCKS_PER_SEC;
+}
+
+/*
+ *Increases Death Count
+ */
+void increaseDeathCnt()	{
+
+	GameProperties game = getGame(NULL);
+	game->deathCount++;
+}
+
+
+/*
+ *Returns Death Count
+ */
+int getDeathCnt()	{
+
+	return getGame(NULL)->deathCount;
+}
+
+/*
+ *Returns total waves for current level
+ */
+int getTotalWaveNo()	{
+
+	return getGame(NULL)->totalWaveNo;
+}
+
+/*
+ *Sets total Waves this level
+ */
+void setTotalWaveNo(int totalW)	{
+
+		getGame(NULL)->totalWaveNo = totalW;
+	
 }
 
 void testSetLastAction()	{
@@ -165,7 +209,7 @@ GameProperties getGame(GameProperties createdGame)	{
  */
 int getWave(GameProperties game)	{
 
-	return game->WaveNo;
+	return game->currWaveNo;
 
 }
 
@@ -189,10 +233,12 @@ GameProperties createGame()	{
 
 	GameProperties newGame = (GameProperties) malloc(sizeof(*newGame));
 	newGame->clock = (GameClock) malloc(sizeof(*(newGame->clock)));
-	newGame->gold=0;
-	newGame->WaveNo=0;
-	newGame->health=0;
+	newGame->gold=1000;
+	newGame->currWaveNo=0;
+	newGame->totalWaveNo = 0;
+	newGame->health=100;
     newGame->costOfNewTower = 300;
+	newGame->deathCount = 0;
 	newGame->clock->start_t  = newGame->clock->lastAction = (double) clock()/CLOCKS_PER_SEC;
 	getGame(newGame);
 	return newGame;

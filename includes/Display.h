@@ -15,8 +15,8 @@ int SCREEN_HEIGHT_GLOBAL;
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   700
 
-//#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
-#define FULLSCREEN_YN 0
+#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
+//#define FULLSCREEN_YN 0
 
 //Tower monitor dimensions
 #define TOWER_MONITOR_HEIGHT (SCREEN_HEIGHT_GLOBAL / 3.5)
@@ -34,6 +34,14 @@ int SCREEN_HEIGHT_GLOBAL;
 #define STATS_BAR_BORDER_X 300
 #define STATS_BAR_BORDER_Y 10
 
+//Action queue dimensions
+#define ACTION_QUEUE_X 0
+#define ACTION_QUEUE_Y (STATS_BAR_HEIGHT)
+#define ACTION_QUEUE_WIDTH (SCREEN_WIDTH_GLOBAL / 5)
+#define ACTION_QUEUE_HEIGHT (SCREEN_HEIGHT_GLOBAL / 5)
+#define ACTION_QUEUE_BORDER_X 25
+#define ACTION_QUEUE_BORDER_Y 20
+
 //Terminal monitor dimensions
 #define TERMINAL_WINDOW_HEIGHT (SCREEN_HEIGHT_GLOBAL / 3.5)
 #define TERMINAL_WINDOW_WIDTH (SCREEN_WIDTH_GLOBAL / 3.5)
@@ -49,10 +57,9 @@ int SCREEN_HEIGHT_GLOBAL;
 
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2_image/SDL_image.h>
 
-#include <stdlib.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -95,13 +102,16 @@ TTF_Font *getInfoWindowFont(TTF_Font *font);
 
 void displayTowerMonitor();
 void displayStatsBar();
+void displayActionQueueMonitor();
 void updateTowerMonitor(char *outputString);
 void updateStatsBar(char *outputString);
+void updateActionQueueMonitor(char *outputString);
 char *strdup2(char * s);
 
 
-int terminal_window(Display d, char *pass, char *clear, char* inputCommand);
+int terminal_window(Display d, char *pass, char *clear);
 void display_text(Display d, char *pass);
+void menu_screen(Display d, int *started);
 
 #endif
 

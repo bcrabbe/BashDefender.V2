@@ -27,14 +27,14 @@ enum upgradeStat
     AOErange=3,
     AOEpower=4,
     level=5,
-    INT=6,
-    CHAR=7
+	INT=6, 
+	CHAR=7
 };
 
 /*----------Symbolic Constants-----------*/
 
-#define ACTIONCOOLDOWN	1	//! minimum time between actions being removed from queue
-
+#define ACTIONCOOLDOWN	1		//! minimum time between actions being removed from queue
+#define ENEMYSPAWNCOOLDOWN 5 	//!minimum time between enemy spawns
 /*----------TypeDefs----------*/
 
 typedef enum commandType commandType;
@@ -55,6 +55,10 @@ GameProperties getGame(GameProperties createdGame);
 void damageHealth(int damage);
 int addGold(int gold);
 int getCostOfNewTower();
+int getDeathCnt();
+void increaseDeathCnt();
+void setTotalWaveNo(int totalW);
+int getTotalWaveNo();
 
 void testingGameStructure();
 void CreateGameTest();

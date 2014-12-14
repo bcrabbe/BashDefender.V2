@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+/*---------- Hash Defines -----------*/
+#define ITEMS_IN_ACTION_QUEUE 5
+
 /*---------- Custom Headers	-----------*/
 
 #include "../includes/sput.h"
@@ -292,21 +295,37 @@ int popToTower()	{
 	GameProperties Game = getGame(NULL);
 	int needed;
 	if(queue->start != NULL) {
-	needed = calulateCosts(queue->start->command,queue->start->option,queue->start->target);
-		if (checkQueue(queue, Game,needed)){
-			ActionQueueStructure queue = getQueue(NULL);
-			GameProperties Game = getGame(NULL);
-			upgradeTowerStat(queue->start->option,queue->start->target);
-			takeGold(Game, needed);
-			QueueNode tempStart = queue->start;
-   		     queue->start = queue->start->nextNode;
-			free(tempStart);
-			setlastAction(Game);
-			--(queue->nItems);
-		return 1;	
+		needed = calulateCosts(queue->start->command,queue->start->option,queue->start->target);
+		switch(queue->start->command)	{
+			case upgrade:
+				if (checkQueue(queue, Game,needed)){
+					ActionQueueStructure queue = getQueue(NULL);
+					GameProperties Game = getGame(NULL);
+					upgradeTowerStat(queue->start->option,queue->start->target);
+					takeGold(Game, needed);
+				}
+				break;
+			case mktwr:
+				printf("got request for tower\n");
+				//! request tower type ignored for now.
+				if (checkQueue(queue,Game,needed)){
+					printf("creating tower\n");
+					createTowerFromPositions(queue->start->target);
+				}
+				break;
+			default:
+
+				break;
 		}
-	}
+	QueueNode tempStart = queue->start;
+    queue->start = queue->start->nextNode;
+	free(tempStart);
+	setlastAction(Game);
+	--(queue->nItems);
+	} else {
 		return 0;
+	}
+	return 1;
 }
 
 
@@ -337,6 +356,7 @@ int popFromQueue(ActionQueueStructure queue, commandType *cmd, upgradeStat *stat
 
 int checkQueue(ActionQueueStructure queue, GameProperties Game, int needed)	{
 	if((checkGold(needed, Game)) && (lastAction(Game)))	{
+			printf("success!\n");
 			return 1;		
 	} 
 	return 0;	
@@ -365,4 +385,79 @@ void testcheckGold()	{
 	sput_fail_unless(checkGold(10,testGame) == 1,"Testing enough gold");
 
 	free(testGame);
+}
+
+/*
+ *Extract display string from first N nodes in action queue and return output string
+ */
+
+char *getActionQueueString(void) {
+    
+    QueueNode p = getQueue(NULL)->start;
+    char *outputString = malloc(500);
+    char *targetString = malloc(4);
+    
+    for(int count = 0; p!= NULL && count < ITEMS_IN_ACTION_QUEUE; p = p->nextNode, count++) {
+        commandType command = p->command;
+        upgradeStat option = p->option;
+        int target = p->target;
+        
+        switch(command) {
+            case upgrade:
+                strcat(outputString, "upgrade");
+                break;
+            case execute:
+                strcat(outputString, "execute");
+                break;
+            case set:
+                strcat(outputString, "set");
+                break;
+            case man:
+                strcat(outputString, "man");
+                break;
+            case cat:
+                strcat(outputString, "cat");
+                break;
+            case mktwr:
+                strcat(outputString, "mktwr");
+                break;
+            case commandError:
+                continue;
+        }
+        
+        strcat(outputString, " ");
+        
+        switch(option) {
+            case power:
+                strcat(outputString, "p");
+                break;
+            case range:
+                strcat(outputString, "r");
+                break;
+            case speed:
+                strcat(outputString, "s");
+                break;
+            case AOErange:
+                strcat(outputString, "AOEr");
+                break;
+            case AOEpower:
+                strcat(outputString, "AOEp");
+                break;
+            case level:
+                strcat(outputString, "level");
+            case statError:
+                continue;
+        }
+        
+        if(target) {
+            sprintf(targetString, " t%d", target);
+            strcat(outputString, targetString);
+        }
+        
+        
+        strcat(outputString, "\n");
+        
+    }
+    
+    return outputString;
 }

@@ -51,7 +51,7 @@ void createLevelPaths()
 {
     LevelPaths pathList = (LevelPaths) malloc(sizeof(*pathList));
     getLevelPaths(pathList);
-    int numberOfPaths = 2;
+    int numberOfPaths = 4;
     
     assignMemoryForPaths(numberOfPaths);
     layPaths(numberOfPaths, 1); // currently 1 as only one level
@@ -275,7 +275,7 @@ void initialiseEnemy(Enemy newEnemy)
     newEnemy->pathProgress = 0;
     newEnemy->x = newEnemy->enemyPath->pathCoords[0][0];
     newEnemy->y = newEnemy->enemyPath->pathCoords[0][1];
-    newEnemy->maxHealth = 1000;
+    newEnemy->maxHealth = 2000;
     newEnemy->health = newEnemy->maxHealth;
     newEnemy->armour = 0;
     newEnemy->speed = 2;
