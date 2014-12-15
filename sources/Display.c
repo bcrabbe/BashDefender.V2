@@ -100,6 +100,8 @@ void init_pic(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture,
 void check_load_images(SDL_Surface *surface, char *pic_name);
 void draw_filled_range(SDL_Renderer *renderer, int cx, int cy, int r);
 void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, int frames, int pic_width, int pic_height, int anim_speed);
+int getBackgroundWidth();
+int getBackgroundHeight();
 
 Display init_SDL(){
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");
@@ -162,6 +164,19 @@ Display init_SDL(){
     
     return d;
 }
+
+
+
+int getBackgroundWidth() {
+  Display d =getDisplayPointer(NULL);
+  return d->backgroundSurface->w;
+}
+
+int getBackgroundHeight() {
+  Display d =getDisplayPointer(NULL);
+  return d->backgroundSurface->h;
+}
+
 /*Tower and enemy graphics functions*/
 
 /*call fucntion in the while loop to present all the animations*/
@@ -238,10 +253,13 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target){
 }
 
 //* draw an enemy at x and y coor with the health bar above it*/
-void drawEnemy(Display d, int x, int y, int w, int h, int pic_width, int pic_height, double currentHealth, double maxHealth, int type, int frames, int anim_speed){
+void drawEnemy(Display d, int x, int y, int w, int h, int pic_width, int pic_height,
+               double currentHealth, double maxHealth, int type, int frames,
+               int anim_speed)
+{
     Uint32 ticks = SDL_GetTicks();
     Uint32 sprite = (ticks / anim_speed) % frames;
-    d->srcRect = (SDL_Rect){ sprite * (pic_width/frames), 0, (pic_width/frames), pic_height};
+    d->srcRect = (SDL_Rect){sprite * (pic_width/frames), 0, (pic_width/frames), pic_height};
     d->rect = (SDL_Rect) {x, y, w, h};
     /*create animation by putting part of a spritesheet(image) into destination rect*/
     SDL_RenderCopy(d->renderer, d->enemyTexture[type], &d->srcRect, &d->rect);
@@ -377,7 +395,9 @@ void updateTowerMonitor(char *outputString) {
     
     displayTowerMonitor();
     
-    d->towerMonitorTextSurface = TTF_RenderText_Blended_Wrapped(d->towerMonitorFont, outputString, d->towerMonitorFontColour, TOWER_MONITOR_WIDTH - TOWER_TEXT_BORDER_X);
+    d->towerMonitorTextSurface = TTF_RenderText_Blended_Wrapped(d->towerMonitorFont, outputString,
+                                                                d->towerMonitorFontColour, TOWER_MONITOR_WIDTH -
+                                                                TOWER_TEXT_BORDER_X);
     if(d->towerMonitorTextSurface == NULL) crash("getInfoWindowTextSurface()");
     d->towerMonitorTextTexture = SDL_CreateTextureFromSurface(d->renderer, d->towerMonitorTextSurface);
     
@@ -403,7 +423,8 @@ void updateStatsBar(char *outputString) {
     
     displayStatsBar();
     
-    d->statsBarTextSurface = TTF_RenderText_Blended_Wrapped(d->statsBarFont, outputString, d->statsBarFontColour, STATS_BAR_WIDTH);
+    d->statsBarTextSurface = TTF_RenderText_Blended_Wrapped(d->statsBarFont, outputString, d->statsBarFontColour,
+                                                            STATS_BAR_WIDTH);
     if(d->statsBarTextSurface == NULL) crash("getInfoWindowTextSurface()");
     d->statsBarTextTexture = SDL_CreateTextureFromSurface(d->renderer, d->statsBarTextSurface);
     
@@ -527,8 +548,18 @@ int terminal_window(Display d, char *pass, char *clear)
 void display_text(Display d, char *pass)
 {
 	//Initialise rects and color
-    d->dstrect = (SDL_Rect) { TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10), TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), 0, 0};
-	d->imagerect = (SDL_Rect) {TERMINAL_WINDOW_X, TERMINAL_WINDOW_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT};
+    d->dstrect = (SDL_Rect) {
+        TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),
+        TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)),
+        0,
+        0
+    };
+	d->imagerect = (SDL_Rect) {
+        TERMINAL_WINDOW_X,
+        TERMINAL_WINDOW_Y,
+        TERMINAL_WINDOW_WIDTH,
+        TERMINAL_WINDOW_HEIGHT
+    };
     d->text_color = (SDL_Color) {0, 255, 0};
 
 	//Build textures from surfaces
@@ -554,7 +585,12 @@ void display_text(Display d, char *pass)
 
 void menu_screen(Display d, int *started)
 {
-	d->startbutton = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
+	d->startbutton = (SDL_Rect) {
+        (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),
+        (SCREEN_HEIGHT_GLOBAL/3)*2,
+        SCREEN_HEIGHT_GLOBAL/6,
+        SCREEN_HEIGHT_GLOBAL/6
+    };
 
 	d->backgroundsurface = IMG_Load("menu_screen5.png");
 	d->backgroundtexture = SDL_CreateTextureFromSurface(d->renderer, d->backgroundsurface);
@@ -578,8 +614,10 @@ void menu_screen(Display d, int *started)
 		{
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				if(event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) && event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 && 
-					event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 &&  event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)
+				if(event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) &&
+                   event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 &&
+                   event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 &&
+                   event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)
 				{
 					if(event.button.button == SDL_BUTTON_LEFT)
 					{

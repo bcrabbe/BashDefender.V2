@@ -38,9 +38,10 @@ void present_enemy(Display d);
 void createLevelPaths();
 LevelPaths getLevelPaths(LevelPaths pathList);
 void assignMemoryForPaths(int numberOfPaths);
-void layPaths(int numberOfPaths);
-void createHorizontalPath(Path P);
-void createDogLegPath(Path P);
+
+void layPaths(int numberOfPaths, int levelNum);
+char *getFilePath(int levelNum, int pathNum);
+void readInPath(int levelNum, int pathNum);
 
 void initialiseHeavyEnemy(Enemy newEnemy);
 int distanceToEndOfPath(int enemyID);
