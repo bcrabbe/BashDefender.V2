@@ -43,7 +43,8 @@ typedef enum clockType	{
 /*----------Symbolic Constants-----------*/
 
 #define ACTIONCOOLDOWN	1		//! minimum time between actions being removed from queue
-#define ENEMYSPAWNCOOLDOWN 2 	//!minimum time between enemy spawns
+#define ENEMYSPAWNCOOLDOWN .5 	//!minimum time between enemy spawns
+
 /*----------TypeDefs----------*/
 
 typedef enum commandType commandType;

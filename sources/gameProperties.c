@@ -1,7 +1,6 @@
 //
 // sputFunctions.c
 // Created by bclarke on 2014/09/11
-// tags: stack, abstraction, struct pointers
 //
 /*---------- Standard Headers -----------*/
 
@@ -127,8 +126,12 @@ void testSetLastAction()	{
  */
 int lastAction(GameProperties Game)	{
 
-	clock_t currTime = (double) clock() / CLOCKS_PER_SEC;
+	clock_t currTime = clock() / CLOCKS_PER_SEC;
+
 	clock_t timeSinceLastAction = currTime - Game->clock->lastAction;
+	iprint(Game->clock->lastAction);
+	iprint(timeSinceLastAction);
+	iprint(ACTIONCOOLDOWN);
 	if (timeSinceLastAction >= ACTIONCOOLDOWN)	{
 		Game->clock->lastAction = currTime;
 		return 1;	

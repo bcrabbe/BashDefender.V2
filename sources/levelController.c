@@ -74,7 +74,6 @@ void levelQueueReader()	{
 						current = removeLink(current);
 					}
 			default:
-					current = current->next;
 					break;
 		}
 	}
