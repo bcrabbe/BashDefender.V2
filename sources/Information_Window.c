@@ -11,6 +11,7 @@
 #include "../includes/Information_Window.h"
 #include "../includes/tower.h"
 #include "../includes/gameProperties.h"
+#include "../includes/actionQueueDataStructure.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,6 +65,33 @@ void towerMonitor(unsigned int targetTower, char *optionalOutputString) {
     updateTowerMonitor(outputString);
 }
 
+/**
+ Creates output string for stats monitor and updates stats monitor
+ */
+void statsBar() {
+    
+    GameProperties properties = getGame(NULL);
+    
+    int gold = getGold(properties);
+    int waveNumber = getWave(properties);
+    int health = getHealth(properties);
+    
+    char *outputString = malloc(MAX_OUTPUT_STRING);
+    
+    sprintf(outputString, "Gold: %d                                                                     Wave Number: %d                                                                     Health: %d", gold, waveNumber, health);
+    
+    updateStatsBar(outputString);
+}
+
+/**
+Creates output string for action queue monitor and updates it
+*/
+void actionQueueMonitor() {
+    
+    char *outputString = getActionQueueString();
+    
+    updateActionQueueMonitor(outputString);
+}
 
 /**
  Creates default string for tower monitor and sends to tower monitor
@@ -92,23 +120,6 @@ char *getTowerString(unsigned int targetTower) {
     return outputString;
 }
 
-/**
- Creates output string for stats monitor and updates stats monitor
- */
-void statsBar() {
-    
-    GameProperties properties = getGame(NULL);
-    
-    int gold = getGold(properties);
-    int waveNumber = getWave(properties);
-    int health = getHealth(properties);
-    
-    char *outputString = malloc(MAX_OUTPUT_STRING);
-    
-    sprintf(outputString, "Gold: %d                                                                     Wave Number: %d                                                                     Health: %d", gold, waveNumber, health);
-    
-    updateStatsBar(outputString);
-}
 
 /**
  Sends "upgrade" command help string to tower monitor

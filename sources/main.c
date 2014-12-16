@@ -33,29 +33,27 @@ int main()
 	//createTowerFromPositions(1);
 	//createTowerFromPositions(2);
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
-    //init_sound();
-    //playBackgroundSound();
 
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
     init_sound();
     playBackgroundSound();
-	while(started == 0){
+
+	while(started == 0)
+	{
 		menu_screen(d, &started);
 	}
     shut_menu_screen();
-       do{
+    do{
         ++steps;
         startFrame(d);
 		levelQueueReader();
         drawBackground();
         terminal_window(d, pass, clear);
-		popToTower();
+		//popToTower();
         if(inputCommand)
         {
             parse(inputCommand);
         }
-        statsBar();
-        towerMonitor(0, NULL);
         present_enemy(d);
         present_tower(d);
 
@@ -67,11 +65,14 @@ int main()
         }
         if(steps%100 == 0)
         {
-        //    userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
+            userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
         //     createEnemy();
         }
         presentAnimation();
 		drawAllTowerPositions();
+        statsBar();
+        towerMonitor(0, NULL);
+        actionQueueMonitor();
         endFrame(d);
     } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear));
 

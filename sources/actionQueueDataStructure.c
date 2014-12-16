@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+/*---------- Hash Defines -----------*/
+#define ITEMS_IN_ACTION_QUEUE 5
+
 /*---------- Custom Headers	-----------*/
 
 #include "../includes/sput.h"
@@ -382,4 +385,79 @@ void testcheckGold()	{
 	sput_fail_unless(checkGold(10,testGame) == 1,"Testing enough gold");
 
 	free(testGame);
+}
+
+/*
+ *Extract display string from first N nodes in action queue and return output string
+ */
+
+char *getActionQueueString(void) {
+    
+    QueueNode p = getQueue(NULL)->start;
+    char *outputString = malloc(500);
+    char *targetString = malloc(4);
+    
+    for(int count = 0; p!= NULL && count < ITEMS_IN_ACTION_QUEUE; p = p->nextNode, count++) {
+        commandType command = p->command;
+        upgradeStat option = p->option;
+        int target = p->target;
+        
+        switch(command) {
+            case upgrade:
+                strcat(outputString, "upgrade");
+                break;
+            case execute:
+                strcat(outputString, "execute");
+                break;
+            case set:
+                strcat(outputString, "set");
+                break;
+            case man:
+                strcat(outputString, "man");
+                break;
+            case cat:
+                strcat(outputString, "cat");
+                break;
+            case mktwr:
+                strcat(outputString, "mktwr");
+                break;
+            case commandError:
+                continue;
+        }
+        
+        strcat(outputString, " ");
+        
+        switch(option) {
+            case power:
+                strcat(outputString, "p");
+                break;
+            case range:
+                strcat(outputString, "r");
+                break;
+            case speed:
+                strcat(outputString, "s");
+                break;
+            case AOErange:
+                strcat(outputString, "AOEr");
+                break;
+            case AOEpower:
+                strcat(outputString, "AOEp");
+                break;
+            case level:
+                strcat(outputString, "level");
+            case statError:
+                continue;
+        }
+        
+        if(target) {
+            sprintf(targetString, " t%d", target);
+            strcat(outputString, targetString);
+        }
+        
+        
+        strcat(outputString, "\n");
+        
+    }
+    
+    return outputString;
 }
