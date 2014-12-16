@@ -69,7 +69,7 @@ int main()
         towerMonitor(0, NULL);
         actionQueueMonitor();
         endFrame(d);
-
+		SDL_Delay(22);
     } while(!terminal_window(d, pass, clear));
     
     shutSDL(d);
