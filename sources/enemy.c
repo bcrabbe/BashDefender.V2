@@ -114,8 +114,8 @@ void readInPath(int levelNum, int pathNum) {
   Path P = lP->paths[pathNum-1];
   
   int lastRowScanned = 0;
-  int backW = getBackgroundWidth(); 
-  int backH = getBackgroundHeight(); 
+  int backW = SCREEN_WIDTH_GLOBAL;
+  int backH = SCREEN_HEIGHT_GLOBAL;
   int x, y;
   if(fscanf(fp,"%d\n",&P->pathLength) != 1) {
     fprintf(stderr,"****ERROR Unable to read path length from path file at '%s' ****\n", filePath);

@@ -78,8 +78,6 @@ void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, in
 void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 void display_text(int x, int y, char *string, int text);
 
-int getBackgroundWidth();
-int getBackgroundHeight();
 
 Display init_SDL(){
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");
@@ -124,13 +122,6 @@ Display init_SDL(){
 
 
 
-int getBackgroundWidth() {
-  return SCREEN_WIDTH_GLOBAL;
-}
-
-int getBackgroundHeight() {
-    return SCREEN_HEIGHT_GLOBAL;
-}
 
 /*Tower and enemy graphics functions*/
 
