@@ -110,7 +110,7 @@ Keyword removeLink(Keyword current)	{
 int createEnemyCommand(Keyword makeEnemy)	{
 
 	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN))	{
-		createSpecificEnemy(makeEnemy->propertiesList[0],makeEnemy->propertiesList[1],makeEnemy->propertiesList[2]);
+		createSpecificEnemy(makeEnemy->propertiesList[0]->propertyValue,makeEnemy->propertiesList[1]->propertyValue,makeEnemy->propertiesList[2]->propertyValue);
 		return 1;
 	} 
 	return 0;

@@ -11,7 +11,8 @@
 #include "../includes/parser.h"
 #include "../includes/main.h"
 #include "../includes/enemy.h"
-#include "../includes/Sound.h"
+
+//#include "../includes/Sound.h"
 
 
 int main()
@@ -40,8 +41,8 @@ int main()
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
 
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
-    init_sound();
-    playBackgroundSound();
+    //init_sound();
+    //playBackgroundSound();
 	while(started == 0)
 	{
 		menu_screen(d, &started);
@@ -83,6 +84,7 @@ int main()
     
     shutSDL(d);
     //shutSound();
+
     freeEnemyGroup();
     freeLevelPaths();
     return 0;

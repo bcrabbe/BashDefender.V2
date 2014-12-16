@@ -17,6 +17,12 @@ struct levelPaths {
 };
 
 struct enemy {
+
+    TypeOfEnemy eType;
+    Family eFamily;
+    int level;
+    int enemyID;
+    
     int x, y;
     Path enemyPath;
     int pathProgress;
@@ -25,8 +31,7 @@ struct enemy {
     int armour;
     int speed;
     int damage;
-    int enemyID;
-    int level;
+    
     int slowEffect;
     int slowEffectStepsRemaining;
     int poisonEffect;
@@ -91,7 +96,7 @@ void freePath(Path p)
 void layPaths(int numberOfPaths, int levelNum)
 {
   
-    LevelPaths lP = getLevelPaths(NULL);
+   // LevelPaths lP = getLevelPaths(NULL);
     for(int i = 1; i <= numberOfPaths; i++) {
       readInPath(levelNum, i);
     }
@@ -102,26 +107,34 @@ void readInPath(int levelNum, int pathNum) {
   char *filePath = getFilePath(levelNum, pathNum);
   FILE *fp = fopen(filePath, "r");
   if(fp == NULL) {
-    fprintf(stderr,"Unable to open path file at '%s'\n", filePath);
+    fprintf(stderr,"****ERROR Unable to open path file at '%s' ****\n", filePath);
     exit(1);
   }
   LevelPaths lP = getLevelPaths(NULL);
   Path P = lP->paths[pathNum-1];
   
-  P->pathLength = 4;
-  
-  int backW = getBackgroundWidth();
-  int backH = getBackgroundHeight();
+  int lastRowScanned = 0;
+  int backW = getBackgroundWidth(); 
+  int backH = getBackgroundHeight(); 
   int x, y;
-  fscanf(fp,"%d\n",&P->pathLength);
+  if(fscanf(fp,"%d\n",&P->pathLength) != 1) {
+    fprintf(stderr,"****ERROR Unable to read path length from path file at '%s' ****\n", filePath);
+    exit(1);
+  }
+  lastRowScanned++;
   
   P->pathCoords = (int **) malloc(sizeof(int *) * P->pathLength);
   for(int i = 0; i < P->pathLength; i++) {
-    fscanf(fp,"%d,%d\n", &x, &y);
     
+    if(fscanf(fp,"%d,%d\n", &x, &y) != 2) {
+      fprintf(stderr,"****ERROR Unable to read path coordinates in file at '%s', last row successfully scanned was %d ****\n", filePath, lastRowScanned);
+      exit(1);
+    }
+    
+    lastRowScanned++;
     x = (int)((double) x * ((double) SCREEN_WIDTH_GLOBAL/ (double) backW) );
     y = (int)((double) y * ((double) SCREEN_HEIGHT_GLOBAL/ (double) backH) );
-  //printf("here\n");
+  
     P->pathCoords[i] = (int *)malloc(sizeof(int) * 2);
     P->pathCoords[i][0] = x;
     P->pathCoords[i][1] = y;
@@ -218,7 +231,7 @@ void freeEnemyGroup()
 /*
 * creates a new blank enemy within the enemy list structure, updates the enemy list structure to reflect the new number of enemies and populates the enemy (currently running for standard enemy only)
 */
-void createEnemy()
+Enemy createEnemy()
 {
     EnemyGroup enemyList =  getEnemyGroup(NULL);
     ++(enemyList->numberOfEnemies);
@@ -234,8 +247,9 @@ void createEnemy()
 	      printf("****ERROR malloc in createEnemy failed****\n");
         exit(1);
     }
+    
+    return enemyList->enemyArray[enemyList->numberOfEnemies];
 
-    initialiseEnemy( enemyList->enemyArray[enemyList->numberOfEnemies]);
 }
 
 /*
@@ -267,10 +281,37 @@ void Test_createEnemy()
 
 }
 
+
+void createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum) {
+
+  Enemy e = createEnemy();
+  
+  switch (eType) {
+    case intBasic :
+      initialiseEnemy(e, lvl, intEnemy, eType, INT_BASIC_HEALTH, INT_BASIC_ARMOUR, INT_BASIC_SPEED, INT_BASIC_DAMAGE, INT_BASIC_HEIGHT, INT_BASIC_WIDTH);
+      break;
+    case intHeavy :
+      initialiseEnemy(e, lvl, intEnemy, eType, INT_HEAVY_HEALTH, INT_HEAVY_ARMOUR, INT_HEAVY_SPEED, INT_HEAVY_DAMAGE, INT_HEAVY_HEIGHT, INT_HEAVY_WIDTH);
+      break;
+    case charBasic :
+      initialiseEnemy(e, lvl, charEnemy, eType, CHAR_BASIC_HEALTH, CHAR_BASIC_ARMOUR, CHAR_BASIC_SPEED, CHAR_BASIC_DAMAGE, CHAR_BASIC_HEIGHT, CHAR_BASIC_WIDTH);
+      break;
+    case charHeavy :
+      initialiseEnemy(e, lvl, charEnemy, eType, CHAR_HEAVY_HEALTH, CHAR_HEAVY_ARMOUR, CHAR_HEAVY_SPEED, CHAR_HEAVY_DAMAGE, CHAR_HEAVY_HEIGHT, CHAR_HEAVY_WIDTH);
+      break;
+    default :
+      fprintf(stderr,"ERROR**** incorrect value for TypeOfEnemy (value = %d) passed to createSpecificEnemy() ****\n", eType);
+      exit(1);
+  }
+}
+    
+    
+
+
 /*
 * populates relevant fields for standard enemies
 */                                            
-void initialiseEnemy(Enemy newEnemy)
+void initialiseEnemy(Enemy newEnemy, int lvl, Family fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width)
 {
     LevelPaths lP = getLevelPaths(NULL);
     newEnemy->enemyPath = lP->paths[rand()%lP->numberOfPaths];
@@ -278,16 +319,21 @@ void initialiseEnemy(Enemy newEnemy)
     newEnemy->x = newEnemy->enemyPath->pathCoords[0][0];
     newEnemy->y = newEnemy->enemyPath->pathCoords[0][1];
 
-    newEnemy->maxHealth = 2000;
+
+
+    newEnemy->eFamily = fam;
+    newEnemy->level = lvl;
+    newEnemy->eType = eType;
+    newEnemy->maxHealth = health*lvl;
     newEnemy->health = newEnemy->maxHealth;
-    newEnemy->armour = 0;
-    newEnemy->speed = 2;
+    newEnemy->armour = armour*lvl;
+    newEnemy->speed = speed;
     newEnemy->enemyID=getNumberOfEnemies();
     newEnemy->dead = 0;
 
-    newEnemy->height = 64;
-    newEnemy->width = 32;
-    newEnemy->damage = 10;
+    newEnemy->height = height;
+    newEnemy->width = width;
+    newEnemy->damage = damage*lvl;
 
 }
 
@@ -355,7 +401,7 @@ void present_enemy(Display d)
 
         if(!isDead(i))
         {
-                drawEnemy(d, e->x, e->y, 50, 50, 2010, 121, (double) e->health, (double)e->maxHealth, 1, 15, 200);
+                 drawEnemy(d, e->x, e->y, 50, 50, 2010, 121, (double) e->health, (double)e->maxHealth, 1, 15, 200); 
         }
     }
 }
@@ -378,7 +424,7 @@ void freeEnemy(int enemyID)
 }
 
 /*
-* moves specified enemy along their assigned path by a set number of steps as designated by the nemy's speed characteristic
+* moves specified enemy along their assigned path by a set number of steps as designated by the enemy's speed characteristic
 */
 int moveEnemy(int enemyID )
 {
@@ -391,10 +437,9 @@ int moveEnemy(int enemyID )
             return 0;
         }
         else {
-            damageHealth(e->damage);
+           damageHealth(e->damage); 
             e->dead = 1;
 			increaseDeathCnt();
-
             return 0;
         }
     }
@@ -481,7 +526,7 @@ void damageEnemy(int damage, int enemyID)
     {
         e->dead=1;
         
-        addGold(e->maxHealth);
+        addGold(e->maxHealth); 
         // drawDeath(e->x, e->y);
     }
 }
@@ -535,18 +580,18 @@ void testEnemy()
 
 /*
 * main function for unit testing
-*/
 
-/*int main()
+
+int main()
 {
     createLevelPaths();
     createEnemyGroup();
-    createEnemy();
-    createEnemy();
-    createEnemy();
+    createSpecificEnemy(charBasic, 1, 0);
+    createSpecificEnemy(charBasic, 1, 0);
+    createSpecificEnemy(charHeavy, 1, 0);
     for(int i = 0; i < 100; i++) {
       moveEnemy(3);
       printEnemy(3);
     }
-}*/
-
+}
+*/

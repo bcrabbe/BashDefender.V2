@@ -102,8 +102,6 @@ void init_pic(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture,
 void check_load_images(SDL_Surface *surface, char *pic_name);
 void draw_filled_range(SDL_Renderer *renderer, int cx, int cy, int r);
 void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, int frames, int pic_width, int pic_height, int anim_speed);
-int getBackgroundWidth();
-int getBackgroundHeight();
 
 Display init_SDL(){
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");

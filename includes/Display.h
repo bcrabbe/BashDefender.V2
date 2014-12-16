@@ -113,6 +113,9 @@ int terminal_window(Display d, char *pass, char *clear);
 void display_text(Display d, char *pass);
 void menu_screen(Display d, int *started);
 
+int getBackgroundWidth();
+int getBackgroundHeight();
+
 #endif
 
 // for my purpose...

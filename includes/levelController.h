@@ -1,5 +1,5 @@
-#ifndef actionQueueDataStructure_h
-
+#ifndef levelController_h
+#define levelController_h
 /*---------- Custom Headers -----------*/
 #include "../includes/tower.h"
 #include "../includes/gameProperties.h"
