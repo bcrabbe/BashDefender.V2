@@ -38,16 +38,19 @@ int main()
     int steps=0;
     //init_sound();
     //playBackgroundSound();
+
 	while(started == 0)
 	{
 		menu_screen(d, &started);
 	}
+    shut_menu_screen();
     do{
         ++steps;
         startFrame(d);
 		levelQueueReader();
         drawBackground();
         levelQueueReader();
+
         terminal_window(d, pass, clear);
 		popToTower();
         if(inputCommand)
@@ -74,6 +77,7 @@ int main()
     
     shutSDL(d);
     //shutSound();
+
 
     freeEnemyGroup();
     freeLevelPaths();
