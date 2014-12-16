@@ -303,30 +303,35 @@ int popToTower()	{
 					GameProperties Game = getGame(NULL);
 					upgradeTowerStat(queue->start->option,queue->start->target);
 					takeGold(Game, needed);
+					removeQueueItem();
 				}
 				break;
 			case mktwr:
-				printf("got request for tower\n");
 				//! request tower type ignored for now.
 				if (checkQueue(queue,Game,needed)){
-					printf("creating tower\n");
 					createTowerFromPositions(queue->start->target);
 					takeGold(Game, needed);
+					removeQueueItem();
 				}
 				break;
 			default:
 
 				break;
 		}
+	} else {
+		return 0;
+	}
+	return 1;
+}
+
+void removeQueueItem()	{
+    ActionQueueStructure queue = getQueue(NULL);
+    GameProperties Game = getGame(NULL);
 	QueueNode tempStart = queue->start;
     queue->start = queue->start->nextNode;
 	free(tempStart);
 	setlastAction(Game);
 	--(queue->nItems);
-	} else {
-		return 0;
-	}
-	return 1;
 }
 
 
@@ -337,6 +342,7 @@ int popFromQueue(ActionQueueStructure queue, commandType *cmd, upgradeStat *stat
     GameProperties Game = getGame(NULL);
     int needed = calulateCosts(*cmd,*stat,*target);
 	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available gold, cooldown time 
+		printf("popping from queue\n");
 		*cmd = queue->start->command;
 		*stat = queue->start->option;
 		*target = queue->start->target;

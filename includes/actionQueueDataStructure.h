@@ -29,6 +29,7 @@ upgradeStat getLastOption(ActionQueueStructure queue);
 ActionQueueStructure getQueue(ActionQueueStructure queue);
 int getLastTarget();
 int getFirstTarget();
+void removeQueueItem();
 int calulateCosts(commandType cmd, upgradeStat stat, int target);
 int getCurrentStat(upgradeStat stat,int target);
 int popToTower();

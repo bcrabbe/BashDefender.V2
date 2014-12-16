@@ -119,6 +119,7 @@ int parseMktwr(char ** commandArray)
     
     if(pushToQueue(getQueue(NULL),mktwr,twrType,towerPosition)>=1)
     {
+		printf("pushing tower to queue\n");
         return 1;
     }
     else return 0;
