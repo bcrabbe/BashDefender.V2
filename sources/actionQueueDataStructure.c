@@ -311,6 +311,7 @@ int popToTower()	{
 				if (checkQueue(queue,Game,needed)){
 					printf("creating tower\n");
 					createTowerFromPositions(queue->start->target);
+					takeGold(Game, needed);
 				}
 				break;
 			default:
