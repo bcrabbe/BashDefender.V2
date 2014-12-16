@@ -20,8 +20,18 @@ struct gameClock	{
 
 	clock_t start_t; //! time game started.  Must be ran at startup. 
 	clock_t lastAction;
-	clock_t enemySpawned;
+	ClockNode first;
+	ClockNode last;
 };
+
+struct clockNode	{
+
+	clockType type;
+	clock_t time;
+	ClockNode next;
+
+};
+
 
 struct gameProperties {
 
@@ -51,6 +61,7 @@ clock_t delayGame(int delayN)	{
 	return timeWaited;
 }
 
+
 /*
  *Sets lastAction member to current clock time
  */
@@ -59,10 +70,9 @@ int setlastAction(GameProperties Game)	{
 	return (int) Game->clock->lastAction;
 }
 
-void setEnemySpawned()	{
+void setClock(clockType clockToSet)	{
 
-		GameProperties game = getGame(NULL);
-		game->clock->enemySpawned = clock()/CLOCKS_PER_SEC;
+		//*clockToSet = clock()/CLOCKS_PER_SEC;
 }
 
 /*
@@ -126,6 +136,8 @@ int lastAction(GameProperties Game)	{
 		return 0;
 }
 
+
+
 /*
  *Damages play health with specified amount of damage
  */
@@ -134,6 +146,8 @@ void damageHealth(int damage)	{
 	getGame(NULL)->health -= damage;
 
 }
+
+
 
 void testlastAction()	{
 
@@ -225,6 +239,101 @@ int getCostOfNewTower() {
 
     return getGame(NULL)->costOfNewTower;
 }
+/*
+ *Creating Game Clock linked list
+ */
+GameClock createClock()	{
+	GameClock clock = (GameClock) malloc(sizeof(*clock));	
+	clock->first = NULL;
+	clock->last = NULL;
+	getClock(clock);
+	return clock;
+}
+
+GameClock getClock(GameClock clock)	{
+
+		static GameClock currClock;
+		if(clock != NULL)	{
+			currClock = clock;
+		}
+
+		return currClock;
+
+}
+
+/*
+ * Add Clock Node
+ */
+void addClock(clockType type)	{
+	
+	GameClock clock = getClock(NULL);	
+	if(checkUniqueClockType(type))	{
+		if(clock->first == NULL)	{
+			clock->first = clock->last = createClockNode(type);
+		} else {
+			clock->last->next = createClockNode(type);
+			clock->last = clock->last->next;
+		}
+	}
+}
+
+ClockNode createClockNode(clockType type)	{
+	ClockNode newNode;
+	newNode = (ClockNode) malloc(sizeof(*newNode));
+	newNode->next = NULL;
+	newNode->time = clock();
+	newNode->type = type;
+	return newNode;
+}
+
+/*
+ *Checks Clock Type is unique
+ */
+
+int checkUniqueClockType(clockType type)	{
+
+	GameClock clock = getClock(NULL);
+	ClockNode currNode;
+	currNode = clock->first;
+	while(currNode!= NULL)	{
+		if (currNode->type == type)	{
+			return 0;
+		}
+		currNode = currNode->next;
+	}
+
+	return 1;
+
+}
+
+int checkClock(clockType cType,int coolDown)	{
+	GameClock gClock = getClock(NULL);
+	ClockNode currNode;
+	currNode = gClock->first;
+
+	clock_t currTime = clock() / CLOCKS_PER_SEC;
+	clock_t timeSinceLastUse;
+
+	while(currNode!= NULL)	{
+		if (currNode->type == cType)	{
+			timeSinceLastUse = currTime - currNode->time;
+			if(timeSinceLastUse >= coolDown)	{
+				setCurrTime(currNode);
+				return 1;
+			} else {
+				return 0;
+			}	
+		}
+		currNode = currNode->next;
+	}
+
+	fprintf(stderr,"clock does not exist\n");
+	return 0;
+}
+
+void setCurrTime(ClockNode node)	{
+	node->time = (double) clock() / CLOCKS_PER_SEC;
+}
 
 /*
  *Creates game structure.  Needs to be run in level init
@@ -232,7 +341,7 @@ int getCostOfNewTower() {
 GameProperties createGame()	{
 
 	GameProperties newGame = (GameProperties) malloc(sizeof(*newGame));
-	newGame->clock = (GameClock) malloc(sizeof(*(newGame->clock)));
+	newGame->clock = createClock();
 	newGame->gold=1000;
 	newGame->currWaveNo=0;
 	newGame->totalWaveNo = 0;
@@ -251,6 +360,11 @@ GameProperties createGame()	{
 int getGold(GameProperties game)	{
 
 	return game->gold;
+}
+
+int getTotalGold()	{
+
+	return(getGold(getGame(NULL)));
 }
 
 void TestGetGold()	{

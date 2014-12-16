@@ -4,10 +4,23 @@
 #include "../includes/gameProperties.h"
 #include "../includes/Display.h"
 
+#define DELAY_BETWEEN_ENEMIES	1
+
 typedef struct path *Path;
 typedef struct levelPaths *LevelPaths;
 typedef struct enemy *Enemy;
 typedef struct enemyGroup *EnemyGroup;
+
+
+
+typedef enum typeOfEnemy	{
+
+	intBasic = 1,
+	intHeavy = 2,
+	charBasic =3,
+	charHeavy =4
+} typeOfEnemy;
+
 
 typedef enum BOOL {TRUE, FALSE} BOOL;
 void createEnemyGroup();

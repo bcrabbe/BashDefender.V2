@@ -2,6 +2,7 @@
 
 /*---------- Custom Headers -----------*/
 #include "../includes/tower.h"
+#include "../includes/gameProperties.h"
 #include "../includes/enemy.h"
 #include "../includes/actionQueueDataStructure.h"
 
@@ -9,8 +10,8 @@
 #define READCHAR	'/'
 typedef enum levelCommand { makeTowerP= 0, 
 							totalWaves = 1, 
-							wave = 2, 
-							delay = 3 
+							wave = 2,
+							makeEnemy = 3
 } levelCommand;
 
 typedef enum property {	x = 0, 
@@ -19,7 +20,9 @@ typedef enum property {	x = 0,
 						waveID = 3, 
 						enemyType = 4,
 					    numberOfEnemies = 5,	
-						dTime = 5 
+						dTime = 5, 
+						entrance = 6,
+						enemyLevel = 7
 } property;
 
 typedef struct keyword *Keyword;
@@ -40,11 +43,15 @@ void addKWtoQueue(Keyword nwKW);
 char* expandCBuffer(char *toExpand, int currSize);
 char* getToken(char *line);
 int validateLine(char *Line, int nWords);
+int createEnemyCommand(Keyword makeEnemy);
 void addProperty(property p);
 void addValue(char *token);
 void createLevel();
 void printQueue();
+Keyword createKeyword();
+void breakDownWaveCommand(KeywordProp *propertiesList, int nProps);
 void makeTowerCommand(Keyword setTower);
+void createLevelClocks();
 void setWaveTotalCommand(Keyword setWaveTotal);
 void waveCreatorCommand(Keyword waveKeyWord);
 Keyword removeLink(Keyword current);
