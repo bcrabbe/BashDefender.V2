@@ -61,8 +61,8 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #include <string.h>
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 typedef struct display *Display;
 int processEvents(Display d);
@@ -86,7 +86,7 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target);
 void drawTowerPosition(int x, int y, int w, int h);
 
 //enemy
-
+int getBackgroundDimensions(int *w, int *h);
 void drawEnemy(Display d, int x, int y, int w, int h, int pic_width, int pic_height, double currentHealth, double maxHealth, int type, int frames, int anim_speed);
 
 void presentAnimation();
