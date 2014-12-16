@@ -19,11 +19,15 @@ int main()
 {
     Display d = init_SDL();
     initLevel();
+	while(1)	{
+		levelQueueReader();
+	}
+}
 //    //testing();
 
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));//createEnemy();
   	//createEnemy();
-    char text[128] = {'>', '>'};
+/*    char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
@@ -74,17 +78,16 @@ int main()
         towerMonitor(0, NULL);
         actionQueueMonitor();
         endFrame(d);
-    } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear) && started == 1);
 
+    } while(!terminal_window(d, pass, clear, inputCommand));
     
     shutSDL(d);
-    shutSound();
-
+    //shutSound();
     freeEnemyGroup();
     freeLevelPaths();
     return 0;
 }
-
+*/
 
 
 

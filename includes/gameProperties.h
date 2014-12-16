@@ -31,17 +31,26 @@ enum upgradeStat
 	CHAR=7
 };
 
+typedef enum clockType	{
+
+	start_t = 0,
+	lastCmdAction = 1,
+	enemyGroupCreated1 = 2,
+	singleEnemyCreated = 3
+	
+} clockType;
+
 /*----------Symbolic Constants-----------*/
 
 #define ACTIONCOOLDOWN	1		//! minimum time between actions being removed from queue
-#define ENEMYSPAWNCOOLDOWN 5 	//!minimum time between enemy spawns
+#define ENEMYSPAWNCOOLDOWN 2 	//!minimum time between enemy spawns
 /*----------TypeDefs----------*/
 
 typedef enum commandType commandType;
 typedef enum upgradeStat upgradeStat;
 typedef struct gameProperties *GameProperties;
 typedef struct gameClock *GameClock;
-
+typedef struct clockNode *ClockNode;
 /*----------Function Prototypes-----------*/
 GameProperties createGame();
 int getGold(GameProperties game);
@@ -52,6 +61,10 @@ clock_t delayGame(int delayN);
 int lastAction(GameProperties Game);
 int setlastAction(GameProperties Game);
 GameProperties getGame(GameProperties createdGame);
+void addClock(clockType type);
+GameClock getClock(GameClock clock);
+int checkUniqueClockType(clockType type);
+ClockNode createClockNode(clockType type);
 void damageHealth(int damage);
 int addGold(int gold);
 int getCostOfNewTower();
@@ -59,11 +72,14 @@ int getDeathCnt();
 void increaseDeathCnt();
 void setTotalWaveNo(int totalW);
 int getTotalWaveNo();
-
+GameClock createClock();
+int checkClock(clockType cType,int coolDown);
+void setCurrTime(ClockNode node);
 void testingGameStructure();
 void CreateGameTest();
 void TestGetGold();
 void TestAddGold();
 void TestTakeGold();
-
+void setEnemyCreated1();
+int getTotalGold();
 #endif
