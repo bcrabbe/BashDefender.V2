@@ -6,17 +6,17 @@
 //  Copyright (c) 2014 VV-SD. All rights reserved.
 //
 
-int SCREEN_WIDTH_GLOBAL;
-int SCREEN_HEIGHT_GLOBAL;
 
 #ifndef TEST_Display_h
 #define TEST_Display_h
+extern int SCREEN_WIDTH_GLOBAL;
+extern int SCREEN_HEIGHT_GLOBAL;
 
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   700
 
-#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
-//#define FULLSCREEN_YN 0
+//#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
+#define FULLSCREEN_YN 0
 
 //Tower monitor dimensions
 #define TOWER_MONITOR_HEIGHT (SCREEN_HEIGHT_GLOBAL / 3.5)

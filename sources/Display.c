@@ -10,6 +10,8 @@
 #include <stdbool.h>
 
 #define HEALTHBAR 80
+int SCREEN_WIDTH_GLOBAL;
+int SCREEN_HEIGHT_GLOBAL;
 
 struct display {
     //Window objects
