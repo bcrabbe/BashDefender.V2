@@ -125,6 +125,11 @@ Display init_SDL(){
 
 /*Tower and enemy graphics functions*/
 
+int getBackgroundDimensions(int *w, int *h){
+    Display d =getDisplayPointer(NULL);
+    SDL_QueryTexture(d->backgroundTexture, NULL, NULL, w, h);
+    return SCREEN_WIDTH_GLOBAL;
+}
 /*call fucntion in the while loop to present all the animations*/
 void presentAnimation(){
     Display d = getDisplayPointer(NULL);
@@ -320,7 +325,7 @@ void updateStatsBar(char *outputString) {
 /**Display output string in action queue monitor*/
 void updateActionQueueMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
-    // displayMonitor(TERMINAL_WINDOW_WIDTH, SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
+     displayMonitor(TERMINAL_WINDOW_WIDTH, SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
     if(strlen(outputString) > 0) {
         display_text(TERMINAL_WINDOW_WIDTH + 30,  SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT + 30, outputString, blended_wrapped);
     }
