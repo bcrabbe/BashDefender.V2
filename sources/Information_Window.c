@@ -21,7 +21,6 @@
 #define DEFAULT_SCREEN_TIME 10000
 
 
-
 /**
  If called with target tower as first parameter and second parameter set to -1, gets output string
  for that tower and sends to tower monitor. If called with first parameter set to NULL and optional

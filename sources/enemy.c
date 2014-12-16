@@ -273,7 +273,7 @@ void initialiseEnemy(Enemy newEnemy)
     newEnemy->maxHealth = 100;
     newEnemy->health = newEnemy->maxHealth;
     newEnemy->armour = 0;
-    newEnemy->speed = 2;
+    newEnemy->speed = 1;
     newEnemy->enemyID=getNumberOfEnemies();
     newEnemy->dead = 0;
 
@@ -295,7 +295,7 @@ void initialiseHeavyEnemy(Enemy newEnemy)
     newEnemy->y = newEnemy->enemyPath->pathCoords[0][1];
     newEnemy->maxHealth = 1000;
     newEnemy->health = newEnemy->maxHealth;
-    newEnemy->armour = 5;
+    newEnemy->armour = 0;
     newEnemy->speed = 1;
     newEnemy->enemyID=getNumberOfEnemies();
     newEnemy->dead = 0;
@@ -347,7 +347,7 @@ void present_enemy(Display d)
 
         if(!isDead(i))
         {
-                drawEnemy(d, e->x, e->y, 50, 50, 2010, 121, (double) e->health, (double)e->maxHealth, 1, 15, 200);
+            drawEnemy(d, e->x, e->y, 50, 50, 2010, 121, (double) e->health, (double)e->maxHealth, 1, 15, 200);
         }
     }
 }
@@ -506,7 +506,7 @@ void towerGetTargetPos(int * towerTargetPosition, int enemyID)
 void printEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
-    printf("Enemy x = %d, enemy y = %d, enemy health = %d\n\n", e->x, e->y, e->health);
+    printf("Enemy x = %d, enemy y = %d, enemy health = %f\n\n", e->x, e->y, e->health);
 }
 
 void testEnemy()

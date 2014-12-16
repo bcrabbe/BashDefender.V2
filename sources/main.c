@@ -30,7 +30,6 @@ int main()
 	int started = 0;
     addGold(100);
     int steps=0;
-<<<<<<< HEAD
 	//createTowerFromPositions(1);
 	//createTowerFromPositions(2);
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
@@ -38,24 +37,17 @@ int main()
     //playBackgroundSound();
 
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
-    //init_sound();
-   // playBackgroundSound();
-	while(started == 0)
-	{
-		menu_screen(d, &started);
-	}
-    do{
-=======
-    userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
     init_sound();
     playBackgroundSound();
+	while(started == 0){
+		menu_screen(d, &started);
+	}
+    shut_menu_screen();
        do{
->>>>>>> vlads/master
         ++steps;
         startFrame(d);
 		levelQueueReader();
         drawBackground();
-
         terminal_window(d, pass, clear);
 		popToTower();
         if(inputCommand)
@@ -81,11 +73,11 @@ int main()
         presentAnimation();
 		drawAllTowerPositions();
         endFrame(d);
-    } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear) && started == 1);
+    } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear));
 
     
-    shutSDL(d);
-    //shutSound();
+    shutSDL();
+    shutSound();
 
     freeEnemyGroup();
     freeLevelPaths();
