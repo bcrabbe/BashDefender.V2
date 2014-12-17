@@ -49,8 +49,8 @@ int main(int argc, char ** argv)
         startFrame(d);
 		levelQueueReader();
         drawBackground();
+        
         levelQueueReader();
-
         terminal_window(d, pass, clear);
 		popToTower();
         if(inputCommand)
@@ -71,8 +71,10 @@ int main(int argc, char ** argv)
         statsBar();
         towerMonitor(0, NULL);
         actionQueueMonitor();
+
+        drawRect(10, 10, 150, 150, 80, 10, 100, 100);
+        
         endFrame(d);
-		SDL_Delay(22);
     } while(!terminal_window(d, pass, clear));
     
     shutSDL(d);

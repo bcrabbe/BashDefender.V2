@@ -21,6 +21,7 @@
 #define MAX_OUTPUT_STRING 200
 #define DEFAULT_SCREEN_TIME 10000
 
+#include <SDL2/SDL.h>
 
 /**
  If called with target tower as first parameter and second parameter set to -1, gets output string

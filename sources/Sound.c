@@ -14,7 +14,7 @@
 #include <time.h>
 
 #include <SDL2_mixer/SDL_mixer.h>
-
+#include <SDL2/SDL.h>
 
 struct sound{
     Mix_Music *background_music;

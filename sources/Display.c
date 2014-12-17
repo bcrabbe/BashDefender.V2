@@ -13,12 +13,11 @@
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-
-#define HEALTHBAR_W 80
-#define HEALTHBAR_H 10
+#include <SDL2/SDL.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 enum font_types{solid, blended, blended_wrapped};
-
 
 struct display {
     //main objects
@@ -46,15 +45,13 @@ struct display {
 	//terminal Window
     SDL_Texture *newtexture;
 	SDL_Texture *terminalWindowTexture;
-    
+
     //Action queue monitor objects
     SDL_Texture *actionQueueTexture;
 
     //Tower objects
-    SDL_Surface *towerSurface[2];
     SDL_Texture *towerTexture[2];
     SDL_Texture *towerPoistionTexture;
-    
     //enemy
     SDL_Texture *enemyTexture[2];
     
@@ -72,12 +69,11 @@ void crash(char *message);
 void getWindowSize(int *w, int *h);
 void init_pic(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture, char *pic_name);
 void check_load_images(SDL_Surface *surface, char *pic_name);
-void draw_filled_range(SDL_Renderer *renderer, int cx, int cy, int r);
+void draw_filled_range(int cx, int cy, int r);
 void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, int frames, int pic_width, int pic_height, int anim_speed);
-
+void init_text_textures(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture);
 void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
-void display_text(int x, int y, char *string, int text);
-
+void display_text(int x, int y, char *string, int text, int r, int g, int b);
 
 Display init_SDL(){
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");
@@ -115,13 +111,9 @@ Display init_SDL(){
     init_pic(&d->renderer, &d->surface, &d->circ1_Texture[1], "circ1_light.png");
     init_pic(&d->renderer, &d->surface, &d->circ2_Texture[0], "circ3_dark.png");
     init_pic(&d->renderer, &d->surface, &d->circ2_Texture[1], "circ3_light.png");
-    
-   
+
     return d;
 }
-
-
-
 
 /*Tower and enemy graphics functions*/
 
@@ -201,29 +193,33 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target){
     SDL_RenderDrawLine(d->renderer, X_from, Y_from, X_target, Y_target);
 }
 
-//* draw an enemy at x and y coor with the health bar above it*/
-void drawEnemy(Display d, int x, int y, int w, int h, int pic_width, int pic_height,
-               double currentHealth, double maxHealth, int type, int frames,
-               int anim_speed)
-{
+/* draw an enemy at x and y coor with the health bar above it*/
+void drawEnemy(int x, int y, int w, int h, int pic_width, int pic_height, int type, int frames, int anim_speed){
+    Display d = getDisplayPointer(NULL);
     Uint32 ticks = SDL_GetTicks();
     Uint32 sprite = (ticks / anim_speed) % frames;
     d->srcRect = (SDL_Rect){sprite * (pic_width/frames), 0, (pic_width/frames), pic_height};
     d->rect = (SDL_Rect) {x, y, w, h};
     /*create animation by putting part of a spritesheet(image) into destination rect*/
     SDL_RenderCopy(d->renderer, d->enemyTexture[type], &d->srcRect, &d->rect);
-    
+}
+
+/* draw CPU rect*/
+void drawRect(int x, int y, int red, int blue, int max_width, int max_height, int current, int total){
+    Display d = getDisplayPointer(NULL);
+    SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_NONE);
     /*presenting and manipulating color and width of the health bar*/
-    double color = (255*((double)currentHealth/maxHealth));
-    SDL_SetRenderDrawColor(d->renderer, 0, color, 0, 255);
-    double health = ((double)(currentHealth * HEALTHBAR_W)/(double)maxHealth);
-    d->rect = (SDL_Rect) {x, y -20, (double)health, HEALTHBAR_H};
+    double color = (255*((double)current/total));
+    SDL_SetRenderDrawColor(d->renderer, red, color, blue, 0);
+    double memory = ((double)(current * max_width/(double)total));
+    d->rect = (SDL_Rect) {x, y, (double)memory, max_height};
     SDL_RenderFillRect(d->renderer, &d->rect);
 }
 
 /*Draw range with transparency*/
-void draw_filled_range(SDL_Renderer *renderer, int cx, int cy, int r)
+void draw_filled_range(int cx, int cy, int r)
 {
+    Display d = getDisplayPointer(NULL);
     Uint32 ticks = SDL_GetTicks();
     Uint32 clock = (ticks / 150)% 20;
     //mx saturation is a max extreme to ensure saturation does not get bigger than pre-set value
@@ -239,12 +235,12 @@ void draw_filled_range(SDL_Renderer *renderer, int cx, int cy, int r)
     else if (clock >= 10 && saturation > initial_saturation){
         saturation -= 0.5;
     }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 255, 50, 0, saturation);
+    SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(d->renderer, 255, 50, 0, saturation);
     for (double dy = 1; dy <= r; dy += 1.0) {
         double dx = floor(sqrt((2.0 * r * dy) - (dy * dy)));
-        SDL_RenderDrawLine(renderer, cx-dx, cy+r-dy, cx+dx, cy+r-dy);
-        SDL_RenderDrawLine(renderer, cx-dx, cy-r+dy, cx+dx, cy-r+dy);
+        SDL_RenderDrawLine(d->renderer, cx-dx, cy+r-dy, cx+dx, cy+r-dy);
+        SDL_RenderDrawLine(d->renderer, cx-dx, cy-r+dy, cx+dx, cy-r+dy);
     }
 }
 
@@ -253,8 +249,7 @@ void drawTower(Display d, int x, int y, int w, int h, int range, int type){
     d->rect= (SDL_Rect) {x, y ,w, h};
     SDL_RenderCopy(d->renderer, d->towerTexture[type], NULL, &d->rect);
     SDL_SetRenderDrawColor(d->renderer, 0, 0, 0, 255);
-   // drawRange(d, x + (double)w/2, y + (double)h/2, range);
-    draw_filled_range(d->renderer, x + (double)w/2, y + (double)h/2, range);
+    draw_filled_range(x + (double)w/2, y + (double)h/2, range);
 }
 
 
@@ -312,40 +307,39 @@ void displayStatsBar() {
 void updateTowerMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
     displayMonitor(TOWER_MONITOR_X, TOWER_MONITOR_Y, TOWER_MONITOR_WIDTH, TOWER_MONITOR_HEIGHT, d->towerMonitorTexture);
-    display_text(TOWER_MONITOR_X + TOWER_TEXT_BORDER_X,  TOWER_MONITOR_Y + TOWER_TEXT_BORDER_Y, outputString, blended_wrapped);
+    display_text(TOWER_MONITOR_X + TOWER_TEXT_BORDER_X,  TOWER_MONITOR_Y + TOWER_TEXT_BORDER_Y, outputString, blended_wrapped, 0 , 255, 255);
+    free(outputString);
 }
 
 /** Display output string in stats monitor*/
 void updateStatsBar(char *outputString) {
     displayStatsBar();
-    display_text(STATS_BAR_X + (double)SCREEN_WIDTH_GLOBAL/7,  STATS_BAR_Y + 10, outputString, blended);
+    display_text(STATS_BAR_X + (double)SCREEN_WIDTH_GLOBAL/7,  STATS_BAR_Y + 10, outputString, blended, 0 , 255, 255);
     free(outputString);
 }
 
 /**Display output string in action queue monitor*/
 void updateActionQueueMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
-     displayMonitor(TERMINAL_WINDOW_WIDTH, SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
-    if(strlen(outputString) > 0) {
-        display_text(TERMINAL_WINDOW_WIDTH + 30,  SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT + 30, outputString, blended_wrapped);
-    }
+    displayMonitor(TERMINAL_WINDOW_WIDTH, SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
+    display_text(TERMINAL_WINDOW_WIDTH + 30,  SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT + 30, outputString, blended_wrapped, 255 , 255 ,255);
+    free(outputString);
+
 }
 
 /*End of information window functions*/
 
 
 //Terminal functions
-/*
-	terminal_window detects input from SDL and calls display_text
-*/
+
+/*terminal_window detects input from SDL and calls display_text*/
 int terminal_window(Display d, char *pass, char *clear)
 {
 	int done = 0;
     char *pass2;
     //Keeps text on screen
     displayMonitor(TERMINAL_WINDOW_X, TERMINAL_WINDOW_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->terminalWindowTexture);
-    display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid);
-    int check = 0;
+    display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid, 255, 0 , 0);    int check = 0;
     SDL_Event *event = &d->event;
     check = (SDL_PollEvent(event));
     if(check != 0)
@@ -356,8 +350,7 @@ int terminal_window(Display d, char *pass, char *clear)
             case SDL_TEXTINPUT:
             {
                 strcat(pass, event->text.text);
-                display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid);
-                break;
+                display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid, 255, 0 , 0);                break;
             }
             case SDL_KEYDOWN:
             {
@@ -369,7 +362,7 @@ int terminal_window(Display d, char *pass, char *clear)
                 {
                     if(strcmp(pass, clear) != 0)
                     {
-                        display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid);
+                         display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid, 255, 0 , 0);
                     }
                     
                     pass2 = pass + 2;
@@ -384,14 +377,13 @@ int terminal_window(Display d, char *pass, char *clear)
 						pass[strlen(pass) - 1] = '\0';
 					}
 
-                    display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid);
+                    display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid, 255, 0 , 0);
 				}
                 switch(d->event.key.keysym.sym)
                 {
                 	case SDLK_ESCAPE:
                 	done = 1;
                 	break;
-                
                 }
                 break;
             }
@@ -399,36 +391,35 @@ int terminal_window(Display d, char *pass, char *clear)
     }
     return done;
 }
-/*
-	display_text builds textures from surfaces and calls renderer
-	to output them to screen.
-*/
-void display_text(int x, int y, char *string, int text)
-{
-    Display d = getDisplayPointer(NULL);
-    d->color = (SDL_Color) {255, 255, 255};
-    switch (text) {
-        case solid:
-            d->surface = TTF_RenderText_Solid(d->font, string, d->color);
-            break;
-        case blended:
-            d->surface = TTF_RenderText_Blended(d->font, string, d->color);
-            break;
-        case blended_wrapped:
-            d->surface = TTF_RenderText_Blended_Wrapped(d->font, string, d->color, TOWER_MONITOR_WIDTH - TOWER_TEXT_BORDER_X);
-            break;
-    }
-    d->newtexture = SDL_CreateTextureFromSurface(d->renderer, d->surface);
-    if(d->newtexture == NULL) {
-        printf("Panic\n");
-    }
-    d->rect = (SDL_Rect) {x, y, d->surface->w, d->surface->h};
 
-	//Display what is necessary using renderer
-    SDL_RenderCopy(d->renderer, d->newtexture, NULL, &d->rect);
-    SDL_FreeSurface(d->surface);
-	//Destroy textures to save memory
-    SDL_DestroyTexture(d->newtexture);
+/*display_text builds textures from surfaces and calls renderer to output them to screen.*/
+void display_text(int x, int y, char *string, int text, int r, int g, int b)
+{
+    if (string != NULL && strlen(string) > 0) {
+        Display d = getDisplayPointer(NULL);
+        d->color = (SDL_Color) {r, g, b};
+        switch (text) {
+            case solid:
+                d->surface = TTF_RenderText_Solid(d->font, string, d->color);
+                break;
+            case blended:
+                d->surface = TTF_RenderText_Blended(d->font, string, d->color);
+                break;
+            case blended_wrapped:
+                d->surface = TTF_RenderText_Blended_Wrapped(d->font, string, d->color, TOWER_MONITOR_WIDTH - TOWER_TEXT_BORDER_X);
+                break;
+        }
+        d->newtexture = SDL_CreateTextureFromSurface(d->renderer, d->surface);
+        if(d->newtexture == NULL) { printf("Panic\n");}
+        d->rect = (SDL_Rect) {x, y, d->surface->w, d->surface->h};
+        
+        //Display what is necessary using renderer
+        SDL_RenderCopy(d->renderer, d->newtexture, NULL, &d->rect);
+        SDL_FreeSurface(d->surface);
+        //Destroy textures to save memory
+        SDL_DestroyTexture(d->newtexture);
+
+    }
 }
 
 void menu_screen(Display d, int *started)

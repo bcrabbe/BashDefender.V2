@@ -351,7 +351,7 @@ void addValue(char *token)	{
 
 char* getToken(char *line)	{
 	int c = 0, letter = 0;
-	char *word;
+	char *word = NULL;
 	if(line[c] == READCHAR)	{
 		for(c = 0; line[c] == READCHAR || line[c] == ' '; c++){
 		}
