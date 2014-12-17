@@ -21,7 +21,6 @@
 		6756D2421A39F72D008DD402 /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6756D23E1A39F72D008DD402 /* SDL2_ttf.framework */; };
 		6756D2431A39F72D008DD402 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6756D23F1A39F72D008DD402 /* SDL2.framework */; };
 		67D2D5051A38752600F10A4B /* Sound.c in Sources */ = {isa = PBXBuildFile; fileRef = 67D2D5041A38752600F10A4B /* Sound.c */; };
-		B5491B3E1A408EFC005FF83F /* pyInterpreter.c in Sources */ = {isa = PBXBuildFile; fileRef = B5491B3C1A408EFC005FF83F /* pyInterpreter.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -76,8 +75,6 @@
 		6756D23F1A39F72D008DD402 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		67D2D5041A38752600F10A4B /* Sound.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Sound.c; path = sources/Sound.c; sourceTree = "<group>"; };
 		67D2D5061A38752F00F10A4B /* Sound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Sound.h; path = includes/Sound.h; sourceTree = "<group>"; };
-		B5491B3C1A408EFC005FF83F /* pyInterpreter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pyInterpreter.c; path = sources/pyInterpreter.c; sourceTree = "<group>"; };
-		B5491B3D1A408EFC005FF83F /* pyInterpreter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pyInterpreter.h; path = sources/pyInterpreter.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,8 +104,6 @@
 				67D2D5061A38752F00F10A4B /* Sound.h */,
 				4CB8A0EB1A33BD0A0076E35F /* Display.c */,
 				4CB8A0E01A33BCF50076E35F /* Display.h */,
-				B5491B3C1A408EFC005FF83F /* pyInterpreter.c */,
-				B5491B3D1A408EFC005FF83F /* pyInterpreter.h */,
 				4CB8A0EC1A33BD0A0076E35F /* enemy.c */,
 				4CB8A0ED1A33BD0A0076E35F /* enemy.png */,
 				4CB8A0EE1A33BD0A0076E35F /* FreeSans.ttf */,
@@ -218,7 +213,6 @@
 				4CB8A1011A33BD0A0076E35F /* gameProperties.c in Sources */,
 				4CB8A1001A33BD0A0076E35F /* enemy.c in Sources */,
 				67D2D5051A38752600F10A4B /* Sound.c in Sources */,
-				B5491B3E1A408EFC005FF83F /* pyInterpreter.c in Sources */,
 				4CB8A1061A33BD0A0076E35F /* tower.c in Sources */,
 				4CB8A0FF1A33BD0A0076E35F /* Display.c in Sources */,
 				4CB8A1021A33BD0A0076E35F /* Information_Window.c in Sources */,

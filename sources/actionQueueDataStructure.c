@@ -22,8 +22,8 @@
 
 struct queueNode {
 	
-	commandType command; //command for execution
-	upgradeStat option; //stat to change
+	cmdType command; //command for execution
+	cmdOption option; //stat to change
 	int target;	//target of command
     struct queueNode *nextNode;
 
@@ -113,7 +113,7 @@ ActionQueueStructure getQueue(ActionQueueStructure queue)	{
 /*
  * Pushes values to newly created node at back of queue
  */
-int pushToQueue(ActionQueueStructure queue, commandType command, upgradeStat option, int target)	{
+int pushToQueue(ActionQueueStructure queue, cmdType command, cmdOption option, int target)	{
 		createNode(queue);
 		queue->current->command = command;
 		queue->current->option = option;
@@ -124,12 +124,12 @@ int pushToQueue(ActionQueueStructure queue, commandType command, upgradeStat opt
 
 void testPushToQueue()	{
 	
-    commandType nCommand_1=upgrade;
-    upgradeStat nStat_1=power;
+    cmdType nCommand_1=upgrade;
+    cmdOption nStat_1=power;
     int tar_1 = 1;
 
-    commandType nCommand_2=execute;
-    upgradeStat nStat_2=range;
+    cmdType nCommand_2=execute;
+    cmdOption nStat_2=range;
     int tar_2 = 2;
 
     GameProperties newGame = createGame();
@@ -147,7 +147,7 @@ void testPushToQueue()	{
 /*
  *Returns first command in queue
  */
-commandType getFirstCommand(ActionQueueStructure queue)	{
+cmdType getFirstCommand(ActionQueueStructure queue)	{
 
 	return queue->start->command;
 }
@@ -155,7 +155,7 @@ commandType getFirstCommand(ActionQueueStructure queue)	{
 /*
  *Returns last command in queue
  */
-commandType getLastCommand(ActionQueueStructure queue)	{
+cmdType getLastCommand(ActionQueueStructure queue)	{
 
 	return queue->current->command;
 }
@@ -163,7 +163,7 @@ commandType getLastCommand(ActionQueueStructure queue)	{
 /*
  *Returns first option in queue
  */
-upgradeStat getFirstOption(ActionQueueStructure queue)	{
+cmdOption getFirstOption(ActionQueueStructure queue)	{
 
 	return queue->start->option;
 
@@ -172,7 +172,7 @@ upgradeStat getFirstOption(ActionQueueStructure queue)	{
 /*
  *Returns last option in queue
  */
-upgradeStat getLastOption(ActionQueueStructure queue)	{
+cmdOption getLastOption(ActionQueueStructure queue)	{
 
 	return queue->current->option;
 
@@ -198,7 +198,7 @@ int getLastTarget()	{
 /*
  *Returns costs of command based on current tower stats
  */
-int calulateCosts(commandType cmd, upgradeStat stat, int target)    {
+int calulateCosts(cmdType cmd, cmdOption stat, int target)    {
 
     switch(cmd) {
         case upgrade:
@@ -218,7 +218,7 @@ int calulateCosts(commandType cmd, upgradeStat stat, int target)    {
 /*
  *Returns specified stat of specified tower
  */
-int getCurrentStat(upgradeStat stat,int target)	{
+int getCurrentStat(cmdOption stat,int target)	{
 
 	switch(stat)	{
 		case power:
@@ -248,7 +248,7 @@ int getCurrentStat(upgradeStat stat,int target)	{
 /*
  *Upgrades tower stat
  */
-upgradeStat upgradeTowerStat(upgradeStat stat, int target)  {
+cmdOption upgradeTowerStat(cmdOption stat, int target)  {
 
     switch(stat)    {
         case power:
@@ -338,7 +338,7 @@ void removeQueueItem()	{
 /*
  *Pops from front of Queue.
  */
-int popFromQueue(ActionQueueStructure queue, commandType *cmd, upgradeStat *stat, int *target)	{ 
+int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int *target)	{
     GameProperties Game = getGame(NULL);
     int needed = calulateCosts(*cmd,*stat,*target);
 	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available gold, cooldown time 
@@ -405,8 +405,8 @@ char *getActionQueueString(void) {
     char *targetString = malloc(4);
     
     for(int count = 0; p!= NULL && count < ITEMS_IN_ACTION_QUEUE; p = p->nextNode, count++) {
-        commandType command = p->command;
-        upgradeStat option = p->option;
+        cmdType command = p->command;
+        cmdOption option = p->option;
         int target = p->target;
         
         switch(command) {

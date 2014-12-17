@@ -11,8 +11,8 @@
 #include "../includes/levelController.h"
 
 /*---------- Functions ----------*/
-int SCREEN_WIDTH_GLOBAL;
-int SCREEN_HEIGHT_GLOBAL;
+//int SCREEN_WIDTH_GLOBAL;
+//int SCREEN_HEIGHT_GLOBAL;
 
 struct keyword	{
 

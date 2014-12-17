@@ -11,11 +11,10 @@
 #include "../includes/parser.h"
 #include "../includes/main.h"
 #include "../includes/enemy.h"
+#include "../includes/Sound.h"
 
-//#include "../includes/Sound.h"
 
-
-int main()
+int main(int argc, char ** argv)
 
 {
     Display d = init_SDL();
@@ -98,7 +97,7 @@ void testing()	{
     //towerToEnemyTesting();
 
     //testValidParses();
-
+    
 
 }
 

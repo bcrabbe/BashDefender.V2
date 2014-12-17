@@ -374,7 +374,6 @@ int terminal_window(Display d, char *pass, char *clear)
                     
                     pass2 = pass + 2;
                     parse(pass2);
-                    
                     strcpy(pass, clear);
                 }
 				//If backspace key is pressed, removes end char of string

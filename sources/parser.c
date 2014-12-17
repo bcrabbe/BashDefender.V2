@@ -40,9 +40,9 @@ int parse(char *inputString)
         return 0;//no valid commands with less than 2 strings or more than 3
     }
 
-    //enumerated type commandType can describe each of the possible commands(see actionQueue.h)
+    //enumerated type cmdType can describe each of the possible commands(see actionQueue.h)
 
-    commandType action = getAction(commandArray[0]);//the first string in the command should contain the action
+    cmdType action = getAction(commandArray[0]);//the first string in the command should contain the action
     
     if(action==commandError)//if getAction returns commandError then the input is invalid
     {                //Error messaging handled in getAction function
@@ -108,7 +108,7 @@ int parse(char *inputString)
 int parseMktwr(char ** commandArray)
 {
     int towerPosition = tolower(commandArray[2][0]) - 'a' +1;
-    upgradeStat twrType = getUpgradeStats(commandArray[1]);
+    cmdOption twrType = getCommandOption(commandArray[1]);
     if(towerPosition<1 || (twrType!=INT && twrType!=CHAR) )//put in a greaterthan bound on the number of postions
 
     {
@@ -130,7 +130,7 @@ int parseMktwr(char ** commandArray)
  */
 int parseMan(char * inputStringCommandMan)
 {
-    commandType commandToMan = getAction(inputStringCommandMan);
+    cmdType commandToMan = getAction(inputStringCommandMan);
     switch (commandToMan)
     {
         case upgrade:
@@ -210,13 +210,13 @@ int parseCat(char * inputStringTargeting)
  */
 int parseUpgrade(char ** commandArray, int numberOfChunks)
 {
-    upgradeStat statToUpgrade = getUpgradeStats(commandArray[1]);
+    cmdOption statToUpgrade = getCommandOption(commandArray[1]);
     
     int target = getTargetTower(commandArray[2]);
     
     if(target!=0 && statToUpgrade!=statError )
     {
-        commandType action = upgrade;
+        cmdType action = upgrade;
         if(pushToQueue(getQueue(NULL),action,statToUpgrade,target)>=1)
             //push to queue returns number of items on queue
             return 1;
@@ -264,64 +264,64 @@ unsigned int getTargetTower(const char * inputStringTargeting)
 }
 
 /*  Called when we read an upgrade command, tests the next token against the 
- *  possible stats returns the corresponding upgradeStat Or
+ *  possible stats returns the corresponding cmdOption Or
     returns statError  and calls the upgradeStatUsageError function
  */
-upgradeStat getUpgradeStats(const char * inputStringUpgradeStats)
+cmdOption getCommandOption(const char * input)
 {
     /*first lets make an array of strings to hold all the possible action commands*/
-    const char **validUpgradeStats;
+    const char **validOptions;
     int numberOfStats=7;//have 5 action commands at this time: upgrade, execute, set, man, cat
-    validUpgradeStats=(const char **)malloc(numberOfStats*sizeof(char*));//array of $[numberOfActions] strings
-    validUpgradeStats[0]="p";
-    validUpgradeStats[1]="r";
-    validUpgradeStats[2]="s";
-    validUpgradeStats[3]="AOEr";
-    validUpgradeStats[4]="AOEp";
-    validUpgradeStats[5]="INT";
-    validUpgradeStats[6]="CHAR";
+    validOptions=(const char **)malloc(numberOfStats*sizeof(char*));//array of $[numberOfActions] strings
+    validOptions[0]="p";
+    validOptions[1]="r";
+    validOptions[2]="s";
+    validOptions[3]="AOEr";
+    validOptions[4]="AOEp";
+    validOptions[5]="INT";
+    validOptions[6]="CHAR";
 
 
     //now test the input string against all valid stats
-    upgradeStat statToUpgrade=statError;
+    cmdOption option = statError;
     for(int i=0; i<numberOfStats; ++i)
     {
-        if(strcmp(inputStringUpgradeStats,validUpgradeStats[i])==0)//if the string is identical to one of the commands
+        if(strcmp(input,validOptions[i])==0)//if the string is identical to one of the commands
         {                                        //then action is set to that command
             switch (i)
             {
                 case 0:
-                    statToUpgrade = power;
-                    return statToUpgrade;
+                    option = power;
+                    return option;
                 case 1:
-                    statToUpgrade = range;
-                    return statToUpgrade;
+                    option = range;
+                    return option;
                 case 2:
-                    statToUpgrade = speed;
-                    return statToUpgrade;
+                    option = speed;
+                    return option;
                 case 3:
-                    statToUpgrade = AOErange;
-                    return statToUpgrade;
+                    option = AOErange;
+                    return option;
                 case 4:
-                    statToUpgrade = AOEpower;
-                    return statToUpgrade;
+                    option = AOEpower;
+                    return option;
                 case 5:
-                    statToUpgrade = INT;
-                    return statToUpgrade;
+                    option = INT;
+                    return option;
                 case 6:
-                    statToUpgrade = CHAR;
-                    return statToUpgrade;
+                    option = CHAR;
+                    return option;
                     
             }
         }
     }
     
-    if(statToUpgrade==statError)//if it is still set to ERROR then the user made a mistake
+    if(option==statError)//if it is still set to ERROR then the user made a mistake
     {
-        upgrageStatUsageError(inputStringUpgradeStats, statToUpgrade, validUpgradeStats, numberOfStats);
+        optionUsageError(input, option, validOptions, numberOfStats);
     }
-    free(validUpgradeStats);//free the mallocd array
-    return statToUpgrade;
+    free(validOptions);//free the mallocd array
+    return option;
 }
 
 
@@ -331,7 +331,7 @@ upgradeStat getUpgradeStats(const char * inputStringUpgradeStats)
  *  If there was a syntax error in the users command call this function which
     will print usage advice to the terminal window
  */
-void upgrageStatUsageError(const char * inputStringUpgradeStats, upgradeStat statToUpgrade, const char ** validUpgradeStats, int numberOfStats)
+void optionUsageError(const char * inputStringUpgradeStats, cmdOption statToUpgrade, const char ** validUpgradeStats, int numberOfStats)
 {
     if(statToUpgrade==statError)//if it is still set to ERROR then the user made a mistake
     {
@@ -354,10 +354,10 @@ void upgrageStatUsageError(const char * inputStringUpgradeStats, upgradeStat sta
 /* 
  *  Takes the first string of the input command and tests it against the correct
     syntax to find which command they want to execute then returns that command 
-    as a enum commandType variable. Returns commandType correspodning to the 
-    validated command or a commandError commandType
+    as a enum cmdType variable. Returns cmdType correspodning to the
+    validated command or a commandError cmdType
  */
-commandType getAction( const char * inputAction )
+cmdType getAction( const char * inputAction )
 {
     /*first lets make an array of strings to hold all the possible action commands*/
     const char **validActions;
@@ -370,7 +370,7 @@ commandType getAction( const char * inputAction )
     validActions[4]="cat";
     validActions[5]="mktwr";
     //now test the input string against all valid actions
-    commandType action = commandError;
+    cmdType action = commandError;
     for(int i=0; i<numberOfActions; ++i)
     {
         if(strcmp(inputAction,validActions[i])==0)//if the string is identical to one of the commands
@@ -513,7 +513,7 @@ void testCommandArray(char ** commandArray, int numberOfChunks)
 /*
  *  Test function. Prints the action  we read.
  */
-void testGetAction(commandType action)
+void testGetAction(cmdType action)
 {
     /*first lets make an array of strings to hold all the possible action commands*/
     const char **validActions;
@@ -533,7 +533,7 @@ void testGetAction(commandType action)
 /*
  *  Test function. Prints upgrade stat we have read.
  */
-void testGetUpgradeStat(upgradeStat statToUpgrade)
+void testGetUpgradeStat(cmdOption statToUpgrade)
 {
     /*first lets make an array of strings to hold all the possible action commands*/
     const char **validUpgradeStats;
