@@ -72,6 +72,8 @@ void levelQueueReader()	{
 			case makeEnemy:
 					if(createEnemyCommand(current))	{
 						current = removeLink(current);
+					} else {
+						current = current->next;
 					}
 			default:
 					break;
@@ -104,6 +106,7 @@ Keyword removeLink(Keyword current)	{
 	}
 	kQueue->nCommands--;
 	return current;
+	printf("exit\n");
 }
 
 int createEnemyCommand(Keyword makeEnemy)	{

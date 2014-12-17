@@ -47,8 +47,8 @@ int main()
     do{
         ++steps;
         startFrame(d);
-		levelQueueReader();
         drawBackground();
+		printf("checking create queue\n");
         levelQueueReader();
 
         terminal_window(d, pass, clear);
