@@ -311,14 +311,10 @@ int checkClock(clockType cType,int coolDown)	{
 	ClockNode currNode;
 	currNode = gClock->first;
 
-	clock_t currTime = (double) clock() / CLOCKS_PER_SEC;
-	clock_t timeSinceLastUse;
-
+	clock_t currTime = (double) clock() / (CLOCKS_PER_SEC/100);
 	while(currNode!= NULL)	{
 		if (currNode->type == cType)	{
-			timeSinceLastUse = currTime - currNode->time;
 			if((currTime - currNode->time) >= coolDown)	{
-				printf("success\n");
 				setCurrTime(currNode);
 				return 1;
 			} else {
@@ -333,7 +329,7 @@ int checkClock(clockType cType,int coolDown)	{
 }
 
 void setCurrTime(ClockNode node)	{
-	node->time = (double) clock() / CLOCKS_PER_SEC;
+	node->time = (double) clock() / (CLOCKS_PER_SEC/100);
 }
 
 /*

@@ -351,7 +351,6 @@ int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int 
 		free(tempStart);	
 		--(queue->nItems);
 		takeGold(Game, needed);	//remove gold
-		setlastAction(Game);	//activate cooldown timer.
 		return 1;
 	}
 		return 0;
@@ -362,7 +361,7 @@ int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int 
  */
 
 int checkQueue(ActionQueueStructure queue, GameProperties Game, int needed)	{
-	if((checkGold(needed, Game)) && (lastAction(Game)))	{
+	if((checkGold(needed, Game)) && (checkClock(lastCmdAction,ACTIONCOOLDOWN)))	{
 			printf("success!\n");
 			return 1;		
 	} 

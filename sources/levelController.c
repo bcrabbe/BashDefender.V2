@@ -65,9 +65,13 @@ void levelQueueReader()	{
 	while(current != NULL)	{
 		switch(current->lCommand)	{
 			case wave:
-					printf("wave\n");
-					waveCreatorCommand(current);
-					current = removeLink(current);
+					if(kQueue->start = current)	{
+						printf("wave\n");
+						waveCreatorCommand(current);
+						current = removeLink(current);
+					} else { 
+						current = current->next;
+					}
 					break;
 			case makeEnemy:
 					if(createEnemyCommand(current))	{
@@ -251,7 +255,7 @@ void initLevel()    {
 void createLevelClocks()	{
 
 		addClock(singleEnemyCreated);
-
+		addClock(lastCmdAction);
 }
 
 void createLevel()	{
@@ -423,9 +427,4 @@ void endLevel() {
 	freeAllTowerPositions();
 	freeEnemyGroup();
 	freeLevelPaths();
-}
-
-void initEnemy()  {
-    //! function should be based on level and wave number as to how many enemies are created
-    //
 }
