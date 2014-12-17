@@ -11,4 +11,8 @@
 
 #include <stdio.h>
 
+void sendStringToPython(char * userInput);
+int quitPython();
+int initPython(int argc, char ** argv);
+
 #endif /* defined(__Bash_Defender_V2__pyInterpreter__) */

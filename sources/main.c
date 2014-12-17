@@ -12,11 +12,12 @@
 #include "../includes/main.h"
 #include "../includes/enemy.h"
 #include "../includes/Sound.h"
+#include "pyInterpreter.h"
 
-
-int main()
+int main(int argc, char ** argv)
 
 {
+    int initPython(int argc, char ** argv);
     Display d = init_SDL();
     initLevel();
 //    //testing();
@@ -82,6 +83,7 @@ int main()
 
     freeEnemyGroup();
     freeLevelPaths();
+    quitPython();
     return 0;
 }
 
@@ -100,7 +102,7 @@ void testing()	{
     //towerToEnemyTesting();
 
     //testValidParses();
-
+    
 
 }
 
