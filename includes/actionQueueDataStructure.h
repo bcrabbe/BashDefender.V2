@@ -21,7 +21,7 @@ ActionQueueStructure createActionQueue();
 int createNode(ActionQueueStructure queue);
 int pushToQueue(ActionQueueStructure queue, cmdType command, cmdOption option, int target);
 int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int *target);
-int checkGold(int needed, GameProperties Game);
+int checkMem(int needed, GameProperties Game);
 cmdType getFirstCommand(ActionQueueStructure queue);
 cmdType getLastCommand(ActionQueueStructure queue);
 cmdOption getFirstOption(ActionQueueStructure queue);

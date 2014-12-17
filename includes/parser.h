@@ -21,7 +21,7 @@ char ** breakUpString(const char * inputString, int *numberOfChunksPtr, const ch
 void testCommandArray(char ** commandArray, int numberOfChunks);
 void testGetAction(enum cmdType action);
 void actionUsageError();
-cmdOption getUpgradeStats(const char * inputStringUpgradeStats);
+cmdOption getCommandOption(const char * input);
 int parseUpgrade(char ** commandArray, int numberOfChunks);
 void testGetUpgradeStat(cmdOption statToUpgrade);
 void optionUsageError(const char * inputStringUpgradeStats, cmdOption statToUpgrade,

@@ -2,6 +2,7 @@
 #include "../includes/parser.h"
 #include "../includes/tower.h"
 #include "../includes/abilities.h"
+#include "../includes/gameProperties.h"
 #include <string.h>
 
 void init_abilities(Ability *psx, Ability *kill, Ability *killall)
@@ -23,7 +24,7 @@ void unlock_ability(Ability *abilityx)
 
 int is_available_ability(Ability *ability)
 {
-	if(ability->unlocked == 1 && getTotalGold() > ability->goldcost)
+	if(ability->unlocked == 1 && getTotalMemory() > ability->goldcost)
 	{
 		return 1;
 	}

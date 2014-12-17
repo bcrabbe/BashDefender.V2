@@ -112,7 +112,6 @@ int parse(char *inputString)
             freeCommandArray(commandArray, numberOfChunks);
             return 0;
     }
-    
 }
 /*
  *
@@ -395,7 +394,7 @@ cmdType getAction( const char * inputAction )
 {
     /*first lets make an array of strings to hold all the possible action commands*/
     const char **validActions;
-    int numberOfActions=8;//have 5 action commands at this time: upgrade, execute, set, man, cat
+    int numberOfActions=7;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validActions=(const char **)malloc(numberOfActions*sizeof(char*));//array of $[numberOfActions] strings
     validActions[0]="upgrade";
     validActions[1]="execute";
@@ -403,8 +402,7 @@ cmdType getAction( const char * inputAction )
     validActions[3]="man";
     validActions[4]="cat";
     validActions[5]="mktwr";
-    validActions[5]="apt-get";
-    validActions[5]="psx";
+    validActions[6]="apt-get";
 
     //now test the input string against all valid actions
     cmdType action = commandError;
