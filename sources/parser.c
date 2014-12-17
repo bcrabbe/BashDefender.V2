@@ -50,7 +50,6 @@ int parse(char *inputString)
         return 0;
     }
     
-
     int specificReturns=0;//stores return values of the different functions that execute the commands
     /**** Now we deal with each possible command separately as they all have different syntax ****/
     switch (action)
@@ -143,7 +142,7 @@ int parseMktwr(char ** commandArray)
     if(towerPosition<1 || (twrType!=INT && twrType!=CHAR) )//put in a greaterthan bound on the number of postions
 
     {
-			printf("error error\n");
+        printf("error error\n");
         //syntax error
         return 0;
     }
@@ -298,19 +297,22 @@ unsigned int getTargetTower(const char * inputStringTargeting)
  *  possible stats returns the corresponding cmdOption Or
     returns statError  and calls the upgradeStatUsageError function
  */
-cmdOption getCommandOption(const char * input)
+cmdOption getCommandOption(char * input)
 {
     /*first lets make an array of strings to hold all the possible action commands*/
+    for(int i = 0; input[i]; i++){
+        input[i] = tolower(input[i]);
+    }
     const char **validOptions;
     int numberOfStats=8;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validOptions=(const char **)malloc(numberOfStats*sizeof(char*));//array of $[numberOfActions] strings
     validOptions[0]="p";
     validOptions[1]="r";
     validOptions[2]="s";
-    validOptions[3]="AOEr";
-    validOptions[4]="AOEp";
-    validOptions[5]="INT";
-    validOptions[6]="CHAR";
+    validOptions[3]="aoer";
+    validOptions[4]="aoep";
+    validOptions[5]="int";
+    validOptions[6]="char";
     validOptions[7]="psx";
 
 
