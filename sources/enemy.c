@@ -114,9 +114,9 @@ void readInPath(int levelNum, int pathNum) {
   Path P = lP->paths[pathNum-1];
   
   int lastRowScanned = 0;
-  int backW = getBackgroundWidth(); 
-  int backH = getBackgroundHeight(); 
+    int backW, backH;
   int x, y;
+    getBackgroundDimensions(&backW, &backH);
   if(fscanf(fp,"%d\n",&P->pathLength) != 1) {
     fprintf(stderr,"****ERROR Unable to read path length from path file at '%s' ****\n", filePath);
     exit(1);
@@ -320,6 +320,7 @@ void initialiseEnemy(Enemy newEnemy, int lvl, Family fam, TypeOfEnemy eType, int
     newEnemy->y = newEnemy->enemyPath->pathCoords[0][1];
 
 
+
     newEnemy->eFamily = fam;
     newEnemy->level = lvl;
     newEnemy->eType = eType;
@@ -327,6 +328,7 @@ void initialiseEnemy(Enemy newEnemy, int lvl, Family fam, TypeOfEnemy eType, int
     newEnemy->health = newEnemy->maxHealth;
     newEnemy->armour = armour*lvl;
     newEnemy->speed = speed;
+
     newEnemy->enemyID=getNumberOfEnemies();
     newEnemy->dead = 0;
 
@@ -348,7 +350,7 @@ void initialiseHeavyEnemy(Enemy newEnemy)
     newEnemy->y = newEnemy->enemyPath->pathCoords[0][1];
     newEnemy->maxHealth = 1000;
     newEnemy->health = newEnemy->maxHealth;
-    newEnemy->armour = 5;
+    newEnemy->armour = 0;
     newEnemy->speed = 1;
     newEnemy->enemyID=getNumberOfEnemies();
     newEnemy->dead = 0;
@@ -400,7 +402,7 @@ void present_enemy(Display d)
 
         if(!isDead(i))
         {
-                 drawEnemy(d, e->x, e->y, 50, 50, 2010, 121, (double) e->health, (double)e->maxHealth, 1, 15, 200); 
+            drawEnemy(d, e->x, e->y, 50, 50, 2010, 121, (double) e->health, (double)e->maxHealth, 1, 15, 200);
         }
     }
 }
@@ -438,8 +440,7 @@ int moveEnemy(int enemyID )
         else {
            damageHealth(e->damage); 
             e->dead = 1;
-			increaseDeathCnt(); 
-
+			increaseDeathCnt();
             return 0;
         }
     }
@@ -510,7 +511,7 @@ int inRange(int tX, int tY, int tRange, int enemyID)
 
 /*
 * Does the specified ammount of damage to the specified enemy. Reduces damage by the amount of armour the enemy has first.
-* If damage reduces health to less than 0, kills enemy and adds gold equivalent to enemy's max health.
+* If damage reduces health to less than 0, kills enemy and adds memory equivalent to enemy's max health/10.
 */
 void damageEnemy(int damage, int enemyID)
 {
@@ -526,7 +527,7 @@ void damageEnemy(int damage, int enemyID)
     {
         e->dead=1;
         
-        addGold(e->maxHealth); 
+        addMemory(e->maxHealth/10); 
         // drawDeath(e->x, e->y);
     }
 }
@@ -560,7 +561,7 @@ void towerGetTargetPos(int * towerTargetPosition, int enemyID)
 void printEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
-    printf("Enemy x = %d, enemy y = %d, enemy health = %d\n\n", e->x, e->y, e->health);
+    printf("Enemy x = %d, enemy y = %d, enemy health = %f\n\n", e->x, e->y, e->health);
 }
 
 void testEnemy()
@@ -580,7 +581,7 @@ void testEnemy()
 
 /*
 * main function for unit testing
-*/
+
 
 int main()
 {
@@ -594,4 +595,4 @@ int main()
       printEnemy(3);
     }
 }
-
+*/

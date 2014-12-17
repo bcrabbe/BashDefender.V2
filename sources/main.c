@@ -14,11 +14,16 @@
 
 //#include "../includes/Sound.h"
 
+
 int main()
 
 {
     Display d = init_SDL();
     initLevel();
+	/*while(1)	{
+		levelQueueReader();
+	}*/
+
 //    //testing();
 
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));//createEnemy();
@@ -29,27 +34,25 @@ int main()
     pass = text;
     clear = empty;
 	int started = 0;
-    addGold(100);
+    addMemory(100);
     int steps=0;
-	//createTowerFromPositions(1);
-	//createTowerFromPositions(2);
-    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
-
-    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
     //init_sound();
     //playBackgroundSound();
+
 	while(started == 0)
 	{
 		menu_screen(d, &started);
 	}
+    shut_menu_screen();
     do{
         ++steps;
         startFrame(d);
 		levelQueueReader();
         drawBackground();
+        levelQueueReader();
 
         terminal_window(d, pass, clear);
-		//popToTower();
+		popToTower();
         if(inputCommand)
         {
             parse(inputCommand);
@@ -63,28 +66,23 @@ int main()
             int move = moveEnemy(i);
            
         }
-        if(steps%100 == 0)
-        {
-            userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
-        //     createEnemy();
-        }
         presentAnimation();
 		drawAllTowerPositions();
         statsBar();
         towerMonitor(0, NULL);
         actionQueueMonitor();
         endFrame(d);
-    } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear) && started == 1);
-
+		SDL_Delay(22);
+    } while(!terminal_window(d, pass, clear));
     
-    //shutSDL(d);
+    shutSDL(d);
     //shutSound();
+
 
     freeEnemyGroup();
     freeLevelPaths();
     return 0;
 }
-
 
 
 
@@ -175,7 +173,7 @@ void testParseToTower()	{
 	createTower();
 	setTowerRange(1,10); //Setting tower range to 10 for tests.
 	setTowerDamage(2,10); //Setting tower damage to 10 for tests.
-	addGold(1000);
+	addMemory(1000);
 	parse("upgrade r t1");
 	parse("upgrade p t2");
 	sput_fail_unless(getFirstTarget() == 1, "First target is 1");

@@ -22,7 +22,6 @@
 #define DEFAULT_SCREEN_TIME 10000
 
 
-
 /**
  If called with target tower as first parameter and second parameter set to -1, gets output string
  for that tower and sends to tower monitor. If called with first parameter set to NULL and optional
@@ -73,13 +72,13 @@ void statsBar() {
     
     GameProperties properties = getGame(NULL);
     
-    int gold = getGold(properties);
+    int mem = getAvailableMemory(properties);
     int waveNumber = getWave(properties);
     int health = getHealth(properties);
     
     char *outputString = malloc(MAX_OUTPUT_STRING);
     
-    sprintf(outputString, "Gold: %d                                                                     Wave Number: %d                                                                     Health: %d", gold, waveNumber, health);
+    sprintf(outputString, "Available Memory: %dbytes                                                 Wave Number: %d                                                                     Health: %d", mem, waveNumber, health);
     
     updateStatsBar(outputString);
 }

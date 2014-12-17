@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include <SDL2/SDL_mixer.h>
+#include <SDL2_mixer/SDL_mixer.h>
 
 
 struct sound{
