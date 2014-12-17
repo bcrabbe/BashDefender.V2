@@ -16,12 +16,11 @@
 		4CB8A1041A33BD0A0076E35F /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CB8A0F41A33BD0A0076E35F /* main.c */; };
 		4CB8A1051A33BD0A0076E35F /* parser.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CB8A0F61A33BD0A0076E35F /* parser.c */; };
 		4CB8A1061A33BD0A0076E35F /* tower.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CB8A0FB1A33BD0A0076E35F /* tower.c */; };
-		6756D2401A39F72D008DD402 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6756D23C1A39F72D008DD402 /* SDL2_image.framework */; };
-		6756D2411A39F72D008DD402 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6756D23D1A39F72D008DD402 /* SDL2_mixer.framework */; };
-		6756D2421A39F72D008DD402 /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6756D23E1A39F72D008DD402 /* SDL2_ttf.framework */; };
-		6756D2431A39F72D008DD402 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6756D23F1A39F72D008DD402 /* SDL2.framework */; };
+		672828CE1A40B460001336A8 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672828CA1A40B460001336A8 /* SDL2_image.framework */; };
+		672828CF1A40B460001336A8 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672828CB1A40B460001336A8 /* SDL2_mixer.framework */; };
+		672828D01A40B460001336A8 /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672828CC1A40B460001336A8 /* SDL2_ttf.framework */; };
+		672828D11A40B460001336A8 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672828CD1A40B460001336A8 /* SDL2.framework */; };
 		67D2D5051A38752600F10A4B /* Sound.c in Sources */ = {isa = PBXBuildFile; fileRef = 67D2D5041A38752600F10A4B /* Sound.c */; };
-		B5491B3E1A408EFC005FF83F /* pyInterpreter.c in Sources */ = {isa = PBXBuildFile; fileRef = B5491B3C1A408EFC005FF83F /* pyInterpreter.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -70,10 +69,10 @@
 		4CB8A0FB1A33BD0A0076E35F /* tower.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tower.c; path = sources/tower.c; sourceTree = "<group>"; };
 		4CB8A0FC1A33BD0A0076E35F /* tower.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tower.png; path = sources/tower.png; sourceTree = "<group>"; };
 		4CB8A0FD1A33BD0A0076E35F /* tower1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tower1.png; path = sources/tower1.png; sourceTree = "<group>"; };
-		6756D23C1A39F72D008DD402 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_image.framework; sourceTree = "<group>"; };
-		6756D23D1A39F72D008DD402 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_mixer.framework; sourceTree = "<group>"; };
-		6756D23E1A39F72D008DD402 /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_ttf.framework; sourceTree = "<group>"; };
-		6756D23F1A39F72D008DD402 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
+		672828CA1A40B460001336A8 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_image.framework; sourceTree = "<group>"; };
+		672828CB1A40B460001336A8 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_mixer.framework; sourceTree = "<group>"; };
+		672828CC1A40B460001336A8 /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_ttf.framework; sourceTree = "<group>"; };
+		672828CD1A40B460001336A8 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		67D2D5041A38752600F10A4B /* Sound.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Sound.c; path = sources/Sound.c; sourceTree = "<group>"; };
 		67D2D5061A38752F00F10A4B /* Sound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Sound.h; path = includes/Sound.h; sourceTree = "<group>"; };
 		B5491B3C1A408EFC005FF83F /* pyInterpreter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pyInterpreter.c; path = sources/pyInterpreter.c; sourceTree = "<group>"; };
@@ -85,10 +84,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6756D2401A39F72D008DD402 /* SDL2_image.framework in Frameworks */,
-				6756D2421A39F72D008DD402 /* SDL2_ttf.framework in Frameworks */,
-				6756D2411A39F72D008DD402 /* SDL2_mixer.framework in Frameworks */,
-				6756D2431A39F72D008DD402 /* SDL2.framework in Frameworks */,
+				672828CF1A40B460001336A8 /* SDL2_mixer.framework in Frameworks */,
+				672828D01A40B460001336A8 /* SDL2_ttf.framework in Frameworks */,
+				672828CE1A40B460001336A8 /* SDL2_image.framework in Frameworks */,
+				672828D11A40B460001336A8 /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,11 +97,11 @@
 		4C3F57B71A276CAC006FD1E5 = {
 			isa = PBXGroup;
 			children = (
+				672828CA1A40B460001336A8 /* SDL2_image.framework */,
+				672828CB1A40B460001336A8 /* SDL2_mixer.framework */,
+				672828CC1A40B460001336A8 /* SDL2_ttf.framework */,
+				672828CD1A40B460001336A8 /* SDL2.framework */,
 				4CB8A0EA1A33BD0A0076E35F /* actionQueueDataStructure.c */,
-				6756D23C1A39F72D008DD402 /* SDL2_image.framework */,
-				6756D23D1A39F72D008DD402 /* SDL2_mixer.framework */,
-				6756D23E1A39F72D008DD402 /* SDL2_ttf.framework */,
-				6756D23F1A39F72D008DD402 /* SDL2.framework */,
 				67D2D5041A38752600F10A4B /* Sound.c */,
 				67D2D5061A38752F00F10A4B /* Sound.h */,
 				4CB8A0EB1A33BD0A0076E35F /* Display.c */,
@@ -218,7 +217,6 @@
 				4CB8A1011A33BD0A0076E35F /* gameProperties.c in Sources */,
 				4CB8A1001A33BD0A0076E35F /* enemy.c in Sources */,
 				67D2D5051A38752600F10A4B /* Sound.c in Sources */,
-				B5491B3E1A408EFC005FF83F /* pyInterpreter.c in Sources */,
 				4CB8A1061A33BD0A0076E35F /* tower.c in Sources */,
 				4CB8A0FF1A33BD0A0076E35F /* Display.c in Sources */,
 				4CB8A1021A33BD0A0076E35F /* Information_Window.c in Sources */,
@@ -313,6 +311,7 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 					"$(PROJECT_DIR)",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -325,6 +324,7 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 					"$(PROJECT_DIR)",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

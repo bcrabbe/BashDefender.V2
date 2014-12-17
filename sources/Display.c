@@ -13,9 +13,9 @@
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-
-#define HEALTHBAR_W 80
-#define HEALTHBAR_H 10
+#include <SDL2/SDL.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 enum font_types{solid, blended, blended_wrapped};
 
@@ -69,10 +69,9 @@ void crash(char *message);
 void getWindowSize(int *w, int *h);
 void init_pic(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture, char *pic_name);
 void check_load_images(SDL_Surface *surface, char *pic_name);
-void draw_filled_range(SDL_Renderer *renderer, int cx, int cy, int r);
+void draw_filled_range(int cx, int cy, int r);
 void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, int frames, int pic_width, int pic_height, int anim_speed);
 void init_text_textures(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture);
-
 void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 void display_text(int x, int y, char *string, int text, int r, int g, int b);
 
@@ -194,29 +193,33 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target){
     SDL_RenderDrawLine(d->renderer, X_from, Y_from, X_target, Y_target);
 }
 
-//* draw an enemy at x and y coor with the health bar above it*/
-void drawEnemy(Display d, int x, int y, int w, int h, int pic_width, int pic_height,
-               double currentHealth, double maxHealth, int type, int frames,
-               int anim_speed)
-{
+/* draw an enemy at x and y coor with the health bar above it*/
+void drawEnemy(int x, int y, int w, int h, int pic_width, int pic_height, int type, int frames, int anim_speed){
+    Display d = getDisplayPointer(NULL);
     Uint32 ticks = SDL_GetTicks();
     Uint32 sprite = (ticks / anim_speed) % frames;
     d->srcRect = (SDL_Rect){sprite * (pic_width/frames), 0, (pic_width/frames), pic_height};
     d->rect = (SDL_Rect) {x, y, w, h};
     /*create animation by putting part of a spritesheet(image) into destination rect*/
     SDL_RenderCopy(d->renderer, d->enemyTexture[type], &d->srcRect, &d->rect);
-    
+}
+
+/* draw CPU rect*/
+void drawRect(int x, int y, int red, int blue, int max_width, int max_height, int current, int total){
+    Display d = getDisplayPointer(NULL);
+    SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_NONE);
     /*presenting and manipulating color and width of the health bar*/
-    double color = (255*((double)currentHealth/maxHealth));
-    SDL_SetRenderDrawColor(d->renderer, 0, color, 0, 255);
-    double health = ((double)(currentHealth * HEALTHBAR_W)/(double)maxHealth);
-    d->rect = (SDL_Rect) {x, y -20, (double)health, HEALTHBAR_H};
+    double color = (255*((double)current/total));
+    SDL_SetRenderDrawColor(d->renderer, red, color, blue, 0);
+    double memory = ((double)(current * max_width/(double)total));
+    d->rect = (SDL_Rect) {x, y, (double)memory, max_height};
     SDL_RenderFillRect(d->renderer, &d->rect);
 }
 
 /*Draw range with transparency*/
-void draw_filled_range(SDL_Renderer *renderer, int cx, int cy, int r)
+void draw_filled_range(int cx, int cy, int r)
 {
+    Display d = getDisplayPointer(NULL);
     Uint32 ticks = SDL_GetTicks();
     Uint32 clock = (ticks / 150)% 20;
     //mx saturation is a max extreme to ensure saturation does not get bigger than pre-set value
@@ -232,12 +235,12 @@ void draw_filled_range(SDL_Renderer *renderer, int cx, int cy, int r)
     else if (clock >= 10 && saturation > initial_saturation){
         saturation -= 0.5;
     }
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 255, 50, 0, saturation);
+    SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(d->renderer, 255, 50, 0, saturation);
     for (double dy = 1; dy <= r; dy += 1.0) {
         double dx = floor(sqrt((2.0 * r * dy) - (dy * dy)));
-        SDL_RenderDrawLine(renderer, cx-dx, cy+r-dy, cx+dx, cy+r-dy);
-        SDL_RenderDrawLine(renderer, cx-dx, cy-r+dy, cx+dx, cy-r+dy);
+        SDL_RenderDrawLine(d->renderer, cx-dx, cy+r-dy, cx+dx, cy+r-dy);
+        SDL_RenderDrawLine(d->renderer, cx-dx, cy-r+dy, cx+dx, cy-r+dy);
     }
 }
 
@@ -246,8 +249,7 @@ void drawTower(Display d, int x, int y, int w, int h, int range, int type){
     d->rect= (SDL_Rect) {x, y ,w, h};
     SDL_RenderCopy(d->renderer, d->towerTexture[type], NULL, &d->rect);
     SDL_SetRenderDrawColor(d->renderer, 0, 0, 0, 255);
-   // drawRange(d, x + (double)w/2, y + (double)h/2, range);
-    draw_filled_range(d->renderer, x + (double)w/2, y + (double)h/2, range);
+    draw_filled_range(x + (double)w/2, y + (double)h/2, range);
 }
 
 
@@ -320,7 +322,7 @@ void updateStatsBar(char *outputString) {
 void updateActionQueueMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
     displayMonitor(TERMINAL_WINDOW_WIDTH, SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
-    display_text(TERMINAL_WINDOW_WIDTH + 30,  SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT + 30, outputString, blended_wrapped, 0 , 255 ,255);
+    display_text(TERMINAL_WINDOW_WIDTH + 30,  SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT + 30, outputString, blended_wrapped, 255 , 255 ,255);
     free(outputString);
 
 }
@@ -397,7 +399,6 @@ void display_text(int x, int y, char *string, int text, int r, int g, int b)
     if (string != NULL && strlen(string) > 0) {
         Display d = getDisplayPointer(NULL);
         d->color = (SDL_Color) {r, g, b};
-        
         switch (text) {
             case solid:
                 d->surface = TTF_RenderText_Solid(d->font, string, d->color);

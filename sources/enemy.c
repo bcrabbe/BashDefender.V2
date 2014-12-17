@@ -402,7 +402,8 @@ void present_enemy(Display d)
 
         if(!isDead(i))
         {
-            drawEnemy(d, e->x, e->y, 50, 50, 2010, 121, (double) e->health, (double)e->maxHealth, 1, 15, 200);
+            drawEnemy(e->x, e->y, 50, 50, 2010, 121, 1, 15, 200);
+            drawRect(e->x, e->y -20, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
         }
     }
 }
@@ -561,7 +562,7 @@ void towerGetTargetPos(int * towerTargetPosition, int enemyID)
 void printEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
-    printf("Enemy x = %d, enemy y = %d, enemy health = %f\n\n", e->x, e->y, e->health);
+    printf("Enemy x = %d, enemy y = %d, enemy health = %d\n\n", e->x, e->y, e->health);
 }
 
 void testEnemy()

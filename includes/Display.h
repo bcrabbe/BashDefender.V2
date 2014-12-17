@@ -10,6 +10,7 @@
 
 #ifndef TEST_Display_h
 #define TEST_Display_h
+
 extern int SCREEN_WIDTH_GLOBAL;
 extern int SCREEN_HEIGHT_GLOBAL;
 
@@ -60,9 +61,6 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #include <stdlib.h>
 #include <string.h>
 
-#include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
 
 typedef struct display *Display;
 int processEvents(Display d);
@@ -79,6 +77,9 @@ void shutSDL();
 void shut_menu_screen();
 
 
+void draw_filled_range(int cx, int cy, int r);
+void drawRect(int x, int y, int red, int blue, int max_width, int max_height, int current, int total);
+
 
 //tower
 void drawTower(Display d, int x, int y, int w, int h, int range, int type);
@@ -87,11 +88,12 @@ void drawTowerPosition(int x, int y, int w, int h);
 
 //enemy
 int getBackgroundDimensions(int *w, int *h);
-void drawEnemy(Display d, int x, int y, int w, int h, int pic_width, int pic_height, double currentHealth, double maxHealth, int type, int frames, int anim_speed);
+void drawEnemy(int x, int y, int w, int h, int pic_width, int pic_height, int type, int frames, int anim_speed);
 
 void presentAnimation();
 void drawBackground();
 
+//CPU and Health atm
 
 #include <stdio.h>
 #include "Information_Window.h"
