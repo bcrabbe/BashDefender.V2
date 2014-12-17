@@ -532,6 +532,17 @@ void damageEnemy(int damage, int enemyID)
     }
 }
 
+/*
+* kills specified enemy
+*/
+void killEnemy(int enemyID)
+{
+    Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
+    e->dead = 1;
+    e->health = 0;
+    addMemory(e->maxHealth/10);
+}
+
 
 /*
 * calculates how far the specified enemy is from the end of their path. Used for tower target aquisition.
@@ -561,7 +572,7 @@ void towerGetTargetPos(int * towerTargetPosition, int enemyID)
 void printEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
-    printf("Enemy x = %d, enemy y = %d, enemy health = %f\n\n", e->x, e->y, e->health);
+    printf("Enemy x = %d, enemy y = %d, enemy health = %d\n\n", e->x, e->y, e->health);
 }
 
 void testEnemy()

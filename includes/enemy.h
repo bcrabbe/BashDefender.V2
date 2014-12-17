@@ -68,6 +68,7 @@ int getEnemyHealth();
 void freeEnemy(int enemyID);
 int moveEnemy(int enemyID);
 int isDead(int enemyID);
+void killEnemy(int enemyID);
 int inRange(int tX, int tY, int tRange, int enemyID);
 void damageEnemy(int damage, int enemyID);
 void towerGetTargetPos(int * towerTargetPosition, int enemyID);
