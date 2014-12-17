@@ -65,7 +65,7 @@ void levelQueueReader()	{
 	while(current != NULL)	{
 		switch(current->lCommand)	{
 			case wave:
-					if(kQueue->start = current)	{
+					if(kQueue->start == current)	{
 						printf("wave\n");
 						waveCreatorCommand(current);
 						current = removeLink(current);
