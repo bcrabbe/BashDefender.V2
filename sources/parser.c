@@ -90,14 +90,46 @@ int parse(char *inputString)
             freeCommandArray(commandArray, numberOfChunks);
             return specificReturns;//0 for error
         }
+        case aptget:
+        {
+            if(numberOfChunks!=2)
+            {
+                freeCommandArray(commandArray, numberOfChunks);
+                return 0;
+            }
+            else
+            {
+                specificReturns = parseAptget(commandArray[1]);
+                freeCommandArray(commandArray, numberOfChunks);
+                return specificReturns;//0 for error
+            }
+        }
         case execute:
         case set:
+        
         default:
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
             freeCommandArray(commandArray, numberOfChunks);
             return 0;
     }
     
+}
+/*
+ *
+ */
+int parseAptget(char * aptToGetString)
+{
+    cmdOption aptToGet = getCommandOption(aptToGetString);
+    if(aptToGet!=psx)
+    {
+        return 0;
+    }
+    if(pushToQueue(getQueue(NULL),aptget,aptToGet,0)>=1)
+    {
+        printf("pushing tower to queue\n");
+        return 1;
+    }
+    else return 0;
 }
 /*
  *  Called when we read mktwr cmd.
@@ -271,7 +303,7 @@ cmdOption getCommandOption(const char * input)
 {
     /*first lets make an array of strings to hold all the possible action commands*/
     const char **validOptions;
-    int numberOfStats=7;//have 5 action commands at this time: upgrade, execute, set, man, cat
+    int numberOfStats=8;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validOptions=(const char **)malloc(numberOfStats*sizeof(char*));//array of $[numberOfActions] strings
     validOptions[0]="p";
     validOptions[1]="r";
@@ -280,6 +312,8 @@ cmdOption getCommandOption(const char * input)
     validOptions[4]="AOEp";
     validOptions[5]="INT";
     validOptions[6]="CHAR";
+    validOptions[7]="psx";
+
 
 
     //now test the input string against all valid stats
@@ -361,7 +395,7 @@ cmdType getAction( const char * inputAction )
 {
     /*first lets make an array of strings to hold all the possible action commands*/
     const char **validActions;
-    int numberOfActions=6;//have 5 action commands at this time: upgrade, execute, set, man, cat
+    int numberOfActions=8;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validActions=(const char **)malloc(numberOfActions*sizeof(char*));//array of $[numberOfActions] strings
     validActions[0]="upgrade";
     validActions[1]="execute";
@@ -369,6 +403,9 @@ cmdType getAction( const char * inputAction )
     validActions[3]="man";
     validActions[4]="cat";
     validActions[5]="mktwr";
+    validActions[5]="apt-get";
+    validActions[5]="psx";
+
     //now test the input string against all valid actions
     cmdType action = commandError;
     for(int i=0; i<numberOfActions; ++i)

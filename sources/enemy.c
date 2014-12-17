@@ -511,7 +511,7 @@ int inRange(int tX, int tY, int tRange, int enemyID)
 
 /*
 * Does the specified ammount of damage to the specified enemy. Reduces damage by the amount of armour the enemy has first.
-* If damage reduces health to less than 0, kills enemy and adds gold equivalent to enemy's max health.
+* If damage reduces health to less than 0, kills enemy and adds memory equivalent to enemy's max health/10.
 */
 void damageEnemy(int damage, int enemyID)
 {
@@ -527,9 +527,20 @@ void damageEnemy(int damage, int enemyID)
     {
         e->dead=1;
         
-        addGold(e->maxHealth); 
+        addMemory(e->maxHealth/10); 
         // drawDeath(e->x, e->y);
     }
+}
+
+/*
+* kills specified enemy
+*/
+void killEnemy(int enemyID)
+{
+    Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
+    e->dead = 1;
+    e->health = 0;
+    addMemory(e->maxHealth/10);
 }
 
 

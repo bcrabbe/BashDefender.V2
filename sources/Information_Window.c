@@ -72,13 +72,13 @@ void statsBar() {
     
     GameProperties properties = getGame(NULL);
     
-    int gold = getGold(properties);
+    int mem = getAvailableMemory(properties);
     int waveNumber = getWave(properties);
     int health = getHealth(properties);
     
     char *outputString = malloc(MAX_OUTPUT_STRING);
     
-    sprintf(outputString, "Gold: %d                                                                     Wave Number: %d                                                                     Health: %d", gold, waveNumber, health);
+    sprintf(outputString, "Available Memory: %dbytes                                                 Wave Number: %d                                                                     Health: %d", mem, waveNumber, health);
     
     updateStatsBar(outputString);
 }

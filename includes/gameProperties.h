@@ -14,7 +14,8 @@ enum cmdType
     set=2,
     man=3,
     cat=4,
-    mktwr=5
+    mktwr=5,
+    aptget=6
 };
 
 
@@ -28,7 +29,8 @@ enum cmdOption
     AOEpower=4,
     level=5,
 	INT=6, 
-	CHAR=7
+	CHAR=7,
+    psx=8
 };
 
 typedef enum clockType	{
@@ -53,8 +55,8 @@ typedef struct gameClock *GameClock;
 typedef struct clockNode *ClockNode;
 /*----------Function Prototypes-----------*/
 GameProperties createGame();
-int getGold(GameProperties game);
-int takeGold(GameProperties game,int gold);
+int getAvailableMemory(GameProperties game);
+int useMemory(GameProperties game,int mem);
 int getWave(GameProperties game);
 int getHealth(GameProperties game);
 clock_t delayGame(int delayN);
@@ -66,7 +68,7 @@ GameClock getClock(GameClock clock);
 int checkUniqueClockType(clockType type);
 ClockNode createClockNode(clockType type);
 void damageHealth(int damage);
-int addGold(int gold);
+int addMemory(int mem);
 int getCostOfNewTower();
 int getDeathCnt();
 void increaseDeathCnt();
@@ -77,9 +79,9 @@ int checkClock(clockType cType,int coolDown);
 void setCurrTime(ClockNode node);
 void testingGameStructure();
 void CreateGameTest();
-void TestGetGold();
-void TestAddGold();
-void TestTakeGold();
+void TestGetAvailableMemory();
+void TestAddMemory();
+void TestUseMemory();
 void setEnemyCreated1();
-int getTotalGold();
+int getTotalMemory();
 #endif

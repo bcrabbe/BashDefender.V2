@@ -15,7 +15,6 @@
 
 
 int main(int argc, char ** argv)
-
 {
     Display d = init_SDL();
     initLevel();
@@ -33,7 +32,7 @@ int main(int argc, char ** argv)
     pass = text;
     clear = empty;
 	int started = 0;
-    addGold(100);
+    addMemory(100);
     int steps=0;
     //init_sound();
     //playBackgroundSound();
@@ -172,7 +171,7 @@ void testParseToTower()	{
 	createTower();
 	setTowerRange(1,10); //Setting tower range to 10 for tests.
 	setTowerDamage(2,10); //Setting tower damage to 10 for tests.
-	addGold(1000);
+	addMemory(1000);
 	parse("upgrade r t1");
 	parse("upgrade p t2");
 	sput_fail_unless(getFirstTarget() == 1, "First target is 1");

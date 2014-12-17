@@ -50,8 +50,8 @@ void testingActionQueue()	{
 	
 	sput_set_output_stream(NULL);
 
-	sput_enter_suite("testCheckGold(): gold check");
-    sput_run_test(testcheckGold);
+	sput_enter_suite("testCheckMem(): memory check");
+    sput_run_test(testCheckMem);
     sput_leave_suite();
 	
 	//sput_enter_suite("testPopFromQueue(): Popping from queue");
@@ -141,7 +141,7 @@ void testPushToQueue()	{
 	sput_fail_unless(getFirstOption(newQueue) == power,"Valid: Top of Queue Option");
 	sput_fail_unless(getLastCommand(newQueue) == execute,"Valid: Last of Queue Command");
 	sput_fail_unless(getLastOption(newQueue) == range,"Valid: Last of Queue Option");
-	addGold(10);
+	addMemory(10);
 
 }
 /*
@@ -302,7 +302,7 @@ int popToTower()	{
 					ActionQueueStructure queue = getQueue(NULL);
 					GameProperties Game = getGame(NULL);
 					upgradeTowerStat(queue->start->option,queue->start->target);
-					takeGold(Game, needed);
+					useMemory(Game, needed);
 					removeQueueItem();
 				}
 				break;
@@ -310,7 +310,7 @@ int popToTower()	{
 				//! request tower type ignored for now.
 				if (checkQueue(queue,Game,needed)){
 					createTowerFromPositions(queue->start->target);
-					takeGold(Game, needed);
+					useMemory(Game, needed);
 					removeQueueItem();
 				}
 				break;
@@ -341,7 +341,8 @@ void removeQueueItem()	{
 int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int *target)	{
     GameProperties Game = getGame(NULL);
     int needed = calulateCosts(*cmd,*stat,*target);
-	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available gold, cooldown time 
+
+	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available Memory, cooldown time 
 		printf("popping from queue\n");
 		*cmd = queue->start->command;
 		*stat = queue->start->option;
@@ -350,7 +351,7 @@ int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int 
 		queue->start = queue->start->nextNode;	
 		free(tempStart);	
 		--(queue->nItems);
-		takeGold(Game, needed);	//remove gold
+		useMemory(Game, needed);	//use memory
 		setlastAction(Game);	//activate cooldown timer.
 		return 1;
 	}
@@ -362,7 +363,7 @@ int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int 
  */
 
 int checkQueue(ActionQueueStructure queue, GameProperties Game, int needed)	{
-	if((checkGold(needed, Game)) && (lastAction(Game)))	{
+	if((checkMem(needed, Game)) && (lastAction(Game)))	{
 			printf("success!\n");
 			return 1;		
 	} 
@@ -370,26 +371,26 @@ int checkQueue(ActionQueueStructure queue, GameProperties Game, int needed)	{
 }
 
 /*
- *Checks required gold is less than stored gold
+ *Checks required Memory is less than the Memory available to use
  */
 
-int checkGold(int needed, GameProperties Game)	{
-	if(needed > getGold(Game)) {
+int checkMem(int needed, GameProperties Game)	{
+	if(needed > getAvailableMemory(Game)) {
 		return 0;
 	}
 		return 1;
 }
 
-void testcheckGold()	{
+void testCheckMem()	{
 
 	GameProperties testGame;
     testGame = createGame();
-	addGold(10);
-	sput_fail_unless(checkGold(10,testGame) == 1,"boundary Testing enough gold");
-	takeGold(testGame,10);
-	sput_fail_unless(checkGold(50,testGame) == 0,"Testing not enough gold");
-	addGold(100);
-	sput_fail_unless(checkGold(10,testGame) == 1,"Testing enough gold");
+	addMemory(10);
+	sput_fail_unless(checkMem(10,testGame) == 1,"boundary Testing enough memory");
+	useMemory(testGame,10);
+	sput_fail_unless(checkMem(50,testGame) == 0,"Testing not enough memory");
+	addMemory(100);
+	sput_fail_unless(checkMem(10,testGame) == 1,"Testing enough memory");
 
 	free(testGame);
 }

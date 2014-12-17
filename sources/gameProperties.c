@@ -35,7 +35,8 @@ struct clockNode	{
 
 struct gameProperties {
 
-	int gold;
+	int memoryUsed;
+	int totalMemory;
 	int currWaveNo;
 	int totalWaveNo;
 	int health;
@@ -178,16 +179,16 @@ void testingGameStructure()	{
 	sput_run_test(CreateGameTest);
 	sput_leave_suite();
 
-	sput_enter_suite("TestGetGold(): Current Gold Value");
-	sput_run_test(TestGetGold);
+	sput_enter_suite("TestGetAvailableMemory(): Current Memory Available");
+	sput_run_test(TestGetAvailableMemory);
 	sput_leave_suite();
 
-	sput_enter_suite("TestAddGold(): Adding Gold");
-	sput_run_test(TestAddGold);
+	sput_enter_suite("TestAddMemory(): Adding Memory");
+	sput_run_test(TestAddMemory);
 	sput_leave_suite();
 
-	sput_enter_suite("TestSubtractGold(): Subtracting Gold");
-	sput_run_test(TestTakeGold);
+	sput_enter_suite("TestUseMemory(): Using More Memory");
+	sput_run_test(TestUseMemory);
 	sput_leave_suite();
 
 	sput_finish_testing();
@@ -198,7 +199,7 @@ void CreateGameTest()	{
 	GameProperties testGame;
 	testGame = createGame();
 	sput_fail_if((createGame()) == NULL,"Creating Game");
-	sput_fail_unless(getGold(testGame) == 0,"Initializing Gold");
+	sput_fail_unless(getAvailableMemory(testGame) == 0,"Initializing Memory");
 	sput_fail_unless(getWave(testGame) == 0,"Initializing WaveNo");
 	sput_fail_unless(getHealth(testGame) == 0,"Initializing Health");
 	free(testGame);
@@ -342,7 +343,9 @@ GameProperties createGame()	{
 
 	GameProperties newGame = (GameProperties) malloc(sizeof(*newGame));
 	newGame->clock = createClock();
-	newGame->gold=1000;
+
+	newGame->totalMemory=1000;
+	newGame->memoryUsed=0;
 	newGame->currWaveNo=0;
 	newGame->totalWaveNo = 0;
 	newGame->health=100;
@@ -355,70 +358,70 @@ GameProperties createGame()	{
 }
 
 /*
- *Returns amount of gold available
+ *Returns amount of Memory available
  */
-int getGold(GameProperties game)	{
+int getAvailableMemory(GameProperties game)	{
 
-	return game->gold;
+	return game->totalMemory - game->memoryUsed;
 }
 
-int getTotalGold()	{
+int getTotalMemory()	{
 
-	return(getGold(getGame(NULL)));
+	return(getAvailableMemory(getGame(NULL)));
 }
 
-void TestGetGold()	{
 
+void TestGetAvailableMemory()	{
 	GameProperties testGame;
     testGame = createGame();
-	testGame->gold = 10;
-	sput_fail_unless(getGold(testGame) == 10,"Getting Gold");	
+	testGame->totalMemory = 10;
+	sput_fail_unless(getAvailableMemory(testGame) == 10,"Getting Memory");	
 	free(testGame);
 }
 
 /*
- *Adds specified amount of gold to pot
+ *Adds specified amount of Memory to resources
  */
-int addGold(int gold)	{
+int addMemory(int mem)	{
 	GameProperties game = getGame(NULL);
-	if(gold > 0)	{
-		game->gold+=gold;	
+	if(mem > 0)	{
+		game->totalMemory+=mem;	
 		return 1;
 	} 
 
 	return 0;
 }
 
-void TestAddGold()	{
+void TestAddMemory()	{
 
 	GameProperties testGame;
     testGame = createGame();
-	addGold(100);
-	sput_fail_unless(getGold(testGame) == 100,"Adding Gold");
-	sput_fail_unless(addGold(-100) == 0,"Adding Negative Gold");
+	addMemory(100);
+	sput_fail_unless(getAvailableMemory(testGame) == 100,"Adding MEmory");
+	sput_fail_unless(addMemory(-100) == 0,"Adding Negative Memory");
 	free(testGame);
 }
 
 /*
- *Subtracts specified amount of gold
+ *Uses specified amount of memory
  */
-int takeGold(GameProperties game,int gold)	{
+int useMemory(GameProperties game,int mem)	{
 
-	if (game->gold >= gold)	{
-		game->gold-=gold;
+	if (game->totalMemory-game->memoryUsed >= mem)	{
+		game->totalMemory+=mem;
 		return 1;
 	} else {
 		return 0;
 	}
 }
 
-void TestTakeGold()	{
+void TestUseMemory()	{
 
 	GameProperties testGame;
     testGame = createGame();
-	testGame->gold = 100;
-	takeGold(testGame,50);
-	sput_fail_unless(getGold(testGame) == 50,"Subtracting Gold");
-	sput_fail_unless(takeGold(testGame,100) == 0,"Subtracting too much Gold");
+	testGame->totalMemory = 100;
+	useMemory(testGame,50);
+	sput_fail_unless(getAvailableMemory(testGame) == 50,"Subtracting Memory");
+	sput_fail_unless(useMemory(testGame,100) == 0,"Subtracting too much Memory");
 	free(testGame);
 }
