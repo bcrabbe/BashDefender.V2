@@ -7,6 +7,7 @@
 //
 
 
+
 #ifndef TEST_Display_h
 #define TEST_Display_h
 extern int SCREEN_WIDTH_GLOBAL;
@@ -56,12 +57,12 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #define MAP_HEIGHT	(SCREEN_HEIGHT_GLOBAL - TOWER_MONITOR_HEIGHT)
 
 
-#include <SDL2/SDL.h>
-#include <SDL2_ttf/SDL_ttf.h>
-#include <SDL2_image/SDL_image.h>
-
 #include <stdlib.h>
 #include <string.h>
+
+#include <SDL2/SDL.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 typedef struct display *Display;
 int processEvents(Display d);
@@ -74,7 +75,8 @@ Display getDisplayPointer(Display d);
 
 void startFrame(Display d);
 void endFrame(Display d);
-void shutSDL(Display d);
+void shutSDL();
+void shut_menu_screen();
 
 
 
@@ -84,21 +86,16 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target);
 void drawTowerPosition(int x, int y, int w, int h);
 
 //enemy
-
+int getBackgroundDimensions(int *w, int *h);
 void drawEnemy(Display d, int x, int y, int w, int h, int pic_width, int pic_height, double currentHealth, double maxHealth, int type, int frames, int anim_speed);
 
 void presentAnimation();
 void drawBackground();
 
 
-//check
-void check_load_images(SDL_Surface *surface, char *pic_name);
-
-TTF_Font *getInfoWindowFont(TTF_Font *font);
-
-
 #include <stdio.h>
 #include "Information_Window.h"
+
 
 void displayTowerMonitor();
 void displayStatsBar();
@@ -110,8 +107,10 @@ char *strdup2(char * s);
 
 
 int terminal_window(Display d, char *pass, char *clear);
-void display_text(Display d, char *pass);
 void menu_screen(Display d, int *started);
+
+int getBackgroundWidth();
+int getBackgroundHeight();
 
 #endif
 

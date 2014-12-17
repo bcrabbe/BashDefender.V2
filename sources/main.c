@@ -14,12 +14,17 @@
 #include "../includes/Sound.h"
 #include "pyInterpreter.h"
 
+
 int main(int argc, char ** argv)
 
 {
     int initPython(int argc, char ** argv);
     Display d = init_SDL();
     initLevel();
+	/*while(1)	{
+		levelQueueReader();
+	}*/
+
 //    //testing();
 
     //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));//createEnemy();
@@ -32,25 +37,23 @@ int main(int argc, char ** argv)
 	int started = 0;
     addGold(100);
     int steps=0;
-	//createTowerFromPositions(1);
-	//createTowerFromPositions(2);
-    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
+    //init_sound();
+    //playBackgroundSound();
 
-    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
-    init_sound();
-    playBackgroundSound();
 	while(started == 0)
 	{
 		menu_screen(d, &started);
 	}
+    shut_menu_screen();
     do{
         ++steps;
         startFrame(d);
 		levelQueueReader();
         drawBackground();
+        levelQueueReader();
 
         terminal_window(d, pass, clear);
-		//popToTower();
+		popToTower();
         if(inputCommand)
         {
             parse(inputCommand);
@@ -64,29 +67,24 @@ int main(int argc, char ** argv)
             int move = moveEnemy(i);
            
         }
-        if(steps%100 == 0)
-        {
-            userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
-        //     createEnemy();
-        }
         presentAnimation();
 		drawAllTowerPositions();
         statsBar();
         towerMonitor(0, NULL);
         actionQueueMonitor();
         endFrame(d);
-    } while(/*moveEnemy(1) != 1 &&*/ !terminal_window(d, pass, clear) && started == 1);
-
+		SDL_Delay(22);
+    } while(!terminal_window(d, pass, clear));
     
     shutSDL(d);
-    shutSound();
+    //shutSound();
+
 
     freeEnemyGroup();
     freeLevelPaths();
     quitPython();
     return 0;
 }
-
 
 
 
