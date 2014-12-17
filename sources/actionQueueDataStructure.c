@@ -17,6 +17,7 @@
 
 #include "../includes/sput.h"
 #include "../includes/actionQueueDataStructure.h"
+#include "../includes/abilities.h"
 
 /*---------- Data Types -----------*/
 
@@ -198,23 +199,39 @@ int getLastTarget()	{
 /*
  *Returns costs of command based on current tower stats
  */
-int calulateCosts(cmdType cmd, cmdOption stat, int target)    {
+int calulateCosts(cmdType cmd, cmdOption opt, int target)    {
 
-    switch(cmd) {
+    switch(cmd)
+    {
         case upgrade:
-            return ((getTowerLevel(target))*getCurrentStat(stat,target));
-            break;
+        {
+            return ((getTowerLevel(target))*getCurrentStat(opt,target));
+        }
         case mktwr:
+        {
             return getCostOfNewTower();
-            break;
+        }
+        case aptget:
+        {
+            return getCostOfAptget(opt);
+        }
         default:
 
-            break;
+        break;
     }
 
     return 0;
 }
 
+int getCostOfAptget (cmdOption opt)
+{
+    if(opt==psx)
+    {
+        return PSX_COST;
+    }
+    else return 0;
+    
+}
 /*
  *Returns specified stat of specified tower
  */

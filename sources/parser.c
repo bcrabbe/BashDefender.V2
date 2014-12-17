@@ -104,6 +104,9 @@ int parse(char *inputString)
             }
         }
         case execute:
+        {
+            
+        }
         case set:
         
         default:
@@ -120,6 +123,8 @@ int parseAptget(char * aptToGetString)
     cmdOption aptToGet = getCommandOption(aptToGetString);
     if(aptToGet!=psx)
     {
+        fprintf(stderr,"\n***app not recognised***\n");
+        fprintf(stderr,"type man aptget to see availible apps\n");
         return 0;
     }
     if(pushToQueue(getQueue(NULL),aptget,aptToGet,0)>=1)
@@ -129,6 +134,7 @@ int parseAptget(char * aptToGetString)
     }
     else return 0;
 }
+
 /*
  *  Called when we read mktwr cmd.
  *  gets tower position and pushes to queue
@@ -154,6 +160,7 @@ int parseMktwr(char ** commandArray)
     }
     else return 0;
 }
+
 /*  calls man printing functions
  *  returns 1 if ok
     returns 0 if error and prints message
@@ -299,10 +306,11 @@ unsigned int getTargetTower(const char * inputStringTargeting)
  */
 cmdOption getCommandOption(char * input)
 {
-    /*first lets make an array of strings to hold all the possible action commands*/
-    for(int i = 0; input[i]; i++){
+    for(int i = 0; input[i]; i++) {
         input[i] = tolower(input[i]);
     }
+    /*first lets make an array of strings to hold all the possible action commands*/
+   
     const char **validOptions;
     int numberOfStats=8;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validOptions=(const char **)malloc(numberOfStats*sizeof(char*));//array of $[numberOfActions] strings

@@ -24,7 +24,7 @@ void unlock_ability(Ability *abilityx)
 
 int is_available_ability(Ability *ability)
 {
-	if(ability->unlocked == 1 && getTotalMemory() > ability->goldcost)
+	if(ability->unlocked == 1)
 	{
 		return 1;
 	}
