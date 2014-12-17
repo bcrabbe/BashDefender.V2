@@ -12,13 +12,11 @@
 #include "../includes/main.h"
 #include "../includes/enemy.h"
 #include "../includes/Sound.h"
-#include "pyInterpreter.h"
 
 
 int main(int argc, char ** argv)
 
 {
-    int initPython(int argc, char ** argv);
     Display d = init_SDL();
     initLevel();
 	/*while(1)	{
@@ -82,7 +80,6 @@ int main(int argc, char ** argv)
 
     freeEnemyGroup();
     freeLevelPaths();
-    quitPython();
     return 0;
 }
 

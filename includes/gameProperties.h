@@ -6,7 +6,7 @@
 #include "../includes/tower.h"
 
 /*----------Enumerated Types-----------*/
-enum commandType
+enum cmdType
 {
     commandError=-1,
     upgrade=0,
@@ -18,7 +18,7 @@ enum commandType
 };
 
 
-enum upgradeStat
+enum cmdOption
 {
     statError=-1,
     power=0,
@@ -46,8 +46,8 @@ typedef enum clockType	{
 #define ENEMYSPAWNCOOLDOWN 2 	//!minimum time between enemy spawns
 /*----------TypeDefs----------*/
 
-typedef enum commandType commandType;
-typedef enum upgradeStat upgradeStat;
+typedef enum cmdType cmdType;
+typedef enum cmdOption cmdOption;
 typedef struct gameProperties *GameProperties;
 typedef struct gameClock *GameClock;
 typedef struct clockNode *ClockNode;

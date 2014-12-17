@@ -7,7 +7,6 @@
 
 #include "../includes/Display.h"
 #include "../includes/parser.h"
-#include "pyInterpreter.h"
 #include <stdbool.h>
 
 
@@ -374,8 +373,7 @@ int terminal_window(Display d, char *pass, char *clear)
                     }
                     
                     pass2 = pass + 2;
-                    // parse(pass2);
-                    sendStringToPython(pass2);
+                    parse(pass2);
                     strcpy(pass, clear);
                 }
 				//If backspace key is pressed, removes end char of string
