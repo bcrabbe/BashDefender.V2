@@ -1,7 +1,6 @@
 //
 // sputFunctions.c
 // Created by bclarke on 2014/09/11
-// tags: stack, abstraction, struct pointers
 //
 /*---------- Standard Headers -----------*/
 
@@ -128,7 +127,8 @@ void testSetLastAction()	{
  */
 int lastAction(GameProperties Game)	{
 
-	clock_t currTime = (double) clock() / CLOCKS_PER_SEC;
+	clock_t currTime = clock() / CLOCKS_PER_SEC;
+
 	clock_t timeSinceLastAction = currTime - Game->clock->lastAction;
 	if (timeSinceLastAction >= ACTIONCOOLDOWN)	{
 		Game->clock->lastAction = currTime;
@@ -312,13 +312,10 @@ int checkClock(clockType cType,int coolDown)	{
 	ClockNode currNode;
 	currNode = gClock->first;
 
-	clock_t currTime = clock() / CLOCKS_PER_SEC;
-	clock_t timeSinceLastUse;
-
+	clock_t currTime = (double) clock() / (CLOCKS_PER_SEC/100);
 	while(currNode!= NULL)	{
 		if (currNode->type == cType)	{
-			timeSinceLastUse = currTime - currNode->time;
-			if(timeSinceLastUse >= coolDown)	{
+			if((currTime - currNode->time) >= coolDown)	{
 				setCurrTime(currNode);
 				return 1;
 			} else {
@@ -333,7 +330,7 @@ int checkClock(clockType cType,int coolDown)	{
 }
 
 void setCurrTime(ClockNode node)	{
-	node->time = (double) clock() / CLOCKS_PER_SEC;
+	node->time = (double) clock() / (CLOCKS_PER_SEC/100);
 }
 
 /*

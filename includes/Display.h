@@ -62,7 +62,6 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #include <string.h>
 
 
-
 typedef struct display *Display;
 int processEvents(Display d);
 

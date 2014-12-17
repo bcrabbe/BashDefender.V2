@@ -47,7 +47,6 @@ int main(int argc, char ** argv)
     do{
         ++steps;
         startFrame(d);
-		levelQueueReader();
         drawBackground();
         
         levelQueueReader();

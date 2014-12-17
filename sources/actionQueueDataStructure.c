@@ -353,6 +353,7 @@ int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int 
 		--(queue->nItems);
 		useMemory(Game, needed);	//use memory
 		setlastAction(Game);	//activate cooldown timer.
+
 		return 1;
 	}
 		return 0;
@@ -363,7 +364,8 @@ int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int 
  */
 
 int checkQueue(ActionQueueStructure queue, GameProperties Game, int needed)	{
-	if((checkMem(needed, Game)) && (lastAction(Game)))	{
+	if((checkMem(needed, Game)) && (checkClock(lastCmdAction,ACTIONCOOLDOWN)))	{
+
 			printf("success!\n");
 			return 1;		
 	} 
