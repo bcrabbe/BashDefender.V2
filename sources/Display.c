@@ -14,8 +14,8 @@ int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
 #include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 enum font_types{solid, blended, blended_wrapped};
 
@@ -54,7 +54,8 @@ struct display {
 
     //Tower objects
     SDL_Texture *towerTexture[2];
-    SDL_Texture *towerPoistionTexture;
+    SDL_Texture *towerPositionTexture[7];
+
     //enemy
     SDL_Texture *enemyTexture[2];
     
@@ -110,9 +111,15 @@ Display init_SDL(){
     init_pic(&d->startButton, "Images/start-button.png");
     init_pic(&d->terminalWindowTexture, "Images/terminalwindow.png");
     init_pic(&d->map, "Images/map1.png");
-    init_pic(&d->towerPoistionTexture, "Images/TowerLocationsA.png");
+    init_pic(&d->towerPositionTexture[0], "Images/TowerLocationsA.png");
+    init_pic(&d->towerPositionTexture[1], "Images/TowerLocationsB.png");
+    init_pic(&d->towerPositionTexture[2], "Images/TowerLocationsC.png");
+    init_pic(&d->towerPositionTexture[3], "Images/TowerLocationsD.png");
+    init_pic(&d->towerPositionTexture[4], "Images/TowerLocationsE.png");
+    init_pic(&d->towerPositionTexture[5], "Images/TowerLocationsF.png");
+    init_pic(&d->towerPositionTexture[6], "Images/TowerLocationsG.png");
     init_pic(&d->enemyTexture[0], "Images/sdl2-spritesheet-actual.png");
-    init_pic(&d->enemyTexture[1], "Images/aniStrip.png");
+    init_pic(&d->enemyTexture[1], "Images/int_enemy_basic.png");
     init_pic(&d->towerTexture[0], "Images/tower.png");
     init_pic(&d->towerTexture[1], "Images/tower1.png");
     init_pic(&d->circ1_Texture[0], "Images/circ1_dark.png");
@@ -172,7 +179,7 @@ void drawBackground(){
 void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon){
     Display d =getDisplayPointer(NULL);
     d->rect = (SDL_Rect) {x, y, w, h};
-    SDL_RenderCopy(d->renderer, d->towerPoistionTexture, NULL, &d->rect);
+    SDL_RenderCopy(d->renderer, d->towerPositionTexture[tIcon-1], NULL, &d->rect);
 }
 
 /*present any animation with one staitc image at the back and one above it*/
@@ -318,7 +325,7 @@ void shutSDL() {
     SDL_DestroyTexture(d->newtexture);
     SDL_DestroyTexture(d->terminalWindowTexture);
     SDL_DestroyTexture(d->actionQueueTexture);
-    SDL_DestroyTexture(d->towerPoistionTexture);
+    SDL_DestroyTexture(d->towerPositionTexture[0]);
     SDL_DestroyTexture(d->startButton);
     SDL_DestroyTexture(d->startBackgroundTexture);
 
