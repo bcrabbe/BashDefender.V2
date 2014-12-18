@@ -63,6 +63,20 @@ extern int SCREEN_HEIGHT_GLOBAL;
 
 
 typedef struct display *Display;
+
+typedef enum	{
+
+	towerPosA = 1,
+	towerPosB = 2,
+	towerPosC = 3,
+	towerPosD = 4,
+	towerPosE = 5,
+	towerPosF = 6,
+	towerPosG = 7
+
+
+} tPosIcon;
+
 int processEvents(Display d);
 
 
@@ -84,7 +98,7 @@ void drawRect(int x, int y, int red, int blue, int max_width, int max_height, in
 //tower
 void drawTower(Display d, int x, int y, int w, int h, int range, int type);
 void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target);
-void drawTowerPosition(int x, int y, int w, int h);
+void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon);
 
 //enemy
 int getBackgroundDimensions(int *w, int *h);

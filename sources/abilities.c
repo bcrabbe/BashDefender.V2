@@ -1,9 +1,4 @@
-#include "../includes/Display.h"
-#include "../includes/parser.h"
-#include "../includes/tower.h"
 #include "../includes/abilities.h"
-#include "../includes/gameProperties.h"
-#include <string.h>
 
 void init_abilities()
 {

@@ -50,8 +50,8 @@ typedef enum clockType	{
 	start_t = 0,
 	lastCmdAction = 1,
 	enemyGroupCreated1 = 2,
-	singleEnemyCreated = 3
-	
+	singleEnemyCreated = 3,	//!delay between single enemies being created
+	groupDelay = 4 	//!Delay between groups of enemies being created
 } clockType;
 
 /*----------Symbolic Constants-----------*/
@@ -81,10 +81,12 @@ GameClock getClock(GameClock clock);
 int checkUniqueClockType(clockType type);
 ClockNode createClockNode(clockType type);
 void damageHealth(int damage);
+void setCreateEnemyGroupDelay(int delay);
 int addMemory(int mem);
 int getCostOfNewTower();
 int getDeathCnt();
 void increaseDeathCnt();
+int getEnemyGroupDelay();
 void setTotalWaveNo(int totalW);
 int getTotalWaveNo();
 GameClock createClock();

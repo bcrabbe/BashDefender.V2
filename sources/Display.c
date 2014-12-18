@@ -14,8 +14,8 @@ int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
 #include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 enum font_types{solid, blended, blended_wrapped};
 
@@ -136,7 +136,7 @@ void drawBackground(){
 }
 
 /*Draw tower position*/
-void drawTowerPosition(int x, int y, int w, int h){
+void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon){
     Display d =getDisplayPointer(NULL);
     d->rect = (SDL_Rect) {x, y, w, h};
     SDL_RenderCopy(d->renderer, d->towerPoistionTexture, NULL, &d->rect);
