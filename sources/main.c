@@ -38,6 +38,7 @@ int main()
     int steps=0;
     //init_sound();
     //playBackgroundSound();
+    userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
 
 	while(started == 0)
 	{
