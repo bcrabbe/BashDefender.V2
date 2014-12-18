@@ -15,8 +15,8 @@ enum cmdType
     cmd_man=4,
     cmd_cat=5,
     cmd_mktwr=6,
-    cmd_aptget=7,
-    cmd_ps=8,
+    cmd_ps=7,
+    cmd_aptget=8,
     cmd_kill=9
 };
 

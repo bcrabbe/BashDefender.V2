@@ -312,6 +312,16 @@ int parseMan(char * inputStringCommandMan)
             manMan();
             return 1;//0 for error
         }
+        case cmd_ps:
+        {
+            manPs();
+            return 1;//0 for error
+        }
+        case cmd_kill:
+        {
+            manKill();
+            return 1;//0 for error
+        }
         case cmd_execute:
         {
             //manExecute();
@@ -559,11 +569,12 @@ cmdType getCommandType(char * firstToken )
                     command = cmd_mktwr;
                     break;
                 case 7:
-                    command = cmd_aptget;
-                    break;
-                case 8:
                     command = cmd_ps;
                     break;
+                case 8:
+                    command = cmd_aptget;
+                    break;
+                
                 case 9:
                     command = cmd_kill;
                     break;
