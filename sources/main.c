@@ -6,6 +6,7 @@
 
 #include "../includes/sput.h"
 #include "../includes/levelController.h"
+#include "../includes/abilities.h"
 #include "../includes/tower.h"
 #include "./../includes/actionQueueDataStructure.h"
 #include "../includes/parser.h"

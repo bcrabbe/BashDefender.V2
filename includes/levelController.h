@@ -12,7 +12,8 @@
 typedef enum levelCommand { makeTowerP= 0, 
 							totalWaves = 1, 
 							wave = 2,
-							makeEnemy = 3
+							makeEnemy = 3,
+							delay = 4
 } levelCommand;
 
 typedef enum property {	x = 0, 
@@ -21,9 +22,9 @@ typedef enum property {	x = 0,
 						waveID = 3, 
 						enemyType = 4,
 					    numberOfEnemies = 5,	
-						dTime = 5, 
-						entrance = 6,
-						enemyLevel = 7
+						dTime = 6, 
+						entrance = 7,
+						enemyLevel =8 
 } property;
 
 typedef struct keyword *Keyword;
@@ -52,10 +53,12 @@ void printQueue();
 Keyword createKeyword();
 void breakDownWaveCommand(KeywordProp *propertiesList, int nProps);
 void makeTowerCommand(Keyword setTower);
+int returnPropertyValue(Keyword current, property reqProperty);
 void createLevelClocks();
 void setWaveTotalCommand(Keyword setWaveTotal);
 void waveCreatorCommand(Keyword waveKeyWord);
 Keyword removeLink(Keyword current);
 void initialQueueReader();
 void levelQueueReader();
+int addGroupCreationDelay(Keyword waveKW);
 #endif

@@ -31,7 +31,7 @@ struct towerPos	{
 };
 
 struct towerPosNode	{
-
+	tPosIcon tIcon;
 	int x;
 	int y;
 
@@ -73,6 +73,7 @@ void addTowerPosNode(int x, int y)	{
 		TowerPosNode newTower = (TowerPosNode) malloc(sizeof(*newTower));
 		newTower->x = x;
 		newTower->y = y;
+		newTower->tIcon = tPos->numberOfPositions;
 		tPos->towerPositions[tPos->numberOfPositions] = newTower;
 }
 
@@ -81,7 +82,7 @@ void drawAllTowerPositions()	{
 	TowerPos tPos = getTowerPos(NULL);
 	int t;
 	for(t = 1; t <= tPos->numberOfPositions;t++)	{
-		drawTowerPosition(tPos->towerPositions[t]->x,tPos->towerPositions[t]->y,100,100);
+		drawTowerPosition(tPos->towerPositions[t]->x,tPos->towerPositions[t]->y,100,100,tPos->towerPositions[t]->tIcon);
 	}
 
 }

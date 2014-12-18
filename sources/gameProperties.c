@@ -42,6 +42,7 @@ struct gameProperties {
     int costOfNewTower;
 	GameClock clock;
 	int deathCount;
+	int createEnemyGroupDelay;
 };
 
 /*---------- Functions ----------*/
@@ -282,7 +283,7 @@ ClockNode createClockNode(clockType type)	{
 	ClockNode newNode;
 	newNode = (ClockNode) malloc(sizeof(*newNode));
 	newNode->next = NULL;
-	newNode->time = clock();
+	newNode->time = clock() / (CLOCKS_PER_SEC/100);
 	newNode->type = type;
 	return newNode;
 }
@@ -349,9 +350,19 @@ GameProperties createGame()	{
     newGame->costOfNewTower = 300;
 	newGame->deathCount = 0;
 	newGame->clock->start_t  = newGame->clock->lastAction = (double) clock()/CLOCKS_PER_SEC;
+	newGame->createEnemyGroupDelay=0;
 	getGame(newGame);
 	return newGame;
 
+}
+
+int getEnemyGroupDelay()	{
+	return(getGame(NULL)->createEnemyGroupDelay);
+}
+
+void setCreateEnemyGroupDelay(int delay)	{
+
+	getGame(NULL)->createEnemyGroupDelay = delay;
 }
 
 /*

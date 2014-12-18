@@ -67,6 +67,7 @@ void levelQueueReader()	{
 			case wave:
 					if(kQueue->start == current)	{
 						printf("wave\n");
+						iprint(returnPropertyValue(current,dTime));
 						waveCreatorCommand(current);
 						current = removeLink(current);
 					} else { 
@@ -79,6 +80,11 @@ void levelQueueReader()	{
 					} else {
 						current = current->next;
 					}
+					break;
+			case delay:
+					setCreateEnemyGroupDelay(returnPropertyValue(current,dTime));
+					current = removeLink(current);
+					break;
 			default:
 					break;
 		}
@@ -113,10 +119,25 @@ Keyword removeLink(Keyword current)	{
 	printf("exit\n");
 }
 
+int returnPropertyValue(Keyword current, property reqProperty)	{
+
+	int i;
+	for(i = 0; i < current->nProperties; i++)	{
+		if(current->propertiesList[i]->p == reqProperty)	{
+			return current->propertiesList[i]->propertyValue;
+		}
+	}
+
+	return 0;
+
+}
+
 int createEnemyCommand(Keyword makeEnemy)	{
 
-	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN))	{
-		createSpecificEnemy(makeEnemy->propertiesList[0]->propertyValue,makeEnemy->propertiesList[1]->propertyValue,makeEnemy->propertiesList[2]->propertyValue);
+	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()))	{
+		setCreateEnemyGroupDelay(0); //!setting delay back to zero
+		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
+		//createSpecificEnemy(makeEnemy->propertiesList[0]->propertyValue,makeEnemy->propertiesList[1]->propertyValue,makeEnemy->propertiesList[2]->propertyValue);
 		return 1;
 	} 
 	return 0;
@@ -124,17 +145,30 @@ int createEnemyCommand(Keyword makeEnemy)	{
 }
 
 void waveCreatorCommand(Keyword waveKeyWord)	{
+	printf("checking wave delay\n");
+	iprint(returnPropertyValue(waveKeyWord,dTime));
 	int enemyNum;
    	for(enemyNum = 0; enemyNum < waveKeyWord->propertiesList[2]->propertyValue; enemyNum++)	{
 		breakDownWaveCommand(waveKeyWord->propertiesList,waveKeyWord->nProperties);
 	}
+	printf("adding delay\n");
+	addGroupCreationDelay(waveKeyWord);
 
-	printf("done adding wave\n");
 }
 
-int checkCreateClock()	{
-
+int addGroupCreationDelay(Keyword waveKW)	{
+	int dValue;
+	KeywordQueue kWQueue = getKWQueue(NULL);
+    Keyword newKey = createKeyword();
+    addKWtoQueue(newKey);
+    newKey->lCommand = delay;
+	if((dValue = returnPropertyValue(waveKW,dTime)))	{
+		addProperty(dTime);	
+		kWQueue->end->propertiesList[kWQueue->end->nProperties-1]->propertyValue = dValue;
 		return 1;
+	}
+
+	return 0;
 }
 
 
@@ -149,12 +183,9 @@ void breakDownWaveCommand(KeywordProp *propertiesList, int nProps)	{
 		Keyword newKey = createKeyword();
 		addKWtoQueue(newKey);	
 		newKey->lCommand = makeEnemy;
-		iprint(nProps);
 		KeywordQueue kWQueue = getKWQueue(NULL);
-		sprint("new wave cmd");
 		for(n = 0; n < nProps; n++)	{
 			if(propertiesList[n]->p != numberOfEnemies && propertiesList[n]->p != dTime)	{
-				sprint("adding property");
 				addProperty(propertiesList[n]->p);
 				kWQueue->end->propertiesList[kWQueue->end->nProperties-1]->propertyValue = propertiesList[n]->propertyValue;
 			}
@@ -256,6 +287,7 @@ void createLevelClocks()	{
 
 		addClock(singleEnemyCreated);
 		addClock(lastCmdAction);
+		addClock(groupDelay);
 }
 
 void createLevel()	{
@@ -367,11 +399,8 @@ char* getToken(char *line)	{
 		word[letter] = line[c];
 		line[c] = READCHAR;		//!Marking characters as read
 	}
-
 	word[letter] = '\0';
 	return word;
-	
-
 }
 
 char* expandCBuffer(char *toExpand, int currSize)	{
@@ -380,7 +409,6 @@ char* expandCBuffer(char *toExpand, int currSize)	{
 	} else {
 		return (toExpand = (char*) realloc(toExpand, (currSize+1)*(sizeof(char))));
 	}
-
 }
 
 /*
