@@ -33,15 +33,18 @@ struct display {
     SDL_Texture *statsBarTexture;
     
     //background
-    SDL_Texture *backgroundTexture;
+    SDL_Texture *map;
     
     //tower monitor
     SDL_Texture *towerMonitorTexture;
 
-	//menu Screen
-	SDL_Texture *backgroundtexture;
-	SDL_Texture *starttexture;
+	//menu Screens
+	SDL_Texture *startBackgroundTexture;
+    SDL_Texture *finalBackgroundTexture;
 
+	SDL_Texture *startButton;
+    SDL_Texture *reStartButton;
+    
 	//terminal Window
     SDL_Texture *newtexture;
 	SDL_Texture *terminalWindowTexture;
@@ -58,6 +61,8 @@ struct display {
     //animation
     SDL_Texture *circ1_Texture[2];
     SDL_Texture *circ2_Texture[2];
+    
+    SDL_Texture *firewall;
 };
 
 /*Functions prototypes for functions only used internally*/
@@ -67,21 +72,23 @@ SDL_Surface *getInfoWindowTextSurface(char *outputString);
 TTF_Font *getInfoWindowFont(TTF_Font *font);
 void crash(char *message);
 void getWindowSize(int *w, int *h);
-void init_pic(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture, char *pic_name);
+void init_pic(SDL_Texture **texture, char *pic_name);
 void check_load_images(SDL_Surface *surface, char *pic_name);
 void draw_filled_range(int cx, int cy, int r);
 void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, int frames, int pic_width, int pic_height, int anim_speed);
-void init_text_textures(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture);
 void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 void display_text(int x, int y, char *string, int text, int r, int g, int b);
+void animateAnyPic(int x, int y, int w, int h, int pic_width, int pic_height, int frames, int anim_speed, SDL_Texture *texture);
 
 Display init_SDL(){
+    
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");
     if(TTF_Init() != 0) crash("TTF_Init()");
     if(IMG_Init(0) != 0) crash("IMG_Init()");
     
     Display d = (Display)malloc(sizeof(struct display));
     getDisplayPointer(d);
+    
     d->window = SDL_CreateWindow("TOWER DEFENSE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, FULLSCREEN_YN);
     d->renderer = SDL_CreateRenderer(d->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     getWindowSize(&SCREEN_WIDTH_GLOBAL,&SCREEN_HEIGHT_GLOBAL);
@@ -91,37 +98,63 @@ Display init_SDL(){
     
     /*improves quality of font*/
     TTF_SetFontHinting(d->font, TTF_HINTING_LIGHT);
-
     putenv("SDL_VIDEODRIVER=dga");
     
     /*inititalize pictures (load picture to the texture)*/
-    init_pic(&d->renderer, &d->surface, &d->towerMonitorTexture, "info_monitor.png");
-    init_pic(&d->renderer, &d->surface, &d->actionQueueTexture, "action_queue-monitor.png");
-    init_pic(&d->renderer, &d->surface, &d->statsBarTexture, "blackBar.png");
-    init_pic(&d->renderer, &d->surface, &d->backgroundtexture, "menu_screen5.png");
-    init_pic(&d->renderer, &d->surface, &d->starttexture, "startbutton.png");
-    init_pic(&d->renderer, &d->surface, &d->terminalWindowTexture, "terminalwindow.png");
-    init_pic(&d->renderer, &d->surface, &d->backgroundTexture, "map1.png");
-    init_pic(&d->renderer, &d->surface, &d->towerPoistionTexture, "TowerLocationsA.png");
-    init_pic(&d->renderer, &d->surface, &d->enemyTexture[0], "sdl2-spritesheet-actual.png");
-    init_pic(&d->renderer, &d->surface, &d->enemyTexture[1], "int_enemy_basic.png");
-    init_pic(&d->renderer, &d->surface, &d->towerTexture[0], "tower.png");
-    init_pic(&d->renderer, &d->surface, &d->towerTexture[1], "tower1.png");
-    init_pic(&d->renderer, &d->surface, &d->circ1_Texture[0], "circ1_dark.png");
-    init_pic(&d->renderer, &d->surface, &d->circ1_Texture[1], "circ1_light.png");
-    init_pic(&d->renderer, &d->surface, &d->circ2_Texture[0], "circ3_dark.png");
-    init_pic(&d->renderer, &d->surface, &d->circ2_Texture[1], "circ3_light.png");
+    init_pic(&d->reStartButton, "iconreset.png");
+    init_pic(&d->finalBackgroundTexture, "final_screen.png");
+    init_pic(&d->towerMonitorTexture, "info_monitor.png");
+    init_pic(&d->actionQueueTexture, "action_queue-monitor.png");
+    init_pic(&d->statsBarTexture, "blackBar.png");
+    init_pic(&d->startBackgroundTexture, "anistrip_menu.png");
+    init_pic(&d->startButton, "start-button.png");
+    init_pic(&d->terminalWindowTexture, "terminalwindow.png");
+    init_pic(&d->map, "map1.png");
+    init_pic(&d->towerPoistionTexture, "TowerLocationsA.png");
+    init_pic(&d->enemyTexture[0], "sdl2-spritesheet-actual.png");
+    init_pic(&d->enemyTexture[1], "aniStrip.png");
+    init_pic(&d->towerTexture[0], "tower.png");
+    init_pic(&d->towerTexture[1], "tower1.png");
+    init_pic(&d->circ1_Texture[0], "circ1_dark.png");
+    init_pic(&d->circ1_Texture[1], "circ1_light.png");
+    init_pic(&d->circ2_Texture[0], "circ3_dark.png");
+    init_pic(&d->circ2_Texture[1], "circ3_light.png");
 
     return d;
 }
 
-/*Tower and enemy graphics functions*/
-
-int getBackgroundDimensions(int *w, int *h){
-    Display d =getDisplayPointer(NULL);
-    SDL_QueryTexture(d->backgroundTexture, NULL, NULL, w, h);
-    return SCREEN_WIDTH_GLOBAL;
+/*draw firewall*/
+void animateAnyPic(int x, int y, int w, int h, int pic_width, int pic_height, int frames, int anim_speed, SDL_Texture *texture){
+    Display d = getDisplayPointer(NULL);
+    Uint32 ticks = SDL_GetTicks();
+    Uint32 sprite = (ticks / anim_speed) % frames;
+    d->srcRect = (SDL_Rect){sprite * (pic_width/frames), 0, (pic_width/frames), pic_height};
+    d->rect = (SDL_Rect) {x, y, w, h};
+    /*create animation by putting part of a spritesheet(image) into destination rect*/
+    SDL_RenderCopy(d->renderer, texture, &d->srcRect, &d->rect);
 }
+
+
+
+/*Tower and enemy graphics functions*/
+void getBackgroundDimensions(int *w, int *h){
+    Display d =getDisplayPointer(NULL);
+    SDL_QueryTexture(d->map, NULL, NULL, w, h);
+}
+/* Draw kill all ability*/
+void drawKillAll(){
+    SDL_Delay(10);
+    Display d = getDisplayPointer(NULL);
+    d->rect = (SDL_Rect) {0,0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL};
+    SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
+    int saturation = 0;
+    while (saturation < 255) {
+        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 2.5);
+        SDL_RenderFillRect(d->renderer, &d->rect);
+        SDL_RenderPresent(d->renderer);
+    }
+}
+
 /*call fucntion in the while loop to present all the animations*/
 void presentAnimation(){
     Display d = getDisplayPointer(NULL);
@@ -132,7 +165,7 @@ void presentAnimation(){
 /*draw background image*/
 void drawBackground(){
     Display d = getDisplayPointer(NULL);
-    SDL_RenderCopy(d->renderer, d->backgroundTexture, NULL, NULL);
+    SDL_RenderCopy(d->renderer, d->map, NULL, NULL);
 }
 
 /*Draw tower position*/
@@ -159,11 +192,12 @@ void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, in
 }
 
 /*Initialize images and check whether they were loaded successfully*/
-void init_pic(SDL_Renderer **rend, SDL_Surface **surface, SDL_Texture **texture, char *pic_name){
-    *surface = IMG_Load(pic_name);
-    check_load_images(*surface, pic_name);
-    *texture = SDL_CreateTextureFromSurface(*rend, *surface);
-    SDL_FreeSurface(*surface);
+void init_pic(SDL_Texture **texture, char *pic_name){
+    Display d = getDisplayPointer(NULL);
+    d->surface = IMG_Load(pic_name);
+    check_load_images(d->surface, pic_name);
+    *texture = SDL_CreateTextureFromSurface(d->renderer, d->surface);
+    SDL_FreeSurface(d->surface);
 }
 
 /*Get pointer to the Display object*/
@@ -276,11 +310,23 @@ void check_load_images(SDL_Surface *surface, char *pic_name){
 /*destroy everything */
 void shutSDL() {
     Display d = getDisplayPointer(NULL);
-    SDL_DestroyTexture(d->towerTexture[1]);
+    SDL_DestroyTexture(d->statsBarTexture);
+    SDL_DestroyTexture(d->map);
+    SDL_DestroyTexture(d->towerMonitorTexture);
+    SDL_DestroyTexture(d->startBackgroundTexture);
+    SDL_DestroyTexture(d->startButton);
+    SDL_DestroyTexture(d->newtexture);
+    SDL_DestroyTexture(d->terminalWindowTexture);
+    SDL_DestroyTexture(d->actionQueueTexture);
+    SDL_DestroyTexture(d->towerPoistionTexture);
+    SDL_DestroyTexture(d->startButton);
+    SDL_DestroyTexture(d->startBackgroundTexture);
+
     SDL_DestroyRenderer(d->renderer);
     SDL_DestroyWindow(d->window);
     SDL_Quit();
     IMG_Quit();
+    TTF_CloseFont(d->font);
     TTF_Quit();
 }
 
@@ -424,9 +470,12 @@ void display_text(int x, int y, char *string, int text, int r, int g, int b)
 
 void menu_screen(Display d, int *started)
 {
-	d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
-	SDL_RenderCopy(d->renderer, d->backgroundtexture, NULL, NULL);
-    SDL_RenderCopy(d->renderer, d->starttexture, NULL, &d->rect);
+    //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
+    animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
+
+    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
+
+    SDL_RenderCopy(d->renderer, d->startButton, NULL, &d->rect);
 	SDL_RenderPresent(d->renderer);
     int check = 0;
     check = (SDL_PollEvent(&d->event));
@@ -453,10 +502,44 @@ void menu_screen(Display d, int *started)
 	}
 }
 
-void shut_menu_screen(){
+int final_screen()
+{
     Display d = getDisplayPointer(NULL);
-    SDL_DestroyTexture(d->starttexture);
-    SDL_DestroyTexture(d->backgroundtexture);
+    SDL_Delay(20);
+
+        animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 3072, 645, 3, 150, d->finalBackgroundTexture);
+        
+        d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
+        
+        SDL_RenderCopy(d->renderer, d->reStartButton, NULL, &d->rect);
+        SDL_RenderPresent(d->renderer);
+        int check = 0;
+        check = (SDL_PollEvent(&d->event));
+        if(check != 0)
+        {
+            switch(d->event.type)
+            {
+                case SDL_MOUSEBUTTONDOWN:
+                {
+                    if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+                            return 1;
+                            //SDL_Quit();
+                            //shutSDL();
+                        }
+                }
+                case SDL_KEYDOWN:
+                {
+                    if(d->event.key.keysym.sym == SDLK_ESCAPE)
+                    {
+                        SDL_Quit();
+                        exit(1);
+                    }
+                }
+            }
+        }
+    return 0;
 }
+
 //End of terminal functions
 

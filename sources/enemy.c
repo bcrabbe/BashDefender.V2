@@ -402,7 +402,7 @@ void present_enemy(Display d)
 
         if(!isDead(i))
         {
-            drawEnemy(e->x, e->y, 50, 50, 2010, 121, 1, 15, 200);
+            drawEnemy(e->x, e->y, 50, 50, 11250, 1250, 1, 9, 200);
             drawRect(e->x, e->y -20, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
         }
     }
@@ -527,9 +527,10 @@ void damageEnemy(int damage, int enemyID)
     if(e->health<=0)
     {
         e->dead=1;
-        
-        addMemory(e->maxHealth/10); 
+        addMemory(e->maxHealth/10);
         // drawDeath(e->x, e->y);
+        drawKillAll();
+
     }
 }
 

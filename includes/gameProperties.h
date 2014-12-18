@@ -73,6 +73,7 @@ int addMemory(int mem);
 int getCostOfNewTower();
 int getDeathCnt();
 void increaseDeathCnt();
+int checkIfPlayerDead();
 void setTotalWaveNo(int totalW);
 int getTotalWaveNo();
 GameClock createClock();

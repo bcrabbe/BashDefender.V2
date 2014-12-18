@@ -145,7 +145,6 @@ int lastAction(GameProperties Game)	{
 void damageHealth(int damage)	{
 
 	getGame(NULL)->health -= damage;
-
 }
 
 
@@ -234,6 +233,19 @@ int getHealth(GameProperties game)	{
 }
 
 /*
+ * Checks if health is 0
+ */
+int checkIfPlayerDead()   {
+
+    if(!getHealth(getGame(NULL)))   {
+        return 1;
+    }
+    
+    return 0;
+
+}
+
+/*
  *Returns cost of new tower
  */
 int getCostOfNewTower() {
@@ -282,7 +294,7 @@ ClockNode createClockNode(clockType type)	{
 	ClockNode newNode;
 	newNode = (ClockNode) malloc(sizeof(*newNode));
 	newNode->next = NULL;
-	newNode->time = clock();
+	newNode->time = clock()/(CLOCKS_PER_SEC/100);
 	newNode->type = type;
 	return newNode;
 }
