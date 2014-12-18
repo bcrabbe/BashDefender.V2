@@ -82,7 +82,7 @@ void drawAllTowerPositions()	{
 	TowerPos tPos = getTowerPos(NULL);
 	int t;
 	for(t = 1; t <= tPos->numberOfPositions;t++)	{
-		drawTowerPosition(tPos->towerPositions[t]->x,tPos->towerPositions[t]->y,100,100,tPos->towerPositions[t]->tIcon);
+		drawTowerPosition(tPos->towerPositions[t]->x,tPos->towerPositions[t]->y,50,50,tPos->towerPositions[t]->tIcon);
 	}
 
 }
