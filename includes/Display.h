@@ -104,6 +104,7 @@ void updateTowerMonitor(char *outputString);
 void updateStatsBar(char *outputString);
 void updateActionQueueMonitor(char *outputString);
 char *strdup2(char * s);
+void updateTerminalWindow(char *outputString);
 
 
 int terminal_window(Display d, char *pass, char *clear);

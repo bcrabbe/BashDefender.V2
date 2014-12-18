@@ -327,11 +327,17 @@ void updateActionQueueMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
      displayMonitor(320, ACTION_QUEUE_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
     if(strlen(outputString) > 0) {
-        display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X,ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped);
+        display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X, ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped);
     }
-    
-    printf("Global Width: %d, Action Queue X: %d\n", SCREEN_WIDTH_GLOBAL, ACTION_QUEUE_WIDTH);
 }
+
+/*void updateTerminalWindow(char *outputString) {
+    Display d = getDisplayPointer(NULL);
+    
+    if(strlen(outputString) > 0) {
+        display_text(20, 20, outputString, blended_wrapped);
+    }
+}*/
 
 /*End of information window functions*/
 

@@ -411,59 +411,53 @@ char *getActionQueueString(void) {
         
         switch(command) {
             case upgrade:
-                strcat(outputString, "upgrade");
-                break;
-            case execute:
-                strcat(outputString, "execute");
-                break;
-            case set:
-                strcat(outputString, "set");
-                break;
-            case man:
-                strcat(outputString, "man");
-                break;
-            case cat:
-                strcat(outputString, "cat");
+                strcat(outputString, "upgrade ");
+                switch(option) {
+                    case power:
+                        strcat(outputString, "p ");
+                        break;
+                    case range:
+                        strcat(outputString, "r ");
+                        break;
+                    case speed:
+                        strcat(outputString, "s ");
+                        break;
+                    case AOErange:
+                        strcat(outputString, "AOEr ");
+                        break;
+                    case AOEpower:
+                        strcat(outputString, "AOEp ");
+                        break;
+                    case level:
+                        strcat(outputString, "level ");
+                }
+                
+                if(target) {
+                    sprintf(targetString, " t%d", target);
+                    strcat(outputString, targetString);
+                }
                 break;
             case mktwr:
-                strcat(outputString, "mktwr");
+                strcat(outputString, "mktwr ");
+                switch(option) {
+                    case INT:
+                        strcat(outputString, "INT ");
+                        break;
+                    case CHAR:
+                        strcat(outputString, "CHAR ");
+                        break;
+                }
+                sprintf(targetString, "%c", 'a' + (target - 1));
+                strcat(outputString, targetString);
                 break;
-            case commandError:
-                continue;
         }
-        
-        strcat(outputString, " ");
-        
-        switch(option) {
-            case power:
-                strcat(outputString, "p");
-                break;
-            case range:
-                strcat(outputString, "r");
-                break;
-            case speed:
-                strcat(outputString, "s");
-                break;
-            case AOErange:
-                strcat(outputString, "AOEr");
-                break;
-            case AOEpower:
-                strcat(outputString, "AOEp");
-                break;
-            case level:
-                strcat(outputString, "level");
-            case statError:
-                continue;
-        }
-        
-        if(target) {
-            sprintf(targetString, " t%d", target);
-            strcat(outputString, targetString);
-        }
-        
-        
+            /*case execute:
+            strcat(outputString, "execute");
+            break;*/
+            /*case set:
+            strcat(outputString, "set");
+            break;*/
         strcat(outputString, "\n");
-        
     }
     
     return outputString;

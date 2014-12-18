@@ -20,6 +20,7 @@
 
 #define MAX_OUTPUT_STRING 200
 #define DEFAULT_SCREEN_TIME 10000
+#define DEFAULT_SCREEN_TIME2 4000
 
 
 /**
@@ -64,6 +65,27 @@ void towerMonitor(unsigned int targetTower, char *optionalOutputString) {
     
     updateTowerMonitor(outputString);
 }
+
+/**
+ update terminal window with optional output string
+ */
+/*void terminalWindow(char *string) {
+    int time = SDL_GetTicks();
+    static int timeOfCall = 0;
+    static char *outputString = NULL;
+    
+    if(string != NULL) {
+        outputString = malloc(MAX_OUTPUT_STRING);
+        sprintf(outputString, "\n\n\n               **********\n%s\n               **********\n\n\n", string);
+        timeOfCall = time;
+    }
+    
+    if(time - timeOfCall > DEFAULT_SCREEN_TIME2) {
+        outputString = NULL;
+    }
+    
+    updateTerminalWindow(outputString);
+}*/
 
 /**
  Creates output string for stats monitor and updates stats monitor
