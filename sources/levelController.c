@@ -78,7 +78,7 @@ void levelQueueReader()	{
 					if(createEnemyCommand(current))	{
 						current = removeLink(current);
 					} else {
-						current = current->next;
+						return;
 					}
 					break;
 			case delay:
