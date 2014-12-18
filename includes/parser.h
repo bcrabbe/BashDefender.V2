@@ -12,8 +12,12 @@
 #include "../includes/actionQueueDataStructure.h"
 
 #define ENABLE_TESTING 0
+typedef struct stringList {
+    char ** stringArray;
+    int numberOfStrings;
+} stringList;
 
-int getAction( const char * inputAction );
+cmdType getCommandType(char * firstToken );
 char * strdup(const char * s);
 int parse(char *inputString);
 void freeCommandArray(char **commandArray,int numberOfChunks);
@@ -24,8 +28,19 @@ void actionUsageError();
 cmdOption getCommandOption(char * input);
 int parseUpgrade(char ** commandArray, int numberOfChunks);
 void testGetUpgradeStat(cmdOption statToUpgrade);
-void optionUsageError(const char * inputStringUpgradeStats, cmdOption statToUpgrade,
-                      const char ** validUpgradeStats, int numberOfStats);
+void optionUsageError();
+int parseKill(char ** commandArray,int numberOfChunks);
+unsigned int getTargetEnemy(const char * inputStringTargeting);
+int parsePs(char * optionString);
+int parseAptget(char * aptToGetString);
+void freeParseLists();
+void initialiseParseLists();
+stringList * getCommandList(stringList * commandList);
+stringList *  getOptionList(stringList * optionList);
+stringList * intialiseCommandList();
+stringList * intialiseOptionList();
+void testStringLists();
+
 unsigned int getTargetTower(const char * inputStringTargeting);
 int parseCat(char * inputStringTargeting);
 int parseMan(char * inputStringCommandMan);

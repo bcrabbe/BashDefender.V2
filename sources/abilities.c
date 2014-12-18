@@ -31,7 +31,7 @@ int is_available_ability(Ability *ability)
 	return 0;
 }
 
-void psx_ability(Ability *psx)
+void psx_ability()
 {
 	char psxlist[200];
 	char template[14] = "EnemyID Health";
@@ -40,25 +40,24 @@ void psx_ability(Ability *psx)
 	char healthstr[10];
 	int enemy_number = getNumberOfEnemies();
 	int health = 0, ID = 0, i;
-	if(is_available_ability(psx) == 1)
-	{
-		for(i = 1; i <= enemy_number; i++)
-		{
-			strcpy(psxlist, template);
-			if(!isDead(i))
-			{
-				ID = i;
-				health = getEnemyHealth(ID);
-				sprintf(IDstr, "%d ", ID);
-				sprintf(healthstr, "%d", health); 
-				strcat(psxlist, newline);
-				strcat(psxlist, IDstr);
-				strcat(psxlist, healthstr);
-				strcat(psxlist, newline);
-			}
-			updateTowerMonitor(psxlist);
-		}
-	}
+
+    for(i = 1; i <= enemy_number; i++)
+    {
+        strcpy(psxlist, template);
+        if(!isDead(i))
+        {
+            ID = i;
+            health = getEnemyHealth(ID);
+            sprintf(IDstr, "%d ", ID);
+            sprintf(healthstr, "%d", health); 
+            strcat(psxlist, newline);
+            strcat(psxlist, IDstr);
+            strcat(psxlist, healthstr);
+            strcat(psxlist, newline);
+        }
+        updateTowerMonitor(psxlist);
+    }
+
 }
 /*
 void kill_ability(int enemyID, Ability *kill)

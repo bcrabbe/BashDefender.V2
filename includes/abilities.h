@@ -20,7 +20,7 @@ typedef struct Ability
 
 //int kill_all_ability(Ability *killall);
 
-void psx_ability(Ability *psx);
+void psx_ability();
 
 int is_available_ability(Ability *ability);
 

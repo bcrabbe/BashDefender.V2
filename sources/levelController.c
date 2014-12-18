@@ -89,7 +89,7 @@ Keyword removeLink(Keyword current)	{
 	Keyword temp;
 	KeywordQueue kQueue = getKWQueue(NULL);
 	if(current == kQueue->start)	{
-		printf("freeing start \n");	
+        //printf("freeing start \n");
 		kQueue->start = kQueue->start->prev;
 		current = kQueue->start;
 		if(kQueue->start != NULL)	{	

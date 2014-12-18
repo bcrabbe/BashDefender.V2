@@ -38,5 +38,6 @@ void testingActionQueue();
 void testPopFromQueue();
 void testPushToQueue();
 char *getActionQueueString(void);
+int getCostOfAptget (cmdOption option);
 
 #endif

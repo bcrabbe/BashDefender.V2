@@ -36,6 +36,8 @@ int main(int argc, char ** argv)
     int steps=0;
 	Ability psx, kill, killall;
 	init_abilities(&psx, &kill, &killall);
+    initialiseParseLists();
+
     //init_sound();
     //playBackgroundSound();
 
@@ -77,15 +79,17 @@ int main(int argc, char ** argv)
     } while(!terminal_window(d, pass, clear));
     
     shutSDL(d);
-    //shutSound();
-
-
-    freeEnemyGroup();
-    freeLevelPaths();
+    quitGame();
     return 0;
 }
 
-
+void quitGame()
+{
+    //shutSound();
+    freeEnemyGroup();
+    freeLevelPaths();
+    freeParseLists();
+}
 
 void testing()	{
 
@@ -197,18 +201,18 @@ void testValidParses()	{
     //  printf("\n135\n\n");
     sput_fail_unless(parse("upgrade r t1")== 1, "upgrade r t1 is valid command");
 	sput_fail_unless(getFirstCommand(getQueue(NULL)) == upgrade, "First command in queue: upgrade");
-	sput_fail_unless(getFirstOption(getQueue(NULL)) == range, "First option in queue: range");
+	sput_fail_unless(getFirstOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");
     //printf("\n139\n\n");
     sput_fail_unless(parse("upgrade p t1")== 1, "upgrade p t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == upgrade, "Last comand in queue: upgrade");
-	sput_fail_unless(getLastOption(getQueue(NULL)) == power, "Last option in queue: power");
+	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_power, "Last option in queue: power");
     //printf("\n143\n\n");
 
     sput_fail_unless(parse("upgrade s t1")== 1, "upgrade s t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == upgrade, "Last comand in queue: upgrade");
-	sput_fail_unless(getLastOption(getQueue(NULL)) == speed, "Last option in queue: speed");
+	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_speed, "Last option in queue: speed");
 	sput_fail_unless(getFirstCommand(getQueue(NULL)) == upgrade, "First command in queue: upgrade");
-	sput_fail_unless(getFirstOption(getQueue(NULL)) == range, "First option in queue: range");
+	sput_fail_unless(getFirstOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");
     //printf("\n149\n\n");
     sput_fail_unless(parse("  ??D--") == 0, "  ??D-- is invalid command");
     //printf("\n151\n\n");

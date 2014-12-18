@@ -1,3 +1,6 @@
+void quitGame();
+
+
 void testing();
 void parseToQueueTesting();
 void testValidParses();

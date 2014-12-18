@@ -9,28 +9,40 @@
 enum cmdType
 {
     commandError=-1,
-    upgrade=0,
-    execute=1,
-    set=2,
-    man=3,
-    cat=4,
-    mktwr=5,
-    aptget=6
+    upgrade=1,
+    execute=2,
+    set=3,
+    man=4,
+    cat=5,
+    mktwr=6,
+    aptget=7,
+    ps=8,
+    kill=9
 };
 
 
 enum cmdOption
 {
-    statError=-1,
-    power=0,
-    range=1,
-    speed=2,
-    AOErange=3,
-    AOEpower=4,
-    level=5,
-	INT=6, 
-	CHAR=7,
-    psx=8
+    optionError=-1,
+    //upgrade(tower stats):
+    upgrade_power=1,
+    upgrade_range=2,
+    upgrade_speed=3,
+    upgrade_AOErange=4,
+    upgrade_AOEpower=5,
+    upgrade_level=6,
+    //mktwr (tower types):
+	mktwr_int=7,
+	mktwr_char=8,
+    //ps (option)
+    ps_x=9,
+    //kill (options)
+    kill_minus9=10,//kills a single targeted enemy
+    kill_all=11,//kills all enemies
+    //aptget (commands to install):
+    aptget_kill=12,
+    
+    
 };
 
 typedef enum clockType	{

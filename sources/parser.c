@@ -14,18 +14,29 @@
 #include "../includes/actionQueueDataStructure.h"
 #include "./../includes/parser.h"
 #include "../includes/Information_Window.h"
+#include "../includes/abilities.h"
+#include "../includes/enemy.h"
+
+
 
 /*
  * Parse called with string of user input from terminal window.
  * reads the first token and calls the relevant command function 
  * returns zero if syntax error.
  */
+void testStringLists()
+{
+    stringList * cmdList = getCommandList(NULL);
+    testCommandArray(cmdList->stringArray,cmdList->numberOfStrings);
+    stringList * optList = getOptionList(NULL);
+    testCommandArray(optList->stringArray,optList->numberOfStrings);
+}
 int parse(char *inputString)
 {
     size_t len = 1+strlen(inputString);//gets the size of inputString
     if( len < 3*sizeof(char)  )
     {
-        actionUsageError();
+        optionUsageError();
         return 0;
     }
 
@@ -36,92 +47,209 @@ int parse(char *inputString)
         maxNumberOfChunks = 3;//being implemented
     if( numberOfChunks<minNumberOfChunks || maxNumberOfChunks>3)
     {
+        optionUsageError();
         freeCommandArray(commandArray, numberOfChunks);
         return 0;//no valid commands with less than 2 strings or more than 3
     }
 
     //enumerated type cmdType can describe each of the possible commands(see actionQueue.h)
+    cmdType command = getCommandType(commandArray[0]);//the first string in the command should contain the action
 
-    cmdType action = getAction(commandArray[0]);//the first string in the command should contain the action
-    
-    if(action==commandError)//if getAction returns commandError then the input is invalid
+    if(command==commandError)//if getAction returns commandError then the input is invalid
     {                //Error messaging handled in getAction function
         freeCommandArray(commandArray, numberOfChunks);
         return 0;
     }
-    
+    printf("cmdTyp = %d \n",command);
     int specificReturns=0;//stores return values of the different functions that execute the commands
     /**** Now we deal with each possible command separately as they all have different syntax ****/
-    switch (action)
+    switch (command)
     {
         case upgrade:
         {
-            if(numberOfChunks<3)
-            {
-                actionUsageError();
-                freeCommandArray(commandArray, numberOfChunks);
-                return 0;
+            if(numberOfChunks!=3) {
+                optionUsageError();
+                specificReturns = 0;
             }
+            else {
             specificReturns = parseUpgrade(commandArray, numberOfChunks);
-            freeCommandArray(commandArray, numberOfChunks);
-            return specificReturns;//0 for error
+            }
+            break;
+
         }
         case cat:
         {
-            specificReturns = parseCat(commandArray[1]);
-            freeCommandArray(commandArray, numberOfChunks);
-            return specificReturns;//0 for error
+            if(numberOfChunks!=2) {
+                optionUsageError();
+                specificReturns = 0;
+            }
+            else {
+                specificReturns = parseCat(commandArray[1]);
+            }
+            break;
+
         }
         case man:
         {
-            specificReturns = parseMan(commandArray[1]);
-            freeCommandArray(commandArray, numberOfChunks);
-            return specificReturns;//0 for error
+            if(numberOfChunks!=2) {
+                optionUsageError();
+                specificReturns = 0;
+            }
+            else {
+                specificReturns = parseMan(commandArray[1]);
+            }
+            break;
+
         }
         case mktwr:
         {
-            if(numberOfChunks<3)
+            if(numberOfChunks!=3)
             {
-                freeCommandArray(commandArray, numberOfChunks);
-                return 0;
+                optionUsageError();
+                specificReturns = 0;
             }
-            specificReturns = parseMktwr(commandArray);
-            freeCommandArray(commandArray, numberOfChunks);
-            return specificReturns;//0 for error
+            else {
+                specificReturns = parseMktwr(commandArray);
+            }
+            break;
+
         }
         case aptget:
         {
-            if(numberOfChunks!=2)
-            {
-                freeCommandArray(commandArray, numberOfChunks);
-                return 0;
+            if(numberOfChunks!=2) {
+                optionUsageError();
+                specificReturns = 0;
             }
-            else
-            {
+            else {
                 specificReturns = parseAptget(commandArray[1]);
-                freeCommandArray(commandArray, numberOfChunks);
-                return specificReturns;//0 for error
             }
+            break;
+
+        }
+        case ps:
+        {
+            if(numberOfChunks!=2) {
+                optionUsageError();
+                specificReturns = 0;
+            }
+            else {
+                specificReturns = parsePs(commandArray[1]);
+                
+            }
+            break;
+        }
+        case kill:
+        {
+            parseKill(commandArray, numberOfChunks);
+            break;
+
+        }
+        case commandError:
+        {
+            printf("command was not read\n");
+            break;
         }
         case execute:
-        {
-            
-        }
         case set:
-        
         default:
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
-            freeCommandArray(commandArray, numberOfChunks);
+            specificReturns = 0;
+    }
+    freeCommandArray(commandArray, numberOfChunks);
+    return specificReturns;//0 for error
+}
+
+/*
+ *
+ */
+int parseKill(char ** commandArray,int numberOfChunks)
+{
+    cmdOption option = getCommandOption(commandArray[1]);
+    
+    if(option!=kill_minus9 && option!=kill_all)
+    {
+        optionUsageError();
+        return 0;
+    }
+    if(option==kill_minus9) {
+        if(numberOfChunks!=3) {
+            optionUsageError();
             return 0;
+        }
+        else {
+            int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
+            //kill_ability(targetEnemyID);
+            return 1;
+        }
+    }
+    else if(option==kill_all) {
+        //kill_all_ability();
+        return 2;
+    }
+ 
+    return 0;
+}
+
+/*
+ *  Called on cat and upgrade commands with the target specifying token.
+ looks at the 2nd char in the string to find an int 1-9 to be the target.
+ Note, wont work for anything > 9, would just see 1.
+ Will print its own error message.
+ Returns TargetTowerID if sucessful
+ Returns 0 if error
+ */
+unsigned int getTargetEnemy(const char * inputStringTargeting)
+{
+    unsigned int numberOfEnemies = getNumberOfEnemies();// this is func in enemy.c
+    
+    size_t len = strlen(inputStringTargeting);//gets the size of string
+    if( len<(2*sizeof(char)) )
+    {
+        fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
+        fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        return 0;
+    }
+    if (inputStringTargeting[0]!='e' && inputStringTargeting[0]!='E')
+    {
+        fprintf(stderr,"*** ERROR: You must target a enemy with this command ***\n");
+        fprintf(stderr,"to target a enemy enter e followed by a number 1 - %d \n",numberOfEnemies);
+        return 0;
+    }
+    
+    unsigned int targetEnemyID = (unsigned int)(inputStringTargeting[1]-'0');
+    
+    if(targetEnemyID > numberOfEnemies || targetEnemyID<1)
+    {
+        fprintf(stderr,"*** ERROR: target enemy does not exist ***\n");
+        fprintf(stderr,"there are only %d enemies you entered e%d\n",
+                numberOfEnemies,targetEnemyID);
+        return 0;
+    }
+    return targetEnemyID;
+}
+/*
+ *
+ */
+int parsePs(char * optionString)
+{
+    cmdOption option = getCommandOption(optionString);
+    if(option != ps_x) {
+        optionUsageError();
+        return 0;
+    }
+    else {
+        psx_ability();
+        return 1;
     }
 }
+
 /*
  *
  */
 int parseAptget(char * aptToGetString)
 {
     cmdOption aptToGet = getCommandOption(aptToGetString);
-    if(aptToGet!=psx)
+    if(aptToGet!=aptget_kill)
     {
         fprintf(stderr,"\n***app not recognised***\n");
         fprintf(stderr,"type man aptget to see availible apps\n");
@@ -143,13 +271,12 @@ int parseAptget(char * aptToGetString)
  */
 int parseMktwr(char ** commandArray)
 {
-    int towerPosition = tolower(commandArray[2][0]) - 'a' +1;
+    int towerPosition = tolower((int)commandArray[2][0]) - 'a' + 1;
     cmdOption twrType = getCommandOption(commandArray[1]);
-    if(towerPosition<1 || (twrType!=INT && twrType!=CHAR) )//put in a greaterthan bound on the number of postions
-
+    unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
+    if(towerPosition<1  || (twrType!=mktwr_int && twrType!=mktwr_char) )
     {
-        printf("error error\n");
-        //syntax error
+        optionUsageError();
         return 0;
     }
     
@@ -167,7 +294,7 @@ int parseMktwr(char ** commandArray)
  */
 int parseMan(char * inputStringCommandMan)
 {
-    cmdType commandToMan = getAction(inputStringCommandMan);
+    cmdType commandToMan = getCommandType(inputStringCommandMan);
     switch (commandToMan)
     {
         case upgrade:
@@ -251,13 +378,14 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     
     int target = getTargetTower(commandArray[2]);
     
-    if(target!=0 && statToUpgrade!=statError )
+    if(target!=0 && statToUpgrade<=5 && statToUpgrade!=optionError )
     {
         cmdType action = upgrade;
         if(pushToQueue(getQueue(NULL),action,statToUpgrade,target)>=1)
             //push to queue returns number of items on queue
             return 1;
     }
+    optionUsageError();
     return 0;
 }
 
@@ -296,74 +424,79 @@ unsigned int getTargetTower(const char * inputStringTargeting)
                 numberOfTowers,targetTower);
         return 0;
     }
-
     return targetTower;
 }
 
-/*  Called when we read an upgrade command, tests the next token against the 
- *  possible stats returns the corresponding cmdOption Or
-    returns statError  and calls the upgradeStatUsageError function
+/*  Called when after we read a command, tests the next token against the
+ *  possible options returns the corresponding cmdOption Or
+    returns optionError  and calls the optUsageError function
  */
-cmdOption getCommandOption(char * input)
+cmdOption getCommandOption(char * secondToken)
 {
-    for(int i = 0; input[i]; i++) {
-        input[i] = tolower(input[i]);
+    for(int i = 0; secondToken[i]; i++) {
+        secondToken[i] = tolower(secondToken[i]);
     }
-    /*first lets make an array of strings to hold all the possible action commands*/
-   
-    const char **validOptions;
-    int numberOfStats=8;//have 5 action commands at this time: upgrade, execute, set, man, cat
-    validOptions=(const char **)malloc(numberOfStats*sizeof(char*));//array of $[numberOfActions] strings
-    validOptions[0]="p";
-    validOptions[1]="r";
-    validOptions[2]="s";
-    validOptions[3]="aoer";
-    validOptions[4]="aoep";
-    validOptions[5]="int";
-    validOptions[6]="char";
-    validOptions[7]="psx";
-
-
+    if(secondToken[0]=='-')//eat leading minus
+    {
+        secondToken=secondToken+1;
+    }
+    /*first lets get the array of strings that hold all the possible action commands*/
+    stringList * optionList = getOptionList(NULL);
+    int numberOfOptions=optionList->numberOfStrings;
 
     //now test the input string against all valid stats
-    cmdOption option = statError;
-    for(int i=0; i<numberOfStats; ++i)
+    cmdOption option = optionError;
+    for(int i=1; i<=numberOfOptions; ++i)
     {
-        if(strcmp(input,validOptions[i])==0)//if the string is identical to one of the commands
+        if(strcmp(secondToken,optionList->stringArray[i])==0)//if the string is identical to one of the commands
         {                                        //then action is set to that command
             switch (i)
             {
-                case 0:
-                    option = power;
-                    return option;
                 case 1:
-                    option = range;
-                    return option;
+                    option = upgrade_power;
+                    break;
                 case 2:
-                    option = speed;
-                    return option;
+                    option = upgrade_range;
+                    break;
                 case 3:
-                    option = AOErange;
-                    return option;
+                    option = upgrade_speed;
+                    break;
                 case 4:
-                    option = AOEpower;
-                    return option;
+                    option = upgrade_AOErange;
+                    break;
                 case 5:
-                    option = INT;
-                    return option;
+                    option = upgrade_AOEpower;
+                    break;
                 case 6:
-                    option = CHAR;
-                    return option;
-                    
+                    option = upgrade_level;
+                    break;
+                case 7:
+                    option = mktwr_int;
+                    break;
+                case 8:
+                    option = mktwr_char;
+                    break;
+                case 9:
+                    option = ps_x;
+                    break;
+                case 10:
+                    option = kill_minus9;
+                    break;
+                case 11:
+                    option = kill_all;
+                    break;
+                case 12:
+                    option = aptget_kill;
+                    break;
             }
+            break;
         }
     }
     
-    if(option==statError)//if it is still set to ERROR then the user made a mistake
+    if(option==optionError)//if it is still set to ERROR then the user made a mistake
     {
-        optionUsageError(input, option, validOptions, numberOfStats);
+        optionUsageError();
     }
-    free(validOptions);//free the mallocd array
     return option;
 }
 
@@ -374,19 +507,12 @@ cmdOption getCommandOption(char * input)
  *  If there was a syntax error in the users command call this function which
     will print usage advice to the terminal window
  */
-void optionUsageError(const char * inputStringUpgradeStats, cmdOption statToUpgrade, const char ** validUpgradeStats, int numberOfStats)
+void optionUsageError()
 {
-    if(statToUpgrade==statError)//if it is still set to ERROR then the user made a mistake
-    {
-        fprintf(stderr,"*** stat not recognised ***\n");
-        fprintf(stderr,"You entered: %s\n",inputStringUpgradeStats);
-        fprintf(stderr,"These are the possible stats: \n");
-        for(int i=0; i<numberOfStats; ++i)
-        {
-            fprintf(stderr,"%s\n",validUpgradeStats[i]);
-        }
-        fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
-    }//error messages will need to be passed back to the terminal to be printed. hopefully can do this by setting up a custom stream. For now will print to stderr.
+  
+    fprintf(stderr,"*** Syntax error: Could not execute command.***\n");
+    fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
+    //error messages will need to be passed back to the terminal to be printed. hopefully can do this by setting up a custom stream. For now will print to stderr.
 }
 
 
@@ -400,57 +526,57 @@ void optionUsageError(const char * inputStringUpgradeStats, cmdOption statToUpgr
     as a enum cmdType variable. Returns cmdType correspodning to the
     validated command or a commandError cmdType
  */
-cmdType getAction( const char * inputAction )
+cmdType getCommandType(char * firstToken )
 {
-    /*first lets make an array of strings to hold all the possible action commands*/
-    const char **validActions;
-    int numberOfActions=7;//have 5 action commands at this time: upgrade, execute, set, man, cat
-    validActions=(const char **)malloc(numberOfActions*sizeof(char*));//array of $[numberOfActions] strings
-    validActions[0]="upgrade";
-    validActions[1]="execute";
-    validActions[2]="set";
-    validActions[3]="man";
-    validActions[4]="cat";
-    validActions[5]="mktwr";
-    validActions[6]="apt-get";
-
+    for(int i = 0; firstToken[i]; i++) {
+        firstToken[i] = tolower(firstToken[i]);
+    }
+    stringList * commandList = getCommandList(NULL);
     //now test the input string against all valid actions
-    cmdType action = commandError;
-    for(int i=0; i<numberOfActions; ++i)
+    cmdType command = commandError;
+    for(int i=1; i<=commandList->numberOfStrings; ++i)
     {
-        if(strcmp(inputAction,validActions[i])==0)//if the string is identical to one of the commands
+        if(strcmp(firstToken,commandList->stringArray[i])==0)//if the string is identical to one of the commands
         {                                        //then action is set to that command
             switch (i)
             {
-                case 0:
-                    action = upgrade;
-                    return action;
                 case 1:
-                    action = execute;
-                    return action;
+                    command = upgrade;
+                    break;
                 case 2:
-                    action = set;
-                    return action;
+                    command = execute;
+                    break;
                 case 3:
-                    action = man;
-                    return action;
+                    command = set;
+                    break;
                 case 4:
-                    action = cat;
-                    return action;
+                    command = man;
+                    break;
                 case 5:
-                    action = mktwr;
-                    return action;
-                
+                    command = cat;
+                    break;
+                case 6:
+                    command = mktwr;
+                    break;
+                case 7:
+                    command = aptget;
+                    break;
+                case 8:
+                    command = ps;
+                    break;
+                case 9:
+                    command = kill;
+                    break;
             }
+            break;
         }
     }
     
-    if(action==commandError)//if it is still set to ERROR then the user made a mistake
+    if(command==commandError)//if it is still set to ERROR then the user made a mistake
     {
-        actionUsageError();
+        actionUsageError(firstToken);
     }
-    free(validActions);//free the mallocd array
-    return action;
+    return command;
 }
 
 
@@ -459,32 +585,19 @@ cmdType getAction( const char * inputAction )
  *   If there was a syntax error in the users command call this function which
      will print usage advice to the terminal window.
  */
-void actionUsageError()
+void actionUsageError(const char * firstToken)
 {
-    const char **validActions;
-    int numberOfActions=6;//have 5 action commands at this time: upgrade, execute,
-                          //set, man, cat
-    validActions=(const char **)malloc(numberOfActions*sizeof(char*));
-    //array of
-        //$[numberOfActions] strings
-    validActions[0]="upgrade";
-    validActions[1]="execute";
-    validActions[2]="set";
-    validActions[3]="man";
-    validActions[4]="cat";
-    validActions[5]="mktwr";
-
-    
-    fprintf(stderr,"*** Action not recognised ***\n");
-    fprintf(stderr,"Possible commands: \n");
-    for(int i=0; i<numberOfActions; ++i)
+    stringList * commandList = getCommandList(NULL);
+    int numberOfCommands=commandList->numberOfStrings;
+    fprintf(stderr,"*** ""%s"" command not recognised ***\n",firstToken);
+    fprintf(stderr,"installed commands: \n");
+    for(int i=1; i<=numberOfCommands; ++i)
     {
-        fprintf(stderr,"%s\n",validActions[i]);
+        fprintf(stderr,"%s\n",commandList->stringArray[i]);
     }
     fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
     //error messages will need to be passed back to the terminal to be printed.
     //hopefully can do this by setting up a custom stream. For now will print to stderr.
-    free(validActions);//free the mallocd array
 
 }
 
@@ -549,48 +662,106 @@ void freeCommandArray(char **commandArray,int numberOfChunks)
  */
 void testCommandArray(char ** commandArray, int numberOfChunks)
 {
-    for(int i=0; i<numberOfChunks; ++i)
+    for(int i=1; i<=numberOfChunks; ++i)
     {
         printf("%s",commandArray[i]);
         printf("|\n");
     }
 }
-/*
- *  Test function. Prints the action  we read.
- */
-void testGetAction(cmdType action)
-{
-    /*first lets make an array of strings to hold all the possible action commands*/
-    const char **validActions;
-    int numberOfActions=6;//have 5 action commands at this time: upgrade, execute, set, man, cat
-    validActions=(const char **)malloc(numberOfActions*sizeof(char*));//array of $[numberOfActions] strings
-    validActions[0]="upgrade";
-    validActions[1]="execute";
-    validActions[2]="set";
-    validActions[3]="man";
-    validActions[4]="cat";
-    validActions[5]="mktwr";
-    printf("****testGetAction****\n");
-    printf("read action: %s\n", validActions[action]);
-    free(validActions);//free the mallocd array
 
+void freeParseLists()
+{
+    stringList * commandList = getCommandList(NULL);
+    for(int i=1; i<=commandList->numberOfStrings; ++i) {
+        free(commandList->stringArray[i]);
+    }
+    free(commandList->stringArray+1);
+    free(commandList);
+    
+    stringList * optsList = getOptionList(NULL);
+    for(int i=1; i<=optsList->numberOfStrings; ++i) {
+        free(optsList->stringArray[i]);
+    }
+    free(optsList->stringArray+1);
+    free(optsList);
 }
-/*
- *  Test function. Prints upgrade stat we have read.
- */
-void testGetUpgradeStat(cmdOption statToUpgrade)
+void initialiseParseLists()
+{
+    stringList * commandList = intialiseCommandList();
+    getCommandList(commandList);
+    stringList * optionList = intialiseOptionList();
+    getOptionList(optionList);
+}
+stringList * getCommandList(stringList * commandList)
+{
+    static stringList * storedCommandList = NULL;
+    if(commandList != NULL && storedCommandList == NULL ) {
+        storedCommandList = commandList;
+    }
+    return storedCommandList;
+}
+stringList *  getOptionList(stringList * optionList)
+{
+    static stringList * storedOptionList = NULL;
+    if(optionList != NULL && storedOptionList == NULL ) {
+        storedOptionList = optionList;
+    }
+    return storedOptionList;
+}
+
+
+stringList * intialiseCommandList()
+{
+    /* make an array of strings to hold all the possible action commands*/
+    static char **validActions;
+    int numberOfActions=9;//have 5 action commands at this time: upgrade, execute, set, man, cat
+    validActions=malloc((numberOfActions+1)*sizeof(char*));//array of $[numberOfActions] strings
+    //validActions-=1;
+    validActions[1]=strdup("upgrade");
+    validActions[2]=strdup("execute");
+    validActions[3]=strdup("set");
+    validActions[4]=strdup("man");
+    validActions[5]=strdup("cat");
+    validActions[6]=strdup("mktwr");
+    validActions[7]=strdup("ps");
+    validActions[8]=strdup("apt-get");
+    validActions[9]=strdup("kill");
+
+
+    stringList * commandList = malloc(sizeof(stringList));
+    commandList->stringArray=validActions;
+    commandList->numberOfStrings=numberOfActions;
+    
+    return commandList;
+}
+
+stringList * intialiseOptionList()
 {
     /*first lets make an array of strings to hold all the possible action commands*/
-    const char **validUpgradeStats;
-    int numberOfStats=5;//have 5 action commands at this time: upgrade, execute, set, man, cat
-    validUpgradeStats=(const char **)malloc(numberOfStats*sizeof(char*));//array of $[numberOfActions] strings
-    validUpgradeStats[0]="p";
-    validUpgradeStats[1]="r";
-    validUpgradeStats[2]="s";
-    validUpgradeStats[3]="AOEr";
-    validUpgradeStats[4]="AOEp";
-    printf("****testGetUpgradeStat****\n");
-    printf("read stat: %s\n", validUpgradeStats[statToUpgrade]);
-    free(validUpgradeStats);//free the mallocd array
+    char **validOptions;
+    int numberOfOptions=12;//have 5 action commands at this time: upgrade, execute, set, man, cat
+    validOptions=malloc((numberOfOptions+1)*sizeof(char*));    //upgrade opts
+                                                               //validOptions-=1;
+    validOptions[1]=strdup("p");
+    validOptions[2]=strdup("r");
+    validOptions[3]=strdup("s");
+    validOptions[4]=strdup("aoer");
+    validOptions[5]=strdup("aoep");
+    validOptions[6]=strdup("lvl");
+    //mktwr opts:
+    validOptions[7]=strdup("int");
+    validOptions[8]=strdup("char");
+    //ps opts:
+    validOptions[9]=strdup("x");
+    //kill opts:
+    validOptions[10]=strdup("9");
+    validOptions[11]=strdup("all");
+    //aptget opts:
+    validOptions[12]=strdup("kill");
     
+    stringList * optionsList = malloc(sizeof(stringList));
+    optionsList->stringArray=validOptions;
+    optionsList->numberOfStrings=numberOfOptions;
+    
+    return optionsList;
 }
