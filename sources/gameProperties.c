@@ -283,7 +283,6 @@ ClockNode createClockNode(clockType type)	{
 	newNode = (ClockNode) malloc(sizeof(*newNode));
 	newNode->next = NULL;
     newNode->time = clock() / (CLOCKS_PER_SEC/100);
-
 	newNode->type = type;
 	return newNode;
 }

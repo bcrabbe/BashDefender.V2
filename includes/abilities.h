@@ -12,7 +12,7 @@
 typedef struct Ability
 {
 	int unlocked;
-	int goldcost;
+	int cost;
 	
 }Ability;
 
@@ -26,6 +26,6 @@ int is_available_ability(Ability *ability);
 
 void unlock_ability(Ability *abilityx);
 
-void init_abilities(Ability *psx, Ability *kill, Ability *killall);
+void init_abilities();
 
 #endif
