@@ -101,24 +101,24 @@ Display init_SDL(){
     putenv("SDL_VIDEODRIVER=dga");
     
     /*inititalize pictures (load picture to the texture)*/
-    init_pic(&d->reStartButton, "iconreset.png");
-    init_pic(&d->finalBackgroundTexture, "final_screen.png");
-    init_pic(&d->towerMonitorTexture, "info_monitor.png");
-    init_pic(&d->actionQueueTexture, "action_queue-monitor.png");
-    init_pic(&d->statsBarTexture, "blackBar.png");
-    init_pic(&d->startBackgroundTexture, "anistrip_menu.png");
-    init_pic(&d->startButton, "start-button.png");
-    init_pic(&d->terminalWindowTexture, "terminalwindow.png");
-    init_pic(&d->map, "map1.png");
-    init_pic(&d->towerPoistionTexture, "TowerLocationsA.png");
-    init_pic(&d->enemyTexture[0], "sdl2-spritesheet-actual.png");
-    init_pic(&d->enemyTexture[1], "aniStrip.png");
-    init_pic(&d->towerTexture[0], "tower.png");
-    init_pic(&d->towerTexture[1], "tower1.png");
-    init_pic(&d->circ1_Texture[0], "circ1_dark.png");
-    init_pic(&d->circ1_Texture[1], "circ1_light.png");
-    init_pic(&d->circ2_Texture[0], "circ3_dark.png");
-    init_pic(&d->circ2_Texture[1], "circ3_light.png");
+    init_pic(&d->reStartButton, "Images/iconreset.png");
+    init_pic(&d->finalBackgroundTexture, "Images/final_screen.png");
+    init_pic(&d->towerMonitorTexture, "Images/info_monitor.png");
+    init_pic(&d->actionQueueTexture, "Images/action_queue-monitor.png");
+    init_pic(&d->statsBarTexture, "Images/blackBar.png");
+    init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
+    init_pic(&d->startButton, "Images/start-button.png");
+    init_pic(&d->terminalWindowTexture, "Images/terminalwindow.png");
+    init_pic(&d->map, "Images/map1.png");
+    init_pic(&d->towerPoistionTexture, "Images/TowerLocationsA.png");
+    init_pic(&d->enemyTexture[0], "Images/sdl2-spritesheet-actual.png");
+    init_pic(&d->enemyTexture[1], "Images/aniStrip.png");
+    init_pic(&d->towerTexture[0], "Images/tower.png");
+    init_pic(&d->towerTexture[1], "Images/tower1.png");
+    init_pic(&d->circ1_Texture[0], "Images/circ1_dark.png");
+    init_pic(&d->circ1_Texture[1], "Images/circ1_light.png");
+    init_pic(&d->circ2_Texture[0], "Images/circ3_dark.png");
+    init_pic(&d->circ2_Texture[1], "Images/circ3_light.png");
 
     return d;
 }
