@@ -325,10 +325,12 @@ void updateStatsBar(char *outputString) {
 /**Display output string in action queue monitor*/
 void updateActionQueueMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
-     displayMonitor(TERMINAL_WINDOW_WIDTH, SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
+     displayMonitor(320, ACTION_QUEUE_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
     if(strlen(outputString) > 0) {
-        display_text(TERMINAL_WINDOW_WIDTH + 30,  SCREEN_HEIGHT_GLOBAL - TERMINAL_WINDOW_HEIGHT + 30, outputString, blended_wrapped);
+        display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X,ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped);
     }
+    
+    printf("Global Width: %d, Action Queue X: %d\n", SCREEN_WIDTH_GLOBAL, ACTION_QUEUE_WIDTH);
 }
 
 /*End of information window functions*/
@@ -406,6 +408,7 @@ int terminal_window(Display d, char *pass, char *clear)
 */
 void display_text(int x, int y, char *string, int text)
 {
+    
     Display d = getDisplayPointer(NULL);
     d->color = (SDL_Color) {255, 255, 255};
     switch (text) {
