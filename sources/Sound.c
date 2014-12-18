@@ -47,24 +47,30 @@ void init_sound(){
     
     check_load_sound((Mix_Music*)s->background_music, "sound.mp3");
     check_load_sound((Mix_Chunk*)s->enemy_sound, "enemy_sound.wav");
-    check_load_sound((Mix_Chunk*)s->enemy_sound, "laser_sound.wav");
+    check_load_sound((Mix_Chunk*)s->tower_sound, "laser_sound.wav");
     
-    Mix_VolumeMusic(100);
+    Mix_VolumeMusic(90);
 
     getSoundPointer(s);
 }
 
 void enemySound(int type){
-    static int cnt = 0;
     Sound s = getSoundPointer(NULL);
     switch (type) {
         case 1:
-            if (cnt == 0) {
-                cnt++;
                 Mix_PlayChannel(-1, s->enemy_sound, 0);
                 Mix_VolumeChunk(s->enemy_sound, 50);
-            }
         break;
+    }
+}
+
+void towerSound(int type){
+    Sound s = getSoundPointer(NULL);
+    switch (type) {
+        case 1:
+            Mix_PlayChannel(-1, s->tower_sound, 0);
+            Mix_VolumeChunk(s->tower_sound, 50);
+            break;
     }
 }
 

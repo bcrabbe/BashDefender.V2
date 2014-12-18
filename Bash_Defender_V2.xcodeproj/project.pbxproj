@@ -20,6 +20,7 @@
 		672828CF1A40B460001336A8 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672828CB1A40B460001336A8 /* SDL2_mixer.framework */; };
 		672828D01A40B460001336A8 /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672828CC1A40B460001336A8 /* SDL2_ttf.framework */; };
 		672828D11A40B460001336A8 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 672828CD1A40B460001336A8 /* SDL2.framework */; };
+		672EB5941A41C6D300468F2D /* abilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 672EB5931A41C6D300468F2D /* abilities.c */; };
 		67D2D5051A38752600F10A4B /* Sound.c in Sources */ = {isa = PBXBuildFile; fileRef = 67D2D5041A38752600F10A4B /* Sound.c */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +74,9 @@
 		672828CB1A40B460001336A8 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_mixer.framework; sourceTree = "<group>"; };
 		672828CC1A40B460001336A8 /* SDL2_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2_ttf.framework; sourceTree = "<group>"; };
 		672828CD1A40B460001336A8 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
+		672EB5931A41C6D300468F2D /* abilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = abilities.c; path = sources/abilities.c; sourceTree = "<group>"; };
+		67959FA91A42DD8200285587 /* OpenSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "OpenSans-Regular.ttf"; path = "sources/OpenSans-Regular.ttf"; sourceTree = "<group>"; };
+		67959FAA1A42DE2B00285587 /* OpenSans-Semibold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OpenSans-Semibold.ttf"; sourceTree = "<group>"; };
 		67D2D5041A38752600F10A4B /* Sound.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Sound.c; path = sources/Sound.c; sourceTree = "<group>"; };
 		67D2D5061A38752F00F10A4B /* Sound.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Sound.h; path = includes/Sound.h; sourceTree = "<group>"; };
 		B5491B3C1A408EFC005FF83F /* pyInterpreter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pyInterpreter.c; path = sources/pyInterpreter.c; sourceTree = "<group>"; };
@@ -101,6 +105,9 @@
 				672828CB1A40B460001336A8 /* SDL2_mixer.framework */,
 				672828CC1A40B460001336A8 /* SDL2_ttf.framework */,
 				672828CD1A40B460001336A8 /* SDL2.framework */,
+				67959FAA1A42DE2B00285587 /* OpenSans-Semibold.ttf */,
+				67959FA91A42DD8200285587 /* OpenSans-Regular.ttf */,
+				672EB5931A41C6D300468F2D /* abilities.c */,
 				4CB8A0EA1A33BD0A0076E35F /* actionQueueDataStructure.c */,
 				67D2D5041A38752600F10A4B /* Sound.c */,
 				67D2D5061A38752F00F10A4B /* Sound.h */,
@@ -222,6 +229,7 @@
 				4CB8A1021A33BD0A0076E35F /* Information_Window.c in Sources */,
 				4CB8A0FE1A33BD0A0076E35F /* actionQueueDataStructure.c in Sources */,
 				4CB8A1051A33BD0A0076E35F /* parser.c in Sources */,
+				672EB5941A41C6D300468F2D /* abilities.c in Sources */,
 				4CB8A1041A33BD0A0076E35F /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

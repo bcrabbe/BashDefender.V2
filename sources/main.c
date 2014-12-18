@@ -33,6 +33,8 @@ int main(int argc, char ** argv)
     pass = text;
     clear = empty;
 	int started = 0;
+    int ended = 0;
+    
     addMemory(100);
     int steps=0;
 
@@ -42,14 +44,13 @@ int main(int argc, char ** argv)
     //init_sound();
     //playBackgroundSound();
 
-	while(started == 0)
-	{
-		menu_screen(d, &started);
-	}
-    shut_menu_screen();
+	
     do{
-        ++steps;
         startFrame(d);
+        while(started == 0){
+            menu_screen(d, &started);
+        }
+        ++steps;
         drawBackground();
         
         levelQueueReader();
@@ -66,7 +67,6 @@ int main(int argc, char ** argv)
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             int move = moveEnemy(i);
-           
         }
         presentAnimation();
 		drawAllTowerPositions();
@@ -75,8 +75,16 @@ int main(int argc, char ** argv)
         actionQueueMonitor();
 
         drawRect(10, 10, 150, 150, 80, 10, 100, 100);
-        
         endFrame(d);
+        
+//        ended = checkIfPlayerDead();
+//        while (ended) {
+//            //final screen returns 1 if restart button was pressed...
+//            if (final_screen()){
+//                ended = 0;
+//            }
+//        }
+        
     } while(!terminal_window(d, pass, clear));
     
     shutSDL(d);

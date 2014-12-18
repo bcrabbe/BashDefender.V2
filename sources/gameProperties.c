@@ -146,7 +146,6 @@ int lastAction(GameProperties Game)	{
 void damageHealth(int damage)	{
 
 	getGame(NULL)->health -= damage;
-
 }
 
 
@@ -232,6 +231,19 @@ int getWave(GameProperties game)	{
 int getHealth(GameProperties game)	{
 
 	return game->health;
+}
+
+/*
+ * Checks if health is 0
+ */
+int checkIfPlayerDead()   {
+
+    if(!getHealth(getGame(NULL)))   {
+        return 1;
+    }
+    
+    return 0;
+
 }
 
 /*

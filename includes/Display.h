@@ -88,7 +88,6 @@ Display getDisplayPointer(Display d);
 void startFrame(Display d);
 void endFrame(Display d);
 void shutSDL();
-void shut_menu_screen();
 
 
 void draw_filled_range(int cx, int cy, int r);
@@ -101,11 +100,13 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target);
 void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon);
 
 //enemy
-int getBackgroundDimensions(int *w, int *h);
+void getBackgroundDimensions(int *w, int *h);
 void drawEnemy(int x, int y, int w, int h, int pic_width, int pic_height, int type, int frames, int anim_speed);
 
 void presentAnimation();
 void drawBackground();
+
+void drawKillAll();
 
 //CPU and Health atm
 
@@ -123,7 +124,11 @@ char *strdup2(char * s);
 
 
 int terminal_window(Display d, char *pass, char *clear);
+
 void menu_screen(Display d, int *started);
+
+
+int final_screen();
 
 int getBackgroundWidth();
 int getBackgroundHeight();
