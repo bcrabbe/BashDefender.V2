@@ -492,12 +492,20 @@ int inRange(int tX, int tY, int tRange, int enemyID)
 * Does the specified ammount of damage to the specified enemy. Reduces damage by the amount of armour the enemy has first.
 * If damage reduces health to less than 0, kills enemy and adds memory equivalent to enemy's max health/10.
 */
-void damageEnemy(int damage, int enemyID)
+void damageEnemy(int damage, int enemyID, int damageType)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
     
     if(!isDead(enemyID)) {
-      int damageToBeDone = damage - e->armour;
+      int damageToBeDone;
+      
+        // modify the damge based on the type of enemy and type of damage
+      if(e->eFamily == damageType) {
+        damageToBeDone = (damage*TYPE_MATCH_MODIFIER) - e->armour;
+      } else {
+        damageToBeDone = (damage/TYPE_MISMATCH_MODIFIER) - e->armour;
+      }
+        
       if(damageToBeDone <= 0) {
         damageToBeDone = 0;
       }
@@ -559,9 +567,9 @@ void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves)
     targetCoords[0] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][0] + (e->width/2);
     targetCoords[1] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][1] + (e->height/2);
   } else {
-    int impactProgess = e->pathProgress + (e->speed * bulletMoves);
-    targetCoords[0] = e->enemyPath->pathCoords[impactProgess][0] + (e->width/2);
-    targetCoords[1] = e->enemyPath->pathCoords[impactProgess][1] + (e->height/2);
+    int impactProgress = e->pathProgress + (e->speed * bulletMoves);
+    targetCoords[0] = e->enemyPath->pathCoords[impactProgress][0] + (e->width/2);
+    targetCoords[1] = e->enemyPath->pathCoords[impactProgress][1] + (e->height/2);
   }
 }
     

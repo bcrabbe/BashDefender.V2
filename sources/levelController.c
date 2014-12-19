@@ -67,7 +67,6 @@ void levelQueueReader()	{
 			case wave:
 					if(kQueue->start == current)	{
 						printf("wave\n");
-						iprint(returnPropertyValue(current,dTime));
 						waveCreatorCommand(current);
 						current = removeLink(current);
 					} else { 
@@ -75,7 +74,6 @@ void levelQueueReader()	{
 					}
 					break;
 			case makeEnemy:
-			    printf("found enemy in queue\n");
 					if(createEnemyCommand(current))	{
 						current = removeLink(current);
 					} else {
@@ -148,7 +146,6 @@ int createEnemyCommand(Keyword makeEnemy)	{
 
 void waveCreatorCommand(Keyword waveKeyWord)	{
 	printf("checking wave delay\n");
-	iprint(returnPropertyValue(waveKeyWord,dTime));
 	int enemyNum;
    	for(enemyNum = 0; enemyNum < waveKeyWord->propertiesList[2]->propertyValue; enemyNum++)	{
 		breakDownWaveCommand(waveKeyWord->propertiesList,waveKeyWord->nProperties);

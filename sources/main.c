@@ -18,6 +18,7 @@
 
 int main(int argc, char ** argv)
 {
+    srand(time(NULL));
     Display d = init_SDL();
     initLevel();
 	/*while(1)	{
