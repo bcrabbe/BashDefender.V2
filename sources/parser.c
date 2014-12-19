@@ -42,9 +42,8 @@ int parse(char *inputString)
     int numberOfTokens;
     char **commandArray = breakUpString(inputString, &numberOfTokens, " ");
     //array of strings, each elem holds a token string from the input command
-    int minNumberOfChunks = 2,//as of cat man and upgrade
-        maxNumberOfChunks = 3;//being implemented
-    if( numberOfTokens<minNumberOfChunks || numberOfTokens>maxNumberOfChunks)
+    int minNumberOfChunks = 2;//as of cat man and upgrade
+    if( numberOfTokens<minNumberOfChunks )
     {
         optionUsageError();
         freeCommandArray(commandArray, numberOfTokens);
@@ -66,7 +65,6 @@ int parseCommands(char ** commandArray, int numberOfTokens)
     
     if(command==cmd_commandError)//if getAction returns commandError then the input is invalid
     {                //Error messaging handled in getAction function
-        freeCommandArray(commandArray, numberOfTokens);
         return 0;
     }
     int specificReturns=0;//stores return values of the different functions that execute the commands
@@ -426,7 +424,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
 unsigned int getTargetTower(const char * inputStringTargeting)
 {
     unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
-
+    
     size_t len = strlen(inputStringTargeting);//gets the size of string
     if( len<(2*sizeof(char)) )
     {
@@ -682,7 +680,7 @@ void freeCommandArray(char **commandArray,int numberOfChunks)
     {
         free(commandArray[i]);
     }
-    free(commandArray);
+    //free(commandArray);
 }
 void testStringLists()
 {
