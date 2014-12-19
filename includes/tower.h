@@ -3,8 +3,6 @@
 
 #include "../includes/Display.h"
 #include "../includes/enemy.h"
-//#include "../includes/gameProperties.h"
-//#include "../includes/actionQueueDataStructure.h"
 
 typedef struct tower *tower;
 typedef struct towerGroup *TowerGroup;
@@ -13,12 +11,6 @@ typedef struct towerPosNode *TowerPosNode;
 typedef struct projectileNode *ProjectileNode;
 typedef struct projectileList *ProjectileList;
 
-enum varType {
-  INTtype = 1,
-  CHARtype = 2
-};
-
-typedef enum varType VarType;
 
 typedef enum firingMethod	{
 
@@ -86,7 +78,7 @@ ProjectileNode newProjectileNode();
 void moveProjectiles();
 void removeProjectileNode(ProjectileNode projNode);
 void moveBullet(ProjectileNode bullet);
-void launchBullet(int firedX, int firedY, int damage, int targetID, VarType firingType);
+void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType);
 void drawProjectiles();
 
 #endif
