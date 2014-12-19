@@ -8,7 +8,7 @@
 #define MAX_COOLDOWN 100 // the longest number of ticks that a tower can take between shots
 
 struct tower {
-    VarType towerType;
+    int towerType;
     int towerID;
     int x, y;
     int damage;
@@ -51,7 +51,7 @@ struct projectileNode {
   int h, w;
   int originX, originY;
   
-  VarType damageType;
+  int damageType;
   FiringMethod whatProjectile;
   
   int targetCoords[2];
@@ -87,7 +87,7 @@ ProjectileNode newProjectileNode()
 /*
 * creates a new bullet projectile and launches it at where the target will be
 */
-void launchBullet(int firedX, int firedY, int damage, int targetID, VarType firingType)
+void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType)
 {
   // make the bullet
   ProjectileNode newNode = newProjectileNode();
@@ -475,7 +475,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->towerID = TG->numOfTowers;//new tower ID is the same as the number of towers in the group
     newTow->x = TowerPositionX;
     newTow->y = TowerPositionY;
-    newTow->towerType = INTtype;
+    newTow->towerType = INT_TYPE;
     newTow->firingType = bullet;
 
     newTow->damage = 20;

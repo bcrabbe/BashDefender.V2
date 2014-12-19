@@ -51,12 +51,6 @@ typedef enum typeOfEnemy	{
 
 typedef enum BOOL {TRUE, FALSE} BOOL;
 
-typedef enum enemyFamily {
-
-  intEnemy = 1,
-  charEnemy = 2,
-} Family;
-
 void createEnemyGroup();
 void freeEnemyGroup();
 Enemy createEnemy();
@@ -91,7 +85,7 @@ void layPaths(int numberOfPaths, int levelNum);
 char *getFilePath(int levelNum, int pathNum);
 void readInPath(int levelNum, int pathNum);
 
-void initialiseEnemy(Enemy newEnemy, int lvl, Family fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width);
+void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width);
 int distanceToEndOfPath(int enemyID);
 
 void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves);
