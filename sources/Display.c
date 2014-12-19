@@ -14,8 +14,8 @@ int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
 #include <SDL2/SDL.h>
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 enum font_types{solid, blended, blended_wrapped};
 
@@ -54,7 +54,7 @@ struct display {
 
     //Tower objects
     SDL_Texture *towerTexture[2];
-    SDL_Texture *towerPositionTexture[7];
+    SDL_Texture *towerPositionTexture[26];
 
     //enemy
     SDL_Texture *enemyTexture[2];
@@ -119,6 +119,25 @@ Display init_SDL(){
     init_pic(&d->towerPositionTexture[4], "Images/TowerLocationsE.png");
     init_pic(&d->towerPositionTexture[5], "Images/TowerLocationsF.png");
     init_pic(&d->towerPositionTexture[6], "Images/TowerLocationsG.png");
+    init_pic(&d->towerPositionTexture[7], "Images/TowerLocationsH.png");
+    init_pic(&d->towerPositionTexture[8], "Images/TowerLocationsI.png");
+    init_pic(&d->towerPositionTexture[9], "Images/TowerLocationsJ.png");
+    init_pic(&d->towerPositionTexture[10], "Images/TowerLocationsK.png");
+    init_pic(&d->towerPositionTexture[11], "Images/TowerLocationsL.png");
+    init_pic(&d->towerPositionTexture[12], "Images/TowerLocationsM.png");
+    init_pic(&d->towerPositionTexture[13], "Images/TowerLocationsN.png");
+    init_pic(&d->towerPositionTexture[14], "Images/TowerLocationsO.png");
+    init_pic(&d->towerPositionTexture[15], "Images/TowerLocationsP.png");
+    init_pic(&d->towerPositionTexture[16], "Images/TowerLocationsQ.png");
+    init_pic(&d->towerPositionTexture[17], "Images/TowerLocationsR.png");
+    init_pic(&d->towerPositionTexture[18], "Images/TowerLocationsS.png");
+    init_pic(&d->towerPositionTexture[19], "Images/TowerLocationsT.png");
+    init_pic(&d->towerPositionTexture[20], "Images/TowerLocationsU.png");
+    init_pic(&d->towerPositionTexture[21], "Images/TowerLocationsV.png");
+    init_pic(&d->towerPositionTexture[22], "Images/TowerLocationsW.png");
+    init_pic(&d->towerPositionTexture[23], "Images/TowerLocationsX.png");
+    init_pic(&d->towerPositionTexture[24], "Images/TowerLocationsY.png");
+    init_pic(&d->towerPositionTexture[25], "Images/TowerLocationsZ.png");
     init_pic(&d->enemyTexture[0], "Images/sdl2-spritesheet-actual.png");
     init_pic(&d->enemyTexture[1], "Images/int_enemy_basic.png");
     init_pic(&d->towerTexture[0], "Images/tower.png");

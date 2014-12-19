@@ -17,8 +17,8 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   700
 
-#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
-//#define FULLSCREEN_YN 0
+//#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
+#define FULLSCREEN_YN 0
 
 //Tower monitor dimensions
 #define TOWER_MONITOR_HEIGHT (SCREEN_HEIGHT_GLOBAL / 3.5)
@@ -57,6 +57,9 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #define MAP_WIDTH SCREEN_WIDTH_GLOBAL
 #define MAP_HEIGHT	(SCREEN_HEIGHT_GLOBAL - TOWER_MONITOR_HEIGHT)
 
+//Tower Position Dimensions
+#define MAX_TOWER_X	1000
+#define MAX_TOWER_Y	1000
 
 #include <stdlib.h>
 #include <string.h>

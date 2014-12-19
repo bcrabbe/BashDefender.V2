@@ -75,7 +75,6 @@ void levelQueueReader()	{
 					}
 					break;
 			case makeEnemy:
-			    printf("found enemy in queue\n");
 					if(createEnemyCommand(current))	{
 						current = removeLink(current);
 					} else {

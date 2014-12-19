@@ -279,13 +279,12 @@ TowerPos getTowerPos(TowerPos tPos)	{
  *Add a new tower position
  */
 void addTowerPosNode(int x, int y)	{
-
 		TowerPos tPos = getTowerPos(NULL);
 		tPos->numberOfPositions++;
 		tPos->towerPositions = (TowerPosNode*) realloc(tPos->towerPositions, (tPos->numberOfPositions+1)*(sizeof(*(tPos->towerPositions))));
 		TowerPosNode newTower = (TowerPosNode) malloc(sizeof(*newTower));
-		newTower->x = x;
-		newTower->y = y;
+		newTower->x = (int)((double) x * ((double) SCREEN_WIDTH_GLOBAL/ (double) MAX_TOWER_X) );
+		newTower->y = (int)((double) y * ((double) SCREEN_HEIGHT_GLOBAL/ (double) MAX_TOWER_Y) );
 		newTower->tIcon = tPos->numberOfPositions;
 		tPos->towerPositions[tPos->numberOfPositions] = newTower;
 }
