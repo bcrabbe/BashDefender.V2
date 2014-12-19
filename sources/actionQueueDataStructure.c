@@ -431,62 +431,47 @@ char *getActionQueueString(void) {
         
         switch(command) {
             case cmd_upgrade:
-                strcat(outputString, "upgrade");
-                break;
-            case cmd_execute:
-                strcat(outputString, "execute");
-                break;
-            case cmd_set:
-                strcat(outputString, "set");
+                strcat(outputString, "upgrade ");
+                switch(option) {
+                    case upgrade_power:
+                        strcat(outputString, "p ");
+                        break;
+                    case upgrade_range:
+                        strcat(outputString, "r ");
+                        break;
+                    case upgrade_speed:
+                        strcat(outputString, "s ");
+                        break;
+                    case upgrade_AOErange:
+                        strcat(outputString, "AOEr ");
+                        break;
+                    case upgrade_AOEpower:
+                        strcat(outputString, "AOEp ");
+                        break;
+                    case upgrade_level:
+                        strcat(outputString, "level ");
+                }
+                
+                if(target) {
+                    sprintf(targetString, " t%d", target);
+                    strcat(outputString, targetString);
+                }
                 break;
             case cmd_mktwr:
-                strcat(outputString, "aptget");
+                strcat(outputString, "mktwr ");
+                switch(option) {
+                    case mktwr_int:
+                        strcat(outputString, "int ");
+                        break;
+                    case mktwr_char:
+                        strcat(outputString, "char ");
+                        break;
+                }
+                sprintf(targetString, "%c", 'a' + (target - 1));
+                strcat(outputString, targetString);
                 break;
-            case cmd_aptget:
-                strcat(outputString, "mktwr");
-                break;
-            default:
-                continue;
         }
-        
-        strcat(outputString, " ");
-        
-        switch(option) {
-            case upgrade_power:
-                strcat(outputString, "p");
-                break;
-            case upgrade_range:
-                strcat(outputString, "r");
-                break;
-            case upgrade_speed:
-                strcat(outputString, "s");
-                break;
-            case upgrade_AOErange:
-                strcat(outputString, "AOEr");
-                break;
-            case upgrade_AOEpower:
-                strcat(outputString, "AOEp");
-                break;
-            case upgrade_level:
-                strcat(outputString, "level");
-            case mktwr_int:
-                strcat(outputString, "INT");
-            case mktwr_char:
-                strcat(outputString, "CHAR");
-            case aptget_kill:
-                strcat(outputString, "kill");
-            default:
-                continue;
-        }
-        
-        if(target) {
-            sprintf(targetString, " t%d", target);
-            strcat(outputString, targetString);
-        }
-        
-        
         strcat(outputString, "\n");
-        
     }
     
     return outputString;
