@@ -445,7 +445,7 @@ unsigned int getTargetTower(const char * inputStringTargeting)
     
     if(targetTower > numberOfTowers)
     {
-        //terminalWindow("ERROR: target tower does not exist ERROR: target tower does not exist ERROR: target tower does not exist ERROR: target tower does not exist ERROR: target tower does not exist ERROR: target tower does not exist ERROR: target tower does not exist ERROR: target tower does not exist");
+        terminalWindow("ERROR: target tower does not exist");
         fprintf(stderr,"*** ERROR: target tower does not exist ***\n");
         fprintf(stderr,"You have only %d towers you entered t%d\n",
                 numberOfTowers,targetTower);

@@ -76,7 +76,7 @@ int main(int argc, char ** argv)
         towerMonitor(0, NULL);
         actionQueueMonitor();
 
-        drawRect(10, 10, 150, 150, 80, 10, 100, 100);
+        terminalWindow(NULL);
         endFrame(d);
         
         ended = checkIfPlayerDead();
