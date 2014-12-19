@@ -480,7 +480,11 @@ void display_text(int x, int y, char *string, int text)
         printf("Panic\n");
     }
     d->rect = (SDL_Rect) {x, y, d->surface->w, d->surface->h};
-
+    //Display what is necessary using renderer
+    SDL_RenderCopy(d->renderer, d->newtexture, NULL, &d->rect);
+    SDL_FreeSurface(d->surface);
+    //Destroy textures to save memory
+    SDL_DestroyTexture(d->newtexture);
     
 }
 
