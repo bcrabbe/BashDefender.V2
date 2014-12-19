@@ -282,7 +282,7 @@ ClockNode createClockNode(clockType type)	{
 	ClockNode newNode;
 	newNode = (ClockNode) malloc(sizeof(*newNode));
 	newNode->next = NULL;
-	newNode->time = clock();
+	newNode->time = clock() / (CLOCKS_PER_SEC/100);
 	newNode->type = type;
 	return newNode;
 }
@@ -311,10 +311,13 @@ int checkClock(clockType cType,int coolDown)	{
 	GameClock gClock = getClock(NULL);
 	ClockNode currNode;
 	currNode = gClock->first;
-
+  iprint(CLOCKS_PER_SEC);
 	clock_t currTime = (double) clock() / (CLOCKS_PER_SEC/100);
+	iprint(currTime);
 	while(currNode!= NULL)	{
 		if (currNode->type == cType)	{
+		sprint("found clock");
+		iprint(currNode->time);
 			if((currTime - currNode->time) >= coolDown)	{
 				setCurrTime(currNode);
 				return 1;

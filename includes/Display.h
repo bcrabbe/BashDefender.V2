@@ -114,6 +114,7 @@ void menu_screen(Display d, int *started);
 int getBackgroundWidth();
 int getBackgroundHeight();
 
+
 #endif
 
 // for my purpose...

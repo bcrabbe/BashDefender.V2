@@ -5,7 +5,10 @@
 #include "../includes/sput.h"
 #include "../includes/debug.h"
 
+#define MAX_COOLDOWN 100 // the longest number of ticks that a tower can take between shots
+
 struct tower {
+    VarType towerType;
     int towerID;
     int x, y;
     int damage;
@@ -19,8 +22,14 @@ struct tower {
     int level;
     int height;
     int width;
+    
+    FiringMethod firingType;
     int gunX;
     int gunY;
+    
+    int firingCoolDown;
+    int drawLaserCount;
+    int drawLaserMaxCount;
 };
 
 struct towerPos	{
@@ -36,6 +45,210 @@ struct towerPosNode	{
 	int y;
 
 };
+
+struct projectileNode {
+  int x, y;
+  int h, w;
+  int originX, originY;
+  
+  VarType damageType;
+  FiringMethod whatProjectile;
+  
+  int targetCoords[2];
+  int targetID;
+  
+  int damage;
+  int aoeDamage;
+  int aoeRange;
+  
+  int movesMade;
+  int movesToTarget;
+  
+  ProjectileNode next;
+};
+
+struct projectileList {
+  ProjectileNode start, current, last;
+} ;
+
+ProjectileNode newProjectileNode()
+{
+  ProjectileNode newNode = (ProjectileNode)malloc(sizeof(struct projectileNode) );
+  if(newNode == NULL) {
+    fprintf(stderr,"****ERROR unable to malloc space for projectile node ****\n");
+    exit(1);
+  }
+  
+  newNode->next = NULL;
+  
+  return newNode;
+}
+
+/*
+* creates a new bullet projectile and launches it at where the target will be
+*/
+void launchBullet(int firedX, int firedY, int damage, int targetID, VarType firingType)
+{
+  // make the bullet
+  ProjectileNode newNode = newProjectileNode();
+  
+  newNode->movesMade = 0;
+  newNode->movesToTarget = 20;
+  
+  newNode->whatProjectile = bullet;
+  newNode->damageType = firingType;
+  newNode->damage = damage;
+  newNode->h = 10;
+  newNode->w = 10;
+  
+  newNode->x = firedX-(newNode->w/2);
+  newNode->y = firedY-(newNode->h/2);
+  newNode->originX = newNode->x;
+  newNode->originY = newNode->y;
+  
+  newNode->aoeDamage = 0;
+  newNode->aoeRange = 0;
+  
+  newNode->targetID = targetID;
+  getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
+  newNode->targetCoords[0] = newNode->targetCoords[0] - (newNode->w/2);
+  newNode->targetCoords[1] = newNode->targetCoords[1] - (newNode->h/2);
+  
+  // add the bullet to the linked list
+  ProjectileList pL = getProjectileList(NULL);
+  
+  if(pL->start == NULL) {
+    pL->start = newNode;
+    pL->current = pL->start;
+    pL->last = pL->start;
+  } else {
+    pL->last->next = newNode;
+    pL->last = newNode;
+  }
+}
+
+void moveBullet(ProjectileNode bullet) {
+  
+  bullet->movesMade++;
+  if(bullet->movesMade == bullet->movesToTarget) {
+    
+    bullet->x = bullet->targetCoords[0];
+    bullet->y = bullet->targetCoords[1];
+    damageEnemy(bullet->damage, bullet->targetID);
+    
+    removeProjectileNode(bullet);
+  } else {
+    
+    bullet->x = bullet->originX + (int) ( ((double)(bullet->targetCoords[0]-bullet->originX)/(double) bullet->movesToTarget) * bullet->movesMade);
+    bullet->y = bullet->originY + (int) ( ((double)(bullet->targetCoords[1]-bullet->originY)/(double) bullet->movesToTarget) * bullet->movesMade);
+  }
+}
+
+void removeProjectileNode(ProjectileNode projNode) {
+
+  ProjectileList pL = getProjectileList(NULL);
+  ProjectileNode prev;
+  
+  
+  if(projNode == pL->start) {
+    pL->start = projNode->next;
+    free(projNode);
+  } else {
+    pL->current = pL->start->next;
+    prev = pL->start;
+    
+    while(pL->current != projNode) {
+      prev = pL->current;
+      pL->current = pL->current->next;
+    }
+    
+    if(pL->current == pL->last) {
+      pL->last = prev;
+      free(pL->current);
+      pL->last->next = NULL;
+    } else {
+      prev->next = pL->current->next;
+      free(pL->current);
+    }
+  }
+}
+    
+      
+  
+void moveProjectiles() {
+  
+  int finished = 0;
+  ProjectileList pL = getProjectileList(NULL);
+  pL->current = pL->start;
+  if(pL->current != NULL) {
+    while(!finished) {
+      switch(pL->current->whatProjectile) {
+        case missile :
+          break;
+        case bullet :
+          moveBullet(pL->current);
+          break;
+        default :
+          fprintf(stderr,"****ERROR laser passed to projectile list as type of projectile \n");
+          exit(1);
+      }
+      if(pL->current->next == NULL) {
+        finished = 1;
+      } else {
+        pL->current = pL->current->next;
+      }
+    }
+  }
+}
+
+void drawProjectiles() {
+  
+  ProjectileList pL = getProjectileList(NULL);
+  if(pL->start!=NULL) {
+    pL->current = pL->start;
+    int finished = 0;
+    while(!finished) {
+      drawRect(pL->current->x, pL->current->y, 208, 16, pL->current->w, pL->current->h, 1, 1); //bullets hard coded as rects for now
+      if(pL->current->next == NULL) {
+        finished = 1;
+      } else {
+        pL->current = pL->current->next;
+      }
+    }
+  }
+}
+    
+      
+  
+
+void createProjectileList() {
+
+  ProjectileList newProjList = (ProjectileList)malloc(sizeof(struct projectileList) );
+  if(newProjList == NULL) {
+    fprintf(stderr,"****ERROR unable to malloc space for projectile list ****\n");
+    exit(1);
+  }
+  
+  newProjList->start = NULL;
+  newProjList->current = NULL;
+  newProjList->last = NULL;
+  
+  getProjectileList(newProjList);
+  
+  
+}
+
+ProjectileList getProjectileList(ProjectileList pL)	{
+
+	static ProjectileList newProjList;
+
+	if(pL != NULL)	{
+		newProjList = pL;
+	}
+
+	return newProjList;
+}
+
 
 /*
  * Creates structure holding array of allowed tower positions
@@ -257,22 +470,27 @@ int userCreateTower(int inputTowerPositionX, int inputTowerPositionY)
 void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
 {
     TowerGroup TG = getTowerGrp(NULL);
-    
+
     newTow->towerID = TG->numOfTowers;//new tower ID is the same as the number of towers in the group
     newTow->x = TowerPositionX;
     newTow->y = TowerPositionY;
+    newTow->towerType = INTtype;
+    newTow->firingType = bullet;
 
-    newTow->damage = 3;
+    newTow->damage = 20;
     newTow->range = 200;
     newTow->firing = 0;
 	  newTow->level = 1;
-    newTow->speed = 10;
+    newTow->speed = 75;
     newTow->AOEpower = 10;
     newTow->AOErange = 10;
     newTow->height = 80;
     newTow->width = 80;
     newTow->gunX = 40;
     newTow->gunY = 20;
+    newTow->firingCoolDown = 0;
+    newTow->drawLaserCount = 0;
+    newTow->drawLaserMaxCount = 10;
     
 }
 
@@ -337,45 +555,6 @@ int upgradeAOErange(int target)
 	return 0;
 }
 
-//upgradeStat upgradeTowerStat(upgradeStat stat, int target)	{
-//
-//	switch(stat)	{
-//		case power:
-//        {
-//			if(upgradeDmg(target))	{
-//				return power;
-//			}
-//        }
-//		case range:
-//        {
-//			if(upgradeRange(target))	{
-//				return range;
-//			}
-//        }
-//		case speed:
-//        {
-//			if(upgradeSpeed(target))	{
-//				return speed;
-//			}
-//        }
-//		case AOErange:
-//        {
-//			if(upgradeAOErange(target))	{
-//				return AOErange;
-//			}
-//        }
-//		case AOEpower:
-//        {
-//			if(upgradeAOEpower(target))	{
-//				return AOEpower;
-//			}
-//        }
-//		default:
-//			fprintf(stderr,"upgradeTowerStat tower.c: unrecognised stat\n");
-//            return statError;
-//
-//	}
-//}
 
 
 void testUpgradeTowerStat()	{
@@ -544,36 +723,53 @@ void fire() {
 	  tower currentTower = getTowerID(towerID);
 	  currentTower->firing = 0;
 	  
-		for(enemyID = 1; enemyID <= getNumberOfEnemies(); enemyID++)	{
-			if (!isDead(enemyID) ) {
-			  if(inRange(currentTower->x + (currentTower->width/2),
-                         currentTower->y + (currentTower->height/2),
-                         currentTower->range, enemyID) == 1) {
-			      
-                  // if first enemy encountered, fire at it
-                  if(currentTower->firing == 0) {
-                      currentTower->firing = 1;
-                      currentTower->targetID = enemyID;
-                  }
-                  // else, compare with current target to choose closest to end of path
-                  else {
-                      if(distanceToEndOfPath(enemyID) <
-                         distanceToEndOfPath(currentTower->targetID) ) {
+	  // check cooldown to see if tower is ready to fire
+	  if(currentTower->firingCoolDown > 0) {
+	    currentTower->firingCoolDown--;
+	  } else {
+	        // pick a target
+		    for(enemyID = 1; enemyID <= getNumberOfEnemies(); enemyID++)	{
+			    if (!isDead(enemyID) ) {
+			      if(inRange(currentTower->x + (currentTower->width/2),
+                             currentTower->y + (currentTower->height/2),
+                             currentTower->range, enemyID) == 1) {
+			          
+                      // if first enemy encountered, fire at it
+                      if(currentTower->firing == 0) {
+                          currentTower->firing = 1;
                           currentTower->targetID = enemyID;
                       }
+                      // else, compare with current target to choose closest to end of path
+                      else {
+                          if(distanceToEndOfPath(enemyID) <
+                             distanceToEndOfPath(currentTower->targetID) ) {
+                              currentTower->targetID = enemyID;
+                          }
+                      }
                   }
-              }
+                }
             }
-        }
 
-      // now target is assigned, shoot!
-        if(currentTower->firing == 1) {
-            towerGetTargetPos(currentTower->targetPosition, currentTower->targetID);
-            damageEnemy(currentTower->damage, currentTower->targetID);
+          // now target is assigned, shoot!
+            if(currentTower->firing == 1) {
+                currentTower->firingCoolDown = MAX_COOLDOWN - currentTower->speed;
+                towerGetTargetPos(currentTower->targetPosition, currentTower->targetID);
+                
+                switch (currentTower->firingType) {
+                  case laser :
+                    currentTower->drawLaserCount = currentTower->drawLaserMaxCount;
+                    damageEnemy(currentTower->damage, currentTower->targetID);
+                    break;
+                  case missile :
+                    break;
+                  case bullet :
+                    launchBullet(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
+                    break;
+                }
+            }
         }
     }
 }
-
 
 void printTower(tower t) {
 
@@ -597,12 +793,17 @@ void present_tower(Display d)
             tower currentTower = getTowerID(towerID);
             drawTower(d, currentTower->x, currentTower->y, currentTower->width,
                       currentTower->height,currentTower->range, 0);
-            if(TG->listOfTowers[towerID]->firing == 1)	{
+            // draw lasers
+            if(currentTower->drawLaserCount > 0)	{
                 drawLine(d, currentTower->x+currentTower->gunX,
                          currentTower->y+currentTower->gunY, currentTower->targetPosition[0],
                          currentTower->targetPosition[1]);
+                currentTower->drawLaserCount--;
             }
             // 80s for tow width and height - these are constant for now.
         }
     }
+    // bullets added here temporarily
+    moveProjectiles();
+    drawProjectiles();
 }

@@ -12,6 +12,7 @@
 #include "../includes/main.h"
 #include "../includes/enemy.h"
 #include "../includes/Sound.h"
+#include "../includes/abilities.h"
 
 
 int main(int argc, char ** argv)
