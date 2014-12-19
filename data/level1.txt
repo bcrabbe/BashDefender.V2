@@ -4,5 +4,5 @@ towerPos x 150 y 360
 towerPos x 280 y 360
 towerPos x 400 y 300
 towerPos x 400 y 100
-wave waveNum 1 enemyType 1 numberOfEnemies 1 entrance 2 delay 5 level 3
+wave waveNum 1 enemyType 1 numberOfEnemies 10 entrance 2 delay 5 level 3
 wave waveNum 1 enemyType 1 numberOfEnemies 2 entrance 2 delay 20 level 3

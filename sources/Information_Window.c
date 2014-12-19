@@ -34,7 +34,8 @@ void towerMonitor(unsigned int targetTower, char *optionalOutputString) {
     static int lastTower = 0, timeOfCall = 0, optionalStringSet = 0;
     char *outputString;
     static char *optionalString = NULL;
-    
+	 printf("Before Ifs:%s\n", optionalOutputString);    
+
     if(targetTower && !optionalOutputString) {
         outputString = getTowerString(targetTower);
         timeOfCall = SDL_GetTicks();
@@ -62,7 +63,7 @@ void towerMonitor(unsigned int targetTower, char *optionalOutputString) {
     if(time - timeOfCall > DEFAULT_SCREEN_TIME) {
         optionalStringSet = 0;
     }
-    
+    printf("After Ifs:%s\n", outputString);
     updateTowerMonitor(outputString);
 }
 

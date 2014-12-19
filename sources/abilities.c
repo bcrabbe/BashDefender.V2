@@ -1,27 +1,80 @@
 #include "../includes/abilities.h"
 
-void init_abilities()
+typedef struct Ability
 {
-	static Ability psx, kill_abil, killall;
-	psx.unlocked = 1;
-	psx.cost = PSX_COST;
-	kill_abil.unlocked = 0;
-	kill_abil.cost = KILL_COST;
-	killall.unlocked = 0;
-	killall.cost = KILLALL_COST;
+	int unlocked;
+	int cost;
+	
+}Ability;
+
+typedef struct Abilities
+{
+	Ability psx;
+	Ability kill;
+}Abilities;
+
+Abilities* get_abilities()
+{
+	static Abilities a;
+	return &a;
+}
+
+void init_abilities()
+{	
+	Abilities * abl = get_abilities();
+	abl->psx.unlocked = 1;
+	abl->psx.cost = PSX_COST;
+	abl->kill.unlocked = 0;
+	abl->kill.cost = KILL_COST;
 }
 	
-void unlock_ability(Ability *abilityx)
+void unlock_ability(AbilityID id)
 {
 	char unlockstring[17] = "Ability unlocked";
-	abilityx->unlocked = 1;
+	Abilities *abl = get_abilities();
+	switch(id)
+	{
+		case PSX:
+		{
+			abl->psx.unlocked = 1;
+			break;
+		}
+		case KILL:
+		{
+			abl->kill.unlocked = 1;
+			break;
+		}
+		default: 
+		{
+			fprintf(stderr, "Ability Switch Error\n");
+			exit(1);
+		}
+	}
 	updateTowerMonitor(unlockstring);		
 }
 
-int is_available_ability(Ability *ability)
+int is_available_ability(AbilityID id)
 {
-
-	if(ability->unlocked == 1 && getTotalMemory() > ability->cost)
+	Ability *a;
+	switch(id)
+	{
+		case PSX:
+		{
+			a = &(get_abilities()->psx);
+			break;
+		}
+		case KILL:
+		{
+			a = &(get_abilities()->kill);
+			break;
+		}
+		default: 
+		{
+			fprintf(stderr, "Is avail Ability Switch Error\n");
+			exit(1);
+		}
+	}
+	if(a->unlocked == 1 && getTotalMemory() > a->cost)
 	{
 		return 1;
 	}
@@ -30,7 +83,7 @@ int is_available_ability(Ability *ability)
 
 void psx_ability()
 {
-	char psxlist[500] = {'\0'};
+	char *psxlist = (char*) calloc(101,sizeof(char));	
 	char template[15] = "EnemyID Health";
 	char newline[2] = "\n";
 	char IDstr[9];
@@ -77,30 +130,31 @@ void psx_ability()
 				strcat(psxlist, newline);
 			}
 		}
-		updateTowerMonitor(psxlist);
+		towerMonitor(-1, psxlist);
 		strcpy(psxlist, clear);
 	}
 }
 
 
-/*
-void kill_ability(int enemyID, Ability *kill)
+
+void kill_ability(int enemyID)
 {
-	if(is_available_ability(kill) == 1)
+	if(is_available_ability(KILL) == 1)
 	{
 		killEnemy(enemyID);
 	}
 }
 
-int kill_all_ability(Ability *killall)
+int kill_all_ability()
 {
 	int i;
 	int enemy_number = getNumberOfEnemies();
 
-	if(is_available_ability(killall) == 1)
+	if(is_available_ability(KILL) == 1)
 	{
 		for(i = 1; i <= enemy_number; i++)
 		{
+			drawKillAll();
 			killEnemy(i);
 		}
 		return 0;
@@ -111,7 +165,7 @@ int kill_all_ability(Ability *killall)
 	}
 	return 0;
 }
-*/
+
 
 	
 
