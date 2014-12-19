@@ -133,6 +133,7 @@ int final_screen();
 int getBackgroundWidth();
 int getBackgroundHeight();
 
+
 #endif
 
 // for my purpose...

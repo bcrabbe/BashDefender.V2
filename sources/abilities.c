@@ -2,11 +2,11 @@
 
 void init_abilities()
 {
-	static Ability psx, kill, killall;
+	static Ability psx, kill_abil, killall;
 	psx.unlocked = 1;
 	psx.cost = PSX_COST;
-	kill.unlocked = 0;
-	kill.cost = KILL_COST;
+	kill_abil.unlocked = 0;
+	kill_abil.cost = KILL_COST;
 	killall.unlocked = 0;
 	killall.cost = KILLALL_COST;
 }
@@ -80,16 +80,6 @@ void psx_ability()
 		updateTowerMonitor(psxlist);
 		strcpy(psxlist, clear);
 	}
-}
-
-void man_ps()
-{
-	towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""ps"" followed by a command\n ( -x\n ) to discover information about one or more enemies\nExamples:\nps -x\n");
-}
-
-void man_kill()
-{
-	towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""kill -9"" followed by a target enemyID (eg 6) or *all*\n to kill one or more enemies\nExamples:\nkill -9 7\n kill -9 all");
 }
 
 

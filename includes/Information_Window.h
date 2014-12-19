@@ -19,5 +19,7 @@ void actionQueueMonitor();
 void manUpgrade();
 void manCat();
 void manMan();
+void manPs();
+void manKill();
 
 #endif

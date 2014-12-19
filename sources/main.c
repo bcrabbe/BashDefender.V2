@@ -13,6 +13,7 @@
 #include "../includes/main.h"
 #include "../includes/enemy.h"
 #include "../includes/Sound.h"
+#include "../includes/abilities.h"
 
 
 int main(int argc, char ** argv)
@@ -209,18 +210,18 @@ void testValidParses()	{
 	createTower();
     //  printf("\n135\n\n");
     sput_fail_unless(parse("upgrade r t1")== 1, "upgrade r t1 is valid command");
-	sput_fail_unless(getFirstCommand(getQueue(NULL)) == upgrade, "First command in queue: upgrade");
+	sput_fail_unless(getFirstCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
 	sput_fail_unless(getFirstOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");
     //printf("\n139\n\n");
     sput_fail_unless(parse("upgrade p t1")== 1, "upgrade p t1 is valid command");
-	sput_fail_unless(getLastCommand(getQueue(NULL)) == upgrade, "Last comand in queue: upgrade");
+	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "Last comand in queue: upgrade");
 	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_power, "Last option in queue: power");
     //printf("\n143\n\n");
 
     sput_fail_unless(parse("upgrade s t1")== 1, "upgrade s t1 is valid command");
-	sput_fail_unless(getLastCommand(getQueue(NULL)) == upgrade, "Last comand in queue: upgrade");
+	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "Last comand in queue: upgrade");
 	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_speed, "Last option in queue: speed");
-	sput_fail_unless(getFirstCommand(getQueue(NULL)) == upgrade, "First command in queue: upgrade");
+	sput_fail_unless(getFirstCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
 	sput_fail_unless(getFirstOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");
     //printf("\n149\n\n");
     sput_fail_unless(parse("  ??D--") == 0, "  ??D-- is invalid command");

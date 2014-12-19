@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,16 +32,48 @@ void crash(char *message);
 
 int main(int argc, char *argv[]) {
 
-  int x, y;
-  if(argc < ARG_NUM) {
-    fprintf(stderr,"Need %d arguments in the program\n", ARG_NUM);
+  int levelNum, pathNum;
+  
+  printf("Enter level number: ");
+  while(scanf("%d", &levelNum) != 1) {
+    printf("try again: ");
+    CLEARINPUT
+  }
+  
+    CLEARINPUT
+  printf("Enter path number: ");
+  while(scanf("%d", &pathNum) != 1) {
+    printf("try again: ");
+    CLEARINPUT
+  }
+  
+
+  char levelNumStr[10];
+  sprintf(levelNumStr, "%d", levelNum);
+  
+  char pathNumStr[10];
+  sprintf(pathNumStr, "%d", pathNum);
+  
+  char *filePath = calloc((strlen("../data/levels/lvl_") + strlen(levelNumStr) + strlen("/paths/path_") +strlen(pathNumStr) + strlen(".txt") ), sizeof(char) );
+  if(filePath == NULL) {
+    fprintf(stderr,"Unable to calloc space for path filePath\n");
     exit(1);
   }
-  /*
+  
+  strcat(filePath, "../data/levels/lvl_");
+  strcat(filePath, levelNumStr);
+  strcat(filePath, "/paths/path_");
+  strcat(filePath, pathNumStr);
+  strcat(filePath, ".txt");
+  
+  int x, y;
+  
+  
+    CLEARINPUT
   char cont;
-  FILE *fp = fopen(argv[1], "w");
+  FILE *fp = fopen(filePath, "r");
   if(fp != NULL) {
-    printf("Aready file named '%s', overwrite? [y/n] ", argv[1]);
+    printf("Aready file located at '%s', overwrite? [y/n] ", filePath);
     while(scanf("%c", &cont) != 1 || (cont != 'y' && cont != 'n')) {
       printf("try again\n");
       CLEARINPUT
@@ -52,7 +85,7 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
   fclose(fp);
-      */
+  
   
   if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");
   if(TTF_Init() != 0) crash("TTF_Init()");
@@ -71,13 +104,13 @@ int main(int argc, char *argv[]) {
   SDL_RenderCopy(d->renderer, d->backgroundTexture, NULL, NULL);
   SDL_RenderPresent(d->renderer);
   
-  remove("tmp2.txt");
-  FILE *t = fopen("tmp2.txt", "w");
+  remove("tmp.txt");
+  FILE *t = fopen("tmp.txt", "w");
   fclose(t);
   
-  FILE *tmpFP2 = fopen("tmp2.txt","w+");
-  if(tmpFP2 == NULL) {
-    fprintf(stderr,"must have file named 'tmp2.txt' in current folder\n");
+  FILE *tmpFP = fopen("tmp.txt","w+");
+  if(tmpFP == NULL) {
+    fprintf(stderr,"must have file named 'tmp.txt' in current folder\n");
     exit(1);
   }
   int numberOfCoords = 0;
@@ -86,30 +119,19 @@ int main(int argc, char *argv[]) {
       checkForEvents(d);
       SDL_Delay(CAPTURE_DELAY);
       SDL_GetMouseState(&x,&y);
-      printf("x: %d, y: %d\n", x, y);
-      fprintf(tmpFP2, "%d,%d\n", x, y);
+      printf("Step Number: %d,   x: %d, y: %d\n", numberOfCoords, x, y);
+      fprintf(tmpFP, "%d,%d\n", x, y);
       numberOfCoords++;
     }
     checkForEvents(d);
   }
   
-  FILE *fp = fopen(argv[1],"w");
-  remove(argv[1]);
-  fp = fopen(argv[1],"w");
+  remove(filePath);
+  fp = fopen(filePath,"w");
   
   char c;
   
-  remove("tmp.txt");
-  FILE *j = fopen("tmp.txt", "w");
-  fclose(j);
-  
-  FILE *tmpFP = fopen("tmp.txt","w+");
-  if(tmpFP2 == NULL) {
-    fprintf(stderr,"must have file named 'tmp1.txt' in current folder\n");
-    exit(1);
-  }
-  
-  fprintf(tmpFP,"%d\n", numberOfCoords);
+  fprintf(fp,"%d\n", numberOfCoords);
   
   rewind(tmpFP);
   while((c = fgetc(tmpFP)) != EOF) {
@@ -117,26 +139,11 @@ int main(int argc, char *argv[]) {
     fprintf(fp,"%c", c);
   }
   
-  rewind(tmpFP2);
-  rewind(tmpFP);
-  
-  while((c = fgetc(tmpFP2)) != EOF) {
-    fprintf(fp,"%c", c);
-  }
-  
-  /*
-  rewind(tmpFP2);
-  while((c = fgetc(tmpFP2)) != EOF) {
-    fprintf(fp,"%c", c);
-  }
-  */
   
   fclose(tmpFP);
-  fclose(tmpFP2);
   fclose(fp);
   
   remove("tmp.txt");
-  remove("tmp2.txt");
   
   
   

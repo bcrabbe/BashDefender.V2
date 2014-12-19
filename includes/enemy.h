@@ -9,29 +9,29 @@
 #define INT_BASIC_ARMOUR 0
 #define INT_BASIC_SPEED 1
 #define INT_BASIC_DAMAGE 10
-#define INT_BASIC_HEIGHT 64
-#define INT_BASIC_WIDTH 32
+#define INT_BASIC_HEIGHT 50
+#define INT_BASIC_WIDTH 50
 
 #define INT_HEAVY_HEALTH 1000
 #define INT_HEAVY_ARMOUR 1
 #define INT_HEAVY_SPEED 1
 #define INT_HEAVY_DAMAGE 100
-#define INT_HEAVY_HEIGHT 64
-#define INT_HEAVY_WIDTH 32
+#define INT_HEAVY_HEIGHT 50
+#define INT_HEAVY_WIDTH 50
 
 #define CHAR_BASIC_HEALTH 100
 #define CHAR_BASIC_ARMOUR 0
 #define CHAR_BASIC_SPEED 3
 #define CHAR_BASIC_DAMAGE 10
-#define CHAR_BASIC_HEIGHT 64
-#define CHAR_BASIC_WIDTH 32
+#define CHAR_BASIC_HEIGHT 50
+#define CHAR_BASIC_WIDTH 50
 
 #define CHAR_HEAVY_HEALTH 1000
 #define CHAR_HEAVY_ARMOUR 1
 #define CHAR_HEAVY_SPEED 1
 #define CHAR_HEAVY_DAMAGE 100
-#define CHAR_HEAVY_HEIGHT 64
-#define CHAR_HEAVY_WIDTH 32
+#define CHAR_HEAVY_HEIGHT 50
+#define CHAR_HEAVY_WIDTH 50
 
 typedef struct path *Path;
 typedef struct levelPaths *LevelPaths;
@@ -93,6 +93,8 @@ void readInPath(int levelNum, int pathNum);
 
 void initialiseEnemy(Enemy newEnemy, int lvl, Family fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width);
 int distanceToEndOfPath(int enemyID);
+
+void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves);
 
 
 #endif

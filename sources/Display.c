@@ -14,8 +14,8 @@ int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 enum font_types{solid, blended, blended_wrapped};
 
@@ -80,6 +80,7 @@ void presentCircuit(Display d,SDL_Texture *text[2], int x,int y,int w, int h, in
 void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 void display_text(int x, int y, char *string, int text, int r, int g, int b);
 void animateAnyPic(int x, int y, int w, int h, int pic_width, int pic_height, int frames, int anim_speed, SDL_Texture *texture);
+
 
 Display init_SDL(){
     
@@ -256,6 +257,8 @@ void drawRect(int x, int y, int red, int blue, int max_width, int max_height, in
     d->rect = (SDL_Rect) {x, y, (double)memory, max_height};
     SDL_RenderFillRect(d->renderer, &d->rect);
 }
+
+    
 
 /*Draw range with transparency*/
 void draw_filled_range(int cx, int cy, int r)
