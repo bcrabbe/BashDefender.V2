@@ -331,13 +331,13 @@ void updateActionQueueMonitor(char *outputString) {
     }
 }
 
-/*void updateTerminalWindow(char *outputString) {
-    Display d = getDisplayPointer(NULL);
-    
-    if(strlen(outputString) > 0) {
-        display_text(20, 20, outputString, blended_wrapped);
+/**Display output string in terminal window*/
+void updateTerminalWindow(char *outputString) {
+
+    if(outputString != NULL) {
+        display_text(TERMINAL_WINDOW_X + TOWER_TEXT_BORDER_X, TERMINAL_WINDOW_Y + TOWER_TEXT_BORDER_Y, outputString, blended_wrapped);
     }
-}*/
+}
 
 /*End of information window functions*/
 

@@ -69,7 +69,7 @@ void towerMonitor(unsigned int targetTower, char *optionalOutputString) {
 /**
  update terminal window with optional output string
  */
-/*void terminalWindow(char *string) {
+void terminalWindow(char *string) {
     int time = SDL_GetTicks();
     static int timeOfCall = 0;
     static char *outputString = NULL;
@@ -81,11 +81,12 @@ void towerMonitor(unsigned int targetTower, char *optionalOutputString) {
     }
     
     if(time - timeOfCall > DEFAULT_SCREEN_TIME2) {
+        free(outputString);
         outputString = NULL;
     }
     
     updateTerminalWindow(outputString);
-}*/
+}
 
 /**
  Creates output string for stats monitor and updates stats monitor

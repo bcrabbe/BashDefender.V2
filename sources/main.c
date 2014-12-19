@@ -72,6 +72,7 @@ int main()
         statsBar();
         towerMonitor(0, NULL);
         actionQueueMonitor();
+        terminalWindow(NULL);
         endFrame(d);
 		SDL_Delay(22);
     } while(!terminal_window(d, pass, clear));
