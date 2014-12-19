@@ -440,10 +440,10 @@ char *getActionQueueString(void) {
                 strcat(outputString, "set");
                 break;
             case cmd_mktwr:
-                strcat(outputString, "aptget");
+                strcat(outputString, "mktwr");
                 break;
             case cmd_aptget:
-                strcat(outputString, "mktwr");
+                strcat(outputString, "aptget");
                 break;
             default:
                 continue;
@@ -469,12 +469,16 @@ char *getActionQueueString(void) {
                 break;
             case upgrade_level:
                 strcat(outputString, "level");
+                break;
             case mktwr_int:
                 strcat(outputString, "INT");
+                break;
             case mktwr_char:
                 strcat(outputString, "CHAR");
+                break;
             case aptget_kill:
                 strcat(outputString, "kill");
+                break;
             default:
                 continue;
         }

@@ -283,6 +283,8 @@ void initLevel()    {
 	createTowerPos();
 	initialQueueReader();
 	createProjectileList();
+	initialiseParseLists();
+	init_abilities();
 }
 
 void createLevelClocks()	{

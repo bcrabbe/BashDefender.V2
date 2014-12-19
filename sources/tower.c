@@ -283,10 +283,16 @@ void addTowerPosNode(int x, int y)	{
 		tPos->numberOfPositions++;
 		tPos->towerPositions = (TowerPosNode*) realloc(tPos->towerPositions, (tPos->numberOfPositions+1)*(sizeof(*(tPos->towerPositions))));
 		TowerPosNode newTower = (TowerPosNode) malloc(sizeof(*newTower));
-		newTower->x = (int)((double) x * ((double) SCREEN_WIDTH_GLOBAL/ (double) MAX_TOWER_X) );
-		newTower->y = (int)((double) y * ((double) SCREEN_HEIGHT_GLOBAL/ (double) MAX_TOWER_Y) );
+		newTower->x = (int) scaleTowerPos(x,SCREEN_WIDTH_GLOBAL,MAX_TOWER_X);
+	//	((double) x * ((double) SCREEN_WIDTH_GLOBAL/ (double) MAX_TOWER_X) );
+		newTower->y = (int) scaleTowerPos(y,SCREEN_HEIGHT_GLOBAL,MAX_TOWER_Y);
+		//((double) y * ((double) SCREEN_HEIGHT_GLOBAL/ (double) MAX_TOWER_Y) );
 		newTower->tIcon = tPos->numberOfPositions;
 		tPos->towerPositions[tPos->numberOfPositions] = newTower;
+}
+
+double scaleTowerPos(int coord, int scaleAxis, int scaleMax)	{
+	return ((double) coord * ((double) scaleAxis/ (double) scaleMax) );
 }
 
 void drawAllTowerPositions()	{
@@ -310,6 +316,12 @@ void freeAllTowerPositions()	{
 
 }
 
+int getNumOfTowerPositions()	{
+	
+	return getTowerPos(NULL)->numberOfPositions;
+
+}
+
 void testingTowerPositions()	{
 
 	sput_start_testing();
@@ -324,25 +336,29 @@ void testingTowerPositions()	{
 }
 
 void testTowerCreation()	{
-
+	
 	addTowerPosNode(100,200);
-	sput_fail_unless(getSpecifiedTowerPosX(1) == 100, "Tower position 1 x coord is 100");
-	sput_fail_unless(getSpecifiedTowerPosY(1) == 200, "Tower position 1 y coord is 200");
-	addTowerPosNode(300,500);
-	sput_fail_unless(getSpecifiedTowerPosX(2) == 300, "Tower position 2 x coord is 300");
-	sput_fail_unless(getSpecifiedTowerPosY(2) == 500, "Tower position 2 y coord is 500");
+	iprint(getLastTowerPositionX());
+	sput_fail_unless(getLastTowerPositionX() == (int) scaleTowerPos(100,SCREEN_WIDTH_GLOBAL,MAX_TOWER_X), "Newly Added Tower position x coord is correct");
+	sput_fail_unless(getLastTowerPositionY() == (int) scaleTowerPos(200,SCREEN_HEIGHT_GLOBAL,MAX_TOWER_Y), "Newly Added Tower position y coord is correct");
 }
 
 int getSpecifiedTowerPosX(int postion)	{
-
 	TowerPos tPos = getTowerPos(NULL);
 	return tPos->towerPositions[postion]->x;
 }
 
 int getSpecifiedTowerPosY(int postion)	{
-
 	TowerPos tPos = getTowerPos(NULL);
 	return tPos->towerPositions[postion]->y;
+}
+
+int getLastTowerPositionY()	{
+	return getSpecifiedTowerPosY(getTowerPos(NULL)->numberOfPositions);
+}
+
+int getLastTowerPositionX()	{
+	return getSpecifiedTowerPosX(getTowerPos(NULL)->numberOfPositions);
 }
 
 int getTowerRange(int towerID)	{
@@ -587,9 +603,6 @@ void freeAllTowers()	{
 
 void testGetTower()	{
 
-	createLevelPaths();
-	createTowerGroup();
-	createTower();
 	sput_fail_unless(getNumberOfTowers() == 1, "Valid: Number of towers held in group is one.");
 	sput_fail_unless(getTowerID(1) != NULL,"Valid: Tower with ID 1 exists.");
 	createTower();
@@ -661,6 +674,7 @@ int getTowerY(int towerID)
     TowerGroup TG = getTowerGrp(NULL);
     return TG->listOfTowers[towerID]->y;
 }
+
 
 int setTowerY(int towerID, int newY)	{
 

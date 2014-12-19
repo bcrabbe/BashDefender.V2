@@ -383,7 +383,7 @@ void updateTowerMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
     displayMonitor(TOWER_MONITOR_X, TOWER_MONITOR_Y, TOWER_MONITOR_WIDTH, TOWER_MONITOR_HEIGHT, d->towerMonitorTexture);
     display_text(TOWER_MONITOR_X + TOWER_TEXT_BORDER_X,  TOWER_MONITOR_Y + TOWER_TEXT_BORDER_Y, outputString, blended_wrapped, 0 , 255, 255);
-    free(outputString);
+    //free(outputString);
 }
 
 /** Display output string in stats monitor*/
@@ -493,7 +493,6 @@ void display_text(int x, int y, char *string, int text, int r, int g, int b)
         SDL_FreeSurface(d->surface);
         //Destroy textures to save memory
         SDL_DestroyTexture(d->newtexture);
-
     }
 }
 

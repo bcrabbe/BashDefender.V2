@@ -197,12 +197,11 @@ void testingGameStructure()	{
 void CreateGameTest()	{
 
 	GameProperties testGame;
-	testGame = createGame();
+	testGame = getGame(NULL);
 	sput_fail_if((createGame()) == NULL,"Creating Game");
 	sput_fail_unless(getAvailableMemory(testGame) == 0,"Initializing Memory");
-	sput_fail_unless(getWave(testGame) == 0,"Initializing WaveNo");
-	sput_fail_unless(getHealth(testGame) == 0,"Initializing Health");
-	free(testGame);
+	sput_fail_unless(getWave(testGame) == 3,"Initializing WaveNo");
+	sput_fail_unless(getHealth(testGame) == 100,"Initializing Health");
 }
 
 /*

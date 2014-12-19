@@ -20,32 +20,23 @@ int main(int argc, char ** argv)
 {
     Display d = init_SDL();
     initLevel();
-	/*while(1)	{
-		levelQueueReader();
-	}*/
+//	testing();
 
-//    //testing();
-
-    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));//createEnemy();
-  	//createEnemy();
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-	int started = 0;
+    int started = 0;
     int ended = 0;
     
     addMemory(100);
     int steps=0;
 
-    initialiseParseLists();
-
-	init_abilities();
     //init_sound();
     //playBackgroundSound();
 
-	
+    
     do{
         startFrame(d);
         while(started == 0){
@@ -56,7 +47,7 @@ int main(int argc, char ** argv)
         
         levelQueueReader();
         terminal_window(d, pass, clear);
-		popToTower();
+    	popToTower();
         if(inputCommand)
         {
             parse(inputCommand);
@@ -70,7 +61,7 @@ int main(int argc, char ** argv)
             int move = moveEnemy(i);
         }
         presentAnimation();
-		drawAllTowerPositions();
+    	drawAllTowerPositions();
         statsBar();
         towerMonitor(0, NULL);
         actionQueueMonitor();
@@ -104,12 +95,12 @@ void quitGame()
 void testing()	{
 
 	testingTowerPositions();
-    //testingGameStructure();
+    testingGameStructure();
     //testingActionQueue();
     //parseToQueueTesting();
     //testEnemy();
     //testingTowerModule();
-	parseToTowerTesting();
+//	parseToTowerTesting();
     //towerToEnemyTesting();
 
     //testValidParses();

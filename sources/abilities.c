@@ -41,7 +41,6 @@ void psx_ability()
 	int health = 0, ID = 0, i, j, tmp = 0, tmp2 = 0;
 	int healtha[200] = {0};
 	int enemyIDa[200] = {0};
-    //if(is_available_ability(psx) == 1)
 	{
 		for(j = 1; j <= enemy_number; j++)
 		{
@@ -53,7 +52,6 @@ void psx_ability()
 				tmp2 = enemyIDa[j];
 				enemyIDa[j+1] = tmp2;
 				enemyIDa[j] = j;
-				
 			}
 			else
 			{
@@ -77,7 +75,7 @@ void psx_ability()
 				strcat(psxlist, newline);
 			}
 		}
-		updateTowerMonitor(psxlist);
+		towerMonitor(-1,psxlist);
 		strcpy(psxlist, clear);
 	}
 }
