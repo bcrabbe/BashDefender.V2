@@ -40,6 +40,7 @@ int upgradeRange(int target);
 int upgradeSpeed(int target);
 int upgradeAOEpower(int target);
 int upgradeAOErange(int target);
+int setTowerType(int towerID, int newType);
 void createTowerGroup();
 TowerGroup getTowerGrp();
 tower getTowerID(int target);
@@ -75,11 +76,17 @@ void drawAllTowerPositions();
 void createProjectileList();
 ProjectileList getProjectileList(ProjectileList pL);
 ProjectileNode newProjectileNode();
-void moveProjectiles();
+void addToProjectileList(ProjectileNode newNode);
 void removeProjectileNode(ProjectileNode projNode);
-void moveBullet(ProjectileNode bullet);
-void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType);
+void moveProjectiles();
 void drawProjectiles();
+
+void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType);
+void moveBullet(ProjectileNode bullet);
+void launchMissile(int firedX, int firedY, int damage, int targetID, int firingType);
+void getBuildUpCoords(int originX, int originY, int *buildUpX, int *buildUpY);
+void moveMissile(ProjectileNode missile);
+
 
 #endif
 

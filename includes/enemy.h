@@ -4,10 +4,15 @@
 #include "../includes/gameProperties.h"
 #include "../includes/Display.h"
 
+// damage modifiers for types
+#define TYPE_MATCH_MODIFIER 2  // multiply the damage by this much if the damage and enemy types match
+#define TYPE_MISMATCH_MODIFIER 2 // divide the damage by this much if the damage and enemy types don't match
+
+// enemy initial characteristics
 #define DELAY_BETWEEN_ENEMIES	1
 #define INT_BASIC_HEALTH 100
 #define INT_BASIC_ARMOUR 0
-#define INT_BASIC_SPEED 1
+#define INT_BASIC_SPEED 2
 #define INT_BASIC_DAMAGE 10
 #define INT_BASIC_HEIGHT 50
 #define INT_BASIC_WIDTH 50
@@ -21,7 +26,7 @@
 
 #define CHAR_BASIC_HEALTH 100
 #define CHAR_BASIC_ARMOUR 0
-#define CHAR_BASIC_SPEED 3
+#define CHAR_BASIC_SPEED 2
 #define CHAR_BASIC_DAMAGE 10
 #define CHAR_BASIC_HEIGHT 50
 #define CHAR_BASIC_WIDTH 50
@@ -64,7 +69,7 @@ int moveEnemy(int enemyID);
 int isDead(int enemyID);
 void killEnemy(int enemyID);
 int inRange(int tX, int tY, int tRange, int enemyID);
-void damageEnemy(int damage, int enemyID);
+void damageEnemy(int damage, int enemyID, int damageType);
 void towerGetTargetPos(int * towerTargetPosition, int enemyID);
 void printEnemy(int enemyID);
 void createPath();
