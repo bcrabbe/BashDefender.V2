@@ -24,13 +24,7 @@
  * reads the first token and calls the relevant command function 
  * returns zero if syntax error.
  */
-void testStringLists()
-{
-    stringList * cmdList = getCommandList(NULL);
-    testCommandArray(cmdList->stringArray,cmdList->numberOfStrings);
-    stringList * optList = getOptionList(NULL);
-    testCommandArray(optList->stringArray,optList->numberOfStrings);
-}
+
 int parse(char *inputString)
 {
     size_t len = 1+strlen(inputString);//gets the size of inputString
@@ -39,52 +33,61 @@ int parse(char *inputString)
         optionUsageError();
         return 0;
     }
+    if(inputString[0]=='f' && inputString[1]=='o' && inputString[2]=='r' )
+    {
+        parseForLoop(inputString);
+    }
 
-    int numberOfChunks;
-    char **commandArray = breakUpString(inputString, &numberOfChunks, " ");
+
+    int numberOfTokens;
+    char **commandArray = breakUpString(inputString, &numberOfTokens, " ");
     //array of strings, each elem holds a token string from the input command
     int minNumberOfChunks = 2,//as of cat man and upgrade
         maxNumberOfChunks = 3;//being implemented
-    if( numberOfChunks<minNumberOfChunks || maxNumberOfChunks>3)
+    if( numberOfTokens<minNumberOfChunks || numberOfTokens>maxNumberOfChunks)
     {
         optionUsageError();
-        freeCommandArray(commandArray, numberOfChunks);
+        freeCommandArray(commandArray, numberOfTokens);
         return 0;//no valid commands with less than 2 strings or more than 3
     }
-    if(commandArray[0][0]=='f' && commandArray[0][1]=='o' && commandArray[0][2]=='r' )
-    {
-        //parseForLoop(commandArray);
-    }
-
-
+  
+    int specificReturns = parseCommands(commandArray,numberOfTokens);
+    
+    freeCommandArray(commandArray, numberOfTokens);
+    return specificReturns;//0 for error
+}
+/*
+ *
+ */
+int parseCommands(char ** commandArray, int numberOfTokens)
+{
     //enumerated type cmdType can describe each of the possible commands(see actionQueue.h)
     cmdType command = getCommandType(commandArray[0]);//the first string in the command should contain the action
-
+    
     if(command==cmd_commandError)//if getAction returns commandError then the input is invalid
     {                //Error messaging handled in getAction function
-        freeCommandArray(commandArray, numberOfChunks);
+        freeCommandArray(commandArray, numberOfTokens);
         return 0;
     }
-    printf("cmdTyp = %d \n",command);
     int specificReturns=0;//stores return values of the different functions that execute the commands
     /**** Now we deal with each possible command separately as they all have different syntax ****/
     switch (command)
     {
         case cmd_upgrade:
         {
-            if(numberOfChunks!=3) {
+            if(numberOfTokens!=3) {
                 optionUsageError();
                 specificReturns = 0;
             }
             else {
-            specificReturns = parseUpgrade(commandArray, numberOfChunks);
+                specificReturns = parseUpgrade(commandArray, numberOfTokens);
             }
             break;
-
+            
         }
         case cmd_cat:
         {
-            if(numberOfChunks!=2) {
+            if(numberOfTokens!=2) {
                 optionUsageError();
                 specificReturns = 0;
             }
@@ -92,11 +95,11 @@ int parse(char *inputString)
                 specificReturns = parseCat(commandArray[1]);
             }
             break;
-
+            
         }
         case cmd_man:
         {
-            if(numberOfChunks!=2) {
+            if(numberOfTokens!=2) {
                 optionUsageError();
                 specificReturns = 0;
             }
@@ -104,11 +107,11 @@ int parse(char *inputString)
                 specificReturns = parseMan(commandArray[1]);
             }
             break;
-
+            
         }
         case cmd_mktwr:
         {
-            if(numberOfChunks!=3)
+            if(numberOfTokens!=3)
             {
                 optionUsageError();
                 specificReturns = 0;
@@ -117,11 +120,11 @@ int parse(char *inputString)
                 specificReturns = parseMktwr(commandArray);
             }
             break;
-
+            
         }
         case cmd_aptget:
         {
-            if(numberOfChunks!=2) {
+            if(numberOfTokens!=2) {
                 optionUsageError();
                 specificReturns = 0;
             }
@@ -129,25 +132,24 @@ int parse(char *inputString)
                 specificReturns = parseAptget(commandArray[1]);
             }
             break;
-
+            
         }
         case cmd_ps:
         {
-            if(numberOfChunks!=2) {
+            if(numberOfTokens!=2) {
                 optionUsageError();
                 specificReturns = 0;
             }
             else {
                 specificReturns = parsePs(commandArray[1]);
-                
             }
             break;
         }
         case cmd_kill:
         {
-            parseKill(commandArray, numberOfChunks);
+            parseKill(commandArray, numberOfTokens);
             break;
-
+            
         }
         case cmd_commandError:
         {
@@ -158,29 +160,25 @@ int parse(char *inputString)
         case cmd_set:
         default:
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
-            specificReturns = 0;
     }
-    freeCommandArray(commandArray, numberOfChunks);
-    return specificReturns;//0 for error
 }
 /*
  *
  */
-void parseForLoop(char ** commandArray)
+void parseForLoop(char * inputString)
 {
-    if(strcmp(commandArray[0],"for")==0)
+    int numberOfLines=0;
+    char ** lineArray = breakUpString(inputString, &numberOfLines, ";");
+    if(numberOfLines<3)
     {
-        //parseForInType(commandArray);
+        
     }
-    char * variableName = strdup(commandArray[1]);
-    
-    
-    free(variableName);
+    //   free(variableName);
 }
 /*
  *
  */
-int parseKill(char ** commandArray,int numberOfChunks)
+int parseKill(char ** commandArray,int numberOfTokens)
 {
     cmdOption option = getCommandOption(commandArray[1]);
     
@@ -190,7 +188,7 @@ int parseKill(char ** commandArray,int numberOfChunks)
         return 0;
     }
     if(option==kill_minus9) {
-        if(numberOfChunks!=3) {
+        if(numberOfTokens!=3) {
             optionUsageError();
             return 0;
         }
@@ -685,7 +683,13 @@ void freeCommandArray(char **commandArray,int numberOfChunks)
     }
     free(commandArray);
 }
-
+void testStringLists()
+{
+    stringList * cmdList = getCommandList(NULL);
+    testCommandArray(cmdList->stringArray,cmdList->numberOfStrings);
+    stringList * optList = getOptionList(NULL);
+    testCommandArray(optList->stringArray,optList->numberOfStrings);
+}
 /*
  *  Test function. Prints contents of commandArray
  */

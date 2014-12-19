@@ -135,7 +135,6 @@ void manUpgrade()
  */
 void manCat()
 {
-    
     towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target eg t1, t2, t3... to display the stats of that target\n");
 }
 
