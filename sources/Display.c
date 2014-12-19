@@ -371,6 +371,7 @@ void updateTowerMonitor(char *outputString) {
 void updateStatsBar(char *outputString) {
     displayStatsBar();
     display_text(STATS_BAR_X + (double)SCREEN_WIDTH_GLOBAL/7,  STATS_BAR_Y + 10, outputString, blended);
+    printf("%s\n", outputString);
     free(outputString);
 }
 
@@ -480,7 +481,12 @@ void display_text(int x, int y, char *string, int text)
         printf("Panic\n");
     }
     d->rect = (SDL_Rect) {x, y, d->surface->w, d->surface->h};
-
+    
+    //Display what is necessary using renderer
+    SDL_RenderCopy(d->renderer, d->newtexture, NULL, &d->rect);
+    SDL_FreeSurface(d->surface);
+    //Destroy textures to save memory
+    SDL_DestroyTexture(d->newtexture);
     
 }
 
