@@ -51,6 +51,11 @@ int parse(char *inputString)
         freeCommandArray(commandArray, numberOfChunks);
         return 0;//no valid commands with less than 2 strings or more than 3
     }
+    if(commandArray[0][0]=='f' && commandArray[0][1]=='o' && commandArray[0][2]=='r' )
+    {
+        //parseForLoop(commandArray);
+    }
+
 
     //enumerated type cmdType can describe each of the possible commands(see actionQueue.h)
     cmdType command = getCommandType(commandArray[0]);//the first string in the command should contain the action
@@ -158,7 +163,20 @@ int parse(char *inputString)
     freeCommandArray(commandArray, numberOfChunks);
     return specificReturns;//0 for error
 }
-
+/*
+ *
+ */
+void parseForLoop(char ** commandArray)
+{
+    if(strcmp(commandArray[0],"for")==0)
+    {
+        //parseForInType(commandArray);
+    }
+    char * variableName = strdup(commandArray[1]);
+    
+    
+    free(variableName);
+}
 /*
  *
  */

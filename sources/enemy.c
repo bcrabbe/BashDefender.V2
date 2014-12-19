@@ -57,7 +57,7 @@ void createLevelPaths()
     LevelPaths pathList = (LevelPaths) malloc(sizeof(*pathList));
     getLevelPaths(pathList);
 
-    int numberOfPaths = 4;
+    int numberOfPaths = 1;
     
     assignMemoryForPaths(numberOfPaths);
     layPaths(numberOfPaths, 1); // currently 1 as only one level
@@ -339,28 +339,6 @@ void initialiseEnemy(Enemy newEnemy, int lvl, Family fam, TypeOfEnemy eType, int
 }
 
 /*
-* populates relevant fields for heavy enemies
-*/   
-void initialiseHeavyEnemy(Enemy newEnemy)
-{
-    LevelPaths lP = getLevelPaths(NULL);
-    newEnemy->enemyPath = lP->paths[rand()%lP->numberOfPaths];
-    newEnemy->pathProgress = 0;
-    newEnemy->x = newEnemy->enemyPath->pathCoords[0][0];
-    newEnemy->y = newEnemy->enemyPath->pathCoords[0][1];
-    newEnemy->maxHealth = 1000;
-    newEnemy->health = newEnemy->maxHealth;
-    newEnemy->armour = 0;
-    newEnemy->speed = 1;
-    newEnemy->enemyID=getNumberOfEnemies();
-    newEnemy->dead = 0;
-    newEnemy->height = 64;
-    newEnemy->width = 32;
-    newEnemy->damage = 100;
-
-}
-
-/*
 * manually sets enemy health. Used in testing.
 */
 int setEnemyHealth(int enemyID, int newHealth)	{
@@ -402,7 +380,7 @@ void present_enemy(Display d)
 
         if(!isDead(i))
         {
-            drawEnemy(e->x, e->y, 50, 50, 2010, 121, 1, 15, 200);
+            drawEnemy(e->x, e->y, e->width, e->height, 2010, 121, 1, 15, 200);
             drawRect(e->x, e->y -20, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
         }
     }
@@ -542,7 +520,6 @@ void killEnemy(int enemyID)
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
     e->dead = 1;
     e->health = 0;
-    addMemory(e->maxHealth/10);
 }
 
 
@@ -567,6 +544,26 @@ void towerGetTargetPos(int * towerTargetPosition, int enemyID)
     towerTargetPosition[0] = e->x+(e->width/2);
     towerTargetPosition[1] = e->y+(e->height/2);
 }
+
+/*
+* for a given number of moves a bullet will take to get to an enemy, sets the target coordinates to where the enemy will be when it gets there
+*/
+void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves)
+{
+  Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
+  
+    //if it's not gonna hit it, target the end of the enemy's path
+  if(distanceToEndOfPath(enemyID) <= bulletMoves*e->speed) {
+    targetCoords[0] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][0] + (e->width/2);
+    targetCoords[1] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][1] + (e->height/2);
+  } else {
+    int impactProgess = e->pathProgress + (e->speed * bulletMoves);
+    targetCoords[0] = e->enemyPath->pathCoords[impactProgess][0] + (e->width/2);
+    targetCoords[1] = e->enemyPath->pathCoords[impactProgess][1] + (e->height/2);
+  }
+}
+    
+    
 
 /*
 * function for unit testing - prints enemy stats

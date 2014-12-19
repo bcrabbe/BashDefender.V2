@@ -81,6 +81,7 @@ void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 void display_text(int x, int y, char *string, int text, int r, int g, int b);
 void animateAnyPic(int x, int y, int w, int h, int pic_width, int pic_height, int frames, int anim_speed, SDL_Texture *texture);
 
+
 Display init_SDL(){
     
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");
@@ -256,6 +257,8 @@ void drawRect(int x, int y, int red, int blue, int max_width, int max_height, in
     d->rect = (SDL_Rect) {x, y, (double)memory, max_height};
     SDL_RenderFillRect(d->renderer, &d->rect);
 }
+
+    
 
 /*Draw range with transparency*/
 void draw_filled_range(int cx, int cy, int r)

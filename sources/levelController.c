@@ -75,6 +75,7 @@ void levelQueueReader()	{
 					}
 					break;
 			case makeEnemy:
+			    printf("found enemy in queue\n");
 					if(createEnemyCommand(current))	{
 						current = removeLink(current);
 					} else {
@@ -138,6 +139,7 @@ int createEnemyCommand(Keyword makeEnemy)	{
 		setCreateEnemyGroupDelay(0); //!setting delay back to zero
 		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
 		//createSpecificEnemy(makeEnemy->propertiesList[0]->propertyValue,makeEnemy->propertiesList[1]->propertyValue,makeEnemy->propertiesList[2]->propertyValue);
+
 		return 1;
 	} 
 	return 0;
@@ -281,6 +283,7 @@ void initLevel()    {
     createEnemyGroup();
 	createTowerPos();
 	initialQueueReader();
+	createProjectileList();
 }
 
 void createLevelClocks()	{

@@ -10,6 +10,24 @@ typedef struct tower *tower;
 typedef struct towerGroup *TowerGroup;
 typedef struct towerPos *TowerPos;
 typedef struct towerPosNode *TowerPosNode;
+typedef struct projectileNode *ProjectileNode;
+typedef struct projectileList *ProjectileList;
+
+enum varType {
+  INTtype = 1,
+  CHARtype = 2
+};
+
+typedef enum varType VarType;
+
+typedef enum firingMethod	{
+
+	laser = 1,
+	bullet = 2,
+	missile = 3
+	
+} FiringMethod;
+
 
 void createTowerPos();
 int getSpecifiedTowerPosY(int postion);
@@ -61,5 +79,15 @@ void testTowerCreation();
 void testingTowerPositions();
 void createTowerFromPositions(int position);
 void drawAllTowerPositions();
+
+void createProjectileList();
+ProjectileList getProjectileList(ProjectileList pL);
+ProjectileNode newProjectileNode();
+void moveProjectiles();
+void removeProjectileNode(ProjectileNode projNode);
+void moveBullet(ProjectileNode bullet);
+void launchBullet(int firedX, int firedY, int damage, int targetID, VarType firingType);
+void drawProjectiles();
+
 #endif
 
