@@ -201,7 +201,7 @@ int parseKill(char ** commandArray,int numberOfChunks)
         }
     }
     else if(option==kill_all) {
-        //kill_all_ability();
+        kill_all_ability();
         return 2;
     }
  
