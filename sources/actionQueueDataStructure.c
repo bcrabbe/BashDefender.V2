@@ -421,14 +421,12 @@ void testCheckMem()	{
 char *getActionQueueString(void) {
     
     QueueNode p = getQueue(NULL)->start;
-    char *outputString = malloc(500);
-    char *targetString = malloc(4);
-    
+    char *outputString = calloc(500,sizeof(char));
+    char *targetString = calloc(10,sizeof(char));
     for(int count = 0; p!= NULL && count < ITEMS_IN_ACTION_QUEUE; p = p->nextNode, count++) {
         cmdType command = p->command;
         cmdOption option = p->option;
         int target = p->target;
-        
         switch(command) {
             case cmd_upgrade:
                 strcat(outputString, "upgrade");

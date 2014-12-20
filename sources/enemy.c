@@ -417,9 +417,8 @@ int moveEnemy(int enemyID )
             return 0;
         }
         else {
-           damageHealth(e->damage); 
+            damageHealth(e->damage); 
             e->dead = 1;
-			increaseDeathCnt();
             return 0;
         }
     }
@@ -502,10 +501,12 @@ void damageEnemy(int damage, int enemyID)
     }
     
     e->health -= damageToBeDone;
-    if(e->health<=0)
+    if(e->health<=0 && e->dead != 1)
     {
         e->dead=1;
         addMemory(e->maxHealth/10);
+		printf("dead\n");
+		increaseDeathCnt();
         // drawDeath(e->x, e->y);
         //drawKillAll();
 

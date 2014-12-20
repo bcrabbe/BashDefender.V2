@@ -20,7 +20,7 @@ int main(int argc, char ** argv)
 {
     Display d = init_SDL();
     initLevel();
-//	testing();
+	//testing();
 
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
@@ -35,7 +35,6 @@ int main(int argc, char ** argv)
 
     //init_sound();
     //playBackgroundSound();
-
     
     do{
         startFrame(d);
@@ -45,6 +44,7 @@ int main(int argc, char ** argv)
         ++steps;
         drawBackground();
         
+		startNextWave();
         levelQueueReader();
         terminal_window(d, pass, clear);
     	popToTower();

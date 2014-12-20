@@ -65,13 +65,19 @@ void levelQueueReader()	{
 	while(current != NULL)	{
 		switch(current->lCommand)	{
 			case wave:
-					if(kQueue->start == current)	{
+					//iprint(returnPropertyValue(current,waveID));
+					//iprint(getWave(getGame(NULL)));
+					if(getWave(getGame(NULL)) == returnPropertyValue(current,waveID))	{
+						increaseEnemyNumbersThisWave(returnPropertyValue(current,numberOfEnemies));
+					}
+					//! only expands waves into create enemies commands if it is at the start of the queue
+					if(kQueue->start == current && getWave(getGame(NULL)) == returnPropertyValue(current,waveID))	{
 						printf("wave\n");
-						iprint(returnPropertyValue(current,dTime));
+					//	iprint(returnPropertyValue(current,dTime));
 						waveCreatorCommand(current);
 						current = removeLink(current);
 					} else { 
-						current = current->next;
+						current = current->prev;
 					}
 					break;
 			case makeEnemy:
@@ -89,6 +95,7 @@ void levelQueueReader()	{
 					break;
 		}
 	}
+
 }
 
 Keyword removeLink(Keyword current)	{
@@ -137,7 +144,6 @@ int createEnemyCommand(Keyword makeEnemy)	{
 	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()))	{
 		setCreateEnemyGroupDelay(0); //!setting delay back to zero
 		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
-		//createSpecificEnemy(makeEnemy->propertiesList[0]->propertyValue,makeEnemy->propertiesList[1]->propertyValue,makeEnemy->propertiesList[2]->propertyValue);
 
 		return 1;
 	} 
@@ -146,15 +152,13 @@ int createEnemyCommand(Keyword makeEnemy)	{
 }
 
 void waveCreatorCommand(Keyword waveKeyWord)	{
-	printf("checking wave delay\n");
-	iprint(returnPropertyValue(waveKeyWord,dTime));
 	int enemyNum;
-   	for(enemyNum = 0; enemyNum < waveKeyWord->propertiesList[2]->propertyValue; enemyNum++)	{
+	int totalEnemies = returnPropertyValue(waveKeyWord,numberOfEnemies);
+   	for(enemyNum = 0; enemyNum < totalEnemies; enemyNum++)	{
 		breakDownWaveCommand(waveKeyWord->propertiesList,waveKeyWord->nProperties);
 	}
-	printf("adding delay\n");
+	//! Adding delay for next group creation
 	addGroupCreationDelay(waveKeyWord);
-
 }
 
 int addGroupCreationDelay(Keyword waveKW)	{
@@ -195,8 +199,7 @@ void breakDownWaveCommand(KeywordProp *propertiesList, int nProps)	{
 }
 
 void setWaveTotalCommand(Keyword setWaveTotal)	{
-	printf("Set wave total\n");
-	setTotalWaveNo(setWaveTotal->propertiesList[0]->propertyValue);
+	setTotalWaveNo(returnPropertyValue(setWaveTotal,total));
 }
 
 void printQueue()	{

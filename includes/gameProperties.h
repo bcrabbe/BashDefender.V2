@@ -56,8 +56,8 @@ typedef enum clockType	{
 
 /*----------Symbolic Constants-----------*/
 
-#define ACTIONCOOLDOWN	30	//! minimum time between actions being removed from queue
-#define ENEMYSPAWNCOOLDOWN 2 	//!minimum time between enemy spawns
+#define ACTIONCOOLDOWN	20	//! minimum time between actions being removed from queue
+#define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 
 /*----------TypeDefs----------*/
 
@@ -87,7 +87,10 @@ int getCostOfNewTower();
 int getDeathCnt();
 void increaseDeathCnt();
 int getEnemyGroupDelay();
+void increaseEnemyNumbersThisWave(int numberOfEnemies);
+int getTotalCurrentWaveEnemies();
 int checkIfPlayerDead();
+void startNextWave();
 void setTotalWaveNo(int totalW);
 int getTotalWaveNo();
 GameClock createClock();
