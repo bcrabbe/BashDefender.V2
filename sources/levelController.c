@@ -9,6 +9,7 @@
 #include "../includes/debug.h"
 #include "../includes/sput.h"
 #include "../includes/levelController.h"
+#include "../includes/parser.h"
 
 /*---------- Functions ----------*/
 //int SCREEN_WIDTH_GLOBAL;
@@ -65,12 +66,19 @@ void levelQueueReader()	{
 	while(current != NULL)	{
 		switch(current->lCommand)	{
 			case wave:
-					if(kQueue->start == current)	{
-						printf("wave\n");
+
+					//iprint(returnPropertyValue(current,waveID));
+					//iprint(getWave(getGame(NULL)));
+					if(getWave(getGame(NULL)) == returnPropertyValue(current,waveID))	{
+						increaseEnemyNumbersThisWave(returnPropertyValue(current,numberOfEnemies));
+					}
+					//! only expands waves into create enemies commands if it is at the start of the queue
+					if(kQueue->start == current && getWave(getGame(NULL)) == returnPropertyValue(current,waveID))	{
+					//	iprint(returnPropertyValue(current,dTime));
 						waveCreatorCommand(current);
 						current = removeLink(current);
 					} else { 
-						current = current->next;
+						current = current->prev;
 					}
 					break;
 			case makeEnemy:
@@ -88,13 +96,13 @@ void levelQueueReader()	{
 					break;
 		}
 	}
+
 }
 
 Keyword removeLink(Keyword current)	{
 	Keyword temp;
 	KeywordQueue kQueue = getKWQueue(NULL);
 	if(current == kQueue->start)	{
-        //printf("freeing start \n");
 		kQueue->start = kQueue->start->prev;
 		current = kQueue->start;
 		if(kQueue->start != NULL)	{	
@@ -115,7 +123,6 @@ Keyword removeLink(Keyword current)	{
 	}
 	kQueue->nCommands--;
 	return current;
-	printf("exit\n");
 }
 
 int returnPropertyValue(Keyword current, property reqProperty)	{
@@ -136,7 +143,6 @@ int createEnemyCommand(Keyword makeEnemy)	{
 	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()))	{
 		setCreateEnemyGroupDelay(0); //!setting delay back to zero
 		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
-		//createSpecificEnemy(makeEnemy->propertiesList[0]->propertyValue,makeEnemy->propertiesList[1]->propertyValue,makeEnemy->propertiesList[2]->propertyValue);
 
 		return 1;
 	} 
@@ -144,15 +150,14 @@ int createEnemyCommand(Keyword makeEnemy)	{
 
 }
 
-void waveCreatorCommand(Keyword waveKeyWord)	{
-	printf("checking wave delay\n");
+void waveCreatorCommand(Keyword waveKeyWord)	 {
 	int enemyNum;
-   	for(enemyNum = 0; enemyNum < waveKeyWord->propertiesList[2]->propertyValue; enemyNum++)	{
+	int totalEnemies = returnPropertyValue(waveKeyWord,numberOfEnemies);
+   	for(enemyNum = 0; enemyNum < totalEnemies; enemyNum++)	{
 		breakDownWaveCommand(waveKeyWord->propertiesList,waveKeyWord->nProperties);
 	}
-	printf("adding delay\n");
+	//! Adding delay for next group creation
 	addGroupCreationDelay(waveKeyWord);
-
 }
 
 int addGroupCreationDelay(Keyword waveKW)	{
@@ -172,9 +177,7 @@ int addGroupCreationDelay(Keyword waveKW)	{
 
 
 void makeTowerCommand(Keyword setTower)	{
-	printf("setting tower position\n");
-	addTowerPosNode(setTower->propertiesList[0]->propertyValue,setTower->propertiesList[1]->propertyValue);
-
+	addTowerPosNode(returnPropertyValue(setTower,x),returnPropertyValue(setTower,y));
 }
 
 void breakDownWaveCommand(KeywordProp *propertiesList, int nProps)	{
@@ -193,8 +196,7 @@ void breakDownWaveCommand(KeywordProp *propertiesList, int nProps)	{
 }
 
 void setWaveTotalCommand(Keyword setWaveTotal)	{
-	printf("Set wave total\n");
-	setTotalWaveNo(setWaveTotal->propertiesList[0]->propertyValue);
+	setTotalWaveNo(returnPropertyValue(setWaveTotal,total));
 }
 
 void printQueue()	{
@@ -234,7 +236,6 @@ void addKWtoQueue(Keyword newKW)	{
 
 		KeywordQueue kQueue = getKWQueue(NULL);
 		if((kQueue->start == NULL) && (kQueue->end == NULL))	{
-			printf("empty queue\n");
 			kQueue->start = kQueue->end = newKW;
 		} else {
 			newKW->next = kQueue->end;
@@ -281,6 +282,8 @@ void initLevel()    {
 	createTowerPos();
 	initialQueueReader();
 	createProjectileList();
+	initialiseParseLists();
+	init_abilities();
 }
 
 void createLevelClocks()	{
@@ -295,20 +298,16 @@ void createLevel()	{
 }
 
 void addKeyWordToken(char *token)	{
-		printf("checking keyword\n");	
 		Keyword newKey = createKeyword();
 		if(!strcmp(token,"towerPos"))	{
 			addKWtoQueue(newKey); 
 			newKey->lCommand = makeTowerP;
-			printf("assigned tower pos keyword\n");
 		} else if(!strcmp(token,"totalWaves"))	{
 			addKWtoQueue(newKey); 
 			newKey->lCommand = totalWaves;
-			printf("assigned total Waves keyword\n");
 		} else if(!strcmp(token,"wave"))	{
 			addKWtoQueue(newKey); 
 			newKey->lCommand = wave;
-			printf("assigned Waves keyword\n");
 		} else {
 			fprintf(stderr,"Keyword not recognised\n");
 			free(newKey);

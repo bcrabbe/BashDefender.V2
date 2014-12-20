@@ -267,9 +267,6 @@ int getNumberOfEnemies()
 void Test_createEnemy()
 {
 
-    createLevelPaths();
-    createEnemyGroup();
-    
     createEnemy();
     sput_fail_unless(getNumberOfEnemies() == 1, "Valid: Number of enemies held in group is one.");
     
@@ -417,9 +414,8 @@ int moveEnemy(int enemyID )
             return 0;
         }
         else {
-           damageHealth(e->damage); 
+            damageHealth(e->damage); 
             e->dead = 1;
-			increaseDeathCnt();
             return 0;
         }
     }
@@ -495,7 +491,6 @@ int inRange(int tX, int tY, int tRange, int enemyID)
 void damageEnemy(int damage, int enemyID, int damageType)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
-    
     if(!isDead(enemyID)) {
       int damageToBeDone;
       
@@ -517,7 +512,6 @@ void damageEnemy(int damage, int enemyID, int damageType)
           addMemory(e->maxHealth/10);
           // drawDeath(e->x, e->y);
           //drawKillAll();
-
       }
     }
 }
@@ -536,7 +530,6 @@ void killEnemy(int enemyID)
 /*
 * calculates how far the specified enemy is from the end of their path. Used for tower target aquisition.
 */
-
 int distanceToEndOfPath(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
