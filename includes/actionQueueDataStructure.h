@@ -29,6 +29,7 @@ cmdOption getLastOption(ActionQueueStructure queue);
 ActionQueueStructure getQueue(ActionQueueStructure queue);
 int getLastTarget();
 int getFirstTarget();
+void clearQueue();
 void removeQueueItem();
 int calulateCosts(cmdType cmd, cmdOption stat, int target);
 int getCurrentStat(cmdOption stat,int target);

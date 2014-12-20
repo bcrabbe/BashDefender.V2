@@ -54,7 +54,7 @@ struct display {
 
     //Tower objects
     SDL_Texture *towerTexture[2];
-    SDL_Texture *towerPositionTexture[7];
+    SDL_Texture *towerPositionTexture[26];
 
     //enemy
     SDL_Texture *enemyTexture[2];
@@ -119,6 +119,25 @@ Display init_SDL(){
     init_pic(&d->towerPositionTexture[4], "Images/TowerLocationsE.png");
     init_pic(&d->towerPositionTexture[5], "Images/TowerLocationsF.png");
     init_pic(&d->towerPositionTexture[6], "Images/TowerLocationsG.png");
+    init_pic(&d->towerPositionTexture[7], "Images/TowerLocationsH.png");
+    init_pic(&d->towerPositionTexture[8], "Images/TowerLocationsI.png");
+    init_pic(&d->towerPositionTexture[9], "Images/TowerLocationsJ.png");
+    init_pic(&d->towerPositionTexture[10], "Images/TowerLocationsK.png");
+    init_pic(&d->towerPositionTexture[11], "Images/TowerLocationsL.png");
+    init_pic(&d->towerPositionTexture[12], "Images/TowerLocationsM.png");
+    init_pic(&d->towerPositionTexture[13], "Images/TowerLocationsN.png");
+    init_pic(&d->towerPositionTexture[14], "Images/TowerLocationsO.png");
+    init_pic(&d->towerPositionTexture[15], "Images/TowerLocationsP.png");
+    init_pic(&d->towerPositionTexture[16], "Images/TowerLocationsQ.png");
+    init_pic(&d->towerPositionTexture[17], "Images/TowerLocationsR.png");
+    init_pic(&d->towerPositionTexture[18], "Images/TowerLocationsS.png");
+    init_pic(&d->towerPositionTexture[19], "Images/TowerLocationsT.png");
+    init_pic(&d->towerPositionTexture[20], "Images/TowerLocationsU.png");
+    init_pic(&d->towerPositionTexture[21], "Images/TowerLocationsV.png");
+    init_pic(&d->towerPositionTexture[22], "Images/TowerLocationsW.png");
+    init_pic(&d->towerPositionTexture[23], "Images/TowerLocationsX.png");
+    init_pic(&d->towerPositionTexture[24], "Images/TowerLocationsY.png");
+    init_pic(&d->towerPositionTexture[25], "Images/TowerLocationsZ.png");
     init_pic(&d->enemyTexture[0], "Images/sdl2-spritesheet-actual.png");
     init_pic(&d->enemyTexture[1], "Images/int_enemy_basic.png");
     init_pic(&d->towerTexture[0], "Images/tower.png");
@@ -364,7 +383,7 @@ void updateTowerMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
     displayMonitor(TOWER_MONITOR_X, TOWER_MONITOR_Y, TOWER_MONITOR_WIDTH, TOWER_MONITOR_HEIGHT, d->towerMonitorTexture);
     display_text(TOWER_MONITOR_X + TOWER_TEXT_BORDER_X,  TOWER_MONITOR_Y + TOWER_TEXT_BORDER_Y, outputString, blended_wrapped);
-    free(outputString);
+    //free(outputString);
 }
 
 /** Display output string in stats monitor*/
@@ -460,8 +479,6 @@ int terminal_window(Display d, char *pass, char *clear)
 /*display_text builds textures from surfaces and calls renderer to output them to screen.*/
 void display_text(int x, int y, char *string, int text)
 {
-
-    
     Display d = getDisplayPointer(NULL);
     d->color = (SDL_Color) {255, 255, 255};
     switch (text) {

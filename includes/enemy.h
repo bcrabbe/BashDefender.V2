@@ -54,7 +54,7 @@ typedef enum typeOfEnemy	{
 } TypeOfEnemy;
 
 
-typedef enum BOOL {TRUE, FALSE} BOOL;
+typedef enum BOOL {FALSE, TRUE} BOOL;
 
 void createEnemyGroup();
 void freeEnemyGroup();

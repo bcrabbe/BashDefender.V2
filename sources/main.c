@@ -21,33 +21,21 @@ int main(int argc, char ** argv)
     srand(time(NULL));
     Display d = init_SDL();
     initLevel();
-	/*while(1)	{
-		levelQueueReader();
-	}*/
-
-//    //testing();
-
-    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));//createEnemy();
-  	//createEnemy();
+//	testing();
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-	int started = 0;
+    int started = 0;
     int ended = 0;
     
     addMemory(100);
     int steps=0;
 
-    initialiseParseLists();
-
-	init_abilities();
     //init_sound();
     //playBackgroundSound();
-    //userCreateTower(rand()% (int) (MAP_WIDTH-80), rand()% (int) (MAP_HEIGHT-80));
 
-	
     do{
         startFrame(d);
         while(started == 0){
@@ -56,9 +44,10 @@ int main(int argc, char ** argv)
         ++steps;
         drawBackground();
         
+		startNextWave();
         levelQueueReader();
         terminal_window(d, pass, clear);
-		popToTower();
+    	popToTower();
         if(inputCommand)
         {
             parse(inputCommand);
@@ -72,7 +61,7 @@ int main(int argc, char ** argv)
             int move = moveEnemy(i);
         }
         presentAnimation();
-		drawAllTowerPositions();
+    	drawAllTowerPositions();
         statsBar();
         towerMonitor(0, NULL);
         actionQueueMonitor();
@@ -105,12 +94,12 @@ void quitGame()
 
 void testing()	{
 
-	testingTowerPositions();
+	//testingTowerPositions();
     //testingGameStructure();
-    //testingActionQueue();
-    //parseToQueueTesting();
-    //testEnemy();
-    //testingTowerModule();
+    testingActionQueue();
+    parseToQueueTesting();
+    //testEnemy(); // ! No longer works.
+    testingTowerModule();
 	parseToTowerTesting();
     //towerToEnemyTesting();
 
@@ -186,34 +175,35 @@ void parseToQueueTesting()	{
 
 void testParseToTower()	{
 
-	createTower();
-	createTower();
-	setTowerRange(1,10); //Setting tower range to 10 for tests.
-	setTowerDamage(2,10); //Setting tower damage to 10 for tests.
-	addMemory(1000);
+	freeAllTowers();
+	clearQueue();	
+	createTowerFromPositions(1);
+	createTowerFromPositions(2);
+	int originalValue = 10;
+	setTowerRange(1,originalValue); //Setting tower range to 10 for tests.
+	setTowerDamage(2,originalValue); //Setting tower damage to 10 for tests.
+	addMemory(10000);
 	parse("upgrade r t1");
 	parse("upgrade p t2");
 	sput_fail_unless(getFirstTarget() == 1, "First target is 1");
 	sput_fail_unless(getLastTarget() == 2, "Last target is 2");
 	delayGame(ACTIONCOOLDOWN);
 	popToTower();
-	sput_fail_unless(getTowerRange(1) == 11, "Upgraded range is 11");
+	sput_fail_unless(getTowerRange(1) > originalValue, "Upgraded range is greater than original value");
 	delayGame(ACTIONCOOLDOWN);
 	popToTower();
-	sput_fail_unless(getTowerDamage(2) == 11, "Upgraded damage is 11");
+	sput_fail_unless(getTowerDamage(2) > originalValue, "Upgraded Damage is greater than original Value");
 	freeAllTowers();
+	clearQueue();
 }
 
 void testValidParses()	{
 	
-	createActionQueue();
-	createTowerGroup();
-	createLevelPaths();
 	createTower();
     //  printf("\n135\n\n");
     sput_fail_unless(parse("upgrade r t1")== 1, "upgrade r t1 is valid command");
-	sput_fail_unless(getFirstCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
-	sput_fail_unless(getFirstOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");
+	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
+	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");
     //printf("\n139\n\n");
     sput_fail_unless(parse("upgrade p t1")== 1, "upgrade p t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "Last comand in queue: upgrade");
@@ -223,8 +213,7 @@ void testValidParses()	{
     sput_fail_unless(parse("upgrade s t1")== 1, "upgrade s t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "Last comand in queue: upgrade");
 	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_speed, "Last option in queue: speed");
-	sput_fail_unless(getFirstCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
-	sput_fail_unless(getFirstOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");
+	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
     //printf("\n149\n\n");
     sput_fail_unless(parse("  ??D--") == 0, "  ??D-- is invalid command");
     //printf("\n151\n\n");
@@ -236,10 +225,7 @@ void testValidParses()	{
     //printf("\n157\n\n");
     sput_fail_unless(parse("cat t") == 0, "cat t is invalid command");
     //printf("\n159\n\n");
-
-
-
-
-	free(getQueue(NULL));
+	freeAllTowers();
+	clearQueue();
 }
 
