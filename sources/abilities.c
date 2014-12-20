@@ -31,7 +31,7 @@ void init_abilities()
 	Abilities * abl = get_abilities();
 	abl->psx.unlocked = 1;
 	abl->psx.cost = PSX_COST;
-	abl->kill.unlocked = 1;
+	abl->kill.unlocked = 0;
 	abl->kill.cost = KILL_COST;
 }
 	
@@ -60,6 +60,58 @@ void unlock_ability(AbilityID id)
 	textToTowerMonitor(unlockstring);		
 }
 
+int get_ability_cost(AbilityID id)
+{
+	Ability *a;
+	switch(id)
+	{
+		case PSX:
+		{
+			a = &(get_abilities()->psx);
+			break;
+		}
+		case KILL:
+		{
+			a = &(get_abilities()->kill);
+			break;
+		}
+		default:
+		{
+			fprintf(stderr, "Is valid unlock Switch Error\n");
+			exit(1);
+		}
+	}
+	return a->cost;
+}
+
+
+int is_valid_unlock(AbilityID id)
+{
+	Ability *a;
+	switch(id)
+	{
+		case PSX:
+		{
+			a = &(get_abilities()->psx);
+			break;
+		}
+		case KILL:
+		{
+			a = &(get_abilities()->kill);
+			break;
+		}
+		default:
+		{
+			fprintf(stderr, "Is valid unlock Switch Error\n");
+			exit(1);
+		}
+	}
+	if(a->unlocked == 0)
+	{
+		return 1;
+	}
+	return 0;
+}
 int is_available_ability(AbilityID id)
 {
 

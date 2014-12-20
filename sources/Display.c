@@ -182,13 +182,13 @@ void getBackgroundDimensions(int *w, int *h){
 }
 /* Draw kill all ability*/
 void drawKillAll(){
-    SDL_Delay(10);
+    SDL_Delay(3);
     Display d = getDisplayPointer(NULL);
     d->rect = (SDL_Rect) {0,0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL};
     SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
     int saturation = 0;
     while (saturation < 255) {
-        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 2.5);
+        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 4);
         SDL_RenderFillRect(d->renderer, &d->rect);
         SDL_RenderPresent(d->renderer);
     }

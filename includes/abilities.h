@@ -7,7 +7,6 @@
 
 #define PSX_COST 10
 #define KILL_COST 2000
-#define KILLALL_COST 10000
 
 typedef enum AbilityID 
 {
