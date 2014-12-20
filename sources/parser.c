@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
+
 #include "../includes/tower.h"
 #include "../includes/actionQueueDataStructure.h"
 #include "./../includes/parser.h"
@@ -20,6 +22,10 @@
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
 int parseMktwr(char ** commandArray, int numberOfTokens);
 
+
+
+
+unsigned long int stringToInt(const char * string);
 
 /*
  * Parse called with string of user input from terminal window.
@@ -512,7 +518,7 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
     
     size_t len = strlen(inputStringTargeting);//gets the size of string
-    if( len<(1*sizeof(char)) )
+    if( len<1  || ( needsIdentifier &&  len<2 ) )
     {
         terminalWindow("ERROR: You must target a towers with this command");
         char str[100];
@@ -534,11 +540,14 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     }
     unsigned int targetTower = 0;
     if( inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T' ) {
-        targetTower = (unsigned int)(inputStringTargeting[1]-'0');
+        targetTower = stringToInt(inputStringTargeting+1    );
+
+        //  targetTower = (unsigned int)(inputStringTargeting[1]-'0');
         //        printf("getTargetTower read %c giving %d\n",inputStringTargeting[1],targetTower);
     }
     else {
-        targetTower = (unsigned int)(inputStringTargeting[0]-'0');
+        targetTower = stringToInt(inputStringTargeting);
+        //targetTower = (unsigned int)(inputStringTargeting[0]-'0');
         //  printf("getTargetTower read %c giving %d \n",inputStringTargeting[0],targetTower);
     }
     if(targetTower > numberOfTowers || targetTower < 1 )
@@ -557,6 +566,15 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     return targetTower;
 }
 
+
+unsigned long int stringToInt(const char * string) {
+    unsigned long int converted=0;
+    size_t length = strlen(string);
+    for(int i=0; i<length; ++i) {
+        converted += (unsigned int)(string[i]-'0') * pow( 10, (length-i-1)) ;
+    }
+    return converted;
+}
 /*  Called when after we read a command, tests the next token against the
  *  possible options returns the corresponding cmdOption Or
     returns optionError  and calls the optUsageError function
