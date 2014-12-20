@@ -36,14 +36,14 @@ unsigned long int stringToInt(const char * string);
 int parse(char *inputString)
 {
     size_t len = 1+strlen(inputString);//gets the size of inputString
-    if( len < 3*sizeof(char)  )
-    {
+    if( len < 3*sizeof(char) ) {
         optionUsageError();
         return 0;
     }
-    if(inputString[0]=='f' && inputString[1]=='o' && inputString[2]=='r' )
-    {
-        parseForLoop(inputString);
+    if(tolower(inputString[0])=='w' && tolower(inputString[1])=='h' &&
+       tolower(inputString[2])=='i' && tolower(inputString[0])=='l' &&
+       tolower(inputString[1])=='e') {
+        return parseWhile(inputString);
     }
 
 
@@ -63,6 +63,58 @@ int parse(char *inputString)
     
     freeCommandArray(commandArray, numberOfTokens);
     return specificReturns;//0 for error
+}
+typedef enum operator {
+    not = '!',
+    notEqualTo = '!'+'=',
+    greaterThan = '>',
+    lessThan = '<',
+    equalTo = '=',
+    greaterThanOrEqualTo = '>'+'=',
+    lessThanOrEqualTo = '<'+'=',
+    sameAs = '='+'=',
+    
+} operator;
+/*
+ *  while(mem>0){ command }
+ */
+int parseWhile(char *inputString)
+{
+    int numberOfBracetsTokens;
+    char ** bracketTokenArray = breakUpString(inputString, &numberOfTokens, "(){}");
+    if(numberOfBracetsTokens<3) {
+        fprintf(stderr,"ERROR: was execting condition and command e.g. ""while(mem>0){ command }"" \n");
+        terminalWindow("ERROR: was execting condition and command e.g. ""while(mem>0){ command }"" ");
+        return 0;
+    }
+    else {
+        operator op = getOperatorFromString( bracketTokenArray[1]);
+    }
+    
+    freeCommandArray(bracketTokenArray);
+}
+
+operator getOperatorFromString(char * conditionString)
+{
+    int i=0;
+    while(conditionString[i]!='/0' && conditionString[i]!=NULL) {
+        if( matchesOperator(conditionString[i])) {
+            
+        }
+    }
+}
+operator matchesOperator(char isThisAnOperator) {
+    switch (isThisAnOperator) {
+        case not:                           return not;
+        case notEqualTo:                    return notEqualTo;
+        case greaterThan:                   return greaterThan;
+        case lessThan:                      return lessThan;
+        case equalTo:                       return equalTo;
+        case greaterThanOrEqualTo:          return greaterThanOrEqualTo;
+        case lessThanOrEqualTo:             return lessThanOrEqualTo;
+        case sameAs:                        return sameAs;
+        default:                            return 0;
+    }
 }
 /*
  *
@@ -168,19 +220,9 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
     }
 }
-/*
- *
- */
-void parseForLoop(char * inputString)
-{
-    int numberOfLines=0;
-    char ** lineArray = breakUpString(inputString, &numberOfLines, ";");
-    if(numberOfLines<3)
-    {
-        
-    }
-    //   free(variableName);
-}
+
+
+
 /*
  *
  */
