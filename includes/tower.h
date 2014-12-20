@@ -24,6 +24,8 @@ typedef enum firingMethod	{
 void createTowerPos();
 int getSpecifiedTowerPosY(int postion);
 int getSpecifiedTowerPosX(int postion);
+int maxTowerPosition();
+char maxTowerPositionChar();
 
 TowerPos getTowerPos(TowerPos tPos);
 void addTowerPosNode(int x, int y);

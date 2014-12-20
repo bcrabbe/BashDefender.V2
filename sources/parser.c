@@ -18,7 +18,7 @@
 #include "../includes/enemy.h"
 
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
-
+int parseMktwr(char ** commandArray, int numberOfTokens);
 
 
 /*
@@ -112,13 +112,13 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         }
         case cmd_mktwr:
         {
-            if(numberOfTokens!=3)
+            if(numberOfTokens<3)
             {
                 optionUsageError();
                 specificReturns = 0;
             }
             else {
-                specificReturns = parseMktwr(commandArray);
+                specificReturns = parseMktwr(commandArray,numberOfTokens);
             }
             break;
             
@@ -285,23 +285,37 @@ int parseAptget(char * aptToGetString)
  *  returns 1 if cmd was probably successfully pushed to queue
  *  returns 0 if definately not succesful or if target or stat call failed
  */
-int parseMktwr(char ** commandArray)
+int parseMktwr(char ** commandArray, int numberOfTokens)
 {
-    int towerPosition = tolower((int)commandArray[2][0]) - 'a' + 1;
     cmdOption twrType = getCommandOption(commandArray[1]);
-    unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
-    if(towerPosition<1  || (twrType!=mktwr_int && twrType!=mktwr_char) )
+    if( !(twrType==mktwr_int || twrType==mktwr_char) )
     {
         optionUsageError();
+        
+        terminalWindow("mktwr expected a type (int, or char)");
         return 0;
     }
     
-    if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
-    {
-		printf("pushing tower to queue\n");
-        return 1;
+    unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
+    int token = 2;
+    while(token < numberOfTokens) {
+        int towerPosition = (int)tolower(commandArray[token][0]) - 'a' + 1;
+        if( isTowerPositionAvailable(towerPosition) ){
+            if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
+            {
+                printf("pushing tower %d to queue\n",towerPosition);
+            }
+        }
+        else {
+            if( towerPosition < 1 || towerPosition > maxTowerPosition() ) {
+                char str[50];
+                sprintf(str,"mktwr expected a target positon A - %c",maxTowerPositionChar());
+                terminalWindow(str);
+            }
+        }
+        ++token;
     }
-    else return 0;
+    return 1;
 }
 
 /*  calls man printing functions
@@ -625,7 +639,8 @@ cmdOption getCommandOption(char * secondToken)
  */
 void optionUsageError()
 {
-  
+    terminalWindow("ERROR: Could not execute command.");
+    terminalWindow("Type man [COMMAND] for help");
     fprintf(stderr,"*** Syntax error: Could not execute command.***\n");
     fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
     //error messages will need to be passed back to the terminal to be printed. hopefully can do this by setting up a custom stream. For now will print to stderr.
@@ -696,8 +711,6 @@ cmdType getCommandType(char * firstToken )
     return command;
 }
 
-
-
 /*
  *   If there was a syntax error in the users command call this function which
      will print usage advice to the terminal window.
@@ -705,9 +718,13 @@ cmdType getCommandType(char * firstToken )
 void actionUsageError(const char * firstToken)
 {
     stringList * commandList = getCommandList(NULL);
-    int numberOfCommands=commandList->numberOfStrings;
     fprintf(stderr,"*** ""%s"" command not recognised ***\n",firstToken);
     fprintf(stderr,"installed commands: \n");
+    char str[200];
+    sprintf(str," ""%s"" command not recognised",firstToken);
+    
+    int numberOfCommands=commandList->numberOfStrings;
+
     for(int i=1; i<=numberOfCommands; ++i)
     {
         fprintf(stderr,"%s\n",commandList->stringArray[i]);
@@ -717,8 +734,6 @@ void actionUsageError(const char * firstToken)
     //hopefully can do this by setting up a custom stream. For now will print to stderr.
 
 }
-
-
 
 /*
  *  Takes the input string and breaks into separate words (where there is a 

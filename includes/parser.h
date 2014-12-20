@@ -43,7 +43,6 @@ void testStringLists();
 
 int parseCat(char * inputStringTargeting);
 int parseMan(char * inputStringCommandMan);
-int parseMktwr(char ** commandArray);
 int parseAptget(char * aptToGetString);
 int parseCommands(char ** commandArray, int numberOfTokens);
 void parseForLoop(char * inputString);

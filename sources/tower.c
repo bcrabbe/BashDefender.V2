@@ -591,10 +591,24 @@ int createTowerFromPositions(int position)	{
 	}
 	return 0;
 }
-
+char maxTowerPositionChar()
+{
+    TowerPos tPos = getTowerPos(NULL);
+    char positionChar = tPos->numberOfPositions + 'a' - 1;
+    return toupper(positionChar);
+}
+int maxTowerPosition() {
+    TowerPos tPos = getTowerPos(NULL);
+    return  tPos->numberOfPositions;
+}
 int isTowerPositionAvailable(int position)	{
 	TowerPos tPos = getTowerPos(NULL);
-	return tPos->towerPositions[position]->empty;
+    if( position < tPos->numberOfPositions ) {
+        return tPos->towerPositions[position]->empty;
+    }
+    else {
+        return 0;
+    }
 }
 
 /*
