@@ -175,7 +175,7 @@ void psx_ability()
 			{
 				ID = e_health[i].id;
 				health = e_health[i].health;
-				sprintf(line, "%d\t%d\n", ID, health);
+				sprintf(line, "%d                %d\n", ID, health);
 				strcat(psxlist, line);
 			}
 		}
