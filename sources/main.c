@@ -217,7 +217,7 @@ void startLevel(Display d, int *restart)	{
         }
         presentAnimation();
     	drawAllTowerPositions();
-        //updateAllInfoWindow();
+        updateAllInfoWindow();
         endFrame(d);
         
         //ended = checkIfPlayerDead();
