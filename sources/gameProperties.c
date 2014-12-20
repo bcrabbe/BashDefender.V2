@@ -306,7 +306,6 @@ GameClock getClock(GameClock clock)	{
  * Add Clock Node
  */
 void addClock(clockType type)	{
-	
 	GameClock clock = getClock(NULL);	
 	if(checkUniqueClockType(type))	{
 		if(clock->first == NULL)	{
@@ -315,6 +314,8 @@ void addClock(clockType type)	{
 			clock->last->next = createClockNode(type);
 			clock->last = clock->last->next;
 		}
+	} else {
+		fprintf(stderr,"Attempt to add non unique clock\n");
 	}
 }
 
@@ -352,7 +353,7 @@ int checkClock(clockType cType,int coolDown)	{
 	ClockNode currNode;
 	currNode = gClock->first;
 	clock_t currTime = (double) clock() / (CLOCKS_PER_SEC/100);
-	while(currNode!= NULL)	{
+	while(currNode != NULL)	{
 		if (currNode->type == cType)	{
 			if((currTime - currNode->time) >= coolDown)	{
 				setCurrTime(currNode);

@@ -33,7 +33,7 @@ struct queueNode {
 struct actionQueueStructure  {
 	
     struct queueNode *start;
-    struct queueNode *current;
+    struct queueNode *current; //!back of queue
     int nItems;
 
 };
@@ -41,10 +41,6 @@ struct actionQueueStructure  {
 
 /*---------- Functions ----------*/
 
-/*int main()	{
-	//testingGameStructure();
-	testingActionQueue();
-}*/
 void testingActionQueue()	{
 
 	sput_start_testing();
@@ -52,7 +48,7 @@ void testingActionQueue()	{
 	sput_set_output_stream(NULL);
 
 	sput_enter_suite("testCheckMem(): memory check");
-    sput_run_test(testCheckMem);
+    //sput_run_test(testCheckMem);
     sput_leave_suite();
 	
 	//sput_enter_suite("testPopFromQueue(): Popping from queue");
@@ -77,6 +73,19 @@ ActionQueueStructure createActionQueue()	{
 	getQueue(newActionQueue);
 
 	return newActionQueue;
+}
+
+void clearQueue()	{
+
+	ActionQueueStructure q = getQueue(NULL);
+	QueueNode currNode = q->start;
+	QueueNode temp;
+	while(currNode != NULL)	{
+		temp = currNode->nextNode;
+		free(currNode);
+		currNode = temp;	
+	}
+	q->start = q->current = NULL;
 }
 
 /*
@@ -133,8 +142,8 @@ void testPushToQueue()	{
     cmdOption nStat_2=upgrade_range;
     int tar_2 = 2;
 
-    GameProperties newGame = createGame();
-    ActionQueueStructure newQueue = createActionQueue();
+    GameProperties newGame = getGame(NULL);
+    ActionQueueStructure newQueue = getQueue(NULL);
 
 	sput_fail_unless(pushToQueue(newQueue,nCommand_1,nStat_1,tar_1) == 1,"Valid: 1 Queue Item");
 	sput_fail_unless(pushToQueue(newQueue,nCommand_2,nStat_2,tar_2) == 2,"Valid: 2 Queue Items");
@@ -143,7 +152,7 @@ void testPushToQueue()	{
 	sput_fail_unless(getLastCommand(newQueue) == cmd_execute,"Valid: Last of Queue Command");
 	sput_fail_unless(getLastOption(newQueue) == upgrade_range,"Valid: Last of Queue Option");
 	addMemory(10);
-
+	clearQueue();
 }
 /*
  *Returns first command in queue
@@ -184,7 +193,7 @@ cmdOption getLastOption(ActionQueueStructure queue)	{
  */
 int getFirstTarget()	{
 
-	return (getQueue(NULL))->start->target;
+	return (getQueue(NULL)->start->target);
 
 }
 
@@ -193,7 +202,7 @@ int getFirstTarget()	{
  */
 int getLastTarget()	{
 
-	return (getQueue(NULL))->current->target;
+	return (getQueue(NULL)->current->target);
 
 }
 /*
@@ -360,7 +369,6 @@ int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int 
     int needed = calulateCosts(*cmd,*stat,*target);
 
 	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available Memory, cooldown time 
-		printf("popping from queue\n");
 		*cmd = queue->start->command;
 		*stat = queue->start->option;
 		*target = queue->start->target;
@@ -382,10 +390,8 @@ int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int 
 
 int checkQueue(ActionQueueStructure queue, GameProperties Game, int needed)	{
 	if((checkMem(needed, Game)) && (checkClock(lastCmdAction,ACTIONCOOLDOWN)))	{
-
-			printf("success!\n");
 			return 1;		
-	} 
+	}
 	return 0;	
 }
 

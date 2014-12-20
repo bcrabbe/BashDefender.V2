@@ -81,7 +81,7 @@ int getNumOfTowerPositions();
 void freeAllTowerPositions();
 void testTowerCreation();
 void testingTowerPositions();
-void createTowerFromPositions(int position);
+int createTowerFromPositions(int position);
 void drawAllTowerPositions();
 
 void createProjectileList();

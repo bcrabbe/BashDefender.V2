@@ -72,7 +72,6 @@ void levelQueueReader()	{
 					}
 					//! only expands waves into create enemies commands if it is at the start of the queue
 					if(kQueue->start == current && getWave(getGame(NULL)) == returnPropertyValue(current,waveID))	{
-						printf("wave\n");
 					//	iprint(returnPropertyValue(current,dTime));
 						waveCreatorCommand(current);
 						current = removeLink(current);
@@ -102,7 +101,6 @@ Keyword removeLink(Keyword current)	{
 	Keyword temp;
 	KeywordQueue kQueue = getKWQueue(NULL);
 	if(current == kQueue->start)	{
-        //printf("freeing start \n");
 		kQueue->start = kQueue->start->prev;
 		current = kQueue->start;
 		if(kQueue->start != NULL)	{	
@@ -123,7 +121,6 @@ Keyword removeLink(Keyword current)	{
 	}
 	kQueue->nCommands--;
 	return current;
-	printf("exit\n");
 }
 
 int returnPropertyValue(Keyword current, property reqProperty)	{
@@ -178,9 +175,7 @@ int addGroupCreationDelay(Keyword waveKW)	{
 
 
 void makeTowerCommand(Keyword setTower)	{
-	printf("setting tower position\n");
-	addTowerPosNode(setTower->propertiesList[0]->propertyValue,setTower->propertiesList[1]->propertyValue);
-
+	addTowerPosNode(returnPropertyValue(setTower,x),returnPropertyValue(setTower,y));
 }
 
 void breakDownWaveCommand(KeywordProp *propertiesList, int nProps)	{
@@ -239,7 +234,6 @@ void addKWtoQueue(Keyword newKW)	{
 
 		KeywordQueue kQueue = getKWQueue(NULL);
 		if((kQueue->start == NULL) && (kQueue->end == NULL))	{
-			printf("empty queue\n");
 			kQueue->start = kQueue->end = newKW;
 		} else {
 			newKW->next = kQueue->end;
@@ -302,20 +296,16 @@ void createLevel()	{
 }
 
 void addKeyWordToken(char *token)	{
-		printf("checking keyword\n");	
 		Keyword newKey = createKeyword();
 		if(!strcmp(token,"towerPos"))	{
 			addKWtoQueue(newKey); 
 			newKey->lCommand = makeTowerP;
-			printf("assigned tower pos keyword\n");
 		} else if(!strcmp(token,"totalWaves"))	{
 			addKWtoQueue(newKey); 
 			newKey->lCommand = totalWaves;
-			printf("assigned total Waves keyword\n");
 		} else if(!strcmp(token,"wave"))	{
 			addKWtoQueue(newKey); 
 			newKey->lCommand = wave;
-			printf("assigned Waves keyword\n");
 		} else {
 			fprintf(stderr,"Keyword not recognised\n");
 			free(newKey);
