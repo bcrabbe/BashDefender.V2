@@ -41,7 +41,6 @@ stringList * intialiseCommandList();
 stringList * intialiseOptionList();
 void testStringLists();
 
-unsigned int getTargetTower(const char * inputStringTargeting);
 int parseCat(char * inputStringTargeting);
 int parseMan(char * inputStringCommandMan);
 int parseMktwr(char ** commandArray);

@@ -80,7 +80,7 @@ int main(int argc, char ** argv)
         terminalWindow(NULL);
         endFrame(d);
         
-        ended = checkIfPlayerDead();
+        //ended = checkIfPlayerDead();
         while (ended) {
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
