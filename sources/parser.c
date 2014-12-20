@@ -46,7 +46,7 @@ int parse(char *inputString)
     testCommandArray(commandArray, numberOfTokens);
     //array of strings, each elem holds a token string from the input command
     int minNumberOfChunks = 2;//as of cat man and upgrade
-    if( numberOfTokens<minNumberOfChunks )
+    if( numberOfTokens < minNumberOfChunks )
     {
         optionUsageError();
         freeCommandArray(commandArray, numberOfTokens);
@@ -410,7 +410,7 @@ void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray)
  */
 int parseUpgrade(char ** commandArray, int numberOfChunks)
 {
-    printf("start parseUpgrade\n");
+//    printf("start parseUpgrade\n");
     cmdOption * statsToUpgradeArray = NULL;
     int numberOfStatsBeingUpgraded = 0;
     
@@ -432,12 +432,11 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         return 0;
     }
     
-    printf("stat array: ");
-    for(int statIter=0; statIter<numberOfStatsBeingUpgraded; ++statIter) {
-        printf("%d ", statsToUpgradeArray[statIter]);
-    }
-
-    printf("\nstart targets \n");
+//    printf("stat array: ");
+//    for(int statIter=0; statIter<numberOfStatsBeingUpgraded; ++statIter) {
+//        printf("%d ", statsToUpgradeArray[statIter]);
+//    }
+//    printf("\nstart targets \n");
 
     //now get targets
     int * targetArray = NULL;
@@ -445,7 +444,6 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     int firstTargetToken = 1+numberOfStatsBeingUpgraded;
     int target = getTargetTower(commandArray[firstTargetToken], true);
     while( firstTargetToken+numberOfTargets < numberOfChunks) {
-        printf("token %d max = %d\n",firstTargetToken+numberOfTargets,numberOfChunks);
         ++numberOfTargets;
         int * tmp = realloc(targetArray, numberOfTargets*sizeof(int));
         if(tmp==NULL) {
@@ -454,6 +452,10 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
         targetArray=tmp;
         targetArray[numberOfTargets-1] = target;
+        if(firstTargetToken+numberOfTargets >= numberOfChunks ) {
+            break;
+        }
+        
         target = getTargetTower(commandArray[firstTargetToken+numberOfTargets], false);
         if(target==0) {
             optionUsageError();
@@ -466,17 +468,16 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         cleanUpParseUpgrade(statsToUpgradeArray,targetArray);
         return 0;
     }
-    printf("tar array: ");
-
-    for(int tarIter=0; tarIter<numberOfTargets; ++tarIter) {
-        printf("%d ", targetArray[tarIter]);
-    }
+//    printf("tar array: ");
+//
+//    for(int tarIter=0; tarIter<numberOfTargets; ++tarIter) {
+//        printf("%d ", targetArray[tarIter]);
+//    }
     for(int statIter=0; statIter<numberOfStatsBeingUpgraded; ++statIter) {
         for(int tarIter=0; tarIter<numberOfTargets; ++tarIter) {
             if(pushToQueue(getQueue(NULL),cmd_upgrade, statsToUpgradeArray[statIter],
                            targetArray[tarIter])>=1) {
-                printf("\n>>> pushed stat = %d tar = %d <<< \n",statsToUpgradeArray[statIter],targetArray[tarIter]);
-
+                 printf("\n>>> pushed stat = %d tar = %d <<< \n",statsToUpgradeArray[statIter],targetArray[tarIter]);
             }
         }
     }
@@ -497,7 +498,7 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
     
     size_t len = strlen(inputStringTargeting);//gets the size of string
-    if( len<(2*sizeof(char)) )
+    if( len<(1*sizeof(char)) )
     {
         terminalWindow("ERROR: You must target a towers with this command");
         char str[100];
@@ -520,14 +521,12 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     unsigned int targetTower = 0;
     if( inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T' ) {
         targetTower = (unsigned int)(inputStringTargeting[1]-'0');
-        printf("getTargetTower read %c\n",inputStringTargeting[1]);
-
+        //        printf("getTargetTower read %c giving %d\n",inputStringTargeting[1],targetTower);
     }
     else {
         targetTower = (unsigned int)(inputStringTargeting[0]-'0');
-        printf("getTargetTower read %c\n",inputStringTargeting[0]);
+        //  printf("getTargetTower read %c giving %d \n",inputStringTargeting[0],targetTower);
     }
-    
     if(targetTower > numberOfTowers || targetTower < 1 )
     {
         terminalWindow("ERROR: target tower does not exist");
