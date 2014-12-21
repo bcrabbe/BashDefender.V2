@@ -180,12 +180,11 @@ void psx_ability()
 			}
 		}
         textToTowerMonitor(psxlist);
+		test_psx_string(psxlist);
 		printf("%s\n", psxlist);
 		psxlist[0] = '\0';
 	}
 }
-
-
 
 void kill_ability(int enemyID)
 {
@@ -214,5 +213,3 @@ int kill_all_ability()
 	//}
 	//return 0;
 }
-
-

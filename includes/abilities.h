@@ -29,4 +29,6 @@ void init_abilities();
 
 int compare_health(const void*a, const void*b);
 
+char *test_psx_string(char *psxlist);
+
 #endif

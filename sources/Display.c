@@ -482,6 +482,8 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
                     
                     pass2 = pass + 2;
                     parse(pass2);
+					//test_string_1(pass2);
+					//test_string_2(clear);
                     strcpy(pass, clear);
                 }
 				//If backspace key is pressed, removes end char of string
@@ -512,7 +514,7 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
     	return 0;
 	}
 }
-
+	
 /*display_text builds textures from surfaces and calls renderer to output them to screen.*/
 void display_text(int x, int y, char *string, int text, SDL_Color colour)
 {

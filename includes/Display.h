@@ -140,6 +140,8 @@ void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 void pause_screen(Display d, int *pause, int *restart);
 int terminal_window(Display d, char *pass, char *clear, int *pause,int restart);
 void menu_screen(Display d, int *started);
+char *test_string_1(char *pass2);
+char *test_string_2(char *clear);
 
 
 int final_screen();

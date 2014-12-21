@@ -21,7 +21,7 @@ int main(int argc, char ** argv)
 	int restart = 0;
     int started = 0;
 	Display d = init_SDL();
-//  testing();
+	testing();
     while(started == 0){
     	menu_screen(d, &started);
     }
@@ -241,19 +241,22 @@ void testing()	{
 
 	setUpTesting();
 	//!Unit Tests	
-	testLevelController(); //! Working
-	testingTowerPositions(); //!Working
-    testingGameStructure(); //!Memory Tests Failing
-    testingActionQueue(); //! Working
+	//testLevelController(); //! Working
+	//testingTowerPositions(); //!Working
+    //testingGameStructure(); //!Memory Tests Failing
+    //testingActionQueue(); //! Working
     //testEnemy(); // ! No longer works.
-    testingTowerModule(); //! working
+    //testingTowerModule(); //! working
+	//testmenuscreen();
+	testTerminalWindowInput();
+	testAbilities();
 
    	//! System Tests 
-   	parseToQueueTesting(); //!Segfaults
+   	//parseToQueueTesting(); //!Segfaults
 	//parseToTowerTesting(); //!Segfaults
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
-	enemyToGamePropertiesTesting();
-    testingInformationWindowModule();
+	//enemyToGamePropertiesTesting();
+    //testingInformationWindowModule();
 
 }
 
@@ -389,3 +392,130 @@ void testValidParses()	{
 	clearQueue();
 }
 
+char *test_psx_string(char *psxlist)
+{
+	static char list[100];
+	if(psxlist != NULL)
+	{
+		strcpy(list, psxlist);
+	}
+	return list;
+}
+
+void testAbilities()
+{
+	sput_start_testing();
+	sput_set_output_stream(NULL);
+	
+	//sput_enter_suite("psx_ability():Testing Abilities - Info window");
+	//sput_run_test(testAbilitiestoInfoWindow);
+	//sput_leave_suite();
+
+	sput_enter_suite("psx_ability(): Testing PSX");
+	sput_run_test(testpsx);
+	sput_leave_suite();
+	
+	sput_enter_suite("kill_all_ability(): Testing Kill all");
+	sput_run_test(testkillall);
+	sput_leave_suite();
+
+	sput_finish_testing();
+}
+
+
+void testpsx()
+{
+	createEnemy();
+	setEnemyHealth(1,100);
+	int enemy_number = getNumberOfEnemies();
+	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
+	psx_ability();
+	sput_fail_if(strlen(test_psx_string(NULL)) == 0, "String not created");
+	killEnemy(1);
+} 
+	
+/*void testAbilitiestoInfoWindow()
+{
+	sput_fail_if(psx_test_result == '0', "Null string passed");
+}
+*/
+void testkillall()
+{
+	createEnemy();
+	setEnemyHealth(1,100);
+	int enemy_number = getNumberOfEnemies();
+
+	sput_fail_if(enemy_number != 2, "Enemies found should = 1");
+	kill_all_ability();
+	sput_fail_unless(getEnemyHealth(1) == 0, "Enemy should be killed");
+}
+
+void testTerminalWindowInput()
+{
+	sput_start_testing();
+	sput_set_output_stream(NULL);
+
+	sput_enter_suite("terminal_window(): Testing, terminal window");
+	sput_run_test(testtermwin);
+	sput_leave_suite();
+
+	sput_finish_testing();
+}
+
+void testtermwin()
+{
+	int *pause;
+	int restart;
+	terminal_window(getDisplayPointer(NULL), ">>", ">>", pause, restart);
+	sput_fail_if(*test_string_1(NULL) == '>', "Incorrect string parsing");
+	sput_fail_if(strlen(test_string_2(NULL)) > 2, "Clear string failure");
+}
+
+char *test_string_1(char *pass2)
+{
+	static char string[128];
+	if(pass2 != NULL)
+	{
+		strcpy(string, pass2);
+	}
+	return string;
+}
+char *test_string_2(char *clear)
+{
+	static char string[128];
+	if(clear != NULL)
+	{
+		strcpy(string, clear);
+	}
+	return string;
+}
+
+
+
+/*
+void testparseterm()
+{
+	sput_fail_if(parse(getParseString() == NULL, "Terminal parse error");
+}
+
+void testmenuscreen()
+{
+	sput_start_testing();
+	sput_set_output_stream(NULL);
+
+	sput_enter_suite("menu_screen(): Testing menu screen");
+	sput_run_test(testmscreen);
+	sput_leave_suite();
+	
+	sput_finish_testing();
+}
+
+void testmscreen()
+{
+	int started = 1;
+	static int events_polled = 0;
+	menu_screen(d, &started);
+	sput_fail_unless(events_polled != 0, "Menu screen polling for events");
+	sput_fail_if(SDL_RenderPresent(d->renderer) == NULL);
+}
+*/
