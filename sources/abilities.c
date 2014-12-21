@@ -213,3 +213,58 @@ int kill_all_ability()
 	//}
 	//return 0;
 }
+
+char *test_psx_string(char *psxlist)
+{
+	static char list[100];
+	if(psxlist != NULL)
+	{
+		strcpy(list, psxlist);
+	}
+	return list;
+}
+
+void testAbilities()
+{
+	sput_start_testing();
+	sput_set_output_stream(NULL);
+	
+	//sput_enter_suite("psx_ability():Testing Abilities - Info window");
+	//sput_run_test(testAbilitiestoInfoWindow);
+	//sput_leave_suite();
+
+	sput_enter_suite("psx_ability(): Testing PSX");
+	sput_run_test(testpsx);
+	sput_leave_suite();
+	
+	sput_enter_suite("kill_all_ability(): Testing Kill all");
+	sput_run_test(testkillall);
+	sput_leave_suite();
+
+	sput_finish_testing();
+}
+
+
+void testpsx()
+{
+	createEnemy();
+	setEnemyHealth(1,100);
+	int enemy_number = getNumberOfEnemies();
+	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
+	psx_ability();
+	sput_fail_if(strlen(test_psx_string(NULL)) == 0, "String not created");
+	killEnemy(1);
+} 
+
+void testkillall()
+{
+	createEnemy();
+	setEnemyHealth(1,100);
+	int enemy_number = getNumberOfEnemies();
+
+	sput_fail_if(enemy_number != 2, "Enemies found should = 1");
+	kill_all_ability();
+	sput_fail_unless(getEnemyHealth(1) == 0, "Enemy should be killed");
+}
+
+

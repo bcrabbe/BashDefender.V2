@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "enemy.h"
+#include "../includes/sput.h"
 
 #define PSX_COST 10
 #define KILL_COST 2000
@@ -30,5 +31,11 @@ void init_abilities();
 int compare_health(const void*a, const void*b);
 
 char *test_psx_string(char *psxlist);
+
+void testAbilities();
+
+void testpsx();
+
+void testkillall();
 
 #endif
