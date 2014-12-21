@@ -681,7 +681,6 @@ void testValidParses()
 	freeAllTowers();
 	clearQueue();
 }
-<<<<<<< HEAD
 
 char *test_psx_string(char *psxlist)
 {
