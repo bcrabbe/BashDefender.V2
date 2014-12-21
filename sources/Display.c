@@ -13,8 +13,8 @@
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 struct display {
     //main objects
@@ -23,7 +23,6 @@ struct display {
     SDL_Renderer *renderer;
     SDL_Rect    srcRect;
     SDL_Rect    rect;
-	SDL_Rect	rect_backup;
     SDL_Event event;
     SDL_Color white;
     SDL_Color red;
@@ -46,6 +45,7 @@ struct display {
 	SDL_Texture *startButton;
     SDL_Texture *reStartButton;
    	SDL_Texture *returnButton; 
+	SDL_Texture *tutorialButton;
 
 	//terminal Window
     SDL_Texture *newtexture;
@@ -55,14 +55,14 @@ struct display {
     SDL_Texture *actionQueueTexture;
 
     //Tower objects
-    SDL_Texture *towerTexture[2];
+    SDL_Texture *towerTexture[3];
     SDL_Texture *towerPositionTexture[26];
 
     //Projectile objects
     SDL_Texture *bulletTexture[3];
 
     //enemy
-    SDL_Texture *enemyTexture[4];
+    SDL_Texture *enemyTexture[5];
     
     //animation
     SDL_Texture *circ1_Texture[2];
@@ -118,6 +118,7 @@ Display init_SDL(){
     init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
     init_pic(&d->startButton, "Images/start-button.png");
 	init_pic(&d->returnButton,"Images/returnButton.png");
+	init_pic(&d->tutorialButton,"Images/tutorialButton.png");
     init_pic(&d->terminalWindowTexture, "Images/terminalwindow.png");
     init_pic(&d->map, "Images/map1.png");
     init_pic(&d->towerPositionTexture[0], "Images/TowerLocationsA.png");
@@ -152,12 +153,14 @@ Display init_SDL(){
     init_pic(&d->enemyTexture[3], "Images/char_enemy_basic.png");
     init_pic(&d->enemyTexture[4], "Images/char_enemy_basic.png");
     init_pic(&d->towerTexture[0], "Images/tower.png");
-    init_pic(&d->towerTexture[1], "Images/tower1.png");
+    init_pic(&d->towerTexture[1], "Images/intTower.png");
+    init_pic(&d->towerTexture[2], "Images/charTower.png");
     init_pic(&d->circ1_Texture[0], "Images/circ1_dark.png");
     init_pic(&d->circ1_Texture[1], "Images/circ1_light.png");
     init_pic(&d->circ2_Texture[0], "Images/circ3_dark.png");
     init_pic(&d->circ2_Texture[1], "Images/circ3_light.png");
-    init_pic(&d->bulletTexture[0], "Images/greenBullet.png");
+    init_pic(&d->bulletTexture[0], "Images/greenBullet2.png");
+    init_pic(&d->bulletTexture[1], "Images/redBullet2.png");
 
     return d;
 }
@@ -261,9 +264,26 @@ void getWindowSize(int *w, int *h){
 }
 
 /*draw damage line from X & Y to target X & Y*/
-void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target){
-    SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, 255);
-    SDL_RenderDrawLine(d->renderer, X_from, Y_from, X_target, Y_target);
+void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType){
+      // choose laser colour depending on type
+      int sat = 5;
+      int adjust = -5;
+    for(int i = 0; i < 10; i++) {
+        
+        if(laserType == INT_TYPE) {
+            SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, sat);
+        } else {
+            SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, sat);
+        }
+        SDL_RenderDrawLine(d->renderer, X_from+adjust, Y_from-adjust, X_target, Y_target);
+        
+        adjust++;
+        if(i < 5) {
+            sat+=25;
+        } else {
+            sat-=25;
+        }
+    }
 }
 
 /* draw an enemy at x and y coor with the health bar above it*/
@@ -320,18 +340,28 @@ void draw_filled_range(int cx, int cy, int r)
 }
 
 /* draws the tower at x and y coor */
-void drawTower(Display d, int x, int y, int w, int h, int range, int type){
-    d->rect= (SDL_Rect) {x, y ,w, h};
-    SDL_RenderCopy(d->renderer, d->towerTexture[type], NULL, &d->rect);
-    SDL_SetRenderDrawColor(d->renderer, 0, 0, 0, 255);
+void drawTower(int x, int y, int w, int h, int type, int range, int frames, int anim_speed, int pic_width, int pic_height){
+    Display d = getDisplayPointer(NULL);
+    Uint32 ticks = SDL_GetTicks();
+    Uint32 sprite = (ticks / anim_speed) % frames;
+    d->srcRect = (SDL_Rect){sprite * (pic_width/frames), 0, (pic_width/frames), pic_height};
+    d->rect = (SDL_Rect) {x, y, w, h};
+    /*create animation by putting part of a spritesheet(image) into destination rect*/
+    SDL_RenderCopy(d->renderer, d->towerTexture[type], &d->srcRect, &d->rect);
     draw_filled_range(x + (double)w/2, y + (double)h/2, range);
 }
 
+
 /* draws projectile */
-void drawBullet(int x, int y, int w, int h) {
+void drawBullet(int x, int y, int w, int h, int bulletType) {
     Display d = getDisplayPointer(NULL);
     d->rect = (SDL_Rect) {x, y, w, h};
-    SDL_RenderCopy(d->renderer, d->bulletTexture[0], NULL, &d->rect);
+      // draw red or green bullet depending on type
+    if(bulletType == INT_TYPE) {
+        SDL_RenderCopy(d->renderer, d->bulletTexture[0], NULL, &d->rect);
+    } else {
+        SDL_RenderCopy(d->renderer, d->bulletTexture[1], NULL, &d->rect);
+    }
 }
   
 
@@ -429,8 +459,8 @@ void updateTowerInformation(int towerX, int towerY, char *string, int towerID) {
     
     int towerWidth = getTowerWidth(towerID);
     
-    displayMonitor(towerX, towerY - 20, towerWidth, 30, d->towerInfoTexture);
-    display_text(towerX + 20, towerY - 10, string, blended, d->red);
+    displayMonitor(towerX - 5, towerY - 20, towerWidth + 10, 30, d->towerInfoTexture);
+    display_text(towerX + 5, towerY - 10, string, blended, d->red);
 }
 
 /**Display output string in terminal window*/
@@ -482,8 +512,8 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
                     
                     pass2 = pass + 2;
                     parse(pass2);
-					//test_string_1(pass2);
-					//test_string_2(clear);
+					test_string_1(pass2);
+					test_string_2(clear);
                     strcpy(pass, clear);
                 }
 				//If backspace key is pressed, removes end char of string
@@ -544,7 +574,7 @@ void display_text(int x, int y, char *string, int text, SDL_Color colour)
     
 }
 
-void menu_screen(Display d, int *started)
+void menu_screen(Display d, gameState *state)
 {
     //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
     animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
@@ -552,7 +582,17 @@ void menu_screen(Display d, int *started)
     d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
 
     SDL_RenderCopy(d->renderer, d->startButton, NULL, &d->rect);
+
+    d->rect = (SDL_Rect) {
+            (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),  //!x
+        ((SCREEN_HEIGHT_GLOBAL/3)*2)+(SCREEN_HEIGHT_GLOBAL/6),      //!y
+            SCREEN_HEIGHT_GLOBAL/6,         //!Width
+            SCREEN_HEIGHT_GLOBAL/6      //!height
+    };
+
+    SDL_RenderCopy(d->renderer, d->tutorialButton, NULL, &d->rect);
 	SDL_RenderPresent(d->renderer);
+
     int check = 0;
     check = (SDL_PollEvent(&d->event));
     if(check != 0)
@@ -561,10 +601,23 @@ void menu_screen(Display d, int *started)
 		{
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)
+				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
+						&& d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
+						&& d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 
+						&&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
-                            *started = 1;
+							//!Start Level
+                            *state = level1;
+							printf("level1\n");
                         }
+				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
+                             && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6
+                             && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 + ((SCREEN_HEIGHT_GLOBAL/6)+5)
+                             &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + (2*(SCREEN_HEIGHT_GLOBAL/6)))    {
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+							*state = tutorial; 
+                        }
+                } 
 			}
 			case SDL_KEYDOWN:
 			{
@@ -624,7 +677,6 @@ void pause_screen(Display d, int *pause, int *restart)
                         if(d->event.button.button == SDL_BUTTON_LEFT){
                             *restart = 1;
                             *pause = 0;
-							printf("restart\n");
 						}
 				}
 			}

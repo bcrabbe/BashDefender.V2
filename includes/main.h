@@ -10,9 +10,19 @@ typedef enum tutPhase {
 	phaseEight = 8,
 	phaseNine = 9,
 	phaseTen = 10,
-	phaseEleven = 11
+	phaseEleven = 11,
+	phaseTwelve = 12,
+	phaseThirteen = 13,
+	phaseFourteen = 14,
+	phaseFifteen = 15,
+	phaseSixteen = 16,
+	phaseSeventeen = 17,
+	phaseEighteen = 18,
+	phaseNineteen = 19,
+	phaseTwenty = 20,
+	phaseTwentyOne = 21,
+	phaseTwentyTwo = 22
 } tutPhase;
-
 
 void quitGame();
 void startLevel(Display d, int *restart);
@@ -20,6 +30,7 @@ void testing();
 void tutorialLevel(Display d,int *restart);
 /*----------System Test Functions-----------*/
 
+void queueToTowerTesting();
 void parseToQueueTesting();
 void parseToTowerTesting();
 void towerToEnemyTesting();
@@ -27,6 +38,8 @@ void enemyToGamePropertiesTesting();
 //void testparseterm();
 
 /*----------Testing Suites-----------*/
+
+void testPopFromQueue();
 void testEnemyDeath();
 void testParseToTower();
 void testValidParses();
@@ -41,3 +54,4 @@ void testkillall();
 char *test_psx_string(char *psxlist);
 char *test_string_1(char *pass2);
 char *test_string_2(char *clear);
+

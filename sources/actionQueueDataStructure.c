@@ -48,12 +48,9 @@ void testingActionQueue()	{
 	sput_set_output_stream(NULL);
 
 	sput_enter_suite("testCheckMem(): memory check");
-    //sput_run_test(testCheckMem);
-    sput_leave_suite();
+    sput_run_test(testCheckMem);
+  	sput_leave_suite();
 	
-	//sput_enter_suite("testPopFromQueue(): Popping from queue");
-	//sput_run_test(testPopFromQueue);
-	//sput_leave_suite();
 
 	sput_enter_suite("testPushToQueue(): Pushing to queue");
 	sput_run_test(testPushToQueue);
@@ -131,7 +128,6 @@ ActionQueueStructure getQueue(ActionQueueStructure queue)	{
  * Pushes values to newly created node at back of queue
  */
 int pushToQueue(ActionQueueStructure queue, cmdType command, cmdOption option, int target)	{
-		printf("pushed to queue\n");
 		createNode(queue);
 		queue->current->command = command;
 		queue->current->option = option;
@@ -146,7 +142,7 @@ void testPushToQueue()	{
     cmdOption nStat_1=upgrade_power;
     int tar_1 = 1;
 
-    cmdType nCommand_2=cmd_execute;
+    cmdType nCommand_2=cmd_upgrade;
     cmdOption nStat_2=upgrade_range;
     int tar_2 = 2;
 
@@ -154,13 +150,16 @@ void testPushToQueue()	{
 
 	sput_fail_unless(pushToQueue(newQueue,nCommand_1,nStat_1,tar_1) == 1,"Valid: 1 Queue Item");
 	sput_fail_unless(pushToQueue(newQueue,nCommand_2,nStat_2,tar_2) == 2,"Valid: 2 Queue Items");
-	sput_fail_unless(getFirstCommand(newQueue) == cmd_upgrade,"Valid: Top of Queue Command");
-	sput_fail_unless(getFirstOption(newQueue) == upgrade_power,"Valid: Top of Queue Option");
-	sput_fail_unless(getLastCommand(newQueue) == cmd_execute,"Valid: Last of Queue Command");
-	sput_fail_unless(getLastOption(newQueue) == upgrade_range,"Valid: Last of Queue Option");
-	addMemory(10);
+	sput_fail_unless(getFirstCommand(newQueue) == cmd_upgrade,"Valid: Top of Queue Upgrade Command");
+	sput_fail_unless(getFirstOption(newQueue) == upgrade_power,"Valid: Top of Queue Power Option");
+	sput_fail_unless(getLastCommand(newQueue) == cmd_upgrade,"Valid: Last in Queue upgrade Command");
+	sput_fail_unless(getLastOption(newQueue) == upgrade_range,"Valid: Last of Queue range Option");
+	pushToQueue(newQueue,cmd_mktwr,mktwr_int,2);
+	sput_fail_unless(getLastCommand(newQueue) == cmd_mktwr,"Valid: Last in Queue make tower command");
+	sput_fail_unless(getLastOption(newQueue) == mktwr_int,"Valid: Last option in Queue is int tower");
 	clearQueue();
 }
+
 /*
  *Returns first command in queue
  */
@@ -182,8 +181,11 @@ cmdType getLastCommand(ActionQueueStructure queue)	{
  */
 cmdOption getFirstOption(ActionQueueStructure queue)	{
 
-	return queue->start->option;
+	if(queue->start != NULL)	{
+		return queue->start->option;	
+	}
 
+	return 0;
 }
 
 /*
@@ -239,6 +241,41 @@ int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
     return 0;
 }
 
+
+
+int costOfUpgradeFactoringInTheUpgradesOnTheQueue( int target, cmdOption stat)
+{
+    ActionQueueStructure q = getQueue(NULL);
+    QueueNode currentNode = q->start;
+    
+    int upgradesToThisStatAndTowerInTheQueue=0;
+    int towerUpgradesToBeCompleted = getUpgradesCompleted(target);
+    int towerLevel = getTowerLevel(target);
+
+   
+    while(currentNode != NULL)
+    {
+        if(currentNode->command == cmd_upgrade &&
+           currentNode->target == target )
+        {
+            ++towerUpgradesToBeCompleted;
+            if(towerUpgradesToBeCompleted % UPGRADES_PER_LEVEL == 0)
+            {
+                ++towerLevel;
+            }
+            if(currentNode->option == stat)
+            {
+                ++upgradesToThisStatAndTowerInTheQueue;
+            }
+        }
+        currentNode=currentNode->nextNode;
+    }
+    int costOfUpgradeWillBe = towerLevel*2*( getCurrentStat(stat,target) +
+                                            upgradesToThisStatAndTowerInTheQueue );
+    return costOfUpgradeWillBe;
+}
+
+
 int getCostOfAptget (cmdOption option)
 {
     if(option==aptget_kill)
@@ -289,36 +326,49 @@ cmdOption upgradeTowerStat(cmdOption stat, int target)  {
             if(upgradeDmg(target))  {
                 return upgrade_power;
             }
-
+			break;
         }
         case upgrade_range:
         {
             if(upgradeRange(target))    {
                 return upgrade_range;
             }
+			break;
         }
         case upgrade_speed:
         {
             if(upgradeSpeed(target))    {
                 return upgrade_speed;
             }
+			break;
         }
         case upgrade_AOErange:
         {
             if(upgradeAOErange(target)) {
                 return upgrade_AOErange;
             }
+			break;
         }
         case upgrade_AOEpower:
         {
             if(upgradeAOEpower(target)) {
                 return upgrade_AOEpower;
             }
+			break;
         }
         default:
             fprintf(stderr,"upgradeTowerStat tower.c: unrecognised stat\n");
             return optionError;
     }
+	return 0;
+}
+
+int startOfQueueCalc()	{
+	ActionQueueStructure queue = getQueue(NULL);
+	if(queue->start != NULL)	{
+		return calculateCosts(queue->start->command,queue->start->option,queue->start->target);
+	}
+	return 0;
 }
 /*
  *Checks start of action Queue for command, and actions it if all criteria are met
@@ -338,7 +388,6 @@ int popToTower()	{
 				}
 				break;
 			case cmd_mktwr:
-				//! request tower type ignored for now.
 				if (checkQueue(queue,Game,needed)) {
 					switch(queue->start->option)	{
 						case mktwr_int:
@@ -431,15 +480,18 @@ int checkMem(int needed, GameProperties Game)	{
 void testCheckMem()	{
 
 	GameProperties testGame;
-    testGame = createGame();
+    testGame = getGame(NULL);
+	setMemory(0);
 	addMemory(10);
 	sput_fail_unless(checkMem(10,testGame) == 1,"boundary Testing enough memory");
 	useMemory(testGame,10);
 	sput_fail_unless(checkMem(50,testGame) == 0,"Testing not enough memory");
 	addMemory(100);
-	sput_fail_unless(checkMem(10,testGame) == 1,"Testing enough memory");
-
-	free(testGame);
+	sput_fail_unless(checkMem(100,testGame) == 1,"Testing enough memory");
+	setMemory(0);
+	test_KillAnEnemy();
+	sput_fail_unless(getAvailableMemory() > 0, "Valid: More memory available after killing an enemy");
+	freeAllEnemies();
 }
 
 /*
@@ -476,6 +528,8 @@ char *getActionQueueString(void) {
                         break;
                     case upgrade_level:
                         strcat(outputString, "level ");
+					default:
+						break;
                 }
                 
                 if(target) {
@@ -492,6 +546,8 @@ char *getActionQueueString(void) {
                     case mktwr_char:
                         strcat(outputString, "CHAR ");
                         break;
+					default:
+						break;
                 }
                 
                 if(target) {

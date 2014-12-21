@@ -134,7 +134,7 @@ int is_available_ability(AbilityID id)
 			exit(1);
 		}
 	}
-	if(a->unlocked == 1 && getTotalMemory() > a->cost)
+	if(a->unlocked == 1)
 	{
 		return 1;
 	}

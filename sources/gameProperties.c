@@ -405,6 +405,18 @@ void freeClocks()	{
 	free(gClock);
 }
 
+ClockNode findClock(clockType cType)	{
+    GameClock gClock = getClock(NULL);
+    ClockNode currNode;
+    currNode = gClock->first;	
+	while(currNode != NULL)	{
+		if (currNode->type == cType)	{
+			return currNode;
+		}
+	   currNode = currNode->next;	
+	}
+	return 0;
+}
 
 int checkClock(clockType cType,int coolDown)	{
 	GameClock gClock = getClock(NULL);
@@ -454,7 +466,8 @@ GameProperties createGame()	{
 
 }
 
-int getEnemyGroupDelay()	{
+int getEnemyGroupDelay()
+{
 	return(getGame(NULL)->createEnemyGroupDelay);
 }
 
@@ -467,18 +480,19 @@ int setCreateEnemyGroupDelay(int delay)	{
 /*
  *Returns amount of Memory available
  */
-int getAvailableMemory()	{
-
+int getAvailableMemory()
+{
 	return getGame(NULL)->totalMemory - getGame(NULL)->memoryUsed;
 }
 
-int getTotalMemory()	{
-
+int getTotalMemory()
+{
 	return getGame(NULL)->totalMemory;
 }
 
 
-void TestGetAvailableMemory()	{
+void TestGetAvailableMemory()
+{
 	GameProperties testGame;
     testGame = createGame();
 	testGame->totalMemory = 10;
@@ -489,7 +503,7 @@ void TestGetAvailableMemory()	{
 /*
  *Adds specified amount of Memory to resources
  */
-int addMemory(int mem)	{
+int addMemory(int mem)          {
 	GameProperties game = getGame(NULL);
 	if(mem > 0)	{
 		game->totalMemory+=mem;	
@@ -497,6 +511,16 @@ int addMemory(int mem)	{
 	} 
 
 	return 0;
+}
+/*
+ *Setting available memory to specified value
+ */
+void setMemory(int newMem)	{
+	GameProperties game = getGame(NULL);
+	if(newMem>= 0)	{
+		game->totalMemory = newMem;
+		game->memoryUsed = 0;
+	}
 }
 
 void TestAddMemory()	{
