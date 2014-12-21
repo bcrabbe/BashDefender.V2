@@ -6,8 +6,10 @@
 #include "enemy.h"
 #include "../includes/sput.h"
 
-#define PSX_COST 10
-#define KILL_COST 2000
+#define PSX_COST 0
+#define KILL_COST 100
+#define KILL_ALL_COST 300
+#define KILL_UNLOCK_COST 500
 
 typedef enum AbilityID 
 {
@@ -16,7 +18,7 @@ typedef enum AbilityID
 }AbilityID;
 
 
-//void kill_ability(int enemyID, Ability *kill);
+int kill_ability(int enemyID);
 
 int kill_all_ability();
 
@@ -37,5 +39,7 @@ void testAbilities();
 void testpsx();
 
 void testkillall();
+
+void apt_get_query();
 
 #endif
