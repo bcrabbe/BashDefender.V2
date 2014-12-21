@@ -65,6 +65,7 @@ int main(int argc, char ** argv)
         statsBar();
         towerMonitor(0, NULL);
         actionQueueMonitor();
+        towerInformation();
 
         terminalWindow(NULL);
         endFrame(d);

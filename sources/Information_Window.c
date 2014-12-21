@@ -119,6 +119,29 @@ void actionQueueMonitor() {
 }
 
 /**
+ Creates tower string for every drawn tower and display
+ */
+void towerInformation() {
+    
+    int numOfTowers = getNumOfTowers();
+    
+    if(numOfTowers > 0) {
+        for(int towerID = 1; towerID <= numOfTowers; ++towerID) {
+            char towerString[10];
+            sprintf(towerString, "Tower %d", towerID);
+            
+            int towerX = getTowerX(towerID);
+            int towerY = getTowerY(towerID);
+            
+            updateTowerInformation(towerX, towerY, towerString, towerID);
+        }
+    }
+    
+    
+    
+}
+
+/**
  Creates default string for tower monitor and sends to tower monitor
  */
 char *getDefaultTowerString() {
