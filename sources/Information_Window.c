@@ -98,11 +98,12 @@ void statsBar() {
     
     int mem = getAvailableMemory(properties);
     int waveNumber = getWave(properties);
+    int totalWaves = getTotalWaves(properties);
     int health = getHealth(properties);
     
     char *outputString = malloc(MAX_OUTPUT_STRING);
     
-    sprintf(outputString, "Available Memory: %dbytes                                                 Wave Number: %d                                                                     Health: %d", mem, waveNumber, health);
+    sprintf(outputString, "Available Memory: %dbytes                                                 Wave: %d / %d                                                                     Health: %d", mem, waveNumber, totalWaves, health);
     
     updateStatsBar(outputString);
 }

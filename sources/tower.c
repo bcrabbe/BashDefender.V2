@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "../includes/tower.h"
 #include "../includes/sput.h"
 #include "../includes/debug.h"
 
 #define MAX_COOLDOWN 100 // the longest number of ticks that a tower can take between shots
+#define BUILDUP_DISTANCE 100 // the distance the missiles travel during their buildup stage
 
 struct tower {
     int towerType;
@@ -43,6 +45,7 @@ struct towerPosNode	{
 	tPosIcon tIcon;
 	int x;
 	int y;
+	BOOL empty; 	// True is empty, false is full 
 
 };
 
@@ -50,6 +53,8 @@ struct projectileNode {
   int x, y;
   int h, w;
   int originX, originY;
+  int buildUpX, buildUpY;
+  int centreX, centreY;
   
   int damageType;
   FiringMethod whatProjectile;
@@ -63,6 +68,8 @@ struct projectileNode {
   
   int movesMade;
   int movesToTarget;
+  int movesForBuildUp;
+  int buildUpH, buildUpW;
   
   ProjectileNode next;
 };
@@ -70,6 +77,7 @@ struct projectileNode {
 struct projectileList {
   ProjectileNode start, current, last;
 } ;
+
 
 ProjectileNode newProjectileNode()
 {
@@ -114,7 +122,109 @@ void launchBullet(int firedX, int firedY, int damage, int targetID, int firingTy
   newNode->targetCoords[0] = newNode->targetCoords[0] - (newNode->w/2);
   newNode->targetCoords[1] = newNode->targetCoords[1] - (newNode->h/2);
   
-  // add the bullet to the linked list
+    // add it to the list
+  addToProjectileList(newNode);
+  
+}
+
+void launchMissile(int firedX, int firedY, int damage, int targetID, int firingType)
+{
+  // make the missile
+  ProjectileNode newNode = newProjectileNode();
+  newNode->whatProjectile = missile;
+  
+  newNode->movesMade = 0;
+  newNode->movesForBuildUp = 50;
+  newNode->movesToTarget = 7;
+  
+  newNode->h = 3;
+  newNode->w = 3;
+  
+  newNode->centreX = firedX;
+  newNode->centreY = firedY;
+  newNode->x = firedX-(newNode->w/2);
+  newNode->y = firedY-(newNode->h/2);
+  newNode->originX = firedX;
+  newNode->originY = firedY;
+  
+  newNode->damage = damage;
+  newNode->aoeDamage = 0;
+  newNode->aoeRange = 0;
+  
+  newNode->targetID = targetID;
+  getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget+newNode->movesForBuildUp);
+  
+ // printf("X: %d, Y: %d\n",newNode->targetCoords[0], newNode->targetCoords[1]);
+ // drawRect(newNode->targetCoords[0], newNode->targetCoords[1], 208, 16, 10, 10, 1, 1);
+  
+  
+  getBuildUpCoords(newNode->originX, newNode->originY, &newNode->buildUpX, &newNode->buildUpY);
+  
+    // add it to the list
+  addToProjectileList(newNode);
+    
+}
+
+/*
+*  sets the destination of the missile's build up phase
+*/
+void getBuildUpCoords(int firedX, int firedY, int *buildUpX, int *buildUpY)
+{
+  
+  int randChecker = 0; //counter to check for loop in while statement below
+  int x, y, xAdjust, yAdjust;
+  
+    // set x and y to be random value between -10 & 10
+  while( (x = (rand()%21) - 10) + (y = (rand()%21) - 10) == 0) {
+    randChecker++;
+    if(randChecker > 100) {
+      fprintf(stderr,"****ERROR missile has looped more than 100 times trying to find a missile coordinate (tower.c) ****\n");
+      exit(1);
+    }
+  }
+  
+  double calcX, calcY;
+  if(x < 0) {
+    calcX = (double)(-x);
+  } else {
+    calcX = (double) x;
+  }
+  
+  if(y < 0) {
+    calcY = (double)(-y);
+  } else {
+    calcY = (double) y;
+  }
+  
+    // get a build up target that is a set number of pixels away
+  //double hypotenuse = sqrt( pow((double) x, 2) + pow((double) y, 2) );
+  double angle = atan(calcY/calcX);
+  
+  calcY = BUILDUP_DISTANCE * sin(angle);
+  calcX = BUILDUP_DISTANCE * cos(angle);
+  
+  // set x & y to adjusted values
+  
+    if(x < 0) {
+    xAdjust = (int)(-calcX);
+  } else {
+    xAdjust = (int)calcX;
+  }
+  
+  if(y < 0) {
+    yAdjust = (int)(-calcY);
+  } else {
+    yAdjust = (int)calcY;
+  }
+  
+  // set the build up coordinates based on the calculated values and starting coordinates
+    *buildUpX = firedX+xAdjust;
+    *buildUpY = firedY+yAdjust;
+  
+}
+
+void addToProjectileList(ProjectileNode newNode)
+{
   ProjectileList pL = getProjectileList(NULL);
   
   if(pL->start == NULL) {
@@ -127,6 +237,36 @@ void launchBullet(int firedX, int firedY, int damage, int targetID, int firingTy
   }
 }
 
+void moveMissile(ProjectileNode missile) {
+
+  missile->movesMade++;
+  if(missile->movesMade == missile->movesToTarget+missile->movesForBuildUp) {
+    
+    missile->x = missile->targetCoords[0] - missile->w;
+    missile->y = missile->targetCoords[1] - missile->h;
+    damageEnemy(missile->damage, missile->targetID, missile->damageType);
+    
+    removeProjectileNode(missile);
+  } else {
+    if(missile->movesMade <= missile->movesForBuildUp) {
+      missile->centreX = missile->originX + (int) ((double)(missile->buildUpX-missile->originX)/(double)20);
+      missile->centreY = missile->originY + (int) ((double)(missile->buildUpY-missile->originY)/(double)20);
+      missile->originX = missile->centreX;
+      missile->originY = missile->centreY;
+      
+      missile->h = 3 + (int)( (double)12 * ( (double)missile->movesMade/(double)missile->movesForBuildUp) );
+      missile->w = 3 + (int)( (double)12 * ( (double)missile->movesMade/(double)missile->movesForBuildUp) );
+      
+      missile->x = missile->centreX-(missile->w/2);
+      missile->y = missile->centreY-(missile->h/2);
+    } else {
+        missile->x = missile->originX + (int) ( ((double)(missile->targetCoords[0]-missile->originX)/(double) (missile->movesToTarget)) * (missile->movesMade-missile->movesForBuildUp));
+        missile->y = missile->originY + (int) ( ((double)(missile->targetCoords[1]-missile->originY)/(double) (missile->movesToTarget)) * (missile->movesMade-missile->movesForBuildUp));
+    }
+  }
+}
+      
+  
 void moveBullet(ProjectileNode bullet) {
   
   bullet->movesMade++;
@@ -134,7 +274,7 @@ void moveBullet(ProjectileNode bullet) {
     
     bullet->x = bullet->targetCoords[0];
     bullet->y = bullet->targetCoords[1];
-    damageEnemy(bullet->damage, bullet->targetID);
+    damageEnemy(bullet->damage, bullet->targetID, bullet->damageType);
     
     removeProjectileNode(bullet);
   } else {
@@ -184,6 +324,7 @@ void moveProjectiles() {
     while(!finished) {
       switch(pL->current->whatProjectile) {
         case missile :
+          moveMissile(pL->current); 
           break;
         case bullet :
           moveBullet(pL->current);
@@ -279,15 +420,19 @@ TowerPos getTowerPos(TowerPos tPos)	{
  *Add a new tower position
  */
 void addTowerPosNode(int x, int y)	{
-
 		TowerPos tPos = getTowerPos(NULL);
 		tPos->numberOfPositions++;
 		tPos->towerPositions = (TowerPosNode*) realloc(tPos->towerPositions, (tPos->numberOfPositions+1)*(sizeof(*(tPos->towerPositions))));
 		TowerPosNode newTower = (TowerPosNode) malloc(sizeof(*newTower));
-		newTower->x = x;
-		newTower->y = y;
+		newTower->empty = TRUE; //! Tower position is available
+		newTower->x = (int) scaleTowerPos(x,SCREEN_WIDTH_GLOBAL,MAX_TOWER_X);
+		newTower->y = (int) scaleTowerPos(y,SCREEN_HEIGHT_GLOBAL,MAX_TOWER_Y);
 		newTower->tIcon = tPos->numberOfPositions;
 		tPos->towerPositions[tPos->numberOfPositions] = newTower;
+}
+
+double scaleTowerPos(int coord, int scaleAxis, int scaleMax)	{
+	return ((double) coord * ((double) scaleAxis/ (double) scaleMax) );
 }
 
 void drawAllTowerPositions()	{
@@ -295,7 +440,9 @@ void drawAllTowerPositions()	{
 	TowerPos tPos = getTowerPos(NULL);
 	int t;
 	for(t = 1; t <= tPos->numberOfPositions;t++)	{
-		drawTowerPosition(tPos->towerPositions[t]->x,tPos->towerPositions[t]->y,50,50,tPos->towerPositions[t]->tIcon);
+		if(tPos->towerPositions[t]->empty == TRUE)	{
+			drawTowerPosition(tPos->towerPositions[t]->x,tPos->towerPositions[t]->y,50,50,tPos->towerPositions[t]->tIcon);
+		}
 	}
 
 }
@@ -308,6 +455,12 @@ void freeAllTowerPositions()	{
 	}
 
 	free(tPos);
+
+}
+
+int getNumOfTowerPositions()	{
+	
+	return getTowerPos(NULL)->numberOfPositions;
 
 }
 
@@ -325,25 +478,29 @@ void testingTowerPositions()	{
 }
 
 void testTowerCreation()	{
-
+	
 	addTowerPosNode(100,200);
-	sput_fail_unless(getSpecifiedTowerPosX(1) == 100, "Tower position 1 x coord is 100");
-	sput_fail_unless(getSpecifiedTowerPosY(1) == 200, "Tower position 1 y coord is 200");
-	addTowerPosNode(300,500);
-	sput_fail_unless(getSpecifiedTowerPosX(2) == 300, "Tower position 2 x coord is 300");
-	sput_fail_unless(getSpecifiedTowerPosY(2) == 500, "Tower position 2 y coord is 500");
+	iprint(getLastTowerPositionX());
+	sput_fail_unless(getLastTowerPositionX() == (int) scaleTowerPos(100,SCREEN_WIDTH_GLOBAL,MAX_TOWER_X), "Newly Added Tower position x coord is correct");
+	sput_fail_unless(getLastTowerPositionY() == (int) scaleTowerPos(200,SCREEN_HEIGHT_GLOBAL,MAX_TOWER_Y), "Newly Added Tower position y coord is correct");
 }
 
 int getSpecifiedTowerPosX(int postion)	{
-
 	TowerPos tPos = getTowerPos(NULL);
 	return tPos->towerPositions[postion]->x;
 }
 
 int getSpecifiedTowerPosY(int postion)	{
-
 	TowerPos tPos = getTowerPos(NULL);
 	return tPos->towerPositions[postion]->y;
+}
+
+int getLastTowerPositionY()	{
+	return getSpecifiedTowerPosY(getTowerPos(NULL)->numberOfPositions);
+}
+
+int getLastTowerPositionX()	{
+	return getSpecifiedTowerPosX(getTowerPos(NULL)->numberOfPositions);
 }
 
 int getTowerRange(int towerID)	{
@@ -369,12 +526,8 @@ void testingTowerModule()	{
 	sput_start_testing();
 	sput_set_output_stream(NULL);	
 
-	sput_enter_suite("testGetTower(): Tower creation and being placed in tower array");
+	sput_enter_suite("testGetTower(): Tower creation at valid positions and being placed in tower array");
 	sput_run_test(testGetTower);
-	sput_leave_suite();
-	
-	sput_enter_suite("testUpgradeTowerStat(): Upgrading tower stats");
-	sput_run_test(testUpgradeTowerStat);
 	sput_leave_suite();
 
 	sput_finish_testing();
@@ -429,13 +582,50 @@ tower createTower() {
 /*
  *Wrapper to pass in allowed tower positions to useCreateTower function
  */
-void createTowerFromPositions(int position)	{
+int createTowerFromPositions(int position)	{
 	TowerPos tPos = getTowerPos(NULL);
-	printf("test\n");
-	iprint(tPos->towerPositions[position]->x);
-	userCreateTower(tPos->towerPositions[position]->x,tPos->towerPositions[position]->y);
-
+	if((position > 0) && (position <= tPos->numberOfPositions) && (tPos->towerPositions[position]->empty == TRUE))	{
+		userCreateTower(tPos->towerPositions[position]->x,tPos->towerPositions[position]->y);
+		tPos->towerPositions[position]->empty = FALSE;
+		return 1;
+	}
+	return 0;
 }
+char maxTowerPositionChar()
+{
+    TowerPos tPos = getTowerPos(NULL);
+    char positionChar = tPos->numberOfPositions + 'a' - 1;
+    return toupper(positionChar);
+}
+int maxTowerPosition() {
+    TowerPos tPos = getTowerPos(NULL);
+    return  tPos->numberOfPositions;
+}
+int isTowerPositionAvailable(int position)	{
+	TowerPos tPos = getTowerPos(NULL);
+    if( position < tPos->numberOfPositions ) {
+        return tPos->towerPositions[position]->empty;
+    }
+    else {
+        return 0;
+    }
+}
+
+/*
+* changes the type of the tower (int/char) to the specified type. Returns 1 if successful, 0 if tower ID doesn't exist.
+*/
+int setTowerType(int towerID, int newType) {
+
+  tower t;
+  if((t = getTowerID(towerID)) == NULL) {
+    return 0;
+  }
+  else {
+    t->towerType = newType;
+    return 1;
+  }
+}
+  
 
 /* called when create tower command input by player. Places a tower at the specified x y.
     returns total number of towers if succesful
@@ -476,7 +666,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->x = TowerPositionX;
     newTow->y = TowerPositionY;
     newTow->towerType = INT_TYPE;
-    newTow->firingType = bullet;
+    newTow->firingType = missile;
 
     newTow->damage = 20;
     newTow->range = 200;
@@ -558,20 +748,6 @@ int upgradeAOErange(int target)
 
 
 
-void testUpgradeTowerStat()	{
-
-	createLevelPaths();
-	createTowerGroup();
-	tower t1 = createTower();
-	tower t2 = createTower();
-	//sput_fail_unless(upgradeTowerStat(power,1) == power,"Valid Power Upgrade: tower one for upgrade");
-	//sput_fail_unless(upgradeTowerStat(power,1) == power,"Valid Power Upgrade: Tower two for upgrade");
-	//sput_fail_unless(upgradeTowerStat(0,1) == 0, " Invalid: Passing invalid upgrade");
-	//sput_fail_unless(upgradeTowerStat(power,3) == 0, " Invalid: Passing invalid target");
-	free(t1);
-	free(t2);
-}
-
 unsigned int getNumberOfTowers()	{
 	return ((getTowerGrp(NULL))->numOfTowers);
 }
@@ -584,20 +760,25 @@ void freeAllTowers()	{
 		free(getTowerGrp(NULL)->listOfTowers[i]);
 		i++;
 	}
+	if(getTowerGrp(NULL)->numOfTowers != 0)	{
+		getTowerGrp(NULL)->numOfTowers -=i;
+	}
 }
 
 void testGetTower()	{
-
-	createLevelPaths();
-	createTowerGroup();
-	createTower();
+	
+	freeAllTowers();
+	createTowerFromPositions(1);
 	sput_fail_unless(getNumberOfTowers() == 1, "Valid: Number of towers held in group is one.");
 	sput_fail_unless(getTowerID(1) != NULL,"Valid: Tower with ID 1 exists.");
-	createTower();
+	createTowerFromPositions(2);
 	sput_fail_unless(getNumberOfTowers() == 2, "Valid: Number of towers held in group is two");
 	sput_fail_unless(getTowerID(2) != NULL,"Valid: Tower with ID 2 exists.");
 	freeAllTowers();
-	free(getTowerGrp(NULL));
+	sput_fail_unless(getNumberOfTowers() == 0,"valid: All towers have been removed.");
+	sput_fail_unless(createTowerFromPositions(99) == 0, "Invalid: no tower position 99");
+	sput_fail_unless(createTowerFromPositions(0) == 0, "Invalid: no tower position 0");
+	sput_fail_unless(getNumberOfTowers() == 0,"valid: No Towers: previous attempts were invalid");
 }
 
 tower getTowerPointer(tower updatedT) {
@@ -662,6 +843,7 @@ int getTowerY(int towerID)
     TowerGroup TG = getTowerGrp(NULL);
     return TG->listOfTowers[towerID]->y;
 }
+
 
 int setTowerY(int towerID, int newY)	{
 
@@ -759,9 +941,10 @@ void fire() {
                 switch (currentTower->firingType) {
                   case laser :
                     currentTower->drawLaserCount = currentTower->drawLaserMaxCount;
-                    damageEnemy(currentTower->damage, currentTower->targetID);
+                    damageEnemy(currentTower->damage, currentTower->targetID, currentTower->towerType);
                     break;
                   case missile :
+                    launchMissile(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
                     break;
                   case bullet :
                     launchBullet(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);

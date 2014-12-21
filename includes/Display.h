@@ -57,6 +57,9 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #define MAP_WIDTH SCREEN_WIDTH_GLOBAL
 #define MAP_HEIGHT	(SCREEN_HEIGHT_GLOBAL - TOWER_MONITOR_HEIGHT)
 
+//Tower Position Dimensions
+#define MAX_TOWER_X	1000
+#define MAX_TOWER_Y	1000
 
 #include <stdlib.h>
 #include <string.h>
