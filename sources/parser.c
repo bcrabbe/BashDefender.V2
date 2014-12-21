@@ -168,19 +168,7 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
     }
 }
-/*
- *
- */
-void parseForLoop(char * inputString)
-{
-    int numberOfLines=0;
-    char ** lineArray = breakUpString(inputString, &numberOfLines, ";");
-    if(numberOfLines<3)
-    {
-        
-    }
-    //   free(variableName);
-}
+
 /*
  *
  */
