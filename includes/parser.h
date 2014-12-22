@@ -46,6 +46,10 @@ int parseMan(char * inputStringCommandMan);
 int parseAptget(char * aptToGetString);
 int parseCommands(char ** commandArray, int numberOfTokens);
 
+/*Test functions*/
+void testingParserModule();
+int test1();
+
 
 
 #endif

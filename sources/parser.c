@@ -18,6 +18,7 @@
 #include "../includes/Information_Window.h"
 #include "../includes/abilities.h"
 #include "../includes/enemy.h"
+#include "../includes/sput.h"
 
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
 int parseMktwr(char ** commandArray, int numberOfTokens);
@@ -911,3 +912,26 @@ stringList * intialiseOptionList()
     
     return optionsList;
 }
+
+/*Parser Test Functions*/
+
+void testingParserModule()	{
+    sput_start_testing();
+    sput_set_output_stream(NULL);
+    
+    sput_enter_suite("test1(): Testing sput");
+    //sput_run_test();
+    sput_leave_suite();
+    
+    sput_finish_testing();
+    
+}
+
+/*int testParseKill() {
+    char *commandKillMinus9[2] = {NULL, "kill -9"};
+    char *commandKillAll[2] = {NULL, "kill *"};
+    char *commandError[2] = {NULL, "random"};
+}*/
+
+
+
