@@ -347,6 +347,7 @@ void initLevel(int level)    {
 	createProjectileList();
 	initialiseParser();
 	init_abilities();
+    destroyCommandList();
 }
 
 void createLevelClocks()	{
@@ -542,6 +543,7 @@ void setUpTesting()	{
     createProjectileList();
     initialiseParser();
     init_abilities();
+    initialQueueReader();
 }
 
 void testLevelController()	{
