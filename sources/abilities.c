@@ -163,6 +163,7 @@ void apt_get_query()
 	char killlocked[50] = "Kill ability is locked\n";
 	char psxunlocked[50] = "PSX ability is unlocked\n";
 	char killunlocked[50] = "Kill ability is unlocked\n";
+	char killunlockcost[50] = {'\0'};
 	Abilities *a;	
 	Ability *b, *c;
 
@@ -188,8 +189,10 @@ void apt_get_query()
 		strcat(statuslist, killlocked);
 	}
 
-	sprintf(statuslist, "Kill ability unlock cost = %d", KILL_UNLOCK_COST);
+	sprintf(killunlockcost, "Kill ability unlock cost = %d", KILL_UNLOCK_COST);
+	strcat(statuslist, killunlockcost);
 	textToTowerMonitor(statuslist);
+	statuslist[0] = '\0';
 } 
 	
 

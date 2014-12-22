@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 
 int main(int argc, char ** argv)
@@ -30,7 +30,6 @@ int main(int argc, char ** argv)
         exit(EXIT_SUCCESS);
     }
 	int restart = 0;
-    int started = 0;
     
     srand(time(NULL));
 	gameState state = menu;
