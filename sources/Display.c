@@ -275,6 +275,7 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int
       // choose laser colour depending on type
       int sat = 5;
       int adjust = -5;
+      SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
     for(int i = 0; i < 10; i++) {
         
         if(laserType == INT_TYPE) {
@@ -370,7 +371,26 @@ void drawBullet(int x, int y, int w, int h, int bulletType) {
         SDL_RenderCopy(d->renderer, d->bulletTexture[1], NULL, &d->rect);
     }
 }
-  
+
+/* draws AOE range */
+void drawAOE(int damageType, int x, int y, int range, int currentCount, int maxCount) {
+    Display d = getDisplayPointer(NULL);
+    
+    float saturation = MAX_AOE_SATURATION - ( ((float)currentCount/(float)maxCount) * MAX_AOE_SATURATION);
+    SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
+    
+    if(damageType == INT_TYPE) {
+        SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, saturation);
+    } else {
+        SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, saturation);
+    }
+    
+    for (double dy = 1; dy <= range; dy += 1.0) {
+        double dx = floor(sqrt((2.0 * range * dy) - (dy * dy)));
+        SDL_RenderDrawLine(d->renderer, x-dx, y+range-dy, x+dx, y+range-dy);
+        SDL_RenderDrawLine(d->renderer, x-dx, y-range+dy, x+dx, y-range+dy);
+    }
+}
 
 /*clear the screen before making any drawings */
 void startFrame(Display d) {

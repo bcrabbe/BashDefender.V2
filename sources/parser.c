@@ -154,6 +154,11 @@ void testChmod();
 void testParsePs();
 void testAptget();
 void testParseMktwr();
+void testMan();
+void testCat();
+void testUpgrade();
+
+void testParseWhile();
 
 
 #pragma mark mainFuntion
@@ -520,7 +525,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         errorToTerminalWindow("ERROR: mktwr expected a type (int, or char) as its first argument");
         return 0;
     }
-    static int numberOfCommandsPushed = 0;
+    int numberOfCommandsPushed = 0;
     
     int token = 2;
     while(token < numberOfTokens)
@@ -544,6 +549,8 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         {
             if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
             {
+                
+                printf(">>> pushed mktwr to queue <<<\n");
                 ++numberOfCommandsPushed;
             }
         }
@@ -606,6 +613,11 @@ int parseMan(char * inputStringCommandMan)
         case cmd_mktwr:
         {
             textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\n mktwr\n\n Builds a new tower. Accepts a tower type either int or char as the second argument and one or more position to build on. e.g. mktwr int a b c d    or    mktwr char a,b,d,e,g etc..");
+            return 1;
+        }
+        case cmd_aptget:
+        {
+            apt_get_query();
             return 1;
         }
         default:
@@ -672,14 +684,13 @@ int parseCat(char * inputStringTargeting)
  */
 int parseUpgrade(char ** commandArray, int numberOfChunks)
 {
-    static cmdOption * statsToUpgradeArray = NULL;
+    cmdOption * statsToUpgradeArray = NULL;
     int numberOfStatsBeingUpgraded = 0;
     int atToken = 1;
     while(atToken < numberOfChunks)
     {
         cmdOption statToUpgrade = getCommandOption(commandArray[atToken]);
         if(statToUpgrade==-1) break;
-        iprint(statToUpgrade);
         if(statToUpgrade<=0 || statToUpgrade>6)
         {
             if(tolower(commandArray[atToken][0])=='t' || tolower(commandArray[atToken][0])=='-')
@@ -688,8 +699,11 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
             }
             else
             {
-                char str[100];
+                printf("herer\n\n");
+
+                char str[200];
                 sprintf(str,"ERROR: %s is not a valid tower stat.",commandArray[atToken]);
+                fprintf(stderr,"%s\n",str);
                 errorToTerminalWindow(str);
                 return 0;
             }
@@ -712,6 +726,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         char str[100];
         sprintf(str,"ERROR: upgrade expected a tower stat as its 1st argument");
         errorToTerminalWindow(str);
+        fprintf(stderr,"%s\n",str);
         cleanUpParseUpgrade(statsToUpgradeArray,NULL);
         return 0;
     }
@@ -745,6 +760,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         char str[100];
         sprintf(str,"ERROR: you must specify a tower to upgrade");
         errorToTerminalWindow(str);
+        fprintf(stderr,"%s\n",str);
         cleanUpParseUpgrade(statsToUpgradeArray,targetArray);
         return 0;
     }
@@ -756,7 +772,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
             if(pushToQueue(getQueue(NULL),cmd_upgrade, statsToUpgradeArray[statIter],
                            targetArray[tarIter])>=1)
             {
-                 printf("\n>>> pushed stat %d to tar %d <<< \n",statsToUpgradeArray[statIter],
+                 printf(">>> pushed stat %d to tar %d <<< \n",statsToUpgradeArray[statIter],
                         targetArray[tarIter]);
             }
         }
@@ -798,7 +814,6 @@ upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct *
     {
         if(storedUpgradeStuct)
         {
-            
             free(storedUpgradeStuct->tarArray);
             free(storedUpgradeStuct->statArray);
             free(storedUpgradeStuct);
@@ -955,7 +970,7 @@ int parseWhile(char *inputString)
                 freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
                 freeCommandArray(commandArray,numberOfTokensInCommandArray);
                 freeCommandArray(conditionArray,numberOfOperands);
-                return 1;
+                return 0;
             }
             if(op==greaterThan)
             {
@@ -977,6 +992,10 @@ int parseWhile(char *inputString)
                         return 0;
                     }
                 }
+                freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
+                freeCommandArray(commandArray,numberOfTokensInCommandArray);
+                freeCommandArray(conditionArray,numberOfOperands);
+                return 1;
             }
             if(op==greaterThanOrEqualTo)
             {
@@ -998,6 +1017,10 @@ int parseWhile(char *inputString)
                         return 0;
                     }
                 }
+                freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
+                freeCommandArray(commandArray,numberOfTokensInCommandArray);
+                freeCommandArray(conditionArray,numberOfOperands);
+                return 1;
             }
             if(op==lessThan)
             {
@@ -1019,6 +1042,10 @@ int parseWhile(char *inputString)
                         return 0;
                     }
                 }
+                freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
+                freeCommandArray(commandArray,numberOfTokensInCommandArray);
+                freeCommandArray(conditionArray,numberOfOperands);
+                return 1;
             }
             if(op==lessThanOrEqualTo)
             {
@@ -1040,11 +1067,15 @@ int parseWhile(char *inputString)
                         return 0;
                     }
                 }
+                freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
+                freeCommandArray(commandArray,numberOfTokensInCommandArray);
+                freeCommandArray(conditionArray,numberOfOperands);
+                return 1;
             }
         }
     }
     freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
-    return 0;
+    return 1;
 }
 
 envVar * returnEnvVar(char * stringToMatch)
@@ -1082,28 +1113,17 @@ int updateMemValue(cmdType command)
     if(command == cmd_mktwr)
     {
         mem->value -= getCostOfMktwr();
-        iprint(getCostOfMktwr());
         return mem->value;
     }
     if(command == cmd_upgrade)
     {
-        iprint(getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) ));
         mem->value -= getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
         return mem->value;
     }
     return mem->value;//stops warnings
-
 }
 int getCostOfMktwr()
 {
-    /*int costs=0;
-    int numberOfMktwrsPushed = numberOfMktwrLastPushed(0);
-    iprint(numberOfMktwrsPushed);
-    for(int i = 0; i < numberOfMktwrsPushed; ++i)
-    {
-        costs += calculateCosts(cmd_mktwr,0,0);
-    }*/
-    
     return calculateCosts(cmd_mktwr,0,0);
 }
 
@@ -1138,13 +1158,26 @@ int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
     {
         return 1;
     }
-    else if( strcmp(variable->name,"mem")==0 && !(op==greaterThanOrEqualTo || op==greaterThan)  )
+    else if( strcmp(variable->name,"mem")==0 )
     {
-        return 1;
+        if( op!=greaterThanOrEqualTo && op!=greaterThan )
+        {
+            char termErrString[100];
+            sprintf(termErrString,"ERROR: testing against mem value with a operator other than > or >= would lead to an infinite loop\n");
+            fprintf(stderr,"%s \n",termErrString);
+            errorToTerminalWindow(termErrString);
+            return 1;
+        }
     }
-    else if( strcmp(variable->name,"tows")==0 && (command==cmd_upgrade || !(op==lessThan || op==lessThanOrEqualTo) ) )
+    else if( strcmp(variable->name,"tows")==0)
     {
-        return 1;
+        if( command==cmd_upgrade)
+        {
+            if( op!=lessThan && op!=lessThanOrEqualTo )
+            {
+                return 1;
+            }
+        }
     }
     else
     {
@@ -1160,7 +1193,6 @@ void makeStringForOperator(operator op, char * string)
         case not:
             string[0] = '!';
             string[1] = '\0';
-            
             return;
         case greaterThan:
             string[0] = '>';
@@ -1417,7 +1449,7 @@ cmdType getCommandType(char * firstToken)
                     command = cmd_upgrade;
                     break;
                 case 2:
-                    //command = cmd_execute; NOT IMPLEMENTED
+                    command = cmd_execute; //NOT IMPLEMENTED
                     break;
                 case 3:
                     command = cmd_chmod;
@@ -1851,6 +1883,24 @@ void testParser()
     sput_run_test(testParseMktwr);
     sput_leave_suite();
 
+    sput_enter_suite("testMan");
+    sput_run_test(testMan);
+    sput_leave_suite();
+    
+    sput_enter_suite("testCat");
+    sput_run_test(testCat);
+    sput_leave_suite();
+
+    sput_enter_suite("testUpgrade");
+    sput_run_test(testUpgrade);
+    sput_leave_suite();
+    
+    sput_enter_suite("testParseWhile");
+    sput_run_test(testParseWhile);
+    sput_leave_suite();
+
+
+    
     sput_finish_testing();
 }
 #pragma mark unitTests_genericFunctions
@@ -1937,6 +1987,7 @@ void testGetTargetTower()
 
 void testGetTargetEnemy()
 {
+    freeAllEnemies();
     createTestEnemy();
     printf("%d enemies \n",getNumberOfEnemies());
     sput_fail_unless(getTargetEnemy("")==0,"calling with empty string should return 0 and error message");
@@ -2120,7 +2171,7 @@ void testAptget()
     sput_fail_unless(parse("apt-get p")==0, "parse(""apt-get p"")==0, p is valid argument but not valid argument of apt-get command -> error message and return 0");
     sput_fail_unless(parse("apt-get kill")==1, "parse(""apt-get kill"")==1, correct syntax -> pushes request to queue and return 1");
     
-    //sput_fail_unless(parse("ps kill")==0, "parse(""ps kill"")==0, kill is already installed -> error message and return 0");
+    sput_fail_unless(parse("ps kill")==0, "parse(""ps kill"")==0, kill is already installed -> error message and return 0");
 }
 
 
@@ -2128,6 +2179,9 @@ void testParseMktwr()
 {
     //clear any towers so that we can make more
     freeAllTowers();
+    iprint(getNumberOfTowers());
+    cprint(maxTowerPositionChar());
+
     sput_fail_unless(parse("mktwr char")==0,
                      "parse(""mktwr char"")==0, too few arguments -> error message and return 0");
     sput_fail_unless(parse("mktwr p U")==0,
@@ -2143,15 +2197,17 @@ void testParseMktwr()
     {
         char str[100];
         sprintf(str,"mktwr int %c",twrPosition);
-        printf("testing:: %s\n",str);
+        printf("\ntesting:: %s\n",str);
         sput_fail_unless(parse(str)==1,
                          "parse(""mktwr int %c"")==1, is valid command -> push 1 tower and return 1");
+        createTowerFromPositions((int)tolower(twrPosition)-'a'+1);
+        iprint(isTowerPositionAvailable((int)tolower(twrPosition)-'a'+1));
         sput_fail_unless(parse(str)==0,
                          "parse(""mktwr int %c"")==0, building on same location again is invalid -> print error and return 0");
     }
     
     freeAllTowers();
-    char cmd[200]="mktwr char";
+    char cmd[200]="mktwr char ";
 
     for(char twrPosition = 'a'; twrPosition<=tolower(maxTowerPositionChar()); ++twrPosition)
     {
@@ -2163,8 +2219,109 @@ void testParseMktwr()
 
     sput_fail_unless(parse(cmd)==maxTowerPosition(),
                      "parse(""mktwr int a b c d e f g...maxTowerPositionChar()"")==maxTowerPosition(), is valid command -> psuh maxTowerPosition() towers and return maxTowerPosition()");
-    
-    
-
 }
+
+void testMan()
+{
+    sput_fail_unless(parse("man s sd")==0,"parse(""man s sd"")=0, too many arguments -> error message and return 0");
+    sput_fail_unless(parse("man test")==0,"parse(""man test"")=0, test not valid argument -> error message and return 0");
+    sput_fail_unless(parse("man int")==0,"parse(""man int"")=0, test not valid argument -> error message and return 0");
+    char validManStringStart[200]="man ";
+    stringList * commandList = getCommandList(NULL);
+    for(int cmds = 1; cmds<=commandList->numberOfStrings; ++cmds)
+    {
+        char * validmanStrings = strdup(validManStringStart);
+        strcat(validmanStrings,commandList->stringArray[cmds]);
+        sput_fail_unless(parse(validmanStrings)==1,"valid parse -> should print the manual entry and return 1");
+    }
+}
+
+
+void testCat()
+{
+    sput_fail_unless(parse("cat foo bar")==0,"too many arguments -> error message and return 0");
+    sput_fail_unless(parse("cat e1")==0,"command must target a tower -> error message and return 0");
+    sput_fail_unless(parse("cat t0")==0,"t0 is not a valid tower -> error message and return 0");
+    
+    sput_fail_unless(parse("cat t0")==0,"t0 is not a valid tower -> error message and return 0");
+    createTowerFromPositions(1);
+    sput_fail_unless(parse("cat t1")==1,"cat t1 is valid -> return 1");
+}
+
+void testUpgrade()
+{
+    freeAllTowers();
+    char validUpgradeString[300]="upgrade p s r aoer aoep t";
+    for(int pos = 1; pos<=maxTowerPosition();++pos)
+    {
+        createTowerFromPositions(pos);
+        char posChar[5];
+        sprintf(posChar,"%d ",pos);
+        strcat(validUpgradeString,posChar);
+    }
+    printf("\ntesting: %s\n",validUpgradeString);
+    sput_fail_unless(parse(validUpgradeString),"Valid test of all stats on all towers -> return 1");
+    upgradeArraysStruct * upgradeStruct = getStatsToUpgradeArrayAndTargetArray(NULL);
+    sput_fail_unless(upgradeStruct->statArray->array[0]==upgrade_power &&
+                     upgradeStruct->statArray->array[1]==upgrade_speed &&
+                     upgradeStruct->statArray->array[2]==upgrade_range &&
+                     upgradeStruct->statArray->array[3]==upgrade_AOErange &&
+                     upgradeStruct->statArray->array[4]==upgrade_AOEpower,
+                     "upgradeStruct->statArray should contain each of the stats pushed ");
+    for(int pos = 1; pos<=maxTowerPosition();++pos)
+    {
+        sput_fail_unless(upgradeStruct->tarArray->array[pos-1]==pos,
+                         "upgradeStruct->tarArray should contain each of the targets");
+    }
+  
+    
+    sput_fail_unless(parse("upgrade p")==0,"not enough arguments -> error message and return 0");
+    sput_fail_unless(parse("upgrade p p")==0,"no target tower -> error message and return 0");
+    sput_fail_unless(parse("upgrade int t1")==0,"int is not a valid argument to upgrade -> error message and return 0");
+    sput_fail_unless(parse("upgrade p t1")==1,"parse(""upgrade -p t1"") valid command -> return 1");
+    sput_fail_unless(parse("upgrade p s t1")==1,"parse(""upgrade -p s -t1"") valid command -> return 1");
+    sput_fail_unless(parse("upgrade t1 2")==0,"parse(""upgrade t1 2"") no stats  -> error message & return 0");
+    sput_fail_unless(parse("upgrade t1 s p ")==0,"parse(""upgrade t1 s p "") stats and targets wrong way round -> return 0");
+}
+
+
+void testParseWhile()
+{
+    freeAllTowers();
+    createTowerFromPositions(1);
+    sput_fail_unless(parse("while(upgrade p t1)")==0,"parse(""while(upgrade p t1)"")==1. no condition statement -> error message and return 0");
+    sput_fail_unless(parse("while(ssz)(upgrade p t1)")==0,"invalid condition -> error message and return 0");
+    sput_fail_unless(parse("while(ssz>10)(upgrade p t1)")==0,"invalid variable -> error message and return 0");
+    sput_fail_unless(parse("while(mem)(upgrade p t1)")==0,"invalid condition -> error message and return 0");
+    sput_fail_unless(parse("while(tows>0)(upgrade p t1)")==0,"invalid, breakInfinite loop called -> error message and return 0");
+    sput_fail_unless(parse("while(mem<10)(upgrade p t1)")==0,"invalid, breakInfinite loop called -> error message and return 0");
+     sput_fail_unless(parse("while(mem<=10)(upgrade p t1)")==0,"invalid, breakInfinite loop called -> error message and return 0");
+    sput_fail_unless(parse("while(tows>=10)(mktwr int b)")==0,"invalid, breakInfinite loop called -> error message and return 0");
+    sput_fail_unless(parse("while(tows>10)(mktwr int b)")==0,"invalid, breakInfinite loop called -> error message and return 0");
+    sput_fail_unless(parse("while(tows<10)(cat t1)")==0,"invalid, breakInfinite loop called -> error message and return 0");
+    sput_fail_unless(parse("while(tows<10)(try with invalid command)")==0,"invalid, no valid command -> error message and return 0");
+    
+    sput_fail_unless(parse("while ( mem > 10 ) ( try with invalid command )")==0,"invalid, no valid command. and make sure spaces in between the brackets causes no issue -> error message and return 0");
+    freeAllTowers();
+    setMemory(100000);
+    sput_fail_unless(parse("while(tows<3)(mktwr int  b)")==1,"Valid -> return 1");
+    setMemory(1000);
+    sput_fail_unless(parse("while(mem>10)(mktwr int  b)")==1,"Valid -> return 1");
+    freeAllTowers();
+    setMemory(10000000);
+     sput_fail_unless(parse("while ( tows < 3 ) ( mktwr int  b )")==1,"parse(""while ( tows < 3 ) ( mktwr int  b )"")==1. Valid, checks that spaces in the string dont mess up -> return 1");
+    freeAllTowers();
+    setMemory(1000);
+    sput_fail_unless(parse("while(mem>=10)(mktwr int a)")==1,"Valid -> return 1");
+    setMemory(1);
+    createTowerFromPositions(1);
+    sput_fail_unless(parse("while(mem>=10)(upgrade p t1)")==1,"Valid -> return 1");
+}
+
+
+
+
+
+
+
 

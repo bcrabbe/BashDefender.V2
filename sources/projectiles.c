@@ -17,6 +17,9 @@
 //laser #defines
 #define LASER_DRAW_COUNT 20 // the number of steps that laser beams stay on the screen
 
+//aoe #defines
+#define AOE_DISPLAY_COUNT 10 // the number of steps that AOE explosions stay on the screen
+void drawExplosions();
 
 struct projectileNode {
     int x, y;
@@ -49,6 +52,202 @@ struct projectileNode {
 struct projectileList {
     ProjectileNode start, current, last;
 } ;
+
+struct explosionNode {
+    int dmgType;
+  
+    int x, y;
+    int range;
+    
+    int totalDisplayCount;
+    int currentDisplayCount;
+    
+    ExplosionNode next;
+} ;
+
+struct explosionList {
+    ExplosionNode start, current, last;
+} ;
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+/* EXPLOSION LINKED LIST FUNCTIONS */
+
+/*
+* creates the AOE explosion list structure
+*/
+void createExplosionList()
+{
+    ExplosionList newExplosionList = (ExplosionList)malloc(sizeof(struct explosionList) );
+    if(newExplosionList == NULL) {
+        fprintf(stderr,"****ERROR unable to malloc space for AOE explosion list ****\n");
+        exit(1);
+    }
+    
+    newExplosionList->start = NULL;
+    newExplosionList->current = NULL;
+    newExplosionList->last = NULL;
+    
+    getExplosionList(newExplosionList);
+}
+
+/*
+* if passed NULL, returns static pointer to AOE explosion list structure. Else, assigns the passed pointer as the static pointer
+*/
+ExplosionList getExplosionList(ExplosionList eL)
+{
+	  static ExplosionList newExplosionList;
+
+	  if(eL != NULL)	{
+		    newExplosionList = eL;
+	  }
+
+	  return newExplosionList;
+}
+
+
+/*
+* creates a new, blank Explosion node
+*/
+ExplosionNode newExplosionNode()
+{
+    ExplosionNode newNode = (ExplosionNode)malloc(sizeof(struct explosionNode) );
+    if(newNode == NULL) {
+        fprintf(stderr,"****ERROR unable to malloc space for AOE explosion node ****\n");
+        exit(1);
+    }
+    
+    newNode->next = NULL;
+    
+    return newNode;
+}
+
+/*
+* adds the passed AOE explosion node to the end of the explosion linked list
+*/
+void addToExplosionList(ExplosionNode newNode)
+{
+    ExplosionList eL = getExplosionList(NULL);
+    
+    if(eL->start == NULL) {
+        eL->start = newNode;
+        eL->current = eL->start;
+        eL->last = eL->start;
+    } else {
+        eL->last->next = newNode;
+        eL->last = newNode;
+    }
+}
+
+/*
+* advances, draws and removes explosions each frame
+*/
+void updateExplosions()
+{
+    advanceExplosions();
+    drawExplosions();
+    removeExplosions();
+}
+
+/*
+* removes any AOE explosions that have reached the end of their draw count
+*/
+void removeExplosions()
+{
+    ExplosionList eL = getExplosionList(NULL);
+    if(eL->start!=NULL) {
+        eL->current = eL->start;
+        ExplosionNode prv = eL->start;
+        ExplosionNode tmp = eL->start;
+        while(eL->current!=NULL) {
+            if(explosionFinished(eL->current) ) {
+                if(eL->current == eL->start) {
+                    eL->start = eL->current->next;
+                }
+                if(eL->current == eL->last) {
+                    eL->last = prv;
+                }
+                eL->current = eL->current->next;
+                prv->next = eL->current;
+                free(tmp);
+            } else {
+                prv = eL->current;
+                eL->current = eL->current->next;
+            }
+            tmp = eL->current;
+        }
+    }
+}
+
+/*
+* returns 1 if an AOE explosion is at the end of its existence, else returns 0
+*/  
+int explosionFinished(ExplosionNode eNode)
+{
+    if(eNode->currentDisplayCount == eNode->totalDisplayCount) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+/*
+* makes a new AOE explosion and adds it to the explosion linked list
+*/
+void makeExplosion(int dmgType, int targetX, int targetY, int range)
+{
+    ExplosionNode newExplosion = newExplosionNode();
+    
+    newExplosion->dmgType = dmgType;
+    
+    newExplosion->x = targetX;
+    newExplosion->y = targetY;
+    newExplosion->range = range;
+    
+    newExplosion->totalDisplayCount = AOE_DISPLAY_COUNT;
+    newExplosion->currentDisplayCount = 0;
+    
+    addToExplosionList(newExplosion);
+}
+
+/*
+* updates all explosions by increasing their current Display Count
+*/
+void advanceExplosions()
+{
+    ExplosionList eL = getExplosionList(NULL);
+    eL->current = eL->start;
+    while(eL->current != NULL) {
+        eL->current->currentDisplayCount++;
+        eL->current = eL->current->next;
+    }
+}
+
+/*
+* draw the range of all AOE explosions
+*/
+void drawExplosions()
+{
+    ExplosionList eL = getExplosionList(NULL);
+    eL->current = eL->start;
+    while(eL->current != NULL) {
+        drawAOE(eL->current->dmgType, eL->current->x, eL->current->y, eL->current->range, eL->current->currentDisplayCount, eL->current->totalDisplayCount);
+        eL->current = eL->current->next;
+    }
+}
+
+/*
+* damages enemies within AOE explosion range
+*/
+void doAOEDamage(int damageType, int damage, int targetID, int range, int x, int y) {
+    for(int i = 1; i <= getNumberOfEnemies(); i++) {
+        if(i != targetID && !isDead(i)) {
+            if(inRange(x, y, range, i) ) {
+                damageEnemy(damage, i, damageType);
+            }
+        }
+    }
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,38 +316,17 @@ void addToProjectileList(ProjectileNode newNode)
         pL->last->next = newNode;
         pL->last = newNode;
     }
-}
+}    
 
 /*
-* removes the passed projectile node from the projectile linked list
+* moves, draws and removes projectiles each frame
 */
-void removeProjectileNode(ProjectileNode projNode)
+void updateProjectiles()
 {
-    ProjectileList pL = getProjectileList(NULL);
-    ProjectileNode prev;
-    
-    if(projNode == pL->start) {
-        pL->start = projNode->next;
-        free(projNode);
-    } else {
-        pL->current = pL->start->next;
-        prev = pL->start;
-        
-        while(pL->current != projNode) {
-            prev = pL->current;
-            pL->current = pL->current->next;
-        }
-        
-        if(pL->current == pL->last) {
-            pL->last = prev;
-            free(pL->current);
-            pL->last->next = NULL;
-        } else {
-            prev->next = pL->current->next;
-            free(pL->current);
-        }
-    }
-}      
+    moveProjectiles();
+    drawProjectiles();
+    removeProjectiles();
+}
 
 /*
 * moves each projectile in the linked list depending on its type and attributes
@@ -211,6 +389,61 @@ void drawProjectiles()
 }
 
 /*
+* removes any projectiles that have reached the end of their moves
+*/
+void removeProjectiles()
+{
+    ProjectileList pL = getProjectileList(NULL);
+    if(pL->start!=NULL) {
+        pL->current = pL->start;
+        ProjectileNode prv = pL->start;
+        ProjectileNode tmp = pL->start;
+        while(pL->current!=NULL) {
+            if(projectileFinished(pL->current) ) {
+                if(pL->current == pL->start) {
+                    pL->start = pL->current->next;
+                }
+                if(pL->current == pL->last) {
+                    pL->last = prv;
+                }
+                pL->current = pL->current->next;
+                prv->next = pL->current;
+                free(tmp);
+            } else {
+                prv = pL->current;
+                pL->current = pL->current->next;
+            }
+            tmp = pL->current;
+        }
+    }
+}
+
+/*
+* returns 1 if a projectile is at the end of its existence, else returns 0
+*/  
+int projectileFinished(ProjectileNode pNode)
+{
+    switch(pNode->whatProjectile) {
+        case missile :
+            if(pNode->movesMade == pNode->movesToTarget+pNode->movesForBuildUp) {
+                return 1;
+            }
+            break;
+        case bullet :
+            if(pNode->movesMade == pNode->movesToTarget) {
+                return 1;
+            }
+            break;
+        case laser :
+            if(pNode->drawLaserCount == pNode->drawLaserMaxCount) {
+                return 1;
+            }
+            break;
+    }
+    return 0;
+}
+
+/*
 * frees all projectiles in the linked list (if there are any) and resets internal list structure pointers to NULL
 */
 void freeAllProjectiles()
@@ -254,7 +487,7 @@ void freeProjectileList()
 /*
 * creates a new bullet projectile and launches it at where the target will be
 */
-void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType)
+void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange)
 {
     // make the bullet
     ProjectileNode newNode = newProjectileNode();
@@ -273,8 +506,8 @@ void launchBullet(int firedX, int firedY, int damage, int targetID, int firingTy
     newNode->originX = newNode->x;
     newNode->originY = newNode->y;
     
-    newNode->aoeDamage = 0;
-    newNode->aoeRange = 0;
+    newNode->aoeDamage = aoeDamage;
+    newNode->aoeRange = aoeRange;
     
     newNode->targetID = targetID;
     getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
@@ -294,8 +527,11 @@ void moveBullet(ProjectileNode bullet) {
   
     if(bullet->movesMade == bullet->movesToTarget) {
         damageEnemy(bullet->damage, bullet->targetID, bullet->damageType);
-      
-        removeProjectileNode(bullet);
+        doAOEDamage(bullet->damageType, bullet->aoeDamage, bullet->targetID, bullet->aoeRange, bullet->targetCoords[0], bullet->targetCoords[1]);
+        makeExplosion(bullet->damageType, bullet->targetCoords[0], bullet->targetCoords[1], bullet->aoeRange);
+        
+        bullet->x = bullet->targetCoords[0];
+        bullet->y = bullet->targetCoords[1];
     } else {
       
         bullet->x = bullet->originX + (int) ( ((double)(bullet->targetCoords[0]-bullet->originX)/(double) bullet->movesToTarget) * bullet->movesMade);
@@ -310,7 +546,7 @@ void moveBullet(ProjectileNode bullet) {
 /*
 * creates a new missile projectile and sets its target/target coords
 */
-void launchMissile(int firedX, int firedY, int damage, int targetID, int firingType)
+void launchMissile(int firedX, int firedY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange)
 {
     // make the missile
     ProjectileNode newNode = newProjectileNode();
@@ -332,8 +568,8 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
     newNode->originY = firedY;
     
     newNode->damage = damage;
-    newNode->aoeDamage = 0;
-    newNode->aoeRange = 0;
+    newNode->aoeDamage = aoeDamage;
+    newNode->aoeRange = aoeRange;
     
     newNode->targetID = targetID;
     getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget+newNode->movesForBuildUp);
@@ -410,7 +646,11 @@ void moveMissile(ProjectileNode missile) {
     
     if(missile->movesMade == missile->movesToTarget+missile->movesForBuildUp) {
         damageEnemy(missile->damage, missile->targetID, missile->damageType);
-        removeProjectileNode(missile);
+        doAOEDamage(missile->damageType, missile->aoeDamage, missile->targetID, missile->aoeRange, missile->targetCoords[0], missile->targetCoords[1]);
+        makeExplosion(missile->damageType, missile->targetCoords[0], missile->targetCoords[1], missile->aoeRange);
+        
+        missile->x = missile->targetCoords[0] - (missile->w/2);
+        missile->y = missile->targetCoords[1] - (missile->h/2);
     } else {
         if(missile->movesMade <= missile->movesForBuildUp) {
             missile->centreX = missile->originX + (int) ((double)(missile->buildUpX-missile->originX)/(double)MISSILE_BUILDUP_DIVISION);
@@ -434,7 +674,7 @@ void moveMissile(ProjectileNode missile) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 /* LASER FUNCTIONS */
 
-void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType)
+void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange)
 {
     ProjectileNode newNode = newProjectileNode();
     newNode->whatProjectile = laser;
@@ -452,8 +692,8 @@ void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType)
     newNode->targetID = targetID;
     getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
     
-    newNode->aoeDamage = 0;
-    newNode->aoeRange = 0;
+    newNode->aoeDamage = aoeDamage;
+    newNode->aoeRange = aoeRange;
     
       // add it to the list
     addToProjectileList(newNode);
@@ -464,13 +704,11 @@ void updateLaser(ProjectileNode laser)
 {
     if(laser->drawLaserCount == 0) {
         damageEnemy(laser->damage, laser->targetID, laser->damageType);
+        doAOEDamage(laser->damageType, laser->aoeDamage, laser->targetID, laser->aoeRange, laser->targetCoords[0], laser->targetCoords[1]);
+        makeExplosion(laser->damageType, laser->targetCoords[0], laser->targetCoords[1], laser->aoeRange);
     }
     
     laser->drawLaserCount++;
-    
-    if (laser->drawLaserCount == laser->drawLaserMaxCount) {
-        removeProjectileNode(laser);
-    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
