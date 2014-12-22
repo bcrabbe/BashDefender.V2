@@ -75,7 +75,7 @@ void psx_ability()
 				strcat(psxlist, newline);
 			}
 		}
-		towerMonitor(-1,psxlist);
+		textToTowerMonitor(psxlist);
 		strcpy(psxlist, clear);
 	}
 }

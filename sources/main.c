@@ -15,15 +15,6 @@
 #include "../includes/Sound.h"
 #include "../includes/abilities.h"
 
-
-/*Temporary main for testing stuff out*/
-
-/*int main (void) {
-    int result = parseKill((char *[]) {"NULL", "kill *", "NULL"}, 3);
-    //printf("Result: %d", result);
-                           
-}*/
-
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
@@ -71,7 +62,7 @@ int main(int argc, char ** argv)
         presentAnimation();
     	drawAllTowerPositions();
         statsBar();
-        towerMonitor(0, NULL);
+        towerMonitor();
         actionQueueMonitor();
         towerInformation();
 

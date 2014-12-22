@@ -2,69 +2,115 @@
 //  Information_Window.c
 //  Group_Project
 //
-//  Functions relating to tower monitor and stats monitor
+//  Functions relating to game windows and displaying information on screen
 //
 //  Created by Michael on 10/11/2014.
 //  Copyright (c) 2014 Michael. All rights reserved.
 //
 
+/*---------- Standard Headers -----------*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/*---------- Custom Headers	-----------*/
 #include "../includes/Information_Window.h"
 #include "../includes/tower.h"
 #include "../includes/gameProperties.h"
 #include "../includes/actionQueueDataStructure.h"
+#include "../includes/Display.h"
+#include "../includes/sput.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
+/*---------- Data Types -----------*/
+typedef struct towerMonitor {
+    char *string;
+    bool stringSet;
+    bool towerInfoSet;
+    int targetTower;
+    int timeSet;
+} TowerMonitor;
 
+/*---------- Hash Defines -----------*/
 #define MAX_OUTPUT_STRING 200
-#define DEFAULT_SCREEN_TIME 10000
-#define DEFAULT_SCREEN_TIME2 4000
+#define DEFAULT_TOWER_MONITOR_TIME 10000
+#define DEFAULT_TERMINAL_WINDOW_TIME 4000
 
-#include <SDL2/SDL.h>
+/*----------Function Prototypes (Internal)-----------*/
+TowerMonitor *getTowerMonitor(void);
+char *getDefaultTowerString();
+char *getTowerString(unsigned int targetTower);
+
+
+
+
 
 /**
- If called with target tower as first parameter and second parameter set to -1, gets output string
- for that tower and sends to tower monitor. If called with first parameter set to NULL and optional
- output string as second parameter, sends that string to tower monitor. After a certain period
- of time, default tower screen reappears.
+ Update tower monitor according to information in tower monitor object
  */
-void towerMonitor(unsigned int targetTower, char *optionalOutputString) {
+void towerMonitor(void) {
+    TowerMonitor *tm = getTowerMonitor();
     int time = SDL_GetTicks();
-    static int lastTower = 0, timeOfCall = 0, optionalStringSet = 0;
-    char *outputString;
-    static char *optionalString = NULL;
     
-    if(targetTower && !optionalOutputString) {
-        outputString = getTowerString(targetTower);
-        timeOfCall = SDL_GetTicks();
-        lastTower = targetTower;
-        optionalStringSet = 0;
+    //Display continuously updated tower information for specified tower if set
+    if(tm->towerInfoSet) {
+        tm->string = getTowerString(tm->targetTower);
     }
-    else if(optionalOutputString) {
-        outputString = optionalString = optionalOutputString;
-        timeOfCall = SDL_GetTicks();
-        optionalStringSet = 1;
+    //Display default string unless another string has been set or a period of time has elapsed
+    else if(!tm->stringSet || (tm->stringSet && time - tm->timeSet > DEFAULT_TOWER_MONITOR_TIME)) {
+        tm->string = getDefaultTowerString();
+        tm->stringSet = false;
+        tm->towerInfoSet = false;
     }
-    else {
-        outputString = getDefaultTowerString();
+    //Display whatever else the string has been set to until set period of time has elapsed
+    
+    updateTowerMonitor(tm->string);
+}
+
+/**
+ Sends any string to tower monitor and displays for set period of time
+ */
+void textToTowerMonitor(char *string) {
+    TowerMonitor *tm = getTowerMonitor();
+    
+    tm->string = string;
+    tm->stringSet = true;
+    tm->timeSet = SDL_GetTicks();
+    
+}
+
+/**
+ Alerts tower monitor that tower information has been requested, information for that tower will be displayed for set period of
+ time
+ */
+void displayTowerInfo(unsigned int targetTower) {
+    TowerMonitor *tm = getTowerMonitor();
+    
+    tm->stringSet = true;
+    tm->towerInfoSet = true;
+    tm->timeSet = SDL_GetTicks();
+    tm->targetTower = targetTower;
+}
+
+
+/**
+ Initialize tower monitor object when first called, return pointer to object each subsequent call
+ */
+TowerMonitor *getTowerMonitor(void) {
+    static TowerMonitor *tm;
+    static bool initialized = false;
+    
+    if(!initialized) {
+        tm = (TowerMonitor *) malloc(sizeof(TowerMonitor));
+        
+        tm->string = (char *) malloc(sizeof(char) * MAX_OUTPUT_STRING);
+        tm->timeSet = 0;
+        tm->stringSet = false;
+        tm->towerInfoSet = false;
+        
+        initialized = true;
     }
     
-    if(timeOfCall != 0 && time - timeOfCall < DEFAULT_SCREEN_TIME) {
-        if(optionalStringSet) {
-            outputString = optionalString;
-        }
-        else {
-            outputString = getTowerString(lastTower);
-        }
-    }
-    
-    if(time - timeOfCall > DEFAULT_SCREEN_TIME) {
-        optionalStringSet = 0;
-    }
-    
-    updateTowerMonitor(outputString);
+    return tm;
 }
 
 /**
@@ -81,7 +127,7 @@ void terminalWindow(char *string) {
         timeOfCall = time;
     }
     
-    if(time - timeOfCall > DEFAULT_SCREEN_TIME2) {
+    if(time - timeOfCall > DEFAULT_TERMINAL_WINDOW_TIME) {
         free(outputString);
         outputString = NULL;
     }
@@ -119,7 +165,7 @@ void actionQueueMonitor() {
 }
 
 /**
- Creates tower string for every drawn tower and display
+ Creates tower string for every drawn tower and displays it
  */
 void towerInformation() {
     
@@ -137,12 +183,10 @@ void towerInformation() {
         }
     }
     
-    
-    
 }
 
 /**
- Creates default string for tower monitor and sends to tower monitor
+ Creates default string for tower monitor
  */
 char *getDefaultTowerString() {
     
@@ -154,7 +198,7 @@ char *getDefaultTowerString() {
 }
 
 /**
- Creates output string for specific tower and sends to tower monitor
+ Creates output string for specific tower
  */
 char *getTowerString(unsigned int targetTower) {
     
@@ -163,7 +207,7 @@ char *getTowerString(unsigned int targetTower) {
     
     char *outputString = malloc(MAX_OUTPUT_STRING);
     
-    sprintf(outputString, "TOWER %d\n\nRange: %d\nDamage: %d\nAOE Speed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
+    sprintf(outputString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
     
     return outputString;
 }
@@ -174,7 +218,7 @@ char *getTowerString(unsigned int targetTower) {
  */
 void manUpgrade()
 {
-    towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\nupgrade\n\ntype ""upgrade"" followed by a stat\n ( p, r, s, AOEp, AOEr)\n ) followed by a target tower\neg t1, t2, t3...\nExamples:\nupgrade r t2\nupgrade p t3");
+    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nupgrade\n\ntype ""upgrade"" followed by a stat\n ( p, r, s, AOEp, AOEr)\n ) followed by a target tower\neg t1, t2, t3...\nExamples:\nupgrade r t2\nupgrade p t3");
 }
 
 /**
@@ -182,7 +226,7 @@ void manUpgrade()
  */
 void manCat()
 {
-    towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target eg t1, t2, t3... to display the stats of that target\n");
+    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target eg t1, t2, t3... to display the stats of that target\n");
 }
 
 /**
@@ -190,15 +234,40 @@ void manCat()
  */
 void manMan()
 {
-    towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\nman \n\ntype ""man"" followed by a command eg upgrade or cat to view the manual entry for that command\n");
+    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nman \n\ntype ""man"" followed by a command eg upgrade or cat to view the manual entry for that command\n");
 }
 
+/**
+ Sends "manPs" command help string to tower monitor
+ */
 void manPs()
 {
-    towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""ps"" followed by a command\n ( -x\n ) to discover information about one or more enemies\nExamples:\nps -x\n");
+    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""ps"" followed by a command\n ( -x\n ) to discover information about one or more enemies\nExamples:\nps -x\n");
 }
 
+/**
+ Sends "manKill" command help string to tower monitor
+ */
 void manKill()
 {
-    towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""kill -9"" followed by a target enemyID (eg 6) or *all*\n to kill one or more enemies\nExamples:\nkill -9 7\n kill -9 all");
+    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""kill -9"" followed by a target enemyID (eg 6) or *all*\n to kill one or more enemies\nExamples:\nkill -9 7\n kill -9 all");
 }
+
+
+/*Test functions*/
+
+/**
+ Tests all functions in information window module
+ */
+void testingInformationWindowModule()	{
+    sput_start_testing();
+    sput_set_output_stream(NULL);
+    
+    //sput_enter_suite("");
+    //sput_run_test();
+    sput_leave_suite();
+    
+    sput_finish_testing();
+    
+}
+

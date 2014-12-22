@@ -390,7 +390,7 @@ int parseCat(char * inputStringTargeting)
         unsigned int targetTower = getTargetTower(inputStringTargeting, true);
         if(targetTower)
         {
-            towerMonitor(targetTower, NULL);//function in Information_Window.c
+            displayTowerInfo(targetTower);//function in Information_Window.c
             return 1;
         }
         else
@@ -912,26 +912,5 @@ stringList * intialiseOptionList()
     
     return optionsList;
 }
-
-/*Parser Test Functions*/
-
-void testingParserModule()	{
-    sput_start_testing();
-    sput_set_output_stream(NULL);
-    
-    sput_enter_suite("test1(): Testing sput");
-    //sput_run_test();
-    sput_leave_suite();
-    
-    sput_finish_testing();
-    
-}
-
-/*int testParseKill() {
-    char *commandKillMinus9[2] = {NULL, "kill -9"};
-    char *commandKillAll[2] = {NULL, "kill *"};
-    char *commandError[2] = {NULL, "random"};
-}*/
-
 
 
