@@ -27,12 +27,30 @@ int parseMktwr(char ** commandArray, int numberOfTokens);
 
 unsigned long int stringToInt(const char * string);
 
+
+typedef enum operator {
+    not = '!',
+    greaterThan = '>',
+    lessThan = '<',
+    equalTo = '=',
+    greaterThanOrEqualTo = '>'+'=',
+    lessThanOrEqualTo = '<'+'=',
+    sameAs = '='+'=',
+    notEqualTo = '!'+'='
+    
+} operator;
+
+int parseWhile(char *inputString);
+operator matchesOperator(char isThisAnOperator);
+operator combineOperators(operator firstOp, operator secondOp);
+operator getOperatorFromString(char * conditionString);
+void makeStringForOperator(operator op, char * string);
+
 /*
  * Parse called with string of user input from terminal window.
  * reads the first token and calls the relevant command function 
  * returns zero if syntax error.
  */
-
 int parse(char *inputString)
 {
     size_t len = 1+strlen(inputString);//gets the size of inputString
@@ -41,8 +59,8 @@ int parse(char *inputString)
         return 0;
     }
     if(tolower(inputString[0])=='w' && tolower(inputString[1])=='h' &&
-       tolower(inputString[2])=='i' && tolower(inputString[0])=='l' &&
-       tolower(inputString[1])=='e') {
+       tolower(inputString[2])=='i' && tolower(inputString[3])=='l' &&
+       tolower(inputString[4])=='e') {
         return parseWhile(inputString);
     }
 
@@ -64,55 +82,172 @@ int parse(char *inputString)
     freeCommandArray(commandArray, numberOfTokens);
     return specificReturns;//0 for error
 }
-typedef enum operator {
-    not = '!',
-    notEqualTo = '!'+'=',
-    greaterThan = '>',
-    lessThan = '<',
-    equalTo = '=',
-    greaterThanOrEqualTo = '>'+'=',
-    lessThanOrEqualTo = '<'+'=',
-    sameAs = '='+'=',
+int parseWhileNoOp(char ** bracketTokenArray)
+{
     
-} operator;
+}
 /*
  *  while(mem>0){ command }
  */
 int parseWhile(char *inputString)
 {
-    int numberOfBracetsTokens;
-    char ** bracketTokenArray = breakUpString(inputString, &numberOfTokens, "(){}");
-    if(numberOfBracetsTokens<3) {
-        fprintf(stderr,"ERROR: was execting condition and command e.g. ""while(mem>0){ command }"" \n");
-        terminalWindow("ERROR: was execting condition and command e.g. ""while(mem>0){ command }"" ");
+    int numberOfBracketsTokens;
+    char ** bracketTokenArray = breakUpString(inputString, &numberOfBracketsTokens, "(){}");
+    if(numberOfBracketsTokens<3) {
+        fprintf(stderr,"ERROR: was expecting condition and command e.g. ""while(mem>0){ command }"" \n");
+        terminalWindow("ERROR: was expecting condition and command e.g. ""while(mem>0){ command }"" ");
         return 0;
     }
     else {
-        operator op = getOperatorFromString( bracketTokenArray[1]);
+        operator op = getOperatorFromString( bracketTokenArray[1] );
+        printf("op = %c\n",op);
+        if(!op) {
+            parseWhileNoOp(bracketTokenArray);
+        }
+        int numberOfOperands=0;
+        char stringForOperator[5];
+        makeStringForOperator(op, stringForOperator);
+        char ** conditionArray = breakUpString(bracketTokenArray[1], &numberOfOperands,
+                                               stringForOperator);
+        /*switch (op)
+        {
+            case not:
+                string[0] = '!';
+                return;
+            case greaterThan:
+                string[0] = '>';
+                return;
+            case lessThan:
+                string[0] = '<';
+                return;
+            case equalTo:
+                string[0] = '=';
+                return;
+            case greaterThanOrEqualTo:
+                string[0] = '>';
+                string[1] = '=';
+                return;
+            case lessThanOrEqualTo:
+                string[0] = '<';
+                string[1] = '=';
+                return;
+            case sameAs:
+                string[0] = '=';
+                string[1] = '=';
+                return;
+            case notEqualTo:
+                string[0] = '!';
+                string[1] = '=';
+                return;
+            default:
+                string[0] = 'E';//error
+                string[1] = 'R';
+                return;
+        }*/
+        
+        if(op!=not && numberOfOperands!=2) {
+            char termErrString[100];
+            sprintf(termErrString,"ERROR: was expecting two operands to %s in conditional \n",
+                    stringForOperator);
+            fprintf(stderr,"%s \n",termErrString);
+            terminalWindow(termErrString);
+            return 0;
+        }
+        if(op==not &&numberOfOperands!=1) {
+            char termErrString[100];
+            sprintf(termErrString,"ERROR: was expecting one operand to ! operator in conditional \n",
+                    stringForOperator);
+            fprintf(stderr,"%s \n",termErrString);
+            terminalWindow(termErrString);
+            return 0;
+        }
     }
-    
-    freeCommandArray(bracketTokenArray);
+    freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
+}
+void makeStringForOperator(operator op, char * string)
+{
+    switch (op)
+    {
+        case not:
+            string[0] = '!';
+            return;
+        case greaterThan:
+            string[0] = '>';
+            return;
+        case lessThan:
+            string[0] = '<';
+            return;
+        case equalTo:
+            string[0] = '=';
+            return;
+        case greaterThanOrEqualTo:
+            string[0] = '>';
+            string[1] = '=';
+            return;
+        case lessThanOrEqualTo:
+            string[0] = '<';
+            string[1] = '=';
+            return;
+        case sameAs:
+            string[0] = '=';
+            string[1] = '=';
+            return;
+        case notEqualTo:
+            string[0] = '!';
+            string[1] = '=';
+            return;
+        default:
+            string[0] = 'E';//error
+            string[1] = 'R';
+            return;
+    }
 }
 
 operator getOperatorFromString(char * conditionString)
 {
     int i=0;
-    while(conditionString[i]!='/0' && conditionString[i]!=NULL) {
-        if( matchesOperator(conditionString[i])) {
-            
+    operator firstOp, secondOp, totalOp;
+    while(conditionString[i]!='\0')
+    {
+        firstOp =  matchesOperator(conditionString[i]);
+        if(firstOp)
+        {
+            secondOp = matchesOperator(conditionString[i+1]);
+            if(secondOp=='=')
+            {
+                totalOp = combineOperators(firstOp,secondOp);
+                return totalOp;
+            }
+            else
+            {
+                return firstOp;
+            }
+        }
+        else {
+            ++i;
         }
     }
 }
-operator matchesOperator(char isThisAnOperator) {
-    switch (isThisAnOperator) {
+operator combineOperators(operator firstOp, operator secondOp)
+{
+    int combinedOpInt;
+    operator combinedOp;
+    if(firstOp && secondOp == '=')
+    {
+        combinedOpInt = (int)firstOp + (int)secondOp;
+        combinedOp = (operator)combinedOpInt;
+        return combinedOp;
+    }
+    else return firstOp;
+}
+operator matchesOperator(char isThisAnOperator)
+{
+    switch (isThisAnOperator)
+    {
         case not:                           return not;
-        case notEqualTo:                    return notEqualTo;
         case greaterThan:                   return greaterThan;
         case lessThan:                      return lessThan;
         case equalTo:                       return equalTo;
-        case greaterThanOrEqualTo:          return greaterThanOrEqualTo;
-        case lessThanOrEqualTo:             return lessThanOrEqualTo;
-        case sameAs:                        return sameAs;
         default:                            return 0;
     }
 }
@@ -889,6 +1024,16 @@ void initialiseParseLists()
     getCommandList(commandList);
     stringList * optionList = intialiseOptionList();
     getOptionList(optionList);
+    stringList * envsList = intialiseEnvVarsList();
+    getEnvsList(envsList);
+}
+stringList * getEnvsList(stringList * envsList)
+{
+    static stringList * storedEnvsList = NULL;
+    if(envsList != NULL && storedEnvsList == NULL ) {
+        storedEnvsList = envsList;
+    }
+    return storedEnvsList;
 }
 stringList * getCommandList(stringList * commandList)
 {
@@ -963,3 +1108,20 @@ stringList * intialiseOptionList()
     
     return optionsList;
 }
+stringList * intialiseEnvVarsList()
+{
+    /*first lets make an array of strings to hold all the possible action commands*/
+    char ** envStringsList;
+    int numberOfEnvs=1;//have 5 action commands at this time: upgrade, execute, set, man, cat
+    envStringsList=malloc((numberOfEnvs)*sizeof(char*));    //upgrade opts
+    envStringsList-=1;
+    envStringsList[1]=strdup("mem");
+
+    
+    stringList * envsList = malloc(sizeof(stringList));
+    envsList->stringArray=envStringsList;
+    envsList->numberOfStrings=numberOfEnvs;
+    
+    return envsList;
+}
+

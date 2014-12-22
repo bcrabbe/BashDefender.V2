@@ -36,9 +36,12 @@ int parseAptget(char * aptToGetString);
 void freeParseLists();
 void initialiseParseLists();
 stringList * getCommandList(stringList * commandList);
-stringList *  getOptionList(stringList * optionList);
+stringList * getOptionList(stringList * optionList);
+stringList * getEnvsList(stringList * envsList);
+
 stringList * intialiseCommandList();
 stringList * intialiseOptionList();
+stringList * intialiseEnvVarsList();
 void testStringLists();
 
 int parseCat(char * inputStringTargeting);
