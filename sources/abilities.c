@@ -136,9 +136,21 @@ int is_available_ability(AbilityID id)
 			exit(1);
 		}
 	}
-	if(a->unlocked == 1 && getTotalMemory() >= a->cost)
+	if(a->unlocked == 1 && getAvailableMemory() >= a->cost)
 	{
 		return 1;
+	}
+	else if(a->unlocked == 0 && getAvailableMemory() < a->cost)
+	{
+		errorToTerminalWindow("Error: Ability is not yet unlocked\nError: Insufficient Memory available");
+	}
+	else if(a->unlocked == 0 && getAvailableMemory() >= a->cost)
+	{
+		errorToTerminalWindow("Error: Ability is not yet unlocked");
+	}
+	else if(a->unlocked == 1 && getAvailableMemory() < a->cost)
+	{
+		errorToTerminalWindow("Error: Insufficient Memory available");
 	}
 	return 0;
 }
