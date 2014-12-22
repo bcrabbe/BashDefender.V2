@@ -16,20 +16,16 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
 
 
 int main(int argc, char ** argv)
 {
     
 	Display d = init_SDL();
-<<<<<<< HEAD
-    if(TESTING) 
+    if(TESTING)
 	{
-=======
-    if(TESTING) {
         Display d = init_SDL();
->>>>>>> a88e5ea97fbdbfdccf51bf8edec1bf2df2a85ef9
         testing();
         exit(EXIT_SUCCESS);
     }

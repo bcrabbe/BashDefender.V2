@@ -21,7 +21,6 @@ typedef enum AbilityID
 int kill_ability(int enemyID);
 
 int kill_all_ability();
-void kill_ability(int enemyID);
 
 void psx_ability();
 

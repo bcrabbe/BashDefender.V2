@@ -318,6 +318,7 @@ void testkillall()
 	int enemy_number = getNumberOfEnemies();
 
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
+	unlock_ability(KILL);
 	kill_all_ability();
 	sput_fail_unless(getEnemyHealth(1) == 0, "Enemy should be killed");
 	freeAllEnemies();
