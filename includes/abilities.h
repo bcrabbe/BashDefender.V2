@@ -22,10 +22,6 @@ int kill_ability(int enemyID);
 
 int is_valid_unlock(AbilityID id);
 
-int is_valid_unlock(AbilityID id);
-int kill_ability(int enemyID);
->>>>>>> 30335175d859f58002a37e520c3d598c683a21c2
-
 int kill_all_ability();
 
 void psx_ability();
