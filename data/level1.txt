@@ -1,3 +1,4 @@
+path pathLevel 1 numberOfPaths 1
 towerPos x 10 y 500
 towerPos x 10 y 400
 towerPos x 10 y 300

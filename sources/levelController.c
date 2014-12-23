@@ -50,11 +50,24 @@ void initialQueueReader()	{
 					setWaveTotalCommand(current);
 					current = removeLink(current);
 					break;
+			case path:
+					pathCommand(current);
+					current = removeLink(current);
+					break;
 			default:
 					current = current->next;
 					break;
 		}
 	}
+}
+
+/*
+ *Sets number of paths for current level
+ */
+void pathCommand(Keyword pathCommand)	{
+
+		iprint(returnPropertyValue(pathCommand,pathLevel));
+		iprint(returnPropertyValue(pathCommand,numberOfPaths));
 }
 
 void levelQueueReader()	{
@@ -65,14 +78,9 @@ void levelQueueReader()	{
 	while(current != NULL)	{
 		switch(current->lCommand)	{
 			case wave:
-					//iprint(returnPropertyValue(current,waveID));
-					//iprint(getWave(getGame(NULL)));
-					if(getWave(getGame(NULL)) == returnPropertyValue(current,waveID))	{
-						increaseEnemyNumbersThisWave(returnPropertyValue(current,numberOfEnemies));
-					}
 					//! only expands waves into create enemies commands if it is at the start of the queue
 					if(kQueue->start == current && getWave(getGame(NULL)) == returnPropertyValue(current,waveID))	{
-					//	iprint(returnPropertyValue(current,dTime));
+						increaseEnemyNumbersThisWave(returnPropertyValue(current,numberOfEnemies));
 						waveCreatorCommand(current);
 						current = removeLink(current);
 					} else { 
@@ -82,6 +90,7 @@ void levelQueueReader()	{
 			case makeEnemy:
 					if(createEnemyCommand(current))	{
 						current = removeLink(current);
+						return;
 					} else {
 						return;
 					}
@@ -89,12 +98,12 @@ void levelQueueReader()	{
 			case delay:
 					setCreateEnemyGroupDelay(returnPropertyValue(current,dTime));
 					current = removeLink(current);
+					return;
 					break;
 			default:
 					break;
 		}
 	}
-
 }
 
 Keyword removeLink(Keyword current)	{
@@ -135,9 +144,27 @@ int returnPropertyValue(Keyword current, property reqProperty)	{
 	return 0;
 
 }
+/*
+ *Returns specified property value from specified queue position
+ */
+int returnPropertyValueFromQueue(int place,property reqProperty)	{
+
+	KeywordQueue kQueue = getKWQueue(NULL);
+	int numberOfKeywords;
+	Keyword currKeyword;
+	for(numberOfKeywords = 1, currKeyword = kQueue->start; currKeyword != NULL && place != numberOfKeywords; currKeyword = currKeyword->prev, numberOfKeywords++)	{
+			/* Do Nothing */	
+	}
+
+	if(currKeyword == NULL)	{
+		return 0;
+	} else	{
+		return returnPropertyValue(currKeyword,reqProperty);
+	}
+}
 
 int createEnemyCommand(Keyword makeEnemy)	{
-
+	//! only create enemy if all cooldowns are ready
 	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()))	{
 		setCreateEnemyGroupDelay(0); //!setting delay back to zero
 		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
@@ -306,6 +333,9 @@ void addKeyWordToken(char *token)	{
 		} else if(!strcmp(token,"wave"))	{
 			addKWtoQueue(newKey); 
 			newKey->lCommand = wave;
+		} else if(!strcmp(token,"path"))	{
+			addKWtoQueue(newKey); 
+			newKey->lCommand = path;
 		} else {
 			fprintf(stderr,"Keyword not recognised\n");
 			free(newKey);
@@ -336,7 +366,6 @@ int validateLine(char *Line, int nWords)	{
 	int wordCount = 0;
 	while(wordCount < nWords)	{
 		token = getToken(Line);
-		sprint(token);
 		if(wordCount < 1)	{
 			addKeyWordToken(token); //!This is a keyword
 		} else	{
@@ -371,6 +400,10 @@ int checkProperty(char *token)	{
 		addProperty(entrance);
 	} else if(!strcmp(token,"level"))	{
 		addProperty(enemyLevel);		
+	} else if(!strcmp(token,"pathLevel"))	{
+		addProperty(pathLevel);		
+	} else if(!strcmp(token,"numberOfPaths"))	{
+		addProperty(numberOfPaths);		
 	}else {
 		return 0;
 	}
@@ -412,7 +445,6 @@ char* expandCBuffer(char *toExpand, int currSize)	{
  *Reads level settings file
  */
 void readLevelSettingsFile(char *file)	{
-
 	FILE *fp;
     char letter;
 	int wordCount = 1;
@@ -453,3 +485,57 @@ void endLevel() {
 	freeEnemyGroup();
 	freeLevelPaths();
 }
+
+/*---------- Test Functions ----------*/
+void setUpTesting()	{
+    createKeywordQueue();
+	readLevelSettingsFile(TESTLEVEL);	
+    createLevelPaths();
+    createTowerGroup();
+    createActionQueue();
+    createGame();
+    createLevelClocks();
+    createEnemyGroup();
+    createTowerPos();
+    createProjectileList();
+    initialiseParseLists();
+    init_abilities();
+}
+
+void testLevelController()	{
+
+    sput_start_testing();
+    sput_set_output_stream(NULL);
+
+    sput_enter_suite("testReadLevelSettingsFile(): Testing reading and processing level keywords");
+    sput_run_test(testReadLevelSettingsFile);
+    sput_leave_suite();
+
+
+    sput_finish_testing();
+}
+
+void testReadLevelSettingsFile()	{
+	sput_fail_unless(countKeywords() == 8,"8 Keywords Should Exist in the level settings queue");
+	initialQueueReader();	//! Removing set up commands
+	sput_fail_unless(countKeywords() == 3,"3 Keywords Should Exist in the level settings queue");
+	sput_fail_unless(returnPropertyValueFromQueue(1,waveID) == 1,"First keyword has waveID 1");
+	sput_fail_unless(returnPropertyValueFromQueue(2,waveID) == 2,"Second keyword has waveID 2");
+	sput_fail_unless(returnPropertyValueFromQueue(3,waveID) == 3,"Third keyword has waveID 3");
+	levelQueueReader();
+}
+
+
+int countKeywords()	{
+		KeywordQueue kQueue = getKWQueue(NULL);
+		int numberOfKeywords;
+		Keyword currKeyword;
+		for(numberOfKeywords = 0, currKeyword = kQueue->start; currKeyword != NULL; currKeyword = currKeyword->prev, numberOfKeywords++)	{
+			/* Do Nothing */	
+		}
+		return numberOfKeywords;
+}
+
+
+
+

@@ -93,13 +93,16 @@ void quitGame()
 
 void testing()	{
 
+	setUpTesting();
+	
+	testLevelController();
 	//testingTowerPositions();
     //testingGameStructure();
-    testingActionQueue();
-    parseToQueueTesting();
+    //testingActionQueue();
+    //parseToQueueTesting();
     //testEnemy(); // ! No longer works.
-    testingTowerModule();
-	parseToTowerTesting();
+    //testingTowerModule();
+	//parseToTowerTesting();
     //towerToEnemyTesting();
 
     //testValidParses();
