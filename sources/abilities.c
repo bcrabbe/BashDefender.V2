@@ -36,8 +36,9 @@ void init_abilities()
 	abl->kill.cost = KILL_COST;
 }
 	
-void unlock_ability(AbilityID id)
+int unlock_ability(AbilityID id)
 {
+	int success = 0;
 	char unlockstring[17] = "Ability unlocked";
 	Abilities *abl = get_abilities();
 	switch(id)
@@ -45,12 +46,14 @@ void unlock_ability(AbilityID id)
 		case PSX:
 		{
 			abl->psx.unlocked = 1;
+			success = 1;
 			break;
 		}
 		case KILL:
 		{
 			abl->kill.unlocked = 1;
 			useMemory(getGame(NULL), KILL_UNLOCK_COST);
+			success = 1;
 			break;
 		}
 		default: 
@@ -59,7 +62,12 @@ void unlock_ability(AbilityID id)
 			exit(1);
 		}
 	}
-	textToTowerMonitor(unlockstring);		
+	textToTowerMonitor(unlockstring);	
+	if(success == 1)
+	{
+		return 1;
+	}
+	return 0;	
 }
 
 int get_ability_cost(AbilityID id)
@@ -155,8 +163,9 @@ int is_available_ability(AbilityID id)
 	return 0;
 }
 
-void apt_get_query()
+int apt_get_query()
 {
+	int success = 0;
 	char *statuslist = (char*) calloc(200, sizeof(char));
 	char template[100] = {"APT_GET_QUERY\n\n"};
 	char psxlocked[50] = "PSX ability is locked\n";
@@ -192,7 +201,16 @@ void apt_get_query()
 	sprintf(killunlockcost, "Kill ability unlock cost = %d", KILL_UNLOCK_COST);
 	strcat(statuslist, killunlockcost);
 	textToTowerMonitor(statuslist);
+	if(statuslist[0] != '\0')
+	{
+		success = 1;
+	}
 	statuslist[0] = '\0';
+	if(success == 1)
+	{
+		return 1;
+	}
+	return 0;
 } 
 	
 
@@ -287,9 +305,9 @@ void testAbilities()
 	sput_start_testing();
 	sput_set_output_stream(NULL);
 	
-	//sput_enter_suite("psx_ability():Testing Abilities - Info window");
-	//sput_run_test(testAbilitiestoInfoWindow);
-	//sput_leave_suite();
+	sput_enter_suite("Testing Unlock Functions");
+	sput_run_test(testunlocks);
+	sput_leave_suite();
 
 	sput_enter_suite("psx_ability(): Testing PSX");
 	sput_run_test(testpsx);
@@ -327,4 +345,13 @@ void testkillall()
 	freeAllEnemies();
 }
 
+void testunlocks()
+{
+	init_abilities();
+	sput_fail_unless(get_ability_cost(PSX) == 0, "PSX cost should be 0 after initialization");
+	sput_fail_unless(get_ability_cost(KILL) > 0, "KILL cost should be greater than 0 after initialization");
+	sput_fail_unless(is_valid_unlock(KILL) == 1, "Valid unlock should return 1 after kill initialization");
+	sput_fail_unless(apt_get_query() == 1, "apt_get_query should return 1 on successful string creation");
+	sput_fail_unless(unlock_ability(KILL) == 1, "On successful unlock, function should return 1");
+}
 
