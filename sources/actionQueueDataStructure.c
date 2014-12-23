@@ -142,7 +142,6 @@ void testPushToQueue()	{
     cmdOption nStat_2=upgrade_range;
     int tar_2 = 2;
 
-    GameProperties newGame = getGame(NULL);
     ActionQueueStructure newQueue = getQueue(NULL);
 
 	sput_fail_unless(pushToQueue(newQueue,nCommand_1,nStat_1,tar_1) == 1,"Valid: 1 Queue Item");

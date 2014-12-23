@@ -43,7 +43,7 @@ int parse(char *inputString)
     }
     if(inputString[0]=='f' && inputString[1]=='o' && inputString[2]=='r' )
     {
-        parseForLoop(inputString);
+        //parseForLoop(inputString);
     }
 
 
