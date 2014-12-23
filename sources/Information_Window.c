@@ -375,7 +375,6 @@ void statsBar() {
 void actionQueueMonitor() {
     
     char *outputString = getActionQueueString();
-    
     updateActionQueueMonitor(outputString);
 }
 
@@ -410,8 +409,8 @@ void towerInformation() {
 char *getDefaultTowerString(TowerMonitor *tm) {
     
     static char defaultTowerString[MAX_OUTPUT_STRING];
-    
-    sprintf(defaultTowerString, "TOWER MONITOR\n\nActive Towers: %d", getNumberOfTowers());
+
+    sprintf(defaultTowerString, "TOWER MONITOR\n\nActive Towers: %d\nItems in Action Queue: %d\n\nCOMMAND CHEAT SHEET:\n\nmktwr int/char pos\nupgrade p/r/s t1/t2\nchmod int/char t1/t2/t3", getNumberOfTowers(),getNumOfQueueItems());
     strcpy(tm->string, defaultTowerString);
     
     return defaultTowerString;
@@ -630,6 +629,7 @@ void testTerminalWindow(void) {
     
     sput_fail_if(strcmp(errorToTerminalWindow("This is a test string"), tw->errorString) != 0, "Testing error string");
     
+    destroyCommandList();
     commandToTerminalWindow("A random command");
     sput_fail_if(strcmp(tw->start->commandString, "A random command") != 0, "Testing sending a command");
     commandToTerminalWindow("Another random command");
@@ -735,6 +735,7 @@ void testParserErrorMessages(void) {
     addMemory(1000);
     printf("Michael Testing: Towers: %d\n", getNumberOfTowers());
     parse("cat t1");
+    printf("...%s...\n", tw->errorString);
     sput_fail_if(strlen(tw->errorString) != 0, "Testing parse cat with recognized and existing target, should NOT send an error message to terminal window");
     freeAllTowers();
     strcpy(tw->errorString, "");
@@ -765,7 +766,7 @@ void testParserInfoMessages(void) {
     freeAllTowers();
     strcpy(tm->string, "");
 
-    parse("cat t2");
+    parse("cat t1");
     sput_fail_if(strlen(tm->string) != 0, "Testing parse cat with non-existing target, should NOT send an info message to tower monitor");
     
 }

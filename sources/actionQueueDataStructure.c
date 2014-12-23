@@ -464,7 +464,6 @@ int popToTower()	{
 							fprintf(stderr,"Unrecognised tower type\n");
 					        break;
 					}
-					//createTowerFromPositions(queue->start->target);
 					useMemory(Game, needed);
 					removeQueueItem();
 				}
@@ -495,34 +494,13 @@ void removeQueueItem()	{
 	--(queue->nItems);
 }
 
-
-/*
- *Pops from front of Queue. : replaced with popToTower()
- */
-int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int *target)	{
-    GameProperties Game = getGame(NULL);
-    int needed = calculateCosts(*cmd,*stat,*target);
-
-	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available Memory, cooldown time 
-		*cmd = queue->start->command;
-		*stat = queue->start->option;
-		*target = queue->start->target;
-		QueueNode tempStart = queue->start;
-		queue->start = queue->start->nextNode;	
-		free(tempStart);	
-		--(queue->nItems);
-		useMemory(Game, needed);	//use memory
-		setlastAction(Game);	//activate cooldown timer.
-
-		return 1;
-	}
-		return 0;
+int getNumOfQueueItems()	{
+	return getQueue(NULL)->nItems;
 }
 
 /*
  * Checks Top of queue to ensure target and time is correct
  */
-
 int checkQueue(ActionQueueStructure queue, GameProperties Game, int needed)	{
 	if((checkMem(needed, Game)) && (checkClock(lastCmdAction,ACTIONCOOLDOWN)))	{
 			return 1;		
