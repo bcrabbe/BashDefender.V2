@@ -122,6 +122,35 @@ int is_valid_unlock(AbilityID id)
 	}
 	return 0;
 }
+int is_ability_unlocked(AbilityID id)
+{
+    
+    Ability *a;
+    switch(id)
+    {
+        case PSX:
+        {
+            a = &(get_abilities()->psx);
+            break;
+        }
+        case KILL:
+        {
+            a = &(get_abilities()->kill);
+            break;
+        }
+        default:
+        {
+            fprintf(stderr, "Is avail Ability Switch Error\n");
+            exit(1);
+        }
+    }
+    if(a->unlocked == 1 )
+    {
+        return 1;
+    }
+ 
+    return 0;
+}
 int is_available_ability(AbilityID id)
 {
 

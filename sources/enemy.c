@@ -377,7 +377,16 @@ int setEnemyHealth(int enemyID, int newHealth)	{
 int setEnemyArmour(int enemyID, int newArmour)	{
 	  getEnemyGroup(NULL)->enemyArray[enemyID]->armour = newArmour;
 	  return getEnemyGroup(NULL)->enemyArray[enemyID]->armour;	
-}   
+}
+
+/*
+* returns the value of the indicated enemy's armour. Used in testing
+*/
+int getEnemyArmour(int enemyID)
+{
+	  return getEnemyGroup(NULL)->enemyArray[enemyID]->armour;
+}
+  
 /*
 * returns pointer to the enemy group structure if input is NULL. If input is not NULL, reassigns pointer to the pointer passed to the function
 */
@@ -439,9 +448,18 @@ void freeEnemy(int enemyID)
 void moveEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
+    
+   
+    
     if(!isDead(enemyID) ) {
-        if(e->pathProgress < e->enemyPath->pathLength - e->speed) {
-            e->pathProgress += e->speed;
+    
+        int adjustedSpeed = e->speed - e->slowEffect;
+        if(adjustedSpeed <= 0) {
+            adjustedSpeed = 1;
+        }
+        
+        if(e->pathProgress < e->enemyPath->pathLength - adjustedSpeed) {
+            e->pathProgress += adjustedSpeed;
             e->x = e->enemyPath->pathCoords[e->pathProgress][0];
             e->y = e->enemyPath->pathCoords[e->pathProgress][1];
         }
@@ -449,6 +467,13 @@ void moveEnemy(int enemyID)
             damageHealth(e->damage); 
             e->dead = 1;
 			      increaseDeathCnt();
+        }
+        
+        if(e->slowEffectStepsRemaining > 0) {
+            e->slowEffectStepsRemaining--;
+        }
+        if(e->slowEffectStepsRemaining == 0) {
+            e->slowEffect = 0;
         }
     }
 }
@@ -472,6 +497,15 @@ int setEnemyY(int enemyID, int newY)
 	  Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
 	  e->y = newY;
 	  return e->y;
+}
+
+/*
+* manually set the enemy's type - used in testing
+*/
+void setEnemyType(int enemyID, int newType)
+{
+    Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
+    e->eFamily = newType;
 }
 
 /*
@@ -545,6 +579,15 @@ void damageEnemy(int damage, int enemyID, int damageType)
           // drawDeath(e->x, e->y);
           //drawKillAll();
       }
+    }
+}
+
+void slowEnemy(int targetID, int slowPower, int slowDuration)
+{
+    Enemy e = getEnemyGroup(NULL)->enemyArray[targetID];
+    if(!isDead(targetID)) {
+        e->slowEffect = slowPower;
+        e->slowEffectStepsRemaining = slowDuration;
     }
 }
 

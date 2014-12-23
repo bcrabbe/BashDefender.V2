@@ -529,8 +529,10 @@ void TestAddMemory()	{
 
 	GameProperties testGame;
     testGame = createGame();
+  int firstMemory = getAvailableMemory();
 	addMemory(100);
-	sput_fail_unless(getAvailableMemory() == 100,"Adding MEmory");
+  int secondMemory = getAvailableMemory();
+	sput_fail_unless(secondMemory-firstMemory == 100,"Adding Memory");
 	sput_fail_unless(addMemory(-100) == 0,"Adding Negative Memory");
 	free(testGame);
 }
