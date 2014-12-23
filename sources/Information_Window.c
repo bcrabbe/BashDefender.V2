@@ -22,12 +22,13 @@
 #include "../includes/sput.h"
 
 /*---------- Data Types -----------*/
+typedef enum stringType {DEFAULT, TOWER_INFO, OTHER_INFO} StringType;
+
 typedef struct towerMonitor {
     char *string;
-    bool stringSet;
-    bool towerInfoSet;
-    int targetTower;
+    StringType st;
     int timeSet;
+    int targetTower;
 } TowerMonitor;
 
 /*---------- Hash Defines -----------*/
@@ -51,17 +52,22 @@ void towerMonitor(void) {
     TowerMonitor *tm = getTowerMonitor();
     int time = SDL_GetTicks();
     
-    //Display continuously updated tower information for specified tower if set
-    if(tm->towerInfoSet) {
-        tm->string = getTowerString(tm->targetTower);
+    //Set output string accordingly
+    switch (tm->st) {
+        case DEFAULT:
+            tm->string = getDefaultTowerString();
+            break;
+        case TOWER_INFO:
+            tm->string = getTowerString(tm->targetTower);
+            break;
+        case OTHER_INFO:
+            break;
     }
-    //Display default string unless another string has been set or a period of time has elapsed
-    else if(!tm->stringSet || (tm->stringSet && time - tm->timeSet > DEFAULT_TOWER_MONITOR_TIME)) {
-        tm->string = getDefaultTowerString();
-        tm->stringSet = false;
-        tm->towerInfoSet = false;
+    
+    //If another string has been set and a period of time has elapsed, reset to default
+    if(tm->st != DEFAULT && time - tm->timeSet > DEFAULT_TOWER_MONITOR_TIME) {
+        tm->st = DEFAULT;
     }
-    //Display whatever else the string has been set to until set period of time has elapsed
     
     updateTowerMonitor(tm->string);
 }
@@ -72,8 +78,8 @@ void towerMonitor(void) {
 void textToTowerMonitor(char *string) {
     TowerMonitor *tm = getTowerMonitor();
     
-    tm->string = string;
-    tm->stringSet = true;
+    strcpy(tm->string, string);
+    tm->st = OTHER_INFO;
     tm->timeSet = SDL_GetTicks();
     
 }
@@ -85,10 +91,9 @@ void textToTowerMonitor(char *string) {
 void displayTowerInfo(unsigned int targetTower) {
     TowerMonitor *tm = getTowerMonitor();
     
-    tm->stringSet = true;
-    tm->towerInfoSet = true;
-    tm->timeSet = SDL_GetTicks();
     tm->targetTower = targetTower;
+    tm->st = TOWER_INFO;
+    tm->timeSet = SDL_GetTicks();
 }
 
 
@@ -104,8 +109,7 @@ TowerMonitor *getTowerMonitor(void) {
         
         tm->string = (char *) malloc(sizeof(char) * MAX_OUTPUT_STRING);
         tm->timeSet = 0;
-        tm->stringSet = false;
-        tm->towerInfoSet = false;
+        tm->st = DEFAULT;
         
         initialized = true;
     }
