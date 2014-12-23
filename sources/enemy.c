@@ -416,6 +416,7 @@ int moveEnemy(int enemyID )
         else {
             damageHealth(e->damage); 
             e->dead = 1;
+			increaseDeathCnt();
             return 0;
         }
     }
@@ -506,8 +507,9 @@ void damageEnemy(int damage, int enemyID, int damageType)
       }
       
       e->health -= damageToBeDone;
-      if(e->health<=0)
+      if(e->health<=0 && e->dead != 1)
       {
+		  increaseDeathCnt();
           e->dead=1;
           addMemory(e->maxHealth/10);
           // drawDeath(e->x, e->y);
@@ -524,6 +526,7 @@ void killEnemy(int enemyID)
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
     e->dead = 1;
     e->health = 0;
+	increaseDeathCnt();
 }
 
 

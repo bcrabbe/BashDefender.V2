@@ -64,9 +64,12 @@ clock_t delayGame(int delayN)	{
 }
 
 void startNextWave()	{
+		iprint(getTotalCurrentWaveEnemies());
+		iprint(getDeathCnt());
 	if(getTotalCurrentWaveEnemies() == getDeathCnt())	{
 		if(getWave(getGame(NULL))  < getTotalWaveNo())	{
 			printf("starting next wave\n");
+			resetEnemyCounts();
 			getGame(NULL)->currWaveNo++;
 		} else {
 			printf("you have won the level\n");

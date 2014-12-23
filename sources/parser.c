@@ -42,8 +42,6 @@ int parse(char *inputString)
         return 0;
     }
 
-
-
     int numberOfTokens;
     char **commandArray = breakUpString(inputString, &numberOfTokens, " ,");
     testCommandArray(commandArray, numberOfTokens);
@@ -165,6 +163,7 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
     }
     return specificReturns;
+
 }
 
 /*

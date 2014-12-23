@@ -56,7 +56,7 @@ typedef enum clockType	{
 
 /*----------Symbolic Constants-----------*/
 
-#define ACTIONCOOLDOWN	1	//! minimum time between actions being removed from queue
+#define ACTIONCOOLDOWN	0	//! minimum time between actions being removed from queue
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 
 #define INT_TYPE 1 //hasdefine to avoid enums when dealing with int and char enemies
@@ -95,6 +95,7 @@ int getTotalCurrentWaveEnemies();
 int checkIfPlayerDead();
 void startNextWave();
 void setTotalWaveNo(int totalW);
+void resetEnemyCounts();
 int getTotalWaveNo();
 GameClock createClock();
 int checkClock(clockType cType,int coolDown);
