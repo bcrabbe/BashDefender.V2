@@ -14,6 +14,7 @@
 void towerMonitor(unsigned int targetTower, char *outputString);
 char *getDefaultTowerString();
 char *getTowerString(unsigned int targetTower);
+void terminalWindow(char *string);
 void statsBar();
 void actionQueueMonitor();
 void manUpgrade();

@@ -3,8 +3,6 @@
 
 #include "../includes/Display.h"
 #include "../includes/enemy.h"
-//#include "../includes/gameProperties.h"
-//#include "../includes/actionQueueDataStructure.h"
 
 typedef struct tower *tower;
 typedef struct towerGroup *TowerGroup;
@@ -13,12 +11,6 @@ typedef struct towerPosNode *TowerPosNode;
 typedef struct projectileNode *ProjectileNode;
 typedef struct projectileList *ProjectileList;
 
-enum varType {
-  INTtype = 1,
-  CHARtype = 2
-};
-
-typedef enum varType VarType;
 
 typedef enum firingMethod	{
 
@@ -32,6 +24,8 @@ typedef enum firingMethod	{
 void createTowerPos();
 int getSpecifiedTowerPosY(int postion);
 int getSpecifiedTowerPosX(int postion);
+int maxTowerPosition();
+char maxTowerPositionChar();
 
 TowerPos getTowerPos(TowerPos tPos);
 void addTowerPosNode(int x, int y);
@@ -48,6 +42,7 @@ int upgradeRange(int target);
 int upgradeSpeed(int target);
 int upgradeAOEpower(int target);
 int upgradeAOErange(int target);
+int setTowerType(int towerID, int newType);
 void createTowerGroup();
 TowerGroup getTowerGrp();
 tower getTowerID(int target);
@@ -87,11 +82,17 @@ void drawAllTowerPositions();
 void createProjectileList();
 ProjectileList getProjectileList(ProjectileList pL);
 ProjectileNode newProjectileNode();
-void moveProjectiles();
+void addToProjectileList(ProjectileNode newNode);
 void removeProjectileNode(ProjectileNode projNode);
-void moveBullet(ProjectileNode bullet);
-void launchBullet(int firedX, int firedY, int damage, int targetID, VarType firingType);
+void moveProjectiles();
 void drawProjectiles();
+
+void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType);
+void moveBullet(ProjectileNode bullet);
+void launchMissile(int firedX, int firedY, int damage, int targetID, int firingType);
+void getBuildUpCoords(int originX, int originY, int *buildUpX, int *buildUpY);
+void moveMissile(ProjectileNode missile);
+
 
 #endif
 

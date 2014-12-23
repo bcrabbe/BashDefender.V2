@@ -19,7 +19,7 @@ struct levelPaths {
 struct enemy {
 
     TypeOfEnemy eType;
-    Family eFamily;
+    int eFamily;
     int level;
     int enemyID;
     
@@ -285,16 +285,16 @@ void createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum) {
   
   switch (eType) {
     case intBasic :
-      initialiseEnemy(e, lvl, intEnemy, eType, INT_BASIC_HEALTH, INT_BASIC_ARMOUR, INT_BASIC_SPEED, INT_BASIC_DAMAGE, INT_BASIC_HEIGHT, INT_BASIC_WIDTH);
+      initialiseEnemy(e, lvl, INT_TYPE, eType, INT_BASIC_HEALTH, INT_BASIC_ARMOUR, INT_BASIC_SPEED, INT_BASIC_DAMAGE, INT_BASIC_HEIGHT, INT_BASIC_WIDTH);
       break;
     case intHeavy :
-      initialiseEnemy(e, lvl, intEnemy, eType, INT_HEAVY_HEALTH, INT_HEAVY_ARMOUR, INT_HEAVY_SPEED, INT_HEAVY_DAMAGE, INT_HEAVY_HEIGHT, INT_HEAVY_WIDTH);
+      initialiseEnemy(e, lvl, INT_TYPE, eType, INT_HEAVY_HEALTH, INT_HEAVY_ARMOUR, INT_HEAVY_SPEED, INT_HEAVY_DAMAGE, INT_HEAVY_HEIGHT, INT_HEAVY_WIDTH);
       break;
     case charBasic :
-      initialiseEnemy(e, lvl, charEnemy, eType, CHAR_BASIC_HEALTH, CHAR_BASIC_ARMOUR, CHAR_BASIC_SPEED, CHAR_BASIC_DAMAGE, CHAR_BASIC_HEIGHT, CHAR_BASIC_WIDTH);
+      initialiseEnemy(e, lvl, CHAR_TYPE, eType, CHAR_BASIC_HEALTH, CHAR_BASIC_ARMOUR, CHAR_BASIC_SPEED, CHAR_BASIC_DAMAGE, CHAR_BASIC_HEIGHT, CHAR_BASIC_WIDTH);
       break;
     case charHeavy :
-      initialiseEnemy(e, lvl, charEnemy, eType, CHAR_HEAVY_HEALTH, CHAR_HEAVY_ARMOUR, CHAR_HEAVY_SPEED, CHAR_HEAVY_DAMAGE, CHAR_HEAVY_HEIGHT, CHAR_HEAVY_WIDTH);
+      initialiseEnemy(e, lvl, CHAR_TYPE, eType, CHAR_HEAVY_HEALTH, CHAR_HEAVY_ARMOUR, CHAR_HEAVY_SPEED, CHAR_HEAVY_DAMAGE, CHAR_HEAVY_HEIGHT, CHAR_HEAVY_WIDTH);
       break;
     default :
       fprintf(stderr,"ERROR**** incorrect value for TypeOfEnemy (value = %d) passed to createSpecificEnemy() ****\n", eType);
@@ -308,7 +308,7 @@ void createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum) {
 /*
 * populates relevant fields for standard enemies
 */                                            
-void initialiseEnemy(Enemy newEnemy, int lvl, Family fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width)
+void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width)
 {
     LevelPaths lP = getLevelPaths(NULL);
     newEnemy->enemyPath = lP->paths[rand()%lP->numberOfPaths];
@@ -488,25 +488,31 @@ int inRange(int tX, int tY, int tRange, int enemyID)
 * Does the specified ammount of damage to the specified enemy. Reduces damage by the amount of armour the enemy has first.
 * If damage reduces health to less than 0, kills enemy and adds memory equivalent to enemy's max health/10.
 */
-void damageEnemy(int damage, int enemyID)
+void damageEnemy(int damage, int enemyID, int damageType)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
-    
-    int damageToBeDone = damage - e->armour;
-    if(damageToBeDone <= 0) {
-      damageToBeDone = 0;
-    }
-    
-    e->health -= damageToBeDone;
-    if(e->health<=0 && e->dead != 1)
-    {
-        e->dead=1;
-        addMemory(e->maxHealth/10);
-		printf("dead\n");
-		increaseDeathCnt();
-        // drawDeath(e->x, e->y);
-        //drawKillAll();
-
+    if(!isDead(enemyID)) {
+      int damageToBeDone;
+      
+        // modify the damge based on the type of enemy and type of damage
+      if(e->eFamily == damageType) {
+        damageToBeDone = (damage*TYPE_MATCH_MODIFIER) - e->armour;
+      } else {
+        damageToBeDone = (damage/TYPE_MISMATCH_MODIFIER) - e->armour;
+      }
+        
+      if(damageToBeDone <= 0) {
+        damageToBeDone = 0;
+      }
+      
+      e->health -= damageToBeDone;
+      if(e->health<=0)
+      {
+          e->dead=1;
+          addMemory(e->maxHealth/10);
+          // drawDeath(e->x, e->y);
+          //drawKillAll();
+      }
     }
 }
 
@@ -524,7 +530,6 @@ void killEnemy(int enemyID)
 /*
 * calculates how far the specified enemy is from the end of their path. Used for tower target aquisition.
 */
-
 int distanceToEndOfPath(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
@@ -555,9 +560,9 @@ void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves)
     targetCoords[0] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][0] + (e->width/2);
     targetCoords[1] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][1] + (e->height/2);
   } else {
-    int impactProgess = e->pathProgress + (e->speed * bulletMoves);
-    targetCoords[0] = e->enemyPath->pathCoords[impactProgess][0] + (e->width/2);
-    targetCoords[1] = e->enemyPath->pathCoords[impactProgess][1] + (e->height/2);
+    int impactProgress = e->pathProgress + (e->speed * bulletMoves);
+    targetCoords[0] = e->enemyPath->pathCoords[impactProgress][0] + (e->width/2);
+    targetCoords[1] = e->enemyPath->pathCoords[impactProgress][1] + (e->height/2);
   }
 }
     

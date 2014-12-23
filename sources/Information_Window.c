@@ -20,6 +20,7 @@
 
 #define MAX_OUTPUT_STRING 200
 #define DEFAULT_SCREEN_TIME 10000
+#define DEFAULT_SCREEN_TIME2 4000
 
 #include <SDL2/SDL.h>
 
@@ -64,6 +65,28 @@ void towerMonitor(unsigned int targetTower, char *optionalOutputString) {
     }
     
     updateTowerMonitor(outputString);
+}
+
+/**
+ update terminal window with optional output string
+ */
+void terminalWindow(char *string) {
+    int time = SDL_GetTicks();
+    static int timeOfCall = 0;
+    static char *outputString = NULL;
+    
+    if(string != NULL) {
+        outputString = malloc(MAX_OUTPUT_STRING);
+        sprintf(outputString, "\n\n\n               **********\n%s\n               **********\n\n\n", string);
+        timeOfCall = time;
+    }
+    
+    if(time - timeOfCall > DEFAULT_SCREEN_TIME2) {
+        free(outputString);
+        outputString = NULL;
+    }
+    
+    updateTerminalWindow(outputString);
 }
 
 /**
@@ -135,7 +158,6 @@ void manUpgrade()
  */
 void manCat()
 {
-    
     towerMonitor(-1, "GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target eg t1, t2, t3... to display the stats of that target\n");
 }
 

@@ -9,6 +9,7 @@
 #include "../includes/debug.h"
 #include "../includes/sput.h"
 #include "../includes/levelController.h"
+#include "../includes/parser.h"
 
 /*---------- Functions ----------*/
 //int SCREEN_WIDTH_GLOBAL;
@@ -175,7 +176,7 @@ int createEnemyCommand(Keyword makeEnemy)	{
 
 }
 
-void waveCreatorCommand(Keyword waveKeyWord)	{
+void waveCreatorCommand(Keyword waveKeyWord)	 {
 	int enemyNum;
 	int totalEnemies = returnPropertyValue(waveKeyWord,numberOfEnemies);
    	for(enemyNum = 0; enemyNum < totalEnemies; enemyNum++)	{

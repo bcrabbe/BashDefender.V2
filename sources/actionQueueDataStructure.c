@@ -435,13 +435,31 @@ char *getActionQueueString(void) {
         int target = p->target;
         switch(command) {
             case cmd_upgrade:
-                strcat(outputString, "upgrade");
-                break;
-            case cmd_execute:
-                strcat(outputString, "execute");
-                break;
-            case cmd_set:
-                strcat(outputString, "set");
+                strcat(outputString, "upgrade ");
+                switch(option) {
+                    case upgrade_power:
+                        strcat(outputString, "p ");
+                        break;
+                    case upgrade_range:
+                        strcat(outputString, "r ");
+                        break;
+                    case upgrade_speed:
+                        strcat(outputString, "s ");
+                        break;
+                    case upgrade_AOErange:
+                        strcat(outputString, "AOEr ");
+                        break;
+                    case upgrade_AOEpower:
+                        strcat(outputString, "AOEp ");
+                        break;
+                    case upgrade_level:
+                        strcat(outputString, "level ");
+                }
+                
+                if(target) {
+                    sprintf(targetString, " t%d", target);
+                    strcat(outputString, targetString);
+                }
                 break;
             case cmd_mktwr:
                 strcat(outputString, "mktwr");
@@ -491,10 +509,7 @@ char *getActionQueueString(void) {
             sprintf(targetString, " t%d", target);
             strcat(outputString, targetString);
         }
-        
-        
         strcat(outputString, "\n");
-        
     }
     
     return outputString;

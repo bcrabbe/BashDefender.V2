@@ -59,6 +59,9 @@ typedef enum clockType	{
 #define ACTIONCOOLDOWN	20	//! minimum time between actions being removed from queue
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 
+#define INT_TYPE 1 //hasdefine to avoid enums when dealing with int and char enemies
+#define CHAR_TYPE 2
+
 /*----------TypeDefs----------*/
 
 typedef enum cmdType cmdType;

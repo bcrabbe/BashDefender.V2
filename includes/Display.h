@@ -37,12 +37,12 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #define STATS_BAR_BORDER_Y 10
 
 //Action queue dimensions
-#define ACTION_QUEUE_X 0
-#define ACTION_QUEUE_Y (STATS_BAR_HEIGHT)
 #define ACTION_QUEUE_WIDTH (SCREEN_WIDTH_GLOBAL / 5)
 #define ACTION_QUEUE_HEIGHT (SCREEN_HEIGHT_GLOBAL / 5)
-#define ACTION_QUEUE_BORDER_X 25
-#define ACTION_QUEUE_BORDER_Y 20
+#define ACTION_QUEUE_X (SCREEN_WIDTH_GLOBAL / 2 - ACTION_QUEUE_WIDTH / 2)
+#define ACTION_QUEUE_Y (SCREEN_HEIGHT_GLOBAL - TOWER_MONITOR_HEIGHT)
+#define ACTION_QUEUE_BORDER_X 40
+#define ACTION_QUEUE_BORDER_Y 40
 
 //Terminal monitor dimensions
 #define TERMINAL_WINDOW_HEIGHT (SCREEN_HEIGHT_GLOBAL / 3.5)
@@ -124,6 +124,7 @@ void updateTowerMonitor(char *outputString);
 void updateStatsBar(char *outputString);
 void updateActionQueueMonitor(char *outputString);
 char *strdup2(char * s);
+void updateTerminalWindow(char *outputString);
 
 
 int terminal_window(Display d, char *pass, char *clear);

@@ -18,6 +18,7 @@
 
 int main(int argc, char ** argv)
 {
+    srand(time(NULL));
     Display d = init_SDL();
     initLevel();
 //	testing();
@@ -34,7 +35,7 @@ int main(int argc, char ** argv)
 
     //init_sound();
     //playBackgroundSound();
-    
+
     do{
         startFrame(d);
         while(started == 0){
@@ -65,10 +66,10 @@ int main(int argc, char ** argv)
         towerMonitor(0, NULL);
         actionQueueMonitor();
 
-        drawRect(10, 10, 150, 150, 80, 10, 100, 100);
+        terminalWindow(NULL);
         endFrame(d);
         
-        ended = checkIfPlayerDead();
+        //ended = checkIfPlayerDead();
         while (ended) {
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
