@@ -65,8 +65,7 @@ int main(int argc, char ** argv)
         towerMonitor();
         actionQueueMonitor();
         towerInformation();
-
-        terminalWindow(NULL);
+        terminalWindow();
         endFrame(d);
         
         //ended = checkIfPlayerDead();

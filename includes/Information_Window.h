@@ -17,9 +17,11 @@ typedef struct towerMonitor TowerMonitor;
 
 /*----------Function Prototypes (External)-----------*/
 void towerMonitor(void);
-void terminalWindow(char *string);
 void textToTowerMonitor(char *string);
 void displayTowerInfo(unsigned int targetTower);
+void terminalWindow(void);
+void errorToTerminalWindow(char *string);
+void commandToTerminalWindow(char *string);
 void statsBar(void);
 void towerInformation(void);
 void actionQueueMonitor(void);

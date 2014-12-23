@@ -22,7 +22,7 @@
 #include "../includes/sput.h"
 
 /*---------- Data Types -----------*/
-typedef enum stringType {DEFAULT, TOWER_INFO, OTHER_INFO} StringType;
+typedef enum stringType {DEFAULT, TOWER_INFO, OTHER_INFO, ERROR_MESSAGE} StringType;
 
 typedef struct towerMonitor {
     char *string;
@@ -31,16 +31,34 @@ typedef struct towerMonitor {
     int targetTower;
 } TowerMonitor;
 
+typedef struct commandNode {
+    char *commandString;
+    struct commandNode *next;
+} CommandNode;
+
+typedef struct terminalWindow {
+    CommandNode *start;
+    CommandNode *current;
+    StringType st;
+    int commands;
+    char *outputString;
+    char *errorString;
+    int timeSet;
+} TerminalWindow;
+
 /*---------- Hash Defines -----------*/
 #define MAX_OUTPUT_STRING 200
+#define TOTAL_COMMANDS_DISPLAYED 5
 #define DEFAULT_TOWER_MONITOR_TIME 10000
-#define DEFAULT_TERMINAL_WINDOW_TIME 4000
+#define TERMINAL_ERROR_TIME 5000
 
 /*----------Function Prototypes (Internal)-----------*/
 TowerMonitor *getTowerMonitor(void);
-char *getDefaultTowerString();
-char *getTowerString(unsigned int targetTower);
-
+void getDefaultTowerString(char **inputString);
+void getTowerString(unsigned int targetTower, char **inputString);
+TerminalWindow *getTerminalWindow(void);
+CommandNode *createCommandNode(void);
+void destroyCommandNode(CommandNode **start);
 
 
 
@@ -55,10 +73,10 @@ void towerMonitor(void) {
     //Set output string accordingly
     switch (tm->st) {
         case DEFAULT:
-            tm->string = getDefaultTowerString();
+            getDefaultTowerString(&tm->string);
             break;
         case TOWER_INFO:
-            tm->string = getTowerString(tm->targetTower);
+            getTowerString(tm->targetTower, &tm->string);
             break;
         case OTHER_INFO:
             break;
@@ -118,25 +136,148 @@ TowerMonitor *getTowerMonitor(void) {
 }
 
 /**
- update terminal window with optional output string
+ update terminal window according to information in terminal window object
  */
-void terminalWindow(char *string) {
+void terminalWindow() {
+    TerminalWindow *tw = getTerminalWindow();
     int time = SDL_GetTicks();
-    static int timeOfCall = 0;
-    static char *outputString = NULL;
     
-    if(string != NULL) {
-        outputString = malloc(MAX_OUTPUT_STRING);
-        sprintf(outputString, "\n\n\n               **********\n%s\n               **********\n\n\n", string);
-        timeOfCall = time;
+    strcpy(tw->outputString, "");
+    
+    switch(tw->st) {
+        case DEFAULT:
+            printf("Case is default\n");
+            
+            for(CommandNode *start = tw->start; start != NULL; start = start->next) {
+                strcat(tw->outputString, "$");
+                strcat(tw->outputString, start->commandString);
+                strcat(tw->outputString, "\n");
+            }
+            break;
+        case ERROR_MESSAGE:
+            strcpy(tw->outputString, tw->errorString);
+            if(time - tw->timeSet > TERMINAL_ERROR_TIME) {
+                tw->st = DEFAULT;
+            }
+            break;
+    }
+
+    if(strlen(tw->outputString) > 0) {
+        updateTerminalWindow(tw->outputString);
+    }
+}
+
+    /*strcpy(tw->outputString, "");
+    
+    for(CommandNode *start = tw->start; start != NULL; start = start->next) {
+        strcat(tw->outputString, "$");
+        strcat(tw->outputString, start->commandString);
+        strcat(tw->outputString, "\n");
     }
     
-    if(time - timeOfCall > DEFAULT_TERMINAL_WINDOW_TIME) {
-        free(outputString);
-        outputString = NULL;
+    if(tw->st == ERROR_MESSAGE) {
+        strcpy(tw->outputString, tw->errorString);
+        if(time - tw->timeSet > TERMINAL_ERROR_TIME) {
+            tw->st = DEFAULT;
+        }
     }
     
-    updateTerminalWindow(outputString);
+    printf("\n\n");
+    
+    if(strlen(tw->outputString) > 0) {
+     updateTerminalWindow(tw->outputString);
+    }
+}*/
+
+/**
+Initialize terminal window object when first called, return pointer to object each subsequent call
+*/
+TerminalWindow *getTerminalWindow(void) {
+    static TerminalWindow *tw;
+    static bool initialized = false;
+    
+    if(!initialized) {
+        tw = (TerminalWindow *) malloc(sizeof(TerminalWindow));
+        tw->start = tw->current = NULL;
+        tw->commands = 0;
+        tw->outputString = (char *) malloc(sizeof(char) * MAX_OUTPUT_STRING);
+        tw->errorString = (char *) malloc(sizeof(char) * MAX_OUTPUT_STRING);
+        tw->st = DEFAULT;
+        tw->timeSet = 0;
+        
+        initialized = true;
+    }
+    
+    return tw;
+}
+
+/**
+ Send error to terminal window object
+ */
+void errorToTerminalWindow(char *string) {
+    TerminalWindow *tw = getTerminalWindow();
+    
+    sprintf(tw->errorString, "******************************\n%s\n******************************", string);
+    tw->st = ERROR_MESSAGE;
+    tw->timeSet = SDL_GetTicks();
+}
+
+/**
+ Send command to terminal window object
+ */
+void commandToTerminalWindow(char *string) {
+    TerminalWindow *tw = getTerminalWindow();
+    
+    CommandNode *newNode = createCommandNode();
+    strcpy(newNode->commandString, string);
+    newNode->next = NULL;
+    
+    if(tw->start == NULL) {
+        tw->start = tw->current = newNode;
+    }
+    else {
+        CommandNode *temp = tw->start;
+        
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+        
+        temp->next = newNode;
+    }
+    
+    tw->commands++;
+    
+    if(tw->commands > TOTAL_COMMANDS_DISPLAYED) {
+        destroyCommandNode(&tw->start);
+    }
+}
+
+/**
+ Creates command node for inserting into list
+*/
+CommandNode *createCommandNode(void) {
+    
+    CommandNode *commandNode = (CommandNode*) malloc(sizeof(CommandNode));
+    if(commandNode == NULL) {
+        fprintf(stderr, "malloc failed in createCommandNode()");
+    }
+    commandNode->commandString = (char *) malloc(sizeof(char) * MAX_OUTPUT_STRING);
+    if(commandNode->commandString == NULL) {
+        fprintf(stderr, "malloc failed in createCommandNode()");
+    }
+    
+    return commandNode;
+    
+}
+
+/**
+ Deallocate memory for previously created command node and command string
+ */
+void destroyCommandNode(CommandNode **start) {
+    CommandNode *temp = *start;
+    *start = (*start)->next;
+    free(temp->commandString);
+    free(temp);
 }
 
 /**
@@ -192,28 +333,21 @@ void towerInformation() {
 /**
  Creates default string for tower monitor
  */
-char *getDefaultTowerString() {
+void getDefaultTowerString(char **inputString) {
     
-    char *outputString = malloc(MAX_OUTPUT_STRING);
+    sprintf(*inputString, "TOWER MONITOR\n\nActive Towers: %d", getNumberOfTowers());
     
-    sprintf(outputString, "TOWER MONITOR\n\nActive Towers: %d", getNumberOfTowers());
-    
-    return outputString;
 }
 
 /**
  Creates output string for specific tower
  */
-char *getTowerString(unsigned int targetTower) {
+void getTowerString(unsigned int targetTower, char **inputString) {
     
     int range, damage, speed, AOEpower, AOErange;
     getStats(&range, &damage, &speed, &AOEpower, &AOErange, targetTower);
     
-    char *outputString = malloc(MAX_OUTPUT_STRING);
-    
-    sprintf(outputString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
-    
-    return outputString;
+    sprintf(*inputString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
 }
 
 
