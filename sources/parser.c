@@ -291,6 +291,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     int token = 2;
     while(token < numberOfTokens) {
         int towerPosition = (int)tolower(commandArray[token][0]) - 'a' + 1;
+		iprint(isTowerPositionAvailable(towerPosition));
         if( isTowerPositionAvailable(towerPosition) ){
             if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
             {

@@ -124,6 +124,7 @@ ActionQueueStructure getQueue(ActionQueueStructure queue)	{
  * Pushes values to newly created node at back of queue
  */
 int pushToQueue(ActionQueueStructure queue, cmdType command, cmdOption option, int target)	{
+		printf("pushed to queue\n");
 		createNode(queue);
 		queue->current->command = command;
 		queue->current->option = option;
