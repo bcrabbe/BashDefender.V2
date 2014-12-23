@@ -164,6 +164,7 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         default:
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
     }
+    return specificReturns;
 }
 
 /*
