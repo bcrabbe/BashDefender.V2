@@ -18,6 +18,7 @@
 #include "../includes/Information_Window.h"
 #include "../includes/abilities.h"
 #include "../includes/enemy.h"
+#include "../includes/sput.h"
 
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
 int parseMktwr(char ** commandArray, int numberOfTokens);
@@ -41,6 +42,7 @@ int parse(char *inputString)
         optionUsageError();
         return 0;
     }
+
 
     int numberOfTokens;
     char **commandArray = breakUpString(inputString, &numberOfTokens, " ,");
@@ -384,7 +386,7 @@ int parseCat(char * inputStringTargeting)
         unsigned int targetTower = getTargetTower(inputStringTargeting, true);
         if(targetTower)
         {
-            towerMonitor(targetTower, NULL);//function in Information_Window.c
+            displayTowerInfo(targetTower);//function in Information_Window.c
             return 1;
         }
         else
@@ -904,3 +906,5 @@ stringList * intialiseOptionList()
     
     return optionsList;
 }
+
+

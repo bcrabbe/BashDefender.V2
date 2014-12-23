@@ -15,7 +15,6 @@
 #include "../includes/Sound.h"
 #include "../includes/abilities.h"
 
-
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
@@ -63,8 +62,9 @@ int main(int argc, char ** argv)
         presentAnimation();
     	drawAllTowerPositions();
         statsBar();
-        towerMonitor(0, NULL);
+        towerMonitor();
         actionQueueMonitor();
+        towerInformation();
 
         terminalWindow(NULL);
         endFrame(d);

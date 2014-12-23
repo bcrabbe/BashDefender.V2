@@ -844,6 +844,11 @@ int getTowerY(int towerID)
     return TG->listOfTowers[towerID]->y;
 }
 
+int getTowerWidth(int towerID) {
+    TowerGroup TG = getTowerGrp(NULL);
+    return TG->listOfTowers[towerID]->width;
+}
+
 
 int setTowerY(int towerID, int newY)	{
 
@@ -990,4 +995,10 @@ void present_tower(Display d)
     // bullets added here temporarily
     moveProjectiles();
     drawProjectiles();
+}
+
+int getNumOfTowers(void) {
+    TowerGroup TG = getTowerGrp(NULL);
+    
+    return TG->numOfTowers;
 }

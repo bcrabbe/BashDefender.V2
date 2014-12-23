@@ -258,10 +258,19 @@ int getWave(GameProperties game)	{
 
 }
 
+/*
+ *Returns total number of waves
+ */
+int getTotalWaves(GameProperties game) {
+    
+    return game->totalWaveNo;
+}
+
 int getHealth(GameProperties game)	{
 
 	return game->health;
 }
+
 
 /*
  * Checks if health is 0

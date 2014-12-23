@@ -461,7 +461,21 @@ char *getActionQueueString(void) {
                 }
                 break;
             case cmd_mktwr:
-                strcat(outputString, "mktwr");
+                strcat(outputString, "mktwr ");
+                switch(option) {
+                    case mktwr_int:
+                        strcat(outputString, "INT ");
+                        break;
+                    case mktwr_char:
+                        strcat(outputString, "CHAR ");
+                        break;
+                }
+                
+                if(target) {
+                    sprintf(targetString, "%c", 'A' + (target - 1));
+                    strcat(outputString, targetString);
+                }
+
                 break;
             case cmd_aptget:
                 strcat(outputString, "aptget");
@@ -470,44 +484,6 @@ char *getActionQueueString(void) {
                 continue;
         }
         
-        strcat(outputString, " ");
-        
-        switch(option) {
-            case upgrade_power:
-                strcat(outputString, "p");
-                break;
-            case upgrade_range:
-                strcat(outputString, "r");
-                break;
-            case upgrade_speed:
-                strcat(outputString, "s");
-                break;
-            case upgrade_AOErange:
-                strcat(outputString, "AOEr");
-                break;
-            case upgrade_AOEpower:
-                strcat(outputString, "AOEp");
-                break;
-            case upgrade_level:
-                strcat(outputString, "level");
-                break;
-            case mktwr_int:
-                strcat(outputString, "INT");
-                break;
-            case mktwr_char:
-                strcat(outputString, "CHAR");
-                break;
-            case aptget_kill:
-                strcat(outputString, "kill");
-                break;
-            default:
-                continue;
-        }
-        
-        if(target) {
-            sprintf(targetString, " t%d", target);
-            strcat(outputString, targetString);
-        }
         strcat(outputString, "\n");
     }
     

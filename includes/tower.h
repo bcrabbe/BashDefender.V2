@@ -93,6 +93,9 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
 void getBuildUpCoords(int originX, int originY, int *buildUpX, int *buildUpY);
 void moveMissile(ProjectileNode missile);
 
+int getNumOfTowers(void);
+int getTowerWidth(int towerID);
+
 
 #endif
 
