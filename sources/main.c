@@ -19,9 +19,9 @@
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
-    Display d = init_SDL();
+	Display d = init_SDL();
     initLevel();
-//	testing();
+  	//testing();
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -30,7 +30,7 @@ int main(int argc, char ** argv)
     int started = 0;
     int ended = 0;
     
-    addMemory(100);
+    addMemory(10000);
     int steps=0;
 
     //init_sound();
@@ -96,14 +96,14 @@ void testing()	{
 
 	setUpTesting();
 	
-	testLevelController();
+	//testLevelController();
 	//testingTowerPositions();
     //testingGameStructure();
     //testingActionQueue();
     //parseToQueueTesting();
     //testEnemy(); // ! No longer works.
     //testingTowerModule();
-	//parseToTowerTesting();
+	//parseToTowerTesting(); //!Segfaults
     //towerToEnemyTesting();
 
     //testValidParses();

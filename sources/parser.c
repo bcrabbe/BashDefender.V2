@@ -41,11 +41,6 @@ int parse(char *inputString)
         optionUsageError();
         return 0;
     }
-    if(inputString[0]=='f' && inputString[1]=='o' && inputString[2]=='r' )
-    {
-        //parseForLoop(inputString);
-    }
-
 
     int numberOfTokens;
     char **commandArray = breakUpString(inputString, &numberOfTokens, " ,");
@@ -167,6 +162,8 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         default:
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
     }
+
+	return 0;
 }
 
 /*
@@ -508,9 +505,8 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     size_t len = strlen(inputStringTargeting);//gets the size of string
     if( len<1  || ( needsIdentifier &&  len<2 ) )
     {
-        terminalWindow("ERROR: You must target a towers with this command");
         char str[100];
-        sprintf(str,"To target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
+        sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
         terminalWindow(str);
         fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
         fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
@@ -520,7 +516,7 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     {
         terminalWindow("ERROR: You must target a towers with this command");
         char str[100];
-        sprintf(str,"To target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
+        sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
         terminalWindow(str);
         fprintf(stderr,"*** ERROR: You must target a towers with this command ***\n");
         fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
@@ -540,9 +536,8 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     }
     if(targetTower > numberOfTowers || targetTower < 1 )
     {
-        terminalWindow("ERROR: target tower does not exist");
         char str[100];
-        sprintf(str,"You have only %d towers you entered t%d",numberOfTowers,
+        sprintf(str,"ERROR: target tower does not existYou have only %d towers you entered t%d",numberOfTowers,
                 targetTower);
         terminalWindow(str);
         
