@@ -67,8 +67,8 @@ void initialQueueReader()	{
  */
 void pathCommand(Keyword pathCommand)	{
 
-		iprint(returnPropertyValue(pathCommand,pathLevel));
-		iprint(returnPropertyValue(pathCommand,numberOfPaths));
+    iprint(returnPropertyValue(pathCommand,pathLevel));
+    iprint(returnPropertyValue(pathCommand,numberOfPaths));
 }
 
 void levelQueueReader()	{
