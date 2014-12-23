@@ -462,7 +462,7 @@ void testing()	{
     //testParser();
     //testingTowerModule(); //! working
     //testingInformationWindowModule();
-    //testTerminalWindowInput();
+    testTerminalWindowInput();
     testAbilities();
 
    	//! System Tests 
