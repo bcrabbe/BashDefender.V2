@@ -86,10 +86,11 @@ int main(int argc, char ** argv)
 
 void quitGame()
 {
+    destroyEnvVarList();
     //shutSound();
     freeEnemyGroup();
     freeLevelPaths();
-    freeParseLists();
+    freeParseLists();`
 }
 
 void testing()	{

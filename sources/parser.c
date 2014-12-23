@@ -23,12 +23,12 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
 int parseMktwr(char ** commandArray, int numberOfTokens);
 
 
-
-
 unsigned long int stringToInt(const char * string);
 
 
 typedef enum operator {
+    error = -1,
+    none = 0,
     not = '!',
     greaterThan = '>',
     lessThan = '<',
@@ -86,6 +86,22 @@ int parseWhileNoOp(char ** bracketTokenArray)
 {
     
 }
+
+envVar * returnEnvVar(char * stringToMatch)
+{
+    envVarList * envsListStruct = getEnvsList(NULL);
+    for(int i=0; i<envsListStruct->numberOfElements; ++i)
+    {
+        if(strcmp(stringToMatch,envsListStruct->array[i]->name) ||
+           strcmp(stringToMatch,envsListStruct->array[i]->name2))
+        {
+            return envsListStruct->array[i];
+        }
+    }
+    return 0;
+
+}
+
 /*
  *  while(mem>0){ command }
  */
@@ -93,23 +109,71 @@ int parseWhile(char *inputString)
 {
     int numberOfBracketsTokens;
     char ** bracketTokenArray = breakUpString(inputString, &numberOfBracketsTokens, "(){}");
-    if(numberOfBracketsTokens<3) {
-        fprintf(stderr,"ERROR: was expecting condition and command e.g. ""while(mem>0){ command }"" \n");
-        terminalWindow("ERROR: was expecting condition and command e.g. ""while(mem>0){ command }"" ");
+    if(numberOfBracketsTokens<3)
+    {
+        fprintf(stderr,"ERROR: was expecting condition and command e.g. ""while ( condition ) { command }"" \n");
+        terminalWindow("ERROR: was expecting condition and command e.g. ""while ( condition ) { command }"" ");
         return 0;
     }
-    else {
+    else
+    {
         operator op = getOperatorFromString( bracketTokenArray[1] );
         printf("op = %c\n",op);
-        if(!op) {
-            parseWhileNoOp(bracketTokenArray);
-        }
         int numberOfOperands=0;
-        char stringForOperator[5];
-        makeStringForOperator(op, stringForOperator);
-        char ** conditionArray = breakUpString(bracketTokenArray[1], &numberOfOperands,
-                                               stringForOperator);
-        /*switch (op)
+        envVarList * envsListStruct = getEnvsList(NULL);
+        envVar * var;
+        int testsValue;
+        if(op==0 || op==not)
+        {
+            if(op==not)
+            {
+                bracketTokenArray[1]=bracketTokenArray[1]+1;//gets rid of the !
+            }
+            char ** conditionArray = breakUpString(bracketTokenArray[1], &numberOfOperands,
+                                                   " ,");
+            if(numberOfOperands>1 )
+            {
+                fprintf(stderr,"ERROR: was expecting a single argument for condition with no operator or ! operator \n");
+                terminalWindow("ERROR: was expecting a single argument for condition with no operator or ! operator");
+                return 0;
+            }
+            free(conditionArray);
+            var = returnEnvVar(bracketTokenArray[1]);
+            if(!var)
+            {
+                char termErrString[100];
+                sprintf(termErrString,"ERROR: use of undeclared variable %s in condition statement",
+                        bracketTokenArray[1]);
+                fprintf(stderr,"%s \n",termErrString);
+                terminalWindow(termErrString);
+                return 0;
+            }
+            
+        }
+        else
+        {
+            char stringForOperator[5];
+            makeStringForOperator(op, stringForOperator);
+            char ** conditionArray = breakUpString(bracketTokenArray[1], &numberOfOperands,
+                                                   stringForOperator);
+            if(op!=not && numberOfOperands!=2) {
+                char termErrString[100];
+                sprintf(termErrString,"ERROR: was expecting two operands to %s in conditional \n",
+                        stringForOperator);
+                fprintf(stderr,"%s \n",termErrString);
+                terminalWindow(termErrString);
+                return 0;
+            }
+            if(op==not &&numberOfOperands!=1) {
+                char termErrString[100];
+                sprintf(termErrString,"ERROR: was expecting one operand to ! operator in conditional \n",
+                        stringForOperator);
+                fprintf(stderr,"%s \n",termErrString);
+                terminalWindow(termErrString);
+                return 0;
+            }
+        }
+        switch (op)
         {
             case not:
                 string[0] = '!';
@@ -143,24 +207,9 @@ int parseWhile(char *inputString)
                 string[0] = 'E';//error
                 string[1] = 'R';
                 return;
-        }*/
+        }
         
-        if(op!=not && numberOfOperands!=2) {
-            char termErrString[100];
-            sprintf(termErrString,"ERROR: was expecting two operands to %s in conditional \n",
-                    stringForOperator);
-            fprintf(stderr,"%s \n",termErrString);
-            terminalWindow(termErrString);
-            return 0;
-        }
-        if(op==not &&numberOfOperands!=1) {
-            char termErrString[100];
-            sprintf(termErrString,"ERROR: was expecting one operand to ! operator in conditional \n",
-                    stringForOperator);
-            fprintf(stderr,"%s \n",termErrString);
-            terminalWindow(termErrString);
-            return 0;
-        }
+        
     }
     freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
 }
@@ -197,8 +246,9 @@ void makeStringForOperator(operator op, char * string)
             string[1] = '=';
             return;
         default:
-            string[0] = 'E';//error
-            string[1] = 'R';
+            string[0] = ' ';//no op just a while var is none zero
+            
+            string[1] = ' ';
             return;
     }
 }
@@ -468,6 +518,7 @@ int parseAptget(char * aptToGetString)
  *  returns 1 if cmd was probably successfully pushed to queue
  *  returns 0 if definately not succesful or if target or stat call failed
  */
+//some crash when no target tower!!
 int parseMktwr(char ** commandArray, int numberOfTokens)
 {
     cmdOption twrType = getCommandOption(commandArray[1]);
@@ -494,6 +545,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
                 char str[50];
                 sprintf(str,"mktwr expected a target positon A - %c",maxTowerPositionChar());
                 terminalWindow(str);
+                return 0;
             }
         }
         ++token;
@@ -678,8 +730,8 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
             }
         }
     }
-
-    return 0;
+    cleanUpParseUpgrade(statsToUpgradeArray,targetArray);
+    return 1;
 }
 
 /* 
@@ -1024,12 +1076,13 @@ void initialiseParseLists()
     getCommandList(commandList);
     stringList * optionList = intialiseOptionList();
     getOptionList(optionList);
-    stringList * envsList = intialiseEnvVarsList();
-    getEnvsList(envsList);
+    envVarList * envsListStruct = intialiseEnvVarsList();
+    getEnvsList(envsListStruct);
+
 }
-stringList * getEnvsList(stringList * envsList)
+envVarList * getEnvsList(envVarList * envsList)
 {
-    static stringList * storedEnvsList = NULL;
+    static envVarList * storedEnvsList = NULL;
     if(envsList != NULL && storedEnvsList == NULL ) {
         storedEnvsList = envsList;
     }
@@ -1108,20 +1161,41 @@ stringList * intialiseOptionList()
     
     return optionsList;
 }
-stringList * intialiseEnvVarsList()
+
+void destroyEnvVarList()
 {
-    /*first lets make an array of strings to hold all the possible action commands*/
-    char ** envStringsList;
-    int numberOfEnvs=1;//have 5 action commands at this time: upgrade, execute, set, man, cat
-    envStringsList=malloc((numberOfEnvs)*sizeof(char*));    //upgrade opts
-    envStringsList-=1;
-    envStringsList[1]=strdup("mem");
+    envVarList * envsListStruct = getEnvsList(NULL);
+    while(envsListStruct->numberOfElements > 0)
+    {
+        free(envsListStruct->array[envsListStruct->numberOfElements-1]->name);
+        free(envsListStruct->array[envsListStruct->numberOfElements-1]->name2);
+        free(envsListStruct->array[envsListStruct->numberOfElements-1]);
+        envsListStruct->numberOfElements -= 1;
+    }
+    free(envsListStruct->array);
+    free(envsListStruct);
+    
+}
+envVarList * intialiseEnvVarsList()
+{
+  
+    envVarList * envsListStruct = malloc(sizeof(envVarList));
+    envsListStruct->numberOfElements = 2;
+    envsListStruct->array = malloc(envsListStruct->numberOfElements*sizeof(envVar *));
+    
+    envsListStruct->array[0] = malloc(sizeof(envVar));
+    envsListStruct->array[0]->name = strdup("memory");
+    envsListStruct->array[0]->name2 = strdup("mem");
+    envsListStruct->array[0]->getValueFunc = &getAvailableMemory;
+    envsListStruct->array[0]->value = envsListStruct->array[0]->getValueFunc();
+    
+    envsListStruct->array[1] =  malloc(sizeof(envVar));
+    envsListStruct->array[1]->name = strdup("tow");
+    envsListStruct->array[1]->name2 = strdup("towers");
+    envsListStruct->array[1]->getValueFunc = &getNumberOfTowers;
+    envsListStruct->array[1]->value = envsListStruct->array[1]->getValueFunc();
 
     
-    stringList * envsList = malloc(sizeof(stringList));
-    envsList->stringArray=envStringsList;
-    envsList->numberOfStrings=numberOfEnvs;
-    
-    return envsList;
+    return envsListStruct;
 }
 
