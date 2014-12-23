@@ -218,7 +218,7 @@ char *getTowerString(unsigned int targetTower) {
  */
 void manUpgrade()
 {
-    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nupgrade\n\ntype ""upgrade"" followed by a stat\n ( p, r, s, AOEp, AOEr)\n ) followed by a target tower\neg t1, t2, t3...\nExamples:\nupgrade r t2\nupgrade p t3");
+    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nupgrade\n\nType ""upgrade"" followed by a stat\n( p, r, s, AOEp, AOEr)\nfollowed by a target tower\ne.g. t1, t2, t3...\nExamples:\nupgrade r t2\nupgrade p t3");
 }
 
 /**
@@ -226,7 +226,7 @@ void manUpgrade()
  */
 void manCat()
 {
-    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target eg t1, t2, t3... to display the stats of that target\n");
+    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target, e.g. t1, t2, t3..., to display the stats of that target\n");
 }
 
 /**
@@ -234,7 +234,7 @@ void manCat()
  */
 void manMan()
 {
-    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nman \n\ntype ""man"" followed by a command eg upgrade or cat to view the manual entry for that command\n");
+    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nman \n\ntype ""man"" followed by a command, e.g. upgrade or cat, to view the manual\nentry for that command\n");
 }
 
 /**
