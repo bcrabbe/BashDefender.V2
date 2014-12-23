@@ -257,7 +257,7 @@ void psx_ability()
 	char *psxlist = (char*) calloc(500,sizeof(char));	
 	char line[32];
 	int enemy_number = getNumberOfEnemies();
-	int health = 0, ID = 0, i, j;
+	int health = 0, ID = 0, i, j, count = 0;
 	printf("%d\n", enemy_number);
 
 
@@ -273,12 +273,16 @@ void psx_ability()
 		strcpy(psxlist, "EnemyID Health\n");
 		for(i = 1; i <= enemy_number; i++)
 		{
-			if(!isDead(i))
+			if(count < 10)
 			{
-				ID = e_health[i].id;
-				health = e_health[i].health;
-				sprintf(line, "%d                %d\n", ID, health);
-				strcat(psxlist, line);
+				if(isDead(i) == 0)
+				{
+					ID = e_health[i].id;
+					health = e_health[i].health;
+					sprintf(line, "%d                %d\n", ID, health);
+					strcat(psxlist, line);
+					count++;
+				}
 			}
 		}
         textToTowerMonitor(psxlist);
@@ -366,11 +370,11 @@ void testkillall()
 	createEnemy();
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
+	printf("%d\n", enemy_number);
 
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
 	unlock_ability(KILL);
-	kill_all_ability();
-	sput_fail_unless(getEnemyHealth(1) == 0, "Enemy should be killed");
+	sput_fail_unless(kill_all_ability() == 1, "Enemy should be killed");
 	freeAllEnemies();
 }
 

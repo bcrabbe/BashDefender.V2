@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 
 
@@ -452,7 +452,7 @@ void testing()	{
 	setUpTesting();
 	
     //!Unit Tests
-    testLevelController(); //! Working
+    //testLevelController(); //! Working
 
     //testingProjectiles(); //! Working
     //testingTowerPositions(); //!Workingr
@@ -466,12 +466,12 @@ void testing()	{
     testAbilities();
 
    	//! System Tests 
-    // enemyToGamePropertiesTesting();
-    // testParserToInfoWindow();
-    // queueToTowerTesting();
-    //  parseToQueueTesting(); //!Working
-    //	parseToTowerTesting(); //!Working
-    //towerToEnemyTesting(); //! Working
+    //enemyToGamePropertiesTesting();
+    //testParserToInfoWindow();
+    //queueToTowerTesting();
+    //parseToQueueTesting(); //!Working
+   //parseToTowerTesting(); //!Working
+   //towerToEnemyTesting(); //! Working
 
 }
 
