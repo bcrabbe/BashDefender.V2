@@ -66,9 +66,7 @@ void initialQueueReader()	{
  *Sets number of paths for current level
  */
 void pathCommand(Keyword pathCommand)	{
-
-		iprint(returnPropertyValue(pathCommand,pathLevel));
-		iprint(returnPropertyValue(pathCommand,numberOfPaths));
+		layPaths(returnPropertyValue(pathCommand,numberOfPaths),returnPropertyValue(pathCommand,pathLevel));
 }
 
 void levelQueueReader()	{
