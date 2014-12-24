@@ -571,11 +571,7 @@ void damageEnemy(int damage, int enemyID, int damageType)
       e->health -= damageToBeDone;
       if(e->health<=0 && e->dead != 1)
       {
-		  increaseDeathCnt();
-		      e->health=0;
-          e->dead=1;
-          addMemory(e->maxHealth);
-          updatePlayerScore(e->level);
+		  killEnemy(enemyID);
           // drawDeath(e->x, e->y);
           //drawKillAll();
       }
@@ -585,7 +581,7 @@ void damageEnemy(int damage, int enemyID, int damageType)
 void slowEnemy(int targetID, int slowPower, int slowDuration)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[targetID];
-    if(!isDead(targetID)) {
+    if(!isDead(targetID) && slowPower > e-> slowEffect) {
         e->slowEffect = slowPower;
         e->slowEffectStepsRemaining = slowDuration;
     }
@@ -599,7 +595,9 @@ void killEnemy(int enemyID)
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
     e->dead = 1;
     e->health = 0;
+	addMemory(e->maxHealth);
 	increaseDeathCnt();
+	updatePlayerScore(e->level);
 }
 
 

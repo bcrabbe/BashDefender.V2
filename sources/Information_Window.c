@@ -426,9 +426,9 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     static char towerString[MAX_OUTPUT_STRING];
     char type[10];
     
-    int towerType, range, damage, speed, AOEpower, AOErange;
+    int towerType, range, damage, speed, AOEpower, AOErange, slowP, slowD;
 
-    getStats(&towerType, &range, &damage, &speed, &AOEpower, &AOErange, targetTower);
+    getStats(&towerType, &range, &damage, &speed, &AOEpower, &AOErange, &slowP, &slowD, targetTower);
     
     switch(towerType) {
         case INT_TYPE:
@@ -440,11 +440,14 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     }
 
 
-    sprintf(towerString, "TOWER %d\n\nRange: %d Cost to Upgrade: %d \nDamage: %d Cost to Upgrade: %d\nSpeed: %d Cost to Upgrade: %d \nAOE Power: %d\nAOE Range: %d", targetTower, 
+    sprintf(towerString,"TOWER %d\n\n Range: %d Cost to Upgrade: %d\n Damage: %d Cost to Upgrade: %d\n Speed: %d Cost to Upgrade: %d\n AOE Power: %d Cost to Upgrade: %d\n AOE Range: %d Cost to Upgrade: %d\n Slow Power: %d Cost to Upgrade: %d\n Slow Duration: %d Cost to Upgrade: %d",targetTower, 
 					range, calculateCosts(cmd_upgrade,upgrade_range,targetTower), 
 					damage, calculateCosts(cmd_upgrade,upgrade_power,targetTower), 
 					speed, calculateCosts(cmd_upgrade,upgrade_speed,targetTower),
-					AOEpower, AOErange);
+					AOEpower,calculateCosts(cmd_upgrade,upgrade_AOEpower,targetTower), 
+					AOErange,calculateCosts(cmd_upgrade,upgrade_AOErange,targetTower),
+					slowP,calculateCosts(cmd_upgrade,upgrade_slowPower,targetTower),
+					slowD,calculateCosts(cmd_upgrade,upgrade_slowDuration,targetTower));
 
     strcpy(tm->string, towerString);
     
@@ -498,7 +501,7 @@ void tutorial_seven()	{
 
 void tutorial_eight()	{
 
-		textToTowerMonitor("Right!  No more losing.  Let's create a char tower with mktwr char c\nChar is a data type in computer science for storing characters");
+		textToTowerMonitor("Right!  No more losing.  Let's create a char tower with mktwr char f\nChar is a data type in computer science for storing characters");
 
 }
 

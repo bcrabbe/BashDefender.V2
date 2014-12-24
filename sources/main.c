@@ -72,11 +72,13 @@ void startLevel(Display d, int *restart)	{
     int ended = 0;
    	int pause = 0; 
     int steps=0;
-    //init_sound();
+	//damageHealth(90);
+    init_sound();
     //playBackgroundSound();
     do{
         startFrame(d);
 		while(pause)	{
+			enemySound(1);
 			pause_screen(d,&pause,restart);
 		}
         ++steps;
@@ -402,19 +404,19 @@ void testing()	{
     testLevelController(); //! Working
     testingProjectiles(); //! Working
     testingGameStructure(); //!Memory Tests Failing
-    testingActionQueue(); //! Working
+   /* testingActionQueue(); //! Working
     testEnemy(); // ! Working.
     testParser();
     testingTowerModule(); //! working
     testingInformationWindowModule();
     testTerminalWindowInput();
-    testAbilities();
+    testAbilities();*/
 
    	//! System Tests
-    enemyToGamePropertiesTesting();
+   /* enemyToGamePropertiesTesting();
     queueToTowerTesting();
     parseToQueueTesting(); //!Working
-    parseToTowerTesting(); //!Working
+    parseToTowerTesting(); //!Working*/
     towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working*/
     testParserToInfoWindow();
 }

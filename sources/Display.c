@@ -9,7 +9,7 @@
 #include "../includes/parser.h"
 #include <stdbool.h>
 #include "../includes/sput.h"
-
+#include"../includes/Sound.h"
 
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
