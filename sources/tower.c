@@ -30,6 +30,8 @@
 #define SPEED_UPGR_VAL 5
 #define RANGE_UPGR_VAL 10
 
+#define UPGRADES_PER_LEVEL 5 // the number of upgrades that can be done to a tower before its level increases
+
 struct tower {
     int towerType;
     int towerID;
@@ -42,8 +44,10 @@ struct tower {
     int targetID;
     int firing;
     int targetPosition[2];
+    
     int level;
     int height;
+    int upgradesCompleted;
     int width;
     
     FiringMethod firingType;
@@ -684,6 +688,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->y = TowerPositionY;
     newTow->towerType = INT_TYPE;
 
+    newTow->upgradesCompleted = 0;
     newTow->damage = 20;
     newTow->range = 100;
     newTow->firing = 0;
@@ -716,6 +721,18 @@ void assignCalculatedFiringType(int towerID) {
     }
   }
 }
+
+void makePostUpgradeChanges(int TowerID) {
+  
+  tower t = getTowerGrp(NULL)->listOfTowers[TowerID];
+  
+  assignCalculatedFiringType(TowerID);
+  
+  t->upgradesCompleted++;
+  if(t->upgradesCompleted % UPGRADES_PER_LEVEL == 0) {
+    t->level++;
+  }
+}
       
 
 /*
@@ -738,7 +755,7 @@ int upgradeDmg(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->damage+=DAMAGE_UPGR_VAL;
-    assignCalculatedFiringType(target);
+    makePostUpgradeChanges(target);
     return upgradeT->damage;
 	}
 	return 0;
@@ -749,7 +766,7 @@ int upgradeRange(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->range+=RANGE_UPGR_VAL;
-    assignCalculatedFiringType(target);
+    makePostUpgradeChanges(target);
     return upgradeT->range;
 	}
 	return 0;
@@ -760,7 +777,7 @@ int upgradeSpeed(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->speed+=SPEED_UPGR_VAL;
-    assignCalculatedFiringType(target);
+    makePostUpgradeChanges(target);
     return upgradeT->speed;
 	}
 	return 0;
@@ -770,7 +787,9 @@ int upgradeAOEpower(int target)
 	
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
-		return upgradeT->AOEpower++;
+		upgradeT->AOEpower++;
+    makePostUpgradeChanges(target);
+    return upgradeT->AOEpower;
 	}
 	return 0;
 }
@@ -779,7 +798,9 @@ int upgradeAOErange(int target)
 	
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
-		return upgradeT->AOErange++;
+		upgradeT->AOErange++;
+    makePostUpgradeChanges(target);
+    return upgradeT->AOErange;
 	}
 	return 0;
 }
