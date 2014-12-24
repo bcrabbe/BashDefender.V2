@@ -15,72 +15,72 @@
 #include "../includes/Sound.h"
 #include "../includes/abilities.h"
 
-
 int main(int argc, char ** argv)
 {
-//    srand(time(NULL));
+    srand(time(NULL));
 	Display d = init_SDL();
-//    initLevel();
-  	testing();
-//    char text[128] = {'>', '>'};
-//    char empty[128] = {'>', '>'};
-//    char *pass, *clear, *inputCommand=NULL;
-//    pass = text;
-//    clear = empty;
-//    int started = 0;
-//    int ended = 0;
-//    
-//    addMemory(10000);
-//    int steps=0;
-//
-//    //init_sound();
-//    //playBackgroundSound();
-//
-//    do{
-//        startFrame(d);
-//        while(started == 0){
-//            menu_screen(d, &started);
-//        }
-//        ++steps;
-//        drawBackground();
-//        
-//		startNextWave();
-//        levelQueueReader();
-//        terminal_window(d, pass, clear);
-//    	popToTower();
-//        if(inputCommand)
-//        {
-//            parse(inputCommand);
-//        }
-//        present_enemy(d);
-//        present_tower(d);
-//
-//    	fire();
-//        for(int i=1; i<=getNumberOfEnemies(); ++i)
-//        {
-//            int move = moveEnemy(i);
-//        }
-//        presentAnimation();
-//    	drawAllTowerPositions();
-//        statsBar();
-//        towerMonitor(0, NULL);
-//        actionQueueMonitor();
-//
-//        terminalWindow(NULL);
-//        endFrame(d);
-//        
-//        //ended = checkIfPlayerDead();
-//        while (ended) {
-//            //final screen returns 1 if restart button was pressed...
-//            if (final_screen()){
-//                ended = 0;
-//            }
-//        }
-//        
-//    } while(!terminal_window(d, pass, clear));
-//    
-//    shutSDL(d);
-//    quitGame();
+    initLevel();
+//  	testing();
+    char text[128] = {'>', '>'};
+    char empty[128] = {'>', '>'};
+    char *pass, *clear, *inputCommand=NULL;
+    pass = text;
+    clear = empty;
+    int started = 0;
+    int ended = 0;
+    
+    addMemory(10000);
+    int steps=0;
+
+    //init_sound();
+    //playBackgroundSound();
+
+    do{
+        startFrame(d);
+        while(started == 0){
+            menu_screen(d, &started);
+        }
+        ++steps;
+        drawBackground();
+        
+		startNextWave();
+        levelQueueReader();
+        terminal_window(d, pass, clear);
+    	popToTower();
+        if(inputCommand)
+        {
+            parse(inputCommand);
+        }
+        present_enemy(d);
+        present_tower(d);
+
+    	fire();
+        for(int i=1; i<=getNumberOfEnemies(); ++i)
+        {
+            int move = moveEnemy(i);
+        }
+        presentAnimation();
+    	drawAllTowerPositions();
+        statsBar();
+        towerMonitor();
+        actionQueueMonitor();
+        towerInformation();
+
+        terminalWindow(NULL);
+        endFrame(d);
+        
+        //ended = checkIfPlayerDead();
+        while (ended) {
+            //final screen returns 1 if restart button was pressed...
+            if (final_screen()){
+                ended = 0;
+            }
+        }
+        
+    } while(!terminal_window(d, pass, clear));
+    
+    shutSDL(d);
+    quitGame();
     return 0;
 }
 

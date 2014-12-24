@@ -66,11 +66,11 @@ clock_t delayGame(int delayN)	{
 void startNextWave()	{
 	if(getTotalCurrentWaveEnemies() == getDeathCnt())	{
 		if(getWave(getGame(NULL))  < getTotalWaveNo())	{
-			printf("starting next wave\n");
+            //printf("starting next wave\n");
 			resetEnemyCounts();
 			setCurrWaveNum(getGame(NULL)->currWaveNo+1);
 		} else {
-			printf("you have won the level\n");
+            //printf("you have won the level\n");
 		}
 	}
 }
@@ -263,10 +263,19 @@ int getWave(GameProperties game)	{
 
 }
 
+/*
+ *Returns total number of waves
+ */
+int getTotalWaves(GameProperties game) {
+    
+    return game->totalWaveNo;
+}
+
 int getHealth(GameProperties game)	{
 
 	return game->health;
 }
+
 
 /*
  * Checks if health is 0

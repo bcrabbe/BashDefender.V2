@@ -11,6 +11,8 @@
 #ifndef TEST_Display_h
 #define TEST_Display_h
 
+#include <SDL2/SDL.h>
+
 extern int SCREEN_WIDTH_GLOBAL;
 extern int SCREEN_HEIGHT_GLOBAL;
 
@@ -66,6 +68,8 @@ extern int SCREEN_HEIGHT_GLOBAL;
 
 
 typedef struct display *Display;
+
+enum font_types{solid, blended, blended_wrapped};
 
 typedef enum	{
 
@@ -125,6 +129,9 @@ void updateStatsBar(char *outputString);
 void updateActionQueueMonitor(char *outputString);
 char *strdup2(char * s);
 void updateTerminalWindow(char *outputString);
+void updateTowerInformation(int towerX, int towerY, char *string, int towerID);
+void display_text(int x, int y, char *string, int text, SDL_Color colour);
+void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 
 
 int terminal_window(Display d, char *pass, char *clear);

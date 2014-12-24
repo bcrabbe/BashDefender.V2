@@ -480,7 +480,6 @@ void testingTowerPositions()	{
 void testTowerCreation()	{
 	
 	addTowerPosNode(100,200);
-	iprint(getLastTowerPositionX());
 	sput_fail_unless(getLastTowerPositionX() == (int) scaleTowerPos(100,SCREEN_WIDTH_GLOBAL,MAX_TOWER_X), "Newly Added Tower position x coord is correct");
 	sput_fail_unless(getLastTowerPositionY() == (int) scaleTowerPos(200,SCREEN_HEIGHT_GLOBAL,MAX_TOWER_Y), "Newly Added Tower position y coord is correct");
 }
@@ -604,8 +603,6 @@ int maxTowerPosition() {
 
 int isTowerPositionAvailable(int position)	{
 	TowerPos tPos = getTowerPos(NULL);
-	iprint(position);
-	iprint(tPos->numberOfPositions);
     if( position <= tPos->numberOfPositions ) {
         return tPos->towerPositions[position]->empty;
     }
@@ -847,6 +844,11 @@ int getTowerY(int towerID)
     return TG->listOfTowers[towerID]->y;
 }
 
+int getTowerWidth(int towerID) {
+    TowerGroup TG = getTowerGrp(NULL);
+    return TG->listOfTowers[towerID]->width;
+}
+
 
 int setTowerY(int towerID, int newY)	{
 
@@ -993,4 +995,10 @@ void present_tower(Display d)
     // bullets added here temporarily
     moveProjectiles();
     drawProjectiles();
+}
+
+int getNumOfTowers(void) {
+    TowerGroup TG = getTowerGrp(NULL);
+    
+    return TG->numOfTowers;
 }

@@ -57,6 +57,7 @@ typedef enum clockType	{
 /*----------Symbolic Constants-----------*/
 
 #define ACTIONCOOLDOWN	0	//! minimum time between actions being removed from queue
+
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 
 #define INT_TYPE 1 //hasdefine to avoid enums when dealing with int and char enemies
@@ -108,4 +109,5 @@ void TestAddMemory();
 void TestUseMemory();
 void setEnemyCreated1();
 int getTotalMemory();
+int getTotalWaves(GameProperties game);
 #endif

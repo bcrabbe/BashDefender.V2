@@ -47,7 +47,6 @@ int parseAptget(char * aptToGetString);
 int parseCommands(char ** commandArray, int numberOfTokens);
 
 
-
 #endif
 
 
