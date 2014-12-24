@@ -275,7 +275,7 @@ void psx_ability()
 		{
 			if(count < 10)
 			{
-				if(isDead(i) == 0)
+				if(isDead(e_health[i].id) == 0)
 				{
 					ID = e_health[i].id;
 					health = e_health[i].health;
@@ -287,9 +287,9 @@ void psx_ability()
 		}
         textToTowerMonitor(psxlist);
 		test_psx_string(psxlist);
-		printf("%s\n", psxlist);
-		psxlist[0] = '\0';
 	}
+	free(e_health);
+	free(psxlist);
 }
 
 int kill_ability(int enemyID)

@@ -73,12 +73,12 @@ void startLevel(Display d, int *restart)	{
    	int pause = 0; 
     int steps=0;
 	//damageHealth(90);
-    init_sound();
+    //init_sound();
     //playBackgroundSound();
     do{
         startFrame(d);
 		while(pause)	{
-			enemySound(1);
+			//enemySound(1);
 			pause_screen(d,&pause,restart);
 		}
         ++steps;
