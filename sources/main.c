@@ -61,11 +61,7 @@ int main(int argc, char ** argv)
         }
         presentAnimation();
     	drawAllTowerPositions();
-        statsBar();
-        towerMonitor();
-        actionQueueMonitor();
-        towerInformation();
-        terminalWindow();
+        updateAllInfoWindow();
         endFrame(d);
         
         //ended = checkIfPlayerDead();

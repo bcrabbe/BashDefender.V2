@@ -398,8 +398,8 @@ void updateStatsBar(char *outputString) {
 /**Display output string in action queue monitor*/
 void updateActionQueueMonitor(char *outputString) {
     Display d = getDisplayPointer(NULL);
-
-     displayMonitor(320, ACTION_QUEUE_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
+    
+     displayMonitor(ACTION_QUEUE_X, ACTION_QUEUE_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
     if(strlen(outputString) > 0) {
         display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X, ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped, d->white);
     }
