@@ -31,6 +31,7 @@ TowerPos getTowerPos(TowerPos tPos);
 void addTowerPosNode(int x, int y);
 tower createTower();
 void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY );
+void assignCalculatedFiringType(int towerID);
 int userCreateTower(int inputTowerPositionX, int inputTowerPositionY);
 int getTowerRange(int towerID);
 int getTowerSpeed(int towerID);

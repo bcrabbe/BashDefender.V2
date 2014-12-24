@@ -72,7 +72,7 @@ typedef struct gameClock *GameClock;
 typedef struct clockNode *ClockNode;
 /*----------Function Prototypes-----------*/
 GameProperties createGame();
-int getAvailableMemory(GameProperties game);
+int getAvailableMemory();
 int useMemory(GameProperties game,int mem);
 int getWave(GameProperties game);
 int getHealth(GameProperties game);

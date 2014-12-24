@@ -7,7 +7,28 @@
 #include "../includes/debug.h"
 
 #define MAX_COOLDOWN 100 // the longest number of ticks that a tower can take between shots
+
+//bullet #defines
+#define BULLET_TO_TARGET 20 // the number of steps for a bullet to reach its target
+#define BULLET_SIZE 10 // the height and width of the bullet image
+
+//missile #defines
 #define BUILDUP_DISTANCE 100 // the distance the missiles travel during their buildup stage
+#define BUILDUP_STEPS 50 // the number of steps it takes for a missile to reach the end of its buildup stage
+#define MISSILE_BUILDUP_DIVISION 20 // the fraction (e.g 1/20th, 1/30th) that the missile moves towards its buildup position every step
+#define MISSILE_TO_TARGET 5 // the number of steps it takes for a missile to reach its target after buildup
+#define MISSILE_STARTING_SIZE 3 // the starting height and width of missile projectiles
+#define MISSILE_ENDING_SIZE 15 // the size of missiles once they have finished their buildup stage
+
+//#defines for tower type weighting
+#define DAMAGE_MOD 7
+#define SPEED_MOD 5
+#define RANGE_MOD 2
+
+//#defines for upgrade amounts
+#define DAMAGE_UPGR_VAL 5
+#define SPEED_UPGR_VAL 5
+#define RANGE_UPGR_VAL 10
 
 struct tower {
     int towerType;
@@ -32,6 +53,13 @@ struct tower {
     int firingCoolDown;
     int drawLaserCount;
     int drawLaserMaxCount;
+};
+
+struct towerGroup	{
+
+	tower *listOfTowers;
+	unsigned int numOfTowers;
+	
 };
 
 struct towerPos	{
@@ -101,13 +129,13 @@ void launchBullet(int firedX, int firedY, int damage, int targetID, int firingTy
   ProjectileNode newNode = newProjectileNode();
   
   newNode->movesMade = 0;
-  newNode->movesToTarget = 20;
+  newNode->movesToTarget = BULLET_TO_TARGET;
   
   newNode->whatProjectile = bullet;
   newNode->damageType = firingType;
   newNode->damage = damage;
-  newNode->h = 10;
-  newNode->w = 10;
+  newNode->h = BULLET_SIZE;
+  newNode->w = BULLET_SIZE;
   
   newNode->x = firedX-(newNode->w/2);
   newNode->y = firedY-(newNode->h/2);
@@ -134,11 +162,11 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
   newNode->whatProjectile = missile;
   
   newNode->movesMade = 0;
-  newNode->movesForBuildUp = 50;
-  newNode->movesToTarget = 7;
+  newNode->movesForBuildUp = BUILDUP_STEPS;
+  newNode->movesToTarget = MISSILE_TO_TARGET;
   
-  newNode->h = 3;
-  newNode->w = 3;
+  newNode->h = MISSILE_STARTING_SIZE;
+  newNode->w = MISSILE_STARTING_SIZE;
   
   newNode->centreX = firedX;
   newNode->centreY = firedY;
@@ -153,9 +181,6 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
   
   newNode->targetID = targetID;
   getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget+newNode->movesForBuildUp);
-  
- // printf("X: %d, Y: %d\n",newNode->targetCoords[0], newNode->targetCoords[1]);
- // drawRect(newNode->targetCoords[0], newNode->targetCoords[1], 208, 16, 10, 10, 1, 1);
   
   
   getBuildUpCoords(newNode->originX, newNode->originY, &newNode->buildUpX, &newNode->buildUpY);
@@ -175,10 +200,10 @@ void getBuildUpCoords(int firedX, int firedY, int *buildUpX, int *buildUpY)
   int x, y, xAdjust, yAdjust;
   
     // set x and y to be random value between -10 & 10
-  while( (x = (rand()%21) - 10) + (y = (rand()%21) - 10) == 0) {
+  while( (x = (rand()%21) - 10) == 0 || (y = (rand()%21) - 10) == 0) {
     randChecker++;
-    if(randChecker > 100) {
-      fprintf(stderr,"****ERROR missile has looped more than 100 times trying to find a missile coordinate (tower.c) ****\n");
+    if(randChecker > 1000) {
+      fprintf(stderr,"****ERROR missile has looped more than 1000 times trying to find a missile coordinate (tower.c) ****\n");
       exit(1);
     }
   }
@@ -197,7 +222,6 @@ void getBuildUpCoords(int firedX, int firedY, int *buildUpX, int *buildUpY)
   }
   
     // get a build up target that is a set number of pixels away
-  //double hypotenuse = sqrt( pow((double) x, 2) + pow((double) y, 2) );
   double angle = atan(calcY/calcX);
   
   calcY = BUILDUP_DISTANCE * sin(angle);
@@ -249,13 +273,13 @@ void moveMissile(ProjectileNode missile) {
     removeProjectileNode(missile);
   } else {
     if(missile->movesMade <= missile->movesForBuildUp) {
-      missile->centreX = missile->originX + (int) ((double)(missile->buildUpX-missile->originX)/(double)20);
-      missile->centreY = missile->originY + (int) ((double)(missile->buildUpY-missile->originY)/(double)20);
+      missile->centreX = missile->originX + (int) ((double)(missile->buildUpX-missile->originX)/(double)MISSILE_BUILDUP_DIVISION);
+      missile->centreY = missile->originY + (int) ((double)(missile->buildUpY-missile->originY)/(double)MISSILE_BUILDUP_DIVISION);
       missile->originX = missile->centreX;
       missile->originY = missile->centreY;
       
-      missile->h = 3 + (int)( (double)12 * ( (double)missile->movesMade/(double)missile->movesForBuildUp) );
-      missile->w = 3 + (int)( (double)12 * ( (double)missile->movesMade/(double)missile->movesForBuildUp) );
+      missile->h = MISSILE_STARTING_SIZE + (int)( (double)(MISSILE_ENDING_SIZE-MISSILE_STARTING_SIZE) * ( (double)missile->movesMade/(double)missile->movesForBuildUp) );
+      missile->w = MISSILE_STARTING_SIZE + (int)( (double)(MISSILE_ENDING_SIZE-MISSILE_STARTING_SIZE) * ( (double)missile->movesMade/(double)missile->movesForBuildUp) );
       
       missile->x = missile->centreX-(missile->w/2);
       missile->y = missile->centreY-(missile->h/2);
@@ -535,13 +559,6 @@ void testingTowerModule()	{
 }
 
 
-struct towerGroup	{
-
-	tower *listOfTowers;
-	unsigned int numOfTowers;
-	
-};
-
 void createTowerGroup()	{
 
 	TowerGroup Group = (TowerGroup) malloc(sizeof(*Group));
@@ -666,13 +683,12 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->x = TowerPositionX;
     newTow->y = TowerPositionY;
     newTow->towerType = INT_TYPE;
-    newTow->firingType = missile;
 
     newTow->damage = 20;
-    newTow->range = 200;
+    newTow->range = 100;
     newTow->firing = 0;
 	  newTow->level = 1;
-    newTow->speed = 75;
+    newTow->speed = 50;
     newTow->AOEpower = 10;
     newTow->AOErange = 10;
     newTow->height = 80;
@@ -682,9 +698,25 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->firingCoolDown = 0;
     newTow->drawLaserCount = 0;
     newTow->drawLaserMaxCount = 10;
+    assignCalculatedFiringType(newTow->towerID);
     
 }
 
+void assignCalculatedFiringType(int towerID) {
+
+  tower t = getTowerGrp(NULL)->listOfTowers[towerID];
+  
+  if((t->damage * DAMAGE_MOD) > (t->speed * SPEED_MOD) && (t->damage * DAMAGE_MOD) > (t->range * RANGE_MOD) ) {
+    t->firingType = bullet;
+  } else {
+    if ((t->speed * SPEED_MOD) > (t->damage * DAMAGE_MOD) && (t->speed * SPEED_MOD) > (t->range * RANGE_MOD) ) {
+      t->firingType = laser;
+    } else {
+      t->firingType = missile;
+    }
+  }
+}
+      
 
 /*
  * Must be called and created before towers are created.
@@ -705,7 +737,9 @@ int upgradeDmg(int target)
 	
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
-		return upgradeT->damage++;
+		upgradeT->damage+=DAMAGE_UPGR_VAL;
+    assignCalculatedFiringType(target);
+    return upgradeT->damage;
 	}
 	return 0;
 }
@@ -714,7 +748,9 @@ int upgradeRange(int target)
 	
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
-		return upgradeT->range++;
+		upgradeT->range+=RANGE_UPGR_VAL;
+    assignCalculatedFiringType(target);
+    return upgradeT->range;
 	}
 	return 0;
 }
@@ -723,7 +759,9 @@ int upgradeSpeed(int target)
 	
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
-		return upgradeT->speed++;
+		upgradeT->speed+=SPEED_UPGR_VAL;
+    assignCalculatedFiringType(target);
+    return upgradeT->speed;
 	}
 	return 0;
 }
