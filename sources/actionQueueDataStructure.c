@@ -325,8 +325,6 @@ int popToTower()	{
 		switch(queue->start->command)	{
 			case cmd_upgrade:
 				if (checkQueue(queue, Game,needed)) {
-					ActionQueueStructure queue = getQueue(NULL);
-					GameProperties Game = getGame(NULL);
 					upgradeTowerStat(queue->start->option,queue->start->target);
 					useMemory(Game, needed);
 					removeQueueItem();
@@ -340,6 +338,12 @@ int popToTower()	{
 					removeQueueItem();
 				}
 				break;
+			case cmd_aptget:
+				if(checkQueue(queue,Game,needed)) {
+					//unlock_ability(); //! needs to be updated
+					useMemory(Game, needed);					
+					removeQueueItem();
+				}
 			default:
 
 				break;

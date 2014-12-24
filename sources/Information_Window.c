@@ -24,12 +24,12 @@
 /*---------- Data Types -----------*/
 typedef enum stringType {DEFAULT, TOWER_INFO, OTHER_INFO} StringType;
 
-typedef struct towerMonitor {
+struct towerMonitor {
     char *string;
     StringType st;
     int timeSet;
     int targetTower;
-} TowerMonitor;
+};
 
 /*---------- Hash Defines -----------*/
 #define MAX_OUTPUT_STRING 200
@@ -211,7 +211,7 @@ char *getTowerString(unsigned int targetTower) {
     
     char *outputString = malloc(MAX_OUTPUT_STRING);
     
-    sprintf(outputString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
+    sprintf(outputString, "TOWER %d\n\nRange: %d \nDamage: %d \nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
     
     return outputString;
 }

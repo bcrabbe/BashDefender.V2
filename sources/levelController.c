@@ -9,7 +9,6 @@
 #include "../includes/debug.h"
 #include "../includes/sput.h"
 #include "../includes/levelController.h"
-#include "../includes/parser.h"
 
 /*---------- Functions ----------*/
 //int SCREEN_WIDTH_GLOBAL;

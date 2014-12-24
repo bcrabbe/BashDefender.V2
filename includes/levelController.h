@@ -1,6 +1,7 @@
 #ifndef levelController_h
 #define levelController_h
 /*---------- Custom Headers -----------*/
+#include "../includes/parser.h"
 #include "../includes/tower.h"
 #include "../includes/gameProperties.h"
 #include "../includes/enemy.h"

@@ -29,7 +29,7 @@ int main(int argc, char ** argv)
     int started = 0;
     int ended = 0;
     
-    addMemory(10000);
+    addMemory(100);
     int steps=0;
 
     //init_sound();

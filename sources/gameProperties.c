@@ -474,7 +474,7 @@ void TestAddMemory()	{
 int useMemory(GameProperties game,int mem)	{
 
 	if (game->totalMemory-game->memoryUsed >= mem)	{
-		game->totalMemory+=mem;
+		game->memoryUsed+=mem;
 		return 1;
 	} else {
 		return 0;
