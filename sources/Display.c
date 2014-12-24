@@ -43,6 +43,7 @@ struct display {
 
 	SDL_Texture *startBackgroundTexture;
     SDL_Texture *finalBackgroundTexture;
+	SDL_Texture *winBackgroundTexture;
 
 
 	SDL_Texture *easyButton;
@@ -126,6 +127,7 @@ Display init_SDL(){
     init_pic(&d->firewall, "Images/firewall.png");
     init_pic(&d->reStartButton, "Images/RestartButton.png");
     init_pic(&d->finalBackgroundTexture, "Images/final_screen.png");
+	init_pic(&d->winBackgroundTexture, "Images/win_screen.png");
     init_pic(&d->towerMonitorTexture, "Images/info_monitor.png");
     init_pic(&d->actionQueueTexture, "Images/action_queue-monitor.png");
     init_pic(&d->statsBarTexture, "Images/blackBar.png");
@@ -910,8 +912,15 @@ int final_screen()
         int scoreStringWidth;
         sprintf(score, "PLAYER SCORE: %d", getPlayerScore());
         TTF_SizeText(d->playerScoreFont, score, &scoreStringWidth, NULL);
-
-        animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 3072, 645, 3, 150, d->finalBackgroundTexture);
+	
+		if(getHealth(getGame(NULL)) > 0)
+		{
+			displayMonitor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, d->winBackgroundTexture);
+		}
+		else
+		{
+        	animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 3072, 645, 3, 150, d->finalBackgroundTexture);
+		}
         display_text(SCREEN_WIDTH_GLOBAL / 2 - scoreStringWidth / 2, SCREEN_HEIGHT_GLOBAL / 4, score, blended, d->playerScoreFont, d->white);
 
         d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
