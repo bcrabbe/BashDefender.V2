@@ -916,13 +916,13 @@ int final_screen()
 		if(getHealth(getGame(NULL)) > 0)
 		{
 			displayMonitor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, d->winBackgroundTexture);
+			display_text(SCREEN_WIDTH_GLOBAL / 2 - scoreStringWidth / 2, SCREEN_HEIGHT_GLOBAL / 4, score, blended, d->playerScoreFont, d->red);
 		}
 		else
 		{
         	animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 3072, 645, 3, 150, d->finalBackgroundTexture);
+			display_text(SCREEN_WIDTH_GLOBAL / 2 - scoreStringWidth / 2, SCREEN_HEIGHT_GLOBAL / 4, score, blended, d->playerScoreFont, d->white);
 		}
-        display_text(SCREEN_WIDTH_GLOBAL / 2 - scoreStringWidth / 2, SCREEN_HEIGHT_GLOBAL / 4, score, blended, d->playerScoreFont, d->white);
-
         d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
     
         SDL_RenderCopy(d->renderer, d->reStartButton, NULL, &d->rect);
