@@ -720,11 +720,11 @@ void launchProjectile(Tower currentTower)
     switch (currentTower->firingType) {
         case laser :
             fireLaser(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange, currentTower->slowPower, currentTower->slowDuration);
-            towerSound(0);
+            //towerSound(0);
             break;
         case missile :
             launchMissile(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange, currentTower->slowPower, currentTower->slowDuration);
-            towerSound(1);
+            //towerSound(1);
             break;
         case bullet :
             launchBullet(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange, currentTower->slowPower, currentTower->slowDuration);
