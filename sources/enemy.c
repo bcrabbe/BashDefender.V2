@@ -475,7 +475,8 @@ int inRange(int tX, int tY, int tRange, int enemyID)
 
     int distanceBetweenTowerAndEnemy = (int)sqrt( pow((double)(e->x+(e->width/2)-tX),2) +
                                               pow((double)(e->y+(e->height/2)-tY),2)    );
-
+	iprint(distanceBetweenTowerAndEnemy);
+	iprint(tRange);
     if(distanceBetweenTowerAndEnemy<tRange){
         return 1;
     }

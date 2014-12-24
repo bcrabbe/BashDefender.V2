@@ -57,19 +57,22 @@ void addValue(char *token);
 void createLevel();
 void printQueue();
 Keyword createKeyword();
-void breakDownWaveCommand(KeywordProp *propertiesList, int nProps);
+int breakDownWaveCommand(KeywordProp *propertiesList, int nProps);
 void makeTowerCommand(Keyword setTower);
 int returnPropertyValue(Keyword current, property reqProperty);
 void createLevelClocks();
 void setWaveTotalCommand(Keyword setWaveTotal);
-void waveCreatorCommand(Keyword waveKeyWord);
+int waveCreatorCommand(Keyword waveKeyWord);
 Keyword removeLink(Keyword current);
 void initialQueueReader();
 void levelQueueReader();
 int addGroupCreationDelay(Keyword waveKW);
 int countKeywords();
 int returnPropertyValueFromQueue(int place,property reqProperty);
-
+Keyword getKeywordFromQueue(int place);
+KeywordProp* returnPropertiesListFromQueue(int place);
+int getNumberOfPropertiesFromQueue(int place);
+levelCommand getKeywordTypeFromQueue(int place);
 /*---------- Test Functions ----------*/
 void setUpTesting();
 void testLevelController();
