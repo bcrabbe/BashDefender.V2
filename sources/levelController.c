@@ -319,6 +319,7 @@ void initLevel()    {
 	createKeywordQueue();
 	createLevel();
     createLevelPaths();
+    layPaths(1, 1); //hard coded for now - waiting for Benji to use in function
     createTowerGroup();
     createActionQueue();
     createGame();

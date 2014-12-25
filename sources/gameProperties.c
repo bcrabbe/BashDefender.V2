@@ -234,7 +234,7 @@ void CreateGameTest()	{
 
 	GameProperties testGame;
 	testGame = getGame(NULL);
-	sput_fail_unless(getAvailableMemory(testGame) == 1000,"Initializing Memory");
+	sput_fail_unless(getAvailableMemory() == 1000,"Initializing Memory");
 	//sput_fail_unless(getWave(testGame) == 3,"Initializing WaveNo");
 	sput_fail_unless(getTotalWaveNo() == 3,"Total Wave Number set to 3 from level file");
 	sput_fail_unless(getHealth(testGame) == 100,"Initializing Health");
@@ -426,14 +426,14 @@ int setCreateEnemyGroupDelay(int delay)	{
 /*
  *Returns amount of Memory available
  */
-int getAvailableMemory(GameProperties game)	{
+int getAvailableMemory()	{
 
-	return game->totalMemory - game->memoryUsed;
+	return getGame(NULL)->totalMemory - getGame(NULL)->memoryUsed;
 }
 
 int getTotalMemory()	{
 
-	return(getAvailableMemory(getGame(NULL)));
+	return getGame(NULL)->totalMemory;
 }
 
 
@@ -441,7 +441,7 @@ void TestGetAvailableMemory()	{
 	GameProperties testGame;
     testGame = createGame();
 	testGame->totalMemory = 10;
-	sput_fail_unless(getAvailableMemory(testGame) == 10,"Getting Memory");	
+	sput_fail_unless(getAvailableMemory() == 10,"Getting Memory");	
 	free(testGame);
 }
 
@@ -463,7 +463,7 @@ void TestAddMemory()	{
 	GameProperties testGame;
     testGame = createGame();
 	addMemory(100);
-	sput_fail_unless(getAvailableMemory(testGame) == 100,"Adding MEmory");
+	sput_fail_unless(getAvailableMemory() == 100,"Adding MEmory");
 	sput_fail_unless(addMemory(-100) == 0,"Adding Negative Memory");
 	free(testGame);
 }
