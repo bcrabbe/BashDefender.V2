@@ -9,7 +9,6 @@
 #include "../includes/debug.h"
 #include "../includes/sput.h"
 #include "../includes/levelController.h"
-#include "../includes/parser.h"
 
 /*---------- Functions ----------*/
 //int SCREEN_WIDTH_GLOBAL;
@@ -66,9 +65,7 @@ void initialQueueReader()	{
  *Sets number of paths for current level
  */
 void pathCommand(Keyword pathCommand)	{
-
-    iprint(returnPropertyValue(pathCommand,pathLevel));
-    iprint(returnPropertyValue(pathCommand,numberOfPaths));
+	layPaths(returnPropertyValue(pathCommand,numberOfPaths),returnPropertyValue(pathCommand,pathLevel));
 }
 
 void levelQueueReader()	{
@@ -132,7 +129,9 @@ Keyword removeLink(Keyword current)	{
 	kQueue->nCommands--;
 	return current;
 }
-
+/*
+ *Returns Specified property from passed in keyword
+ */
 int returnPropertyValue(Keyword current, property reqProperty)	{
 
 	int i;
@@ -150,33 +149,54 @@ int returnPropertyValue(Keyword current, property reqProperty)	{
  */
 int returnPropertyValueFromQueue(int place,property reqProperty)	{
 
+	if(getKeywordFromQueue(place) == NULL)	{
+		return 0;
+	} else	{
+		return returnPropertyValue(getKeywordFromQueue(place),reqProperty);
+	}
+}
+
+int getNumberOfPropertiesFromQueue(int place)	{
+
+	return getKeywordFromQueue(place)->nProperties;
+}
+
+/*
+ *Returns a keyword from a specified queue position
+ */
+Keyword getKeywordFromQueue(int place)	{
 	KeywordQueue kQueue = getKWQueue(NULL);
 	int numberOfKeywords;
 	Keyword currKeyword;
 	for(numberOfKeywords = 1, currKeyword = kQueue->start; currKeyword != NULL && place != numberOfKeywords; currKeyword = currKeyword->prev, numberOfKeywords++)	{
 			/* Do Nothing */	
 	}
+	return currKeyword;
+}
 
-	if(currKeyword == NULL)	{
-		return 0;
-	} else	{
-		return returnPropertyValue(currKeyword,reqProperty);
-	}
+/*
+ *Returns the list of properties from a specified queue position
+ */
+KeywordProp* returnPropertiesListFromQueue(int place)	{
+	return getKeywordFromQueue(place)->propertiesList;
+}
+
+levelCommand getKeywordTypeFromQueue(int place)	{
+	return getKeywordFromQueue(place)->lCommand;
 }
 
 int createEnemyCommand(Keyword makeEnemy)	{
 	//! only create enemy if all cooldowns are ready
-	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()))	{
+	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()) && (getWave(getGame(NULL)) == returnPropertyValue(makeEnemy,waveID)))	{
 		setCreateEnemyGroupDelay(0); //!setting delay back to zero
 		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
 
 		return 1;
 	} 
 	return 0;
-
 }
 
-void waveCreatorCommand(Keyword waveKeyWord)	 {
+int waveCreatorCommand(Keyword waveKeyWord)	 {
 	int enemyNum;
 	int totalEnemies = returnPropertyValue(waveKeyWord,numberOfEnemies);
    	for(enemyNum = 0; enemyNum < totalEnemies; enemyNum++)	{
@@ -184,6 +204,7 @@ void waveCreatorCommand(Keyword waveKeyWord)	 {
 	}
 	//! Adding delay for next group creation
 	addGroupCreationDelay(waveKeyWord);
+	return enemyNum;
 }
 
 int addGroupCreationDelay(Keyword waveKW)	{
@@ -201,24 +222,23 @@ int addGroupCreationDelay(Keyword waveKW)	{
 	return 0;
 }
 
-
 void makeTowerCommand(Keyword setTower)	{
 	addTowerPosNode(returnPropertyValue(setTower,x),returnPropertyValue(setTower,y));
 }
 
-void breakDownWaveCommand(KeywordProp *propertiesList, int nProps)	{
-		int n;
-		Keyword newKey = createKeyword();
-		addKWtoQueue(newKey);	
-		newKey->lCommand = makeEnemy;
-		KeywordQueue kWQueue = getKWQueue(NULL);
-		for(n = 0; n < nProps; n++)	{
-			if(propertiesList[n]->p != numberOfEnemies && propertiesList[n]->p != dTime)	{
-				addProperty(propertiesList[n]->p);
-				kWQueue->end->propertiesList[kWQueue->end->nProperties-1]->propertyValue = propertiesList[n]->propertyValue;
-			}
+int breakDownWaveCommand(KeywordProp *propertiesList, int nProps)	{
+	int n;
+	Keyword newKey = createKeyword();
+	addKWtoQueue(newKey);	
+	newKey->lCommand = makeEnemy;
+	KeywordQueue kWQueue = getKWQueue(NULL);
+	for(n = 0; n < nProps; n++)	{
+		if(propertiesList[n]->p != numberOfEnemies && propertiesList[n]->p != dTime)	{
+			addProperty(propertiesList[n]->p);
+			kWQueue->end->propertiesList[kWQueue->end->nProperties-1]->propertyValue = propertiesList[n]->propertyValue;
 		}
-
+	}
+	return n;
 }
 
 void setWaveTotalCommand(Keyword setWaveTotal)	{
@@ -290,7 +310,6 @@ KeywordQueue getKWQueue(KeywordQueue kwQueue)	{
 	}
 
 	return currKWQueue;
-
 }
 
 /*
@@ -406,6 +425,7 @@ int checkProperty(char *token)	{
 	} else if(!strcmp(token,"numberOfPaths"))	{
 		addProperty(numberOfPaths);		
 	}else {
+		fprintf(stderr,"Unrecognised Property has been read\n");
 		return 0;
 	}
 
@@ -519,11 +539,28 @@ void testLevelController()	{
 void testReadLevelSettingsFile()	{
 	sput_fail_unless(countKeywords() == 8,"8 Keywords Should Exist in the level settings queue");
 	initialQueueReader();	//! Removing set up commands
-	sput_fail_unless(countKeywords() == 3,"3 Keywords Should Exist in the level settings queue");
-	sput_fail_unless(returnPropertyValueFromQueue(1,waveID) == 1,"First keyword has waveID 1");
-	sput_fail_unless(returnPropertyValueFromQueue(2,waveID) == 2,"Second keyword has waveID 2");
-	sput_fail_unless(returnPropertyValueFromQueue(3,waveID) == 3,"Third keyword has waveID 3");
-	levelQueueReader();
+	sput_fail_unless(countKeywords() == 3,"Valid: 3 Keywords Should Exist in the level settings queue");
+	setCurrWaveNum(1);
+	sput_fail_unless(returnPropertyValueFromQueue(1,waveID) == 1,"Valid: First keyword has waveID 1");
+	sput_fail_unless(returnPropertyValueFromQueue(2,waveID) == 2,"Valid: Second keyword has waveID 2");
+	sput_fail_unless(returnPropertyValueFromQueue(3,waveID) == 3,"Valid: Third keyword has waveID 3");
+	sput_fail_unless(waveCreatorCommand(getKeywordFromQueue(1)) ==3,"Valid: Three enemy commands should be placed in the queue");
+	sput_fail_unless(getKeywordTypeFromQueue(3) == wave,"Valid: Third command is queue should be wave");
+	sput_fail_unless(getKeywordTypeFromQueue(4) == makeEnemy,"Valid: Fourth command is queue should be makeEnemy");
+	sput_fail_unless(createEnemyCommand(getKeywordFromQueue(4)) == 0,"Invalid:Cooldown for single enemy creation not yet ready");
+	delayGame(ENEMYSPAWNCOOLDOWN);
+	sput_fail_unless(createEnemyCommand(getKeywordFromQueue(4)) == 1,"Valid: Cooldown for single enemy creation is ready");
+	sput_fail_unless(getKeywordTypeFromQueue(7) == delay,"Valid: Seventh Keyword in queue is delay");
+	sput_fail_unless(setCreateEnemyGroupDelay(returnPropertyValue(getKeywordFromQueue(7),dTime)) == 30, "group delay is 30");
+	sput_fail_unless(createEnemyCommand(getKeywordFromQueue(4)) == 0,"Invalid: Cooldown for enemy group creation is not ready");
+	delayGame(30);
+	sput_fail_unless(createEnemyCommand(getKeywordFromQueue(4)) == 1,"Valid: Cooldown for enemy group creation is ready");
+	sput_fail_unless(waveCreatorCommand(getKeywordFromQueue(2)) ==10,"Valid: Ten enemy commands should be placed in the queue");
+	sput_fail_unless(createEnemyCommand(getKeywordFromQueue(9)) == 0,"Invalid: Enemy has wave ID for next wave");
+	setCurrWaveNum(2);
+	delayGame(ENEMYSPAWNCOOLDOWN);
+	sput_fail_unless(createEnemyCommand(getKeywordFromQueue(9)) == 1,"Valid: Enemy has wave ID for current wave");
+	//levelQueueReader();
 }
 
 

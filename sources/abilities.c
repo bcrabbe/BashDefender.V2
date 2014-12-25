@@ -110,8 +110,3 @@ int kill_all_ability(Ability *killall)
 	return 0;
 }
 */
-
-	
-
-
-
