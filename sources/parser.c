@@ -283,8 +283,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     cmdOption twrType = getCommandOption(commandArray[1]);
     if( !(twrType==mktwr_int || twrType==mktwr_char) )
     {
-        optionUsageError();
-        
+        // optionUsageError();
         terminalWindow("mktwr expected a type (int, or char)");
         return 0;
     }
@@ -422,7 +421,8 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     int numberOfStatsBeingUpgraded = 0;
     
     cmdOption statToUpgrade = getCommandOption(commandArray[1]);
-    while(statToUpgrade>0 && statToUpgrade<=6) {
+    while(statToUpgrade>0 && statToUpgrade<=6)
+    {
         ++numberOfStatsBeingUpgraded;
         cmdOption * tmp = realloc(statsToUpgradeArray, numberOfStatsBeingUpgraded*sizeof(cmdOption));
         if(tmp==NULL) {
@@ -431,6 +431,10 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
         statsToUpgradeArray=tmp;
         statsToUpgradeArray[numberOfStatsBeingUpgraded-1] = statToUpgrade;
+        
+        if(tolower(commandArray[1+numberOfStatsBeingUpgraded][0])=='t' || tolower(commandArray[1+numberOfStatsBeingUpgraded][0])=='-') {
+            break;
+        }
         statToUpgrade = getCommandOption(commandArray[1+numberOfStatsBeingUpgraded]);
     }
     if(!numberOfStatsBeingUpgraded) {
@@ -450,7 +454,8 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     int numberOfTargets = 0;
     int firstTargetToken = 1+numberOfStatsBeingUpgraded;
     int target = getTargetTower(commandArray[firstTargetToken], true);
-    while( firstTargetToken+numberOfTargets < numberOfChunks) {
+    while( firstTargetToken + numberOfTargets < numberOfChunks)
+    {
         ++numberOfTargets;
         int * tmp = realloc(targetArray, numberOfTargets*sizeof(int));
         if(tmp==NULL) {
