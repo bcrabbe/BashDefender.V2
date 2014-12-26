@@ -424,6 +424,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     cmdOption statToUpgrade = getCommandOption(commandArray[1]);
     while(statToUpgrade>0 && statToUpgrade<=6)
     {
+        iprint(statToUpgrade);
         ++numberOfStatsBeingUpgraded;
         cmdOption * tmp = realloc(statsToUpgradeArray, numberOfStatsBeingUpgraded*sizeof(cmdOption));
         if(tmp==NULL) {
@@ -437,6 +438,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
             break;
         }
         statToUpgrade = getCommandOption(commandArray[1+numberOfStatsBeingUpgraded]);
+        if(statToUpgrade<0 || statToUpgrade>6) break;
     }
     if(!numberOfStatsBeingUpgraded) {
         //optionUsageError();
@@ -457,6 +459,12 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     int target = getTargetTower(commandArray[firstTargetToken], true);
     while( firstTargetToken + numberOfTargets < numberOfChunks)
     {
+        iprint(target);
+        if(target==0) {
+            optionUsageError();
+            cleanUpParseUpgrade(statsToUpgradeArray, targetArray);
+            return 0;
+        }
         ++numberOfTargets;
         int * tmp = realloc(targetArray, numberOfTargets*sizeof(int));
         if(tmp==NULL) {
@@ -470,11 +478,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
         
         target = getTargetTower(commandArray[firstTargetToken+numberOfTargets], false);
-        if(target==0) {
-            optionUsageError();
-            cleanUpParseUpgrade(statsToUpgradeArray, targetArray);
-            return 0;
-        }
+ 
     }
     if(!numberOfTargets) {
         optionUsageError();
