@@ -208,7 +208,7 @@ int getLastTarget()	{
 /*
  *Returns costs of command based on current tower stats
  */
-int calulateCosts(cmdType cmd, cmdOption opt, int target)    {
+int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
 
     switch(cmd)
     {
@@ -321,7 +321,7 @@ int popToTower()	{
 	GameProperties Game = getGame(NULL);
 	int needed;
 	if(queue->start != NULL) {
-		needed = calulateCosts(queue->start->command,queue->start->option,queue->start->target);
+		needed = calculateCosts(queue->start->command,queue->start->option,queue->start->target);
 		switch(queue->start->command)	{
 			case cmd_upgrade:
 				if (checkQueue(queue, Game,needed)) {
@@ -366,11 +366,11 @@ void removeQueueItem()	{
 
 
 /*
- *Pops from front of Queue.
+ *Pops from front of Queue. : replaced with popToTower()
  */
 int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int *target)	{
     GameProperties Game = getGame(NULL);
-    int needed = calulateCosts(*cmd,*stat,*target);
+    int needed = calculateCosts(*cmd,*stat,*target);
 
 	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available Memory, cooldown time 
 		*cmd = queue->start->command;
