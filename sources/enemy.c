@@ -49,18 +49,12 @@ struct enemyGroup {
 };
 
 /*
-* mallocs memory and creates 2d arrays containing path coords.
-* currently number of paths is chosen within function.
+* mallocs memory for the pathList Structure
 */
 void createLevelPaths()
 {
     LevelPaths pathList = (LevelPaths) malloc(sizeof(*pathList));
     getLevelPaths(pathList);
-
-    int numberOfPaths = 1;
-    
-    assignMemoryForPaths(numberOfPaths);
-    layPaths(numberOfPaths, 1); // currently 1 as only one level
   
 }
 
@@ -96,7 +90,8 @@ void freePath(Path p)
 void layPaths(int numberOfPaths, int levelNum)
 {
   
-   // LevelPaths lP = getLevelPaths(NULL);
+    assignMemoryForPaths(numberOfPaths);
+    
     for(int i = 1; i <= numberOfPaths; i++) {
       readInPath(levelNum, i);
     }
@@ -475,7 +470,6 @@ int inRange(int tX, int tY, int tRange, int enemyID)
 
     int distanceBetweenTowerAndEnemy = (int)sqrt( pow((double)(e->x+(e->width/2)-tX),2) +
                                               pow((double)(e->y+(e->height/2)-tY),2)    );
-
     if(distanceBetweenTowerAndEnemy<tRange){
         return 1;
     }

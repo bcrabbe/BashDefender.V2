@@ -56,25 +56,30 @@ clock_t delayGame(int delayN)	{
 	clock_t ticks1, ticks2,timeWaited;
     ticks1=clock();
     timeWaited = ticks2=ticks1;
-    while((ticks2/CLOCKS_PER_SEC-ticks1/CLOCKS_PER_SEC)<delayN){
+    while((ticks2/(CLOCKS_PER_SEC/100)-ticks1/(CLOCKS_PER_SEC/100))<delayN){
         ticks2=clock();
-		timeWaited = (ticks2/CLOCKS_PER_SEC-ticks1/CLOCKS_PER_SEC);
+		timeWaited = (ticks2/(CLOCKS_PER_SEC/100)-ticks1/(CLOCKS_PER_SEC/100));
 	}
 	return timeWaited;
 }
 
 void startNextWave()	{
-    //iprint(getTotalCurrentWaveEnemies());
-    //iprint(getDeathCnt());
 	if(getTotalCurrentWaveEnemies() == getDeathCnt())	{
 		if(getWave(getGame(NULL))  < getTotalWaveNo())	{
             //printf("starting next wave\n");
 			resetEnemyCounts();
-			getGame(NULL)->currWaveNo++;
+			setCurrWaveNum(getGame(NULL)->currWaveNo+1);
 		} else {
             //printf("you have won the level\n");
 		}
 	}
+}
+
+
+void setCurrWaveNum(int newWave)	{
+
+	getGame(NULL)->currWaveNo = newWave;
+
 }
 
 /*
@@ -229,7 +234,7 @@ void CreateGameTest()	{
 
 	GameProperties testGame;
 	testGame = getGame(NULL);
-	sput_fail_unless(getAvailableMemory(testGame) == 1000,"Initializing Memory");
+	sput_fail_unless(getAvailableMemory() == 1000,"Initializing Memory");
 	//sput_fail_unless(getWave(testGame) == 3,"Initializing WaveNo");
 	sput_fail_unless(getTotalWaveNo() == 3,"Total Wave Number set to 3 from level file");
 	sput_fail_unless(getHealth(testGame) == 100,"Initializing Health");
@@ -412,22 +417,23 @@ int getEnemyGroupDelay()	{
 	return(getGame(NULL)->createEnemyGroupDelay);
 }
 
-void setCreateEnemyGroupDelay(int delay)	{
+int setCreateEnemyGroupDelay(int delay)	{
 
 	getGame(NULL)->createEnemyGroupDelay = delay;
+	return delay;
 }
 
 /*
  *Returns amount of Memory available
  */
-int getAvailableMemory(GameProperties game)	{
+int getAvailableMemory()	{
 
-	return game->totalMemory - game->memoryUsed;
+	return getGame(NULL)->totalMemory - getGame(NULL)->memoryUsed;
 }
 
 int getTotalMemory()	{
 
-	return(getAvailableMemory(getGame(NULL)));
+	return getGame(NULL)->totalMemory;
 }
 
 
@@ -435,7 +441,7 @@ void TestGetAvailableMemory()	{
 	GameProperties testGame;
     testGame = createGame();
 	testGame->totalMemory = 10;
-	sput_fail_unless(getAvailableMemory(testGame) == 10,"Getting Memory");	
+	sput_fail_unless(getAvailableMemory() == 10,"Getting Memory");	
 	free(testGame);
 }
 
@@ -457,7 +463,7 @@ void TestAddMemory()	{
 	GameProperties testGame;
     testGame = createGame();
 	addMemory(100);
-	sput_fail_unless(getAvailableMemory(testGame) == 100,"Adding MEmory");
+	sput_fail_unless(getAvailableMemory() == 100,"Adding MEmory");
 	sput_fail_unless(addMemory(-100) == 0,"Adding Negative Memory");
 	free(testGame);
 }
@@ -468,7 +474,7 @@ void TestAddMemory()	{
 int useMemory(GameProperties game,int mem)	{
 
 	if (game->totalMemory-game->memoryUsed >= mem)	{
-		game->totalMemory+=mem;
+		game->memoryUsed+=mem;
 		return 1;
 	} else {
 		return 0;

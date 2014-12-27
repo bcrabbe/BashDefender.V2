@@ -21,7 +21,7 @@ void unlock_ability(Ability *abilityx)
 int is_available_ability(Ability *ability)
 {
 
-	if(ability->unlocked == 1 && getTotalMemory() > ability->cost)
+	if(ability->unlocked == 1 && getAvailableMemory() > ability->cost)
 	{
 		return 1;
 	}
@@ -110,8 +110,3 @@ int kill_all_ability(Ability *killall)
 	return 0;
 }
 */
-
-	
-
-
-

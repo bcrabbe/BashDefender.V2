@@ -25,12 +25,12 @@
 typedef enum towerMonitorString {TOWER_DEFAULT, TOWER_INFO, OTHER_INFO} TowerMonitorString;
 typedef enum terminalWindowString {TERMINAL_DEFAULT, ERROR_MESSAGE} TerminalWindowString;
 
-typedef struct towerMonitor {
+struct towerMonitor {
     char *string;
     TowerMonitorString stringType;
     int timeSet;
     int targetTower;
-} TowerMonitor;
+};
 
 typedef struct commandNode {
     char *commandString;
@@ -161,7 +161,7 @@ void terminalWindow() {
     switch(tw->stringType) {
         case TERMINAL_DEFAULT:
             for(CommandNode *start = tw->start; start != NULL; start = start->next) {
-                strcat(tw->outputString, "$");
+                strcat(tw->outputString, "$ ");
                 strcat(tw->outputString, start->commandString);
                 strcat(tw->outputString, "\n");
             }
@@ -342,6 +342,7 @@ void getTowerString(unsigned int targetTower, char **inputString) {
     int range, damage, speed, AOEpower, AOErange;
     getStats(&range, &damage, &speed, &AOEpower, &AOErange, targetTower);
     
+
     sprintf(*inputString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
 }
 
