@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define CLEARINPUT while(getchar() != '\n') {}
+#define CLEARINPUT while(getchar() != '\n') {} //clears any input from the buffer. Useful when using scanf() with chars.
 
 #define CAPTURE_DELAY 50 //delay between mouse position capture events
 #define ARG_NUM 2 //number of arguments that should be passed to file
@@ -26,27 +26,64 @@ struct display {
 
 typedef struct display *Display;
 
+void getPathAndLevelNumbers(int *levelNum, int *pathNum);
+char *makeFilePath(int levelNum, int pathNum);
+void checkForDuplicateFile(char *filePath);
 
-void checkForEvents(Display d);
+void initSDL();
 void crash(char *message);
+void openMapInSDLWindow(Display d);
+FILE *createTempFile();
 
-int main(int argc, char *argv[]) {
+int recordStepsInTempFile(FILE *tmpFP, Display d);
+void checkForEvents(Display d);
+
+void writeCoordsToFile(int numberOfCoords, FILE *tmpFP, char *filePath);
+
+int main() {
 
   int levelNum, pathNum;
+  getPathAndLevelNumbers(&levelNum, &pathNum);
+
+  char *filePath = makeFilePath(levelNum, pathNum);
+
+  checkForDuplicateFile(filePath);
   
+  initSDL();
+  
+  Display d = (Display)malloc(sizeof(struct display));
+
+  openMapInSDLWindow(d);
+  
+  FILE *tmpFP = createTempFile();
+  
+  int numberOfCoords = recordStepsInTempFile(tmpFP, d);
+  
+  writeCoordsToFile(numberOfCoords, tmpFP, filePath);
+  
+  
+  
+  return 0;
+
+}
+
+void getPathAndLevelNumbers(int *levelNum, int *pathNum) {
+
   printf("Enter level number: ");
-  while(scanf("%d", &levelNum) != 1) {
+  while(scanf("%d", levelNum) != 1) {
     printf("try again: ");
     CLEARINPUT
   }
   
     CLEARINPUT
   printf("Enter path number: ");
-  while(scanf("%d", &pathNum) != 1) {
+  while(scanf("%d", pathNum) != 1) {
     printf("try again: ");
     CLEARINPUT
   }
-  
+}
+
+char *makeFilePath(int levelNum, int pathNum) {
 
   char levelNumStr[10];
   sprintf(levelNumStr, "%d", levelNum);
@@ -66,32 +103,51 @@ int main(int argc, char *argv[]) {
   strcat(filePath, pathNumStr);
   strcat(filePath, ".txt");
   
-  int x, y;
-  
-  
+  return filePath;
+}
+
+void checkForDuplicateFile(char *filePath) {
+
     CLEARINPUT
   char cont;
   FILE *fp = fopen(filePath, "r");
+  
   if(fp != NULL) {
     printf("Aready file located at '%s', overwrite? [y/n] ", filePath);
+    
     while(scanf("%c", &cont) != 1 || (cont != 'y' && cont != 'n')) {
       printf("try again\n");
       CLEARINPUT
     }
-  }
-  if(cont == 'n') {
-    fprintf(stderr,"OK, program exited\n");
+  
+    if(cont == 'n') {
+      fprintf(stderr,"OK, program exited\n");
+      fclose(fp);
+      exit(1);
+    }
+    
     fclose(fp);
-    exit(1);
   }
-  fclose(fp);
-  
-  
+}
+
+
+void initSDL() {
   if(SDL_Init(SDL_INIT_EVERYTHING) != 0) crash("SDL_Init()");
   if(TTF_Init() != 0) crash("TTF_Init()");
   if(IMG_Init(0) != 0) crash("IMG_Init()");
-  Display d = (Display)malloc(sizeof(struct display));
-  
+}
+
+/**
+ Prints last SDL error message to stderr, along with message included in first parameter.
+ */
+void crash(char *message) {
+    fprintf(stderr, "%s: %s\n", message, SDL_GetError());
+    SDL_Quit();
+}
+
+
+void openMapInSDLWindow(Display d) {
+
   d->finished = 0;
   d->capture = 0;
   d->backgroundSurface = IMG_Load("map.png");
@@ -103,16 +159,26 @@ int main(int argc, char *argv[]) {
   
   SDL_RenderCopy(d->renderer, d->backgroundTexture, NULL, NULL);
   SDL_RenderPresent(d->renderer);
-  
+}
+
+FILE *createTempFile() {
+
   remove("tmp.txt");
   FILE *t = fopen("tmp.txt", "w");
   fclose(t);
   
   FILE *tmpFP = fopen("tmp.txt","w+");
   if(tmpFP == NULL) {
-    fprintf(stderr,"must have file named 'tmp.txt' in current folder\n");
+    fprintf(stderr,"Unable to create file 'tmp.txt' in current folder\n");
     exit(1);
   }
+
+  return tmpFP;
+}
+
+
+int recordStepsInTempFile(FILE *tmpFP, Display d) {
+  int x, y;
   int numberOfCoords = 0;
   while (!d->finished) {
     if(d->capture) {
@@ -126,43 +192,9 @@ int main(int argc, char *argv[]) {
     checkForEvents(d);
   }
   
-  remove(filePath);
-  fp = fopen(filePath,"w");
-  
-  char c;
-  
-  fprintf(fp,"%d\n", numberOfCoords);
-  
-  rewind(tmpFP);
-  while((c = fgetc(tmpFP)) != EOF) {
-    printf("%c", c);
-    fprintf(fp,"%c", c);
-  }
-  
-  
-  fclose(tmpFP);
-  fclose(fp);
-  
-  remove("tmp.txt");
-  
-  
-  
-  return 0;
-
+  return numberOfCoords;
 }
-
-/**
- Prints last SDL error message to stderr, along withb message included in first parameter.
- */
-void crash(char *message) {
-    fprintf(stderr, "%s: %s\n", message, SDL_GetError());
-    SDL_Quit();
-}
-
-
-
-
-
+  
 // Gobble all events & ignore most
 void checkForEvents(Display d) {
 
@@ -187,6 +219,27 @@ void checkForEvents(Display d) {
 }
 
 
+void writeCoordsToFile(int numberOfCoords, FILE *tmpFP, char *filePath) {
+  remove(filePath);
+  FILE *fp = fopen(filePath,"w");
+  
+  char c;
+  
+  fprintf(fp,"%d\n", numberOfCoords);
+  
+  rewind(tmpFP);
+  while((c = fgetc(tmpFP)) != EOF) {
+    fprintf(fp,"%c", c);
+  }
+  
+  
+  fclose(tmpFP);
+  fclose(fp);
+  
+  remove("tmp.txt");
+}
+
+  
 
 
 
