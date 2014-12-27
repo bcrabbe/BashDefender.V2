@@ -487,7 +487,7 @@ void TestUseMemory()	{
     testGame = createGame();
 	testGame->totalMemory = 100;
 	useMemory(testGame,50);
-	sput_fail_unless(getAvailableMemory(testGame) == 50,"Subtracting Memory");
+	sput_fail_unless(getAvailableMemory() == 50,"Subtracting Memory");
 	sput_fail_unless(useMemory(testGame,100) == 0,"Subtracting too much Memory");
 	free(testGame);
 }
