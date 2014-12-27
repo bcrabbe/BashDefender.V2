@@ -20,7 +20,7 @@ int main(int argc, char ** argv)
     srand(time(NULL));
 	Display d = init_SDL();
     initLevel();
-//  	testing();
+  	//testing();
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -91,15 +91,16 @@ void testing()	{
 
 	setUpTesting();
 	
-	testLevelController(); //! Working
-	testingTowerPositions(); //!Working
-    //testingGameStructure(); //!Memory Tests Failing
-    testingActionQueue(); //! Working
-   // parseToQueueTesting(); //!Segfaults
-    //testEnemy(); // ! No longer works.
-    testingTowerModule(); //! working
-	//parseToTowerTesting(); //!Segfaults
-    //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
+//	testLevelController(); //! Working
+//	testingTowerPositions(); //!Working
+//    //testingGameStructure(); //!Memory Tests Failing
+//    testingActionQueue(); //! Working
+//   // parseToQueueTesting(); //!Segfaults
+//    //testEnemy(); // ! No longer works.
+//    testingTowerModule(); //! working
+//	//parseToTowerTesting(); //!Segfaults
+//    //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
+    testingInformationWindowModule();
 
     
 
