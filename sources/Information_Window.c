@@ -66,8 +66,6 @@ CommandNode *createCommandNode(void);
 void destroyCommandNode(CommandNode **start);
 
 
-
-
 /**
  Updates all information windows and bars
  */
