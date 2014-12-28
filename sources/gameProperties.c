@@ -391,6 +391,21 @@ int checkUniqueClockType(clockType type)	{
 
 }
 
+
+void freeClocks()	{
+	GameClock gClock = getClock(NULL);
+	ClockNode currNode = gClock->first;
+	ClockNode temp;
+	while(currNode != NULL)	{
+		temp = currNode->next;	
+		free(currNode);
+		currNode = temp;
+	}
+
+	free(gClock);
+}
+
+
 int checkClock(clockType cType,int coolDown)	{
 	GameClock gClock = getClock(NULL);
 	ClockNode currNode;

@@ -215,7 +215,7 @@ void createEnemyGroup()
 void freeEnemyGroup()
 {
     EnemyGroup enemyList =  getEnemyGroup(NULL);
-    for(int i = 0; i <= enemyList->numberOfEnemies; i++) {
+    for(int i = 1; i <= enemyList->numberOfEnemies; i++) {
         free(enemyList->enemyArray[i]);
     }
     free(enemyList->enemyArray);

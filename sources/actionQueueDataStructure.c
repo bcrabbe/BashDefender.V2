@@ -88,6 +88,13 @@ void clearQueue()	{
 	q->start = q->current = NULL;
 }
 
+void freeActionQueue()	{
+
+		clearQueue();
+		free(getQueue(NULL));
+
+}
+
 /*
  *puts node to back of queue
  */

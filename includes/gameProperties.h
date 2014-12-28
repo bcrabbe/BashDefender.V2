@@ -111,7 +111,7 @@ void TestUseMemory();
 void setEnemyCreated1();
 int getTotalMemory();
 int getTotalWaves(GameProperties game);
-
+void freeClocks();
 /*----------Test Functions-----------*/
 void testStartNextWave();
 void testClocks();

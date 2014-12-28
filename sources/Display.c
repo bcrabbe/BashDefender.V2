@@ -23,11 +23,12 @@ struct display {
     SDL_Renderer *renderer;
     SDL_Rect    srcRect;
     SDL_Rect    rect;
+	SDL_Rect	rect_backup;
     SDL_Event event;
     SDL_Color white;
     SDL_Color red;
     TTF_Font *font;
-    
+	    
     SDL_Texture *statsBarTexture;
     SDL_Texture *towerInfoTexture;
     
@@ -41,9 +42,11 @@ struct display {
 	SDL_Texture *startBackgroundTexture;
     SDL_Texture *finalBackgroundTexture;
 
+
 	SDL_Texture *startButton;
     SDL_Texture *reStartButton;
-    
+   	SDL_Texture *returnButton; 
+
 	//terminal Window
     SDL_Texture *newtexture;
 	SDL_Texture *terminalWindowTexture;
@@ -103,7 +106,7 @@ Display init_SDL(){
     putenv("SDL_VIDEODRIVER=dga");
     
     /*inititalize pictures (load picture to the texture)*/
-    init_pic(&d->reStartButton, "Images/iconreset.png");
+    init_pic(&d->reStartButton, "Images/RestartButton.png");
     init_pic(&d->finalBackgroundTexture, "Images/final_screen.png");
     init_pic(&d->towerMonitorTexture, "Images/info_monitor.png");
     init_pic(&d->actionQueueTexture, "Images/action_queue-monitor.png");
@@ -111,6 +114,7 @@ Display init_SDL(){
     init_pic(&d->towerInfoTexture, "Images/towerInfoBackground.png");
     init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
     init_pic(&d->startButton, "Images/start-button.png");
+	init_pic(&d->returnButton,"Images/returnButton.png");
     init_pic(&d->terminalWindowTexture, "Images/terminalwindow.png");
     init_pic(&d->map, "Images/map1.png");
     init_pic(&d->towerPositionTexture[0], "Images/TowerLocationsA.png");
@@ -432,7 +436,7 @@ void updateTerminalWindow(char *outputString) {
 //Terminal functions
 
 /*terminal_window detects input from SDL and calls display_text*/
-int terminal_window(Display d, char *pass, char *clear)
+int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
 {
 	int done = 0;
     char *pass2;
@@ -481,14 +485,20 @@ int terminal_window(Display d, char *pass, char *clear)
                 switch(d->event.key.keysym.sym)
                 {
                 	case SDLK_ESCAPE:
-                	done = 1;
+					*pause = 1;
+                	//done = 1;
                 	break;
                 }
                 break;
             }
         }
     }
-    return done;
+
+	if(restart)	{
+		return 1;
+	} else {
+    	return 0;
+	}
 }
 
 /*display_text builds textures from surfaces and calls renderer to output them to screen.*/
@@ -541,6 +551,68 @@ void menu_screen(Display d, int *started)
                         if(d->event.button.button == SDL_BUTTON_LEFT){
                             *started = 1;
                         }
+			}
+			case SDL_KEYDOWN:
+			{
+				if(d->event.key.keysym.sym == SDLK_ESCAPE)
+				{
+					SDL_Quit();
+					exit(1);
+				}
+			}
+		}
+	}
+}
+
+void pause_screen(Display d, int *pause, int *restart)
+{
+    //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
+    animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
+
+    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), 
+				(SCREEN_HEIGHT_GLOBAL/3)*2, 
+				SCREEN_HEIGHT_GLOBAL/6, 
+				SCREEN_HEIGHT_GLOBAL/6
+	};
+
+    SDL_RenderCopy(d->renderer, d->returnButton, NULL, &d->rect);
+	//SDL_RenderPresent(d->renderer);
+    
+	d->rect = (SDL_Rect) {
+			(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),  //!x 
+		((SCREEN_HEIGHT_GLOBAL/3)*2)+(SCREEN_HEIGHT_GLOBAL/6), 		//!y
+			SCREEN_HEIGHT_GLOBAL/6, 		//!Width
+			SCREEN_HEIGHT_GLOBAL/6		//!height
+	};
+
+    SDL_RenderCopy(d->renderer, d->reStartButton, NULL, &d->rect);
+	SDL_RenderPresent(d->renderer);
+
+    int check = 0;
+    check = (SDL_PollEvent(&d->event));
+    if(check != 0)
+    {
+		switch(d->event.type)
+		{
+			case SDL_MOUSEBUTTONDOWN:
+			{
+				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
+					&& d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
+					&& d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 
+					&&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+                            *pause = 0;
+                        }
+				 } else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
+							 && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
+							 && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 + ((SCREEN_HEIGHT_GLOBAL/6)+5)  
+							 &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + (2*(SCREEN_HEIGHT_GLOBAL/6)))	{
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+                            *restart = 1;
+                            *pause = 0;
+							printf("restart\n");
+						}
+				}
 			}
 			case SDL_KEYDOWN:
 			{

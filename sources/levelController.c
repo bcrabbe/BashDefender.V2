@@ -320,7 +320,6 @@ void initLevel()    {
 	createKeywordQueue();
 	createLevel();
     createLevelPaths();
-    layPaths(1, 1); //hard coded for now - waiting for Benji to use in function
     createTowerGroup();
     createActionQueue();
     createGame();
@@ -501,12 +500,13 @@ void readLevelSettingsFile(char *file)	{
 void endLevel() {
 
     freeAllTowers();
-    free(getTowerGrp(NULL));
     free(getGame(NULL));
-    free(getQueue(NULL));
 	freeAllTowerPositions();
+    free(getTowerGrp(NULL));
 	freeEnemyGroup();
 	freeLevelPaths();
+	freeClocks();
+	freeActionQueue();
 }
 
 /*---------- Test Functions ----------*/

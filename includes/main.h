@@ -1,6 +1,5 @@
 void quitGame();
-
-
+void startLevel(Display d, int *restart);
 void testing();
 
 /*----------System Test Functions-----------*/

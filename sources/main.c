@@ -18,17 +18,35 @@
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
+	int restart = 0;
+    int started = 0;
 	Display d = init_SDL();
-    initLevel();
-//  	testing();
+    while(started == 0){
+    	menu_screen(d, &started);
+    }
+
+	do	{
+		restart = 0;
+    	initLevel();
+		startLevel(d,&restart);
+		endLevel();
+	} while (restart);
+
+//  testing();
+    
+    shutSDL(d);
+    quitGame();
+    return 0;
+}
+
+void startLevel(Display d, int *restart)	{
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-    int started = 0;
     int ended = 0;
-    
+   	int pause = 0; 
     addMemory(100);
     int steps=0;
 
@@ -37,15 +55,18 @@ int main(int argc, char ** argv)
 
     do{
         startFrame(d);
-        while(started == 0){
-            menu_screen(d, &started);
-        }
+    //    while(started == 0){
+     //       menu_screen(d, &started);
+      //  }
+		while(pause)	{
+			pause_screen(d,&pause,restart);
+		}
         ++steps;
         drawBackground();
         
     	startNextWave();
         levelQueueReader();
-        terminal_window(d, pass, clear);
+        terminal_window(d, pass, clear,&pause, *restart);
     	popToTower();
         if(inputCommand)
         {
@@ -72,11 +93,8 @@ int main(int argc, char ** argv)
             }
         }
         
-    } while(!terminal_window(d, pass, clear));
-    
-    shutSDL(d);
-    quitGame();
-    return 0;
+    } while(!terminal_window(d, pass, clear,&pause, *restart));
+		printf("finished\n");    
 }
 
 void quitGame()
