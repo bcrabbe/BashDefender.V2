@@ -96,6 +96,7 @@ void towerMonitor(void) {
             break;
         case OTHER_INFO:
             break;
+
     }
     
     //If another string has been set and a period of time has elapsed, reset to default
@@ -275,6 +276,7 @@ void destroyCommandNode(CommandNode **start) {
     *start = (*start)->next;
     free(temp->commandString);
     free(temp);
+
 }
 
 /**
