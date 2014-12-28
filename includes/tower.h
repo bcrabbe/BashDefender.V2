@@ -80,6 +80,7 @@ void testTowerCreation();
 void testingTowerPositions();
 int createTowerFromPositions(int position);
 void drawAllTowerPositions();
+void createTowerTypeFromPositions(int position, int tType);
 
 void createProjectileList();
 ProjectileList getProjectileList(ProjectileList pL);

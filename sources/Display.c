@@ -56,7 +56,7 @@ struct display {
     SDL_Texture *towerPositionTexture[26];
 
     //enemy
-    SDL_Texture *enemyTexture[2];
+    SDL_Texture *enemyTexture[4];
     
     //animation
     SDL_Texture *circ1_Texture[2];
@@ -141,6 +141,9 @@ Display init_SDL(){
     init_pic(&d->towerPositionTexture[25], "Images/TowerLocationsZ.png");
     init_pic(&d->enemyTexture[0], "Images/sdl2-spritesheet-actual.png");
     init_pic(&d->enemyTexture[1], "Images/int_enemy_basic.png");
+    init_pic(&d->enemyTexture[2], "Images/int_enemy_basic.png");
+    init_pic(&d->enemyTexture[3], "Images/char_enemy_basic.png");
+    init_pic(&d->enemyTexture[4], "Images/char_enemy_basic.png");
     init_pic(&d->towerTexture[0], "Images/tower.png");
     init_pic(&d->towerTexture[1], "Images/tower1.png");
     init_pic(&d->circ1_Texture[0], "Images/circ1_dark.png");

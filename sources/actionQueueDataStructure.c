@@ -214,7 +214,7 @@ int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
     {
         case cmd_upgrade:
         {
-            return ((getTowerLevel(target))*getCurrentStat(opt,target));
+            return ((getTowerLevel(target))*(2*getCurrentStat(opt,target)));
         }
         case cmd_mktwr:
         {
@@ -333,7 +333,18 @@ int popToTower()	{
 			case cmd_mktwr:
 				//! request tower type ignored for now.
 				if (checkQueue(queue,Game,needed)) {
-					createTowerFromPositions(queue->start->target);
+					switch(queue->start->option)	{
+						case mktwr_int:
+							createTowerTypeFromPositions(queue->start->target,INT_TYPE);	
+							break;
+						case mktwr_char:
+							createTowerTypeFromPositions(queue->start->target,CHAR_TYPE);	
+							break;
+						default:
+							fprintf(stderr,"Unrecognised tower type\n");
+					        break;
+					}
+					//createTowerFromPositions(queue->start->target);
 					useMemory(Game, needed);
 					removeQueueItem();
 				}

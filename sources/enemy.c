@@ -274,7 +274,7 @@ void Test_createEnemy()
 }
 
 
-void createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum) {
+int createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum) {
 
   Enemy e = createEnemy();
   switch (eType) {
@@ -294,6 +294,8 @@ void createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum) {
       fprintf(stderr,"ERROR**** incorrect value for TypeOfEnemy (value = %d) passed to createSpecificEnemy() ****\n", eType);
       exit(1);
   }
+
+  return e->enemyID;
 }
     
     
@@ -323,7 +325,7 @@ void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int he
 
     newEnemy->height = height;
     newEnemy->width = width;
-    newEnemy->damage = damage*lvl;
+    newEnemy->damage = damage*(lvl/2);
 
 }
 
@@ -369,7 +371,7 @@ void present_enemy(Display d)
 
         if(!isDead(i))
         {
-            drawEnemy(e->x, e->y, e->width, e->height, 2010, 121, 1, 15, 200);
+            drawEnemy(e->x, e->y, e->width, e->height, 2010, 121, e->eType, 15, 200);
             drawRect(e->x, e->y -20, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
         }
     }
@@ -502,7 +504,7 @@ void damageEnemy(int damage, int enemyID, int damageType)
       {
 		  increaseDeathCnt();
           e->dead=1;
-          addMemory(e->maxHealth/10);
+          addMemory(e->maxHealth/5);
           // drawDeath(e->x, e->y);
           //drawKillAll();
       }

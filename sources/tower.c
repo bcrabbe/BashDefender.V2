@@ -611,6 +611,14 @@ int createTowerFromPositions(int position)	{
 	}
 	return 0;
 }
+
+void createTowerTypeFromPositions(int position, int tType)	{
+	iprint(tType);
+	TowerGroup TG = getTowerGrp(NULL);
+	createTowerFromPositions(position);
+	TG->listOfTowers[TG->numOfTowers]->towerType = tType;
+}
+
 char maxTowerPositionChar()
 {
     TowerPos tPos = getTowerPos(NULL);
@@ -689,7 +697,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->towerType = INT_TYPE;
 
     newTow->upgradesCompleted = 0;
-    newTow->damage = 20;
+    newTow->damage = 30;
     newTow->range = 100;
     newTow->firing = 0;
 	  newTow->level = 1;
