@@ -63,16 +63,27 @@ clock_t delayGame(int delayN)	{
 	return timeWaited;
 }
 
-void startNextWave()	{
+int startNextWave()	{
 	if(getTotalCurrentWaveEnemies() == getDeathCnt())	{
 		if(getWave(getGame(NULL))  < getTotalWaveNo())	{
-            //printf("starting next wave\n");
 			resetEnemyCounts();
 			setCurrWaveNum(getGame(NULL)->currWaveNo+1);
 		} else {
             //printf("you have won the level\n");
 		}
+		return 1;
 	}
+	return 0;
+}
+
+void testStartNextWave()	{
+
+		setCurrWaveNum(getGame(NULL)->currWaveNo+1);
+		increaseEnemyNumbersThisWave(10);
+		getGame(NULL)->deathCount = 0;
+		sput_fail_unless(startNextWave() == 0, "Invalid: 10 enemies have not registered as dead yet");	
+		getGame(NULL)->deathCount = 10;
+		sput_fail_unless(startNextWave() == 1, "Valid: 10 enemies have registered as dead");	
 }
 
 
@@ -151,6 +162,19 @@ void setTotalWaveNo(int totalW)	{
 	
 }
 
+void testClocks()	{
+	sput_fail_unless(addClock(testClock) == 1,"Valid: Adding Dummy Test Clock");
+	sput_fail_unless(checkUniqueClockType(testClock) == 0,"Invalid: Unique clock checker.  Clocck should already exist");
+	sput_fail_unless(addClock(testClock) == 0,"Invalid: Adding non unique Dummy clock");
+	sput_fail_unless(checkClock(testClock,10) == 0,"Invalid: Cooldown of 10 has not passed");
+	delayGame(10);
+	sput_fail_unless(checkClock(testClock,10) == 1,"Valid: Cooldown of 10 has passed");
+	sput_fail_unless(checkClock(testClock,10) == 0,"Invalid: Cooldown of 10 hasn't passed after reset of cooldown");
+	delayGame(10);
+	sput_fail_unless(checkClock(testClock,10) == 1,"Valid: Cooldown of 10 has passed after reset of cooldown");
+
+}
+
 void testSetLastAction()	{
 
 	GameProperties newGame = getGame(NULL);
@@ -203,12 +227,12 @@ void testingGameStructure()	{
 	
 	sput_set_output_stream(NULL);
 
-	sput_enter_suite("testlastAction(): Cooldown checking");
-	//sput_run_test(testlastAction);
+	sput_enter_suite("testStartNextWave(): Testing wave management");
+	sput_run_test(testStartNextWave);
 	sput_leave_suite();
-	
-	sput_enter_suite("testSetLastAction(): Setting last action to current clock");
-	//sput_run_test(testSetLastAction);
+
+	sput_enter_suite("testClocks(): Testing Clock Data Structure");
+	sput_run_test(testClocks);
 	sput_leave_suite();
 
 	sput_enter_suite("CreateGameTest(): Creation & Initialization");
@@ -322,7 +346,7 @@ GameClock getClock(GameClock clock)	{
 /*
  * Add Clock Node
  */
-void addClock(clockType type)	{
+int addClock(clockType type)	{
 	GameClock clock = getClock(NULL);	
 	if(checkUniqueClockType(type))	{
 		if(clock->first == NULL)	{
@@ -333,7 +357,9 @@ void addClock(clockType type)	{
 		}
 	} else {
 		fprintf(stderr,"Attempt to add non unique clock\n");
+		return 0;
 	}
+	return 1;
 }
 
 ClockNode createClockNode(clockType type)	{
@@ -364,6 +390,21 @@ int checkUniqueClockType(clockType type)	{
 	return 1;
 
 }
+
+
+void freeClocks()	{
+	GameClock gClock = getClock(NULL);
+	ClockNode currNode = gClock->first;
+	ClockNode temp;
+	while(currNode != NULL)	{
+		temp = currNode->next;	
+		free(currNode);
+		currNode = temp;
+	}
+
+	free(gClock);
+}
+
 
 int checkClock(clockType cType,int coolDown)	{
 	GameClock gClock = getClock(NULL);
@@ -487,7 +528,7 @@ void TestUseMemory()	{
     testGame = createGame();
 	testGame->totalMemory = 100;
 	useMemory(testGame,50);
-	sput_fail_unless(getAvailableMemory(testGame) == 50,"Subtracting Memory");
+	sput_fail_unless(getAvailableMemory() == 50,"Subtracting Memory");
 	sput_fail_unless(useMemory(testGame,100) == 0,"Subtracting too much Memory");
 	free(testGame);
 }

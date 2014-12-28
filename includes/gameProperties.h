@@ -51,12 +51,13 @@ typedef enum clockType	{
 	lastCmdAction = 1,
 	enemyGroupCreated1 = 2,
 	singleEnemyCreated = 3,	//!delay between single enemies being created
-	groupDelay = 4 	//!Delay between groups of enemies being created
+	groupDelay = 4, 	//!Delay between groups of enemies being created
+	testClock = 5 //! dummy clock type for testing
 } clockType;
 
 /*----------Symbolic Constants-----------*/
 
-#define ACTIONCOOLDOWN	10000	//! minimum time between actions being removed from queue
+#define ACTIONCOOLDOWN	10	//! minimum time between actions being removed from queue
 
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 
@@ -80,7 +81,7 @@ clock_t delayGame(int delayN);
 int lastAction(GameProperties Game);
 int setlastAction(GameProperties Game);
 GameProperties getGame(GameProperties createdGame);
-void addClock(clockType type);
+int addClock(clockType type);
 GameClock getClock(GameClock clock);
 int checkUniqueClockType(clockType type);
 ClockNode createClockNode(clockType type);
@@ -94,7 +95,7 @@ int getEnemyGroupDelay();
 void increaseEnemyNumbersThisWave(int numberOfEnemies);
 int getTotalCurrentWaveEnemies();
 int checkIfPlayerDead();
-void startNextWave();
+int startNextWave();
 void setTotalWaveNo(int totalW);
 void resetEnemyCounts();
 int getTotalWaveNo();
@@ -110,4 +111,8 @@ void TestUseMemory();
 void setEnemyCreated1();
 int getTotalMemory();
 int getTotalWaves(GameProperties game);
+void freeClocks();
+/*----------Test Functions-----------*/
+void testStartNextWave();
+void testClocks();
 #endif

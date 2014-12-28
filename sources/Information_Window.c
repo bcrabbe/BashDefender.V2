@@ -345,9 +345,12 @@ void getTowerString(unsigned int targetTower, char **inputString) {
     
     int range, damage, speed, AOEpower, AOErange;
     getStats(&range, &damage, &speed, &AOEpower, &AOErange, targetTower);
-    
 
-    sprintf(*inputString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
+    sprintf(*inputString, "TOWER %d\n\nRange: %d Cost to Upgrade: %d \nDamage: %d Cost to Upgrade: %d\nSpeed: %d Cost to Upgrade: %d \nAOE Power: %d\nAOE Range: %d", targetTower, 
+					range, calculateCosts(cmd_upgrade,upgrade_range,targetTower), 
+					damage, calculateCosts(cmd_upgrade,upgrade_power,targetTower), 
+					speed, calculateCosts(cmd_upgrade,upgrade_speed,targetTower),
+					AOEpower, AOErange);
 }
 
 

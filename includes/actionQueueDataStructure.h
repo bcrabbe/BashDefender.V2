@@ -31,7 +31,7 @@ int getLastTarget();
 int getFirstTarget();
 void clearQueue();
 void removeQueueItem();
-int calulateCosts(cmdType cmd, cmdOption stat, int target);
+int calculateCosts(cmdType cmd, cmdOption stat, int target);
 int getCurrentStat(cmdOption stat,int target);
 int popToTower();
 void testCheckMem();
@@ -40,5 +40,6 @@ void testPopFromQueue();
 void testPushToQueue();
 char *getActionQueueString(void);
 int getCostOfAptget (cmdOption option);
+void freeActionQueue();
 
 #endif

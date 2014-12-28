@@ -18,17 +18,35 @@
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
+	int restart = 0;
+    int started = 0;
 	Display d = init_SDL();
-    initLevel();
-//  	testing();
+    while(started == 0){
+    	menu_screen(d, &started);
+    }
+
+	do	{
+		restart = 0;
+    	initLevel();
+		startLevel(d,&restart);
+		endLevel();
+	} while (restart);
+
+//  testing();
+    
+    shutSDL(d);
+    quitGame();
+    return 0;
+}
+
+void startLevel(Display d, int *restart)	{
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-    int started = 0;
     int ended = 0;
-    
+   	int pause = 0; 
     addMemory(100);
     int steps=0;
 
@@ -37,15 +55,18 @@ int main(int argc, char ** argv)
 
     do{
         startFrame(d);
-        while(started == 0){
-            menu_screen(d, &started);
-        }
+    //    while(started == 0){
+     //       menu_screen(d, &started);
+      //  }
+		while(pause)	{
+			pause_screen(d,&pause,restart);
+		}
         ++steps;
         drawBackground();
         
-		startNextWave();
+    	startNextWave();
         levelQueueReader();
-        terminal_window(d, pass, clear);
+        terminal_window(d, pass, clear,&pause, *restart);
     	popToTower();
         if(inputCommand)
         {
@@ -72,11 +93,8 @@ int main(int argc, char ** argv)
             }
         }
         
-    } while(!terminal_window(d, pass, clear));
-    
-    shutSDL(d);
-    quitGame();
-    return 0;
+    } while(!terminal_window(d, pass, clear,&pause, *restart));
+		printf("finished\n");    
 }
 
 void quitGame()
@@ -90,19 +108,40 @@ void quitGame()
 void testing()	{
 
 	setUpTesting();
-	
+
+	//!Unit Tests	
 	testLevelController(); //! Working
 	testingTowerPositions(); //!Working
-    //testingGameStructure(); //!Memory Tests Failing
+    testingGameStructure(); //!Memory Tests Failing
     testingActionQueue(); //! Working
-   // parseToQueueTesting(); //!Segfaults
     //testEnemy(); // ! No longer works.
     testingTowerModule(); //! working
+
+   	//! System Tests 
+   	parseToQueueTesting(); //!Segfaults
 	//parseToTowerTesting(); //!Segfaults
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
+	enemyToGamePropertiesTesting();
+}
 
-    
+void enemyToGamePropertiesTesting()	{
 
+	sput_start_testing();
+    sput_set_output_stream(NULL);
+
+	sput_enter_suite("testEnemyDeath(): Game Properties capturing enemy deaths corectly");
+	sput_run_test(testEnemyDeath);
+	sput_leave_suite();
+}
+
+void testEnemyDeath()	{
+	int enemyID = createSpecificEnemy(1,1,1), 
+		currDeathCnt = getDeathCnt(),
+		currMemory = getAvailableMemory();
+	damageEnemy(50,enemyID,1);
+	sput_fail_unless(getDeathCnt() > currDeathCnt, "Valid: One Enemy has died");
+	sput_fail_unless(getAvailableMemory() > currMemory,"Valid: Enemy has died and added to available memory");
+	resetEnemyCounts();
 }
 
 void towerToEnemyTesting()	{
