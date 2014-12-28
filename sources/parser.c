@@ -172,7 +172,7 @@ int parseWhile(char *inputString)
                 terminalWindow(termErrString);
                 return 0;
             }
-        }
+        }/*
         switch (op)
         {
             case not:
@@ -207,7 +207,7 @@ int parseWhile(char *inputString)
                 string[0] = 'E';//error
                 string[1] = 'R';
                 return;
-        }
+        }*/
         
         
     }
