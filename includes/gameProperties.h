@@ -56,7 +56,7 @@ typedef enum clockType	{
 
 /*----------Symbolic Constants-----------*/
 
-#define ACTIONCOOLDOWN	0	//! minimum time between actions being removed from queue
+#define ACTIONCOOLDOWN	10000	//! minimum time between actions being removed from queue
 
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 
@@ -85,8 +85,8 @@ GameClock getClock(GameClock clock);
 int checkUniqueClockType(clockType type);
 ClockNode createClockNode(clockType type);
 void damageHealth(int damage);
-void setCreateEnemyGroupDelay(int delay);
 int addMemory(int mem);
+int setCreateEnemyGroupDelay(int delay);
 int getCostOfNewTower();
 int getDeathCnt();
 void increaseDeathCnt();
@@ -104,6 +104,7 @@ void setCurrTime(ClockNode node);
 void testingGameStructure();
 void CreateGameTest();
 void TestGetAvailableMemory();
+void setCurrWaveNum(int newWave);
 void TestAddMemory();
 void TestUseMemory();
 void setEnemyCreated1();

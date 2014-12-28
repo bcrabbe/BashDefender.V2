@@ -56,25 +56,30 @@ clock_t delayGame(int delayN)	{
 	clock_t ticks1, ticks2,timeWaited;
     ticks1=clock();
     timeWaited = ticks2=ticks1;
-    while((ticks2/CLOCKS_PER_SEC-ticks1/CLOCKS_PER_SEC)<delayN){
+    while((ticks2/(CLOCKS_PER_SEC/100)-ticks1/(CLOCKS_PER_SEC/100))<delayN){
         ticks2=clock();
-		timeWaited = (ticks2/CLOCKS_PER_SEC-ticks1/CLOCKS_PER_SEC);
+		timeWaited = (ticks2/(CLOCKS_PER_SEC/100)-ticks1/(CLOCKS_PER_SEC/100));
 	}
 	return timeWaited;
 }
 
 void startNextWave()	{
-    //iprint(getTotalCurrentWaveEnemies());
-    //iprint(getDeathCnt());
 	if(getTotalCurrentWaveEnemies() == getDeathCnt())	{
 		if(getWave(getGame(NULL))  < getTotalWaveNo())	{
             //printf("starting next wave\n");
 			resetEnemyCounts();
-			getGame(NULL)->currWaveNo++;
+			setCurrWaveNum(getGame(NULL)->currWaveNo+1);
 		} else {
             //printf("you have won the level\n");
 		}
 	}
+}
+
+
+void setCurrWaveNum(int newWave)	{
+
+	getGame(NULL)->currWaveNo = newWave;
+
 }
 
 /*
@@ -412,9 +417,10 @@ int getEnemyGroupDelay()	{
 	return(getGame(NULL)->createEnemyGroupDelay);
 }
 
-void setCreateEnemyGroupDelay(int delay)	{
+int setCreateEnemyGroupDelay(int delay)	{
 
 	getGame(NULL)->createEnemyGroupDelay = delay;
+	return delay;
 }
 
 /*

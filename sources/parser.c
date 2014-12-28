@@ -36,6 +36,7 @@ unsigned long int stringToInt(const char * string);
 
 int parse(char *inputString)
 {
+    commandToTerminalWindow(inputString); //Display input string in terminal window, whether recognized or not
     size_t len = 1+strlen(inputString);//gets the size of inputString
     if( len < 3*sizeof(char)  )
     {
@@ -283,9 +284,11 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     cmdOption twrType = getCommandOption(commandArray[1]);
     if( !(twrType==mktwr_int || twrType==mktwr_char) )
     {
+
+        
         optionUsageError();
         
-        terminalWindow("mktwr expected a type (int, or char)");
+        errorToTerminalWindow("mktwr expected a type (int, or char)");
         return 0;
     }
     
@@ -293,6 +296,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     int token = 2;
     while(token < numberOfTokens) {
         int towerPosition = (int)tolower(commandArray[token][0]) - 'a' + 1;
+		iprint(isTowerPositionAvailable(towerPosition));
         if( isTowerPositionAvailable(towerPosition) ){
             if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
             {
@@ -303,7 +307,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
             if( towerPosition < 1 || towerPosition > maxTowerPosition() ) {
                 char str[50];
                 sprintf(str,"mktwr expected a target positon A - %c",maxTowerPositionChar());
-                terminalWindow(str);
+                errorToTerminalWindow(str);
             }
         }
         ++token;
@@ -422,7 +426,9 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     int numberOfStatsBeingUpgraded = 0;
     
     cmdOption statToUpgrade = getCommandOption(commandArray[1]);
-    while(statToUpgrade>0 && statToUpgrade<=6) {
+    while(statToUpgrade>0 && statToUpgrade<=6)
+    {
+        iprint(statToUpgrade);
         ++numberOfStatsBeingUpgraded;
         cmdOption * tmp = realloc(statsToUpgradeArray, numberOfStatsBeingUpgraded*sizeof(cmdOption));
         if(tmp==NULL) {
@@ -431,7 +437,12 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
         statsToUpgradeArray=tmp;
         statsToUpgradeArray[numberOfStatsBeingUpgraded-1] = statToUpgrade;
+        
+        if(tolower(commandArray[1+numberOfStatsBeingUpgraded][0])=='t' || tolower(commandArray[1+numberOfStatsBeingUpgraded][0])=='-') {
+            break;
+        }
         statToUpgrade = getCommandOption(commandArray[1+numberOfStatsBeingUpgraded]);
+        if(statToUpgrade<0 || statToUpgrade>6) break;
     }
     if(!numberOfStatsBeingUpgraded) {
         //optionUsageError();
@@ -450,7 +461,14 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     int numberOfTargets = 0;
     int firstTargetToken = 1+numberOfStatsBeingUpgraded;
     int target = getTargetTower(commandArray[firstTargetToken], true);
-    while( firstTargetToken+numberOfTargets < numberOfChunks) {
+    while( firstTargetToken + numberOfTargets < numberOfChunks)
+    {
+        iprint(target);
+        if(target==0) {
+            optionUsageError();
+            cleanUpParseUpgrade(statsToUpgradeArray, targetArray);
+            return 0;
+        }
         ++numberOfTargets;
         int * tmp = realloc(targetArray, numberOfTargets*sizeof(int));
         if(tmp==NULL) {
@@ -464,11 +482,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
         
         target = getTargetTower(commandArray[firstTargetToken+numberOfTargets], false);
-        if(target==0) {
-            optionUsageError();
-            cleanUpParseUpgrade(statsToUpgradeArray, targetArray);
-            return 0;
-        }
+ 
     }
     if(!numberOfTargets) {
         optionUsageError();
@@ -509,17 +523,17 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     {
         char str[100];
         sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-        terminalWindow(str);
+        errorToTerminalWindow(str);
         fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
         fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
         return 0;
     }
     if ( needsIdentifier && !(inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T') )
     {
-        terminalWindow("ERROR: You must target a towers with this command");
+        errorToTerminalWindow("ERROR: You must target a towers with this command");
         char str[100];
         sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-        terminalWindow(str);
+        errorToTerminalWindow(str);
         fprintf(stderr,"*** ERROR: You must target a towers with this command ***\n");
         fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
         return 0;
@@ -541,7 +555,7 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
         char str[100];
         sprintf(str,"ERROR: target tower does not existYou have only %d towers you entered t%d",numberOfTowers,
                 targetTower);
-        terminalWindow(str);
+        errorToTerminalWindow(str);
         
         fprintf(stderr,"*** ERROR: target tower does not exist ***\n");
         fprintf(stderr,"You have only %d towers you entered t%d\n",
@@ -642,8 +656,8 @@ cmdOption getCommandOption(char * secondToken)
  */
 void optionUsageError()
 {
-    terminalWindow("ERROR: Could not execute command.");
-    terminalWindow("Type man [COMMAND] for help");
+    errorToTerminalWindow("ERROR: Could not execute command.");
+    errorToTerminalWindow("Type man [COMMAND] for help");
     fprintf(stderr,"*** Syntax error: Could not execute command.***\n");
     fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
     //error messages will need to be passed back to the terminal to be printed. hopefully can do this by setting up a custom stream. For now will print to stderr.
