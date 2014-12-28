@@ -106,6 +106,10 @@ void drawTower(Display d, int x, int y, int w, int h, int range, int type);
 void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target);
 void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon);
 
+//projectiles
+void drawBullet(int x, int y, int w, int h);
+
+
 //enemy
 void getBackgroundDimensions(int *w, int *h);
 void drawEnemy(int x, int y, int w, int h, int pic_width, int pic_height, int type, int frames, int anim_speed);

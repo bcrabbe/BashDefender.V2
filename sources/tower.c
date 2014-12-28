@@ -16,7 +16,7 @@
 #define BUILDUP_DISTANCE 100 // the distance the missiles travel during their buildup stage
 #define BUILDUP_STEPS 50 // the number of steps it takes for a missile to reach the end of its buildup stage
 #define MISSILE_BUILDUP_DIVISION 20 // the fraction (e.g 1/20th, 1/30th) that the missile moves towards its buildup position every step
-#define MISSILE_TO_TARGET 5 // the number of steps it takes for a missile to reach its target after buildup
+#define MISSILE_TO_TARGET 7 // the number of steps it takes for a missile to reach its target after buildup
 #define MISSILE_STARTING_SIZE 3 // the starting height and width of missile projectiles
 #define MISSILE_ENDING_SIZE 15 // the size of missiles once they have finished their buildup stage
 
@@ -377,7 +377,8 @@ void drawProjectiles() {
     pL->current = pL->start;
     int finished = 0;
     while(!finished) {
-      drawRect(pL->current->x, pL->current->y, 208, 16, pL->current->w, pL->current->h, 1, 1); //bullets hard coded as rects for now
+      //drawRect(pL->current->x, pL->current->y, 208, 16, pL->current->w, pL->current->h, 1, 1); //bullets hard coded as rects for now
+      drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h);
       if(pL->current->next == NULL) {
         finished = 1;
       } else {
@@ -690,7 +691,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
 
     newTow->upgradesCompleted = 0;
     newTow->damage = 20;
-    newTow->range = 100;
+    newTow->range = 200;
     newTow->firing = 0;
 	  newTow->level = 1;
     newTow->speed = 50;
