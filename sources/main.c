@@ -40,6 +40,7 @@ int main(int argc, char ** argv)
 }
 
 void startLevel(Display d, int *restart)	{
+
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -108,7 +109,6 @@ void quitGame()
 void testing()	{
 
 	setUpTesting();
-
 	//!Unit Tests	
 	testLevelController(); //! Working
 	testingTowerPositions(); //!Working
@@ -122,6 +122,8 @@ void testing()	{
 	//parseToTowerTesting(); //!Segfaults
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 	enemyToGamePropertiesTesting();
+    testingInformationWindowModule();
+
 }
 
 void enemyToGamePropertiesTesting()	{

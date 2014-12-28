@@ -17,16 +17,12 @@ typedef struct towerMonitor TowerMonitor;
 
 /*----------Function Prototypes (External)-----------*/
 void updateAllInfoWindow(void);
-void textToTowerMonitor(char *string);
+char *textToTowerMonitor(char *string);
 void displayTowerInfo(unsigned int targetTower);
-void errorToTerminalWindow(char *string);
-void commandToTerminalWindow(char *string);
-void manUpgrade(void);
-void manCat(void);
-void manMan(void);
-void manPs(void);
-void manKill(void);
+char *errorToTerminalWindow(char *string);
+char *commandToTerminalWindow(char *string);
 
+/*----------Function Prototypes (Testing)-----------*/
 void testingInformationWindowModule(void);
 
 #endif
