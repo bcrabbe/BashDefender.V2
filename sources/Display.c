@@ -58,6 +58,9 @@ struct display {
     SDL_Texture *towerTexture[2];
     SDL_Texture *towerPositionTexture[26];
 
+    //Projectile objects
+    SDL_Texture *bulletTexture[3];
+
     //enemy
     SDL_Texture *enemyTexture[4];
     
@@ -154,6 +157,7 @@ Display init_SDL(){
     init_pic(&d->circ1_Texture[1], "Images/circ1_light.png");
     init_pic(&d->circ2_Texture[0], "Images/circ3_dark.png");
     init_pic(&d->circ2_Texture[1], "Images/circ3_light.png");
+    init_pic(&d->bulletTexture[0], "Images/greenBullet.png");
 
     return d;
 }
@@ -323,6 +327,13 @@ void drawTower(Display d, int x, int y, int w, int h, int range, int type){
     draw_filled_range(x + (double)w/2, y + (double)h/2, range);
 }
 
+/* draws projectile */
+void drawBullet(int x, int y, int w, int h) {
+    Display d = getDisplayPointer(NULL);
+    d->rect = (SDL_Rect) {x, y, w, h};
+    SDL_RenderCopy(d->renderer, d->bulletTexture[0], NULL, &d->rect);
+}
+  
 
 /*clear the screen before making any drawings */
 void startFrame(Display d) {
