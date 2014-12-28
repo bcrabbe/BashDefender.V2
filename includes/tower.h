@@ -97,7 +97,7 @@ void moveMissile(ProjectileNode missile);
 
 int getNumOfTowers(void);
 int getTowerWidth(int towerID);
-
+int isTowerPositionAvailable(int position);
 
 #endif
 

@@ -277,7 +277,6 @@ void Test_createEnemy()
 void createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum) {
 
   Enemy e = createEnemy();
-  
   switch (eType) {
     case intBasic :
       initialiseEnemy(e, lvl, INT_TYPE, eType, INT_BASIC_HEALTH, INT_BASIC_ARMOUR, INT_BASIC_SPEED, INT_BASIC_DAMAGE, INT_BASIC_HEIGHT, INT_BASIC_WIDTH);
@@ -310,8 +309,6 @@ void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int he
     newEnemy->pathProgress = 0;
     newEnemy->x = newEnemy->enemyPath->pathCoords[0][0];
     newEnemy->y = newEnemy->enemyPath->pathCoords[0][1];
-
-
 
     newEnemy->eFamily = fam;
     newEnemy->level = lvl;
