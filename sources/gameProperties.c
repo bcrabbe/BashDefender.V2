@@ -444,7 +444,7 @@ GameProperties createGame()	{
 	newGame->currWaveNo=0;
 	newGame->totalWaveNo = 0;
 	newGame->health=100;
-    newGame->costOfNewTower = 300;
+    newGame->costOfNewTower = 400;
 	newGame->deathCount = 0;
 	newGame->clock->start_t  = newGame->clock->lastAction = (double) clock()/CLOCKS_PER_SEC;
 	newGame->createEnemyGroupDelay=0;

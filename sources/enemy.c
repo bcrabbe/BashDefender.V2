@@ -325,7 +325,7 @@ void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int he
 
     newEnemy->height = height;
     newEnemy->width = width;
-    newEnemy->damage = damage*(lvl/2);
+    newEnemy->damage = damage*lvl;
 
 }
 

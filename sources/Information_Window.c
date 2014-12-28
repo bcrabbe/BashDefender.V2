@@ -79,6 +79,19 @@ void updateAllInfoWindow(void) {
     terminalWindow();
 }
 
+void tutorialUpdateAllInfoWindow(void) {
+    statsBar();
+	tutorialTowerMonitor();
+    actionQueueMonitor();
+    towerInformation();
+    terminalWindow();
+}
+
+void tutorialTowerMonitor()	{
+	TowerMonitor *tm = getTowerMonitor();
+	updateTowerMonitor(tm->string);
+}
+
 /**
  Update tower monitor according to information in tower monitor object
  */
@@ -392,7 +405,62 @@ void manKill()
     textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""kill -9"" followed by a target enemyID (eg 6) or *all*\n to kill one or more enemies\nExamples:\nkill -9 7\n kill -9 all");
 }
 
+void tutorial_one()	{
 
+	textToTowerMonitor("Hi!  Welcome to your first day as a Bash Defender.  \n Lets get started!\n");
+
+}
+
+void tutorial_two()	{
+
+	textToTowerMonitor("lets try making a tower!\n please type:\n mktwr int a\n to make an integer tower in position a.  You can try another position if you like!\n\n This command looks like a lot like linux command 'mkdir' for making directories - but thats not too important right now.\n");
+
+}
+
+void tutorial_three()	{
+
+		textToTowerMonitor("Well done!  You have made a tower of type integer.\n You should use this tower type against integer enemies - those are the ones with numbers.\n\n  In Computer Science, an integer is data type for storing whole numbers.\n");
+
+}
+void tutorial_four()	{
+		textToTowerMonitor("I know what you are thinking, why would you need to build towers when its so calm and peaceful round here?\n Well, its not always like this.  In your job as a linux administrator, you will be under constant attack from virus's.\n.  In fact, it looks like there is one on its way right now!\n");
+
+}
+
+void tutorial_five()	{
+
+	textToTowerMonitor("Oh no!  It looks like that enemy got away.  We need to prepare before the next enemy comes.\n  Upgrade your tower's damage by typing\n upgrade p t1");
+
+}
+
+void tutorial_six()	{
+
+	textToTowerMonitor("Well Done!  Now your tower will do more damage against those pesky virus'\n.  Check it out, here comes another one!\n");
+
+}
+
+void tutorial_five_error()	{
+
+	textToTowerMonitor("Thats not the correct stat to upgrade.\n  Please upgrade power by typing \n upgrade p t1\n");
+}
+
+void tutorial_seven()	{
+
+	textToTowerMonitor("Well That was weird.\n Why didn't your upgraded tower kill that enemy?  Its because your tower was the wrong type!  That enemy was a char enemy - You can tell because it was red.  \n\nYou should also note that your health is going down with each enemy to break through your defenses (top right corner!).  Let this get to zero and your lose!");
+
+}
+
+void tutorial_eight()	{
+
+		textToTowerMonitor("Right!  No more losing.  Lets create a char tower with mktwr char c\n  Char is data type in computer science for storing characters");
+
+}
+
+void tutorial_nine()	{
+
+		textToTowerMonitor("Bam!  that char virus didn't stand a chance.  Lets look at some other upgrade commands before we finish up.  \n");
+
+}
 /*Test functions*/
 
 /**

@@ -819,11 +819,20 @@ unsigned int getNumberOfTowers()	{
 	return ((getTowerGrp(NULL))->numOfTowers);
 }
 
-
+int checkCharType()	{
+	int i = 1;
+	while(i <= getTowerGrp(NULL)->numOfTowers)	{
+		if(getTowerGrp(NULL)->listOfTowers[i]->towerType == CHAR_TYPE) {
+			return 1;
+		}
+		i++;
+	}
+	return 0;
+}
 void freeAllTowers()	{
 
 	int i = 1;
-	while(i < getTowerGrp(NULL)->numOfTowers)	{
+	while(i <= getTowerGrp(NULL)->numOfTowers)	{
 		free(getTowerGrp(NULL)->listOfTowers[i]);
 		i++;
 	}

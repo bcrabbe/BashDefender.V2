@@ -21,22 +21,161 @@ int main(int argc, char ** argv)
 	int restart = 0;
     int started = 0;
 	Display d = init_SDL();
+//  testing();
     while(started == 0){
     	menu_screen(d, &started);
     }
 
 	do	{
 		restart = 0;
-    	initLevel();
+    	initLevel(1);
+		//tutorialLevel(d,&restart);
 		startLevel(d,&restart);
 		endLevel();
 	} while (restart);
 
-//  testing();
     
     shutSDL(d);
     quitGame();
     return 0;
+}
+
+void tutorialLevel(Display d,int *restart)	{
+	tutPhase tPhase = phaseOne;
+    char text[128] = {'>', '>'};
+    char empty[128] = {'>', '>'};
+    char *pass, *clear, *inputCommand=NULL;
+    pass = text;
+    clear = empty;
+    int ended = 0;
+   	int pause = 0; 
+    int steps=0;
+	
+    //init_sound();
+    //playBackgroundSound();
+	addClock(tutorialClock);
+	int damage;
+	int currMemory;
+    do{
+        startFrame(d);
+		while(pause)	{
+			pause_screen(d,&pause,restart);
+		}
+        ++steps;
+        drawBackground();
+        
+
+		switch(tPhase)	{
+
+			case phaseOne:
+					tutorial_one();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN_SHORT))	{
+						tPhase++;
+					}
+					break;
+			case phaseTwo:
+					tutorial_two();
+					if(getNumOfTowers() > 0)	{
+						damage = getTowerDamage(1);
+						tPhase++;
+					}
+					break;
+			case phaseThree:
+					tutorial_three();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+						tPhase++;
+					}
+					break;
+			case phaseFour:
+					startNextWave();
+					tutorial_four();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+						tPhase++;
+					}
+					break;
+			case phaseFive:
+					tutorial_five();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+						tPhase++;
+						currMemory = getAvailableMemory();
+					}
+					break;
+			case phaseSix:	
+					if(getTowerDamage(1) > damage)	{
+						tutorial_six();
+						tPhase++;
+					} else if(getAvailableMemory() < currMemory) {
+						tutorial_five_error();
+					}
+					break;
+			case phaseSeven:
+					startNextWave();
+					if(getWave(getGame(NULL)) == 2)  {
+						if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+							tPhase++;
+						}
+					}
+					break;
+			case phaseEight:
+					tutorial_seven();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+						tPhase++;
+					}
+					break;
+			case phaseNine:
+					tutorial_eight();
+					if(checkCharType())  {
+						tPhase++;
+					}
+					break;
+			case phaseTen:
+					startNextWave();
+					if(getDeathCnt() > 0)	{
+						tPhase++;
+					}
+					break;
+			case phaseEleven:
+					tutorial_nine();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+						tPhase++;
+					}
+					break;
+			default:
+
+
+					break;
+		}
+
+        levelQueueReader();
+        terminal_window(d, pass, clear,&pause, *restart);
+    	popToTower();
+        if(inputCommand)
+        {
+            parse(inputCommand);
+        }
+        present_enemy(d);
+        present_tower(d);
+
+    	fire();
+        for(int i=1; i<=getNumberOfEnemies(); ++i)
+        {
+            int move = moveEnemy(i);
+        }
+        presentAnimation();
+    	drawAllTowerPositions();
+    	tutorialUpdateAllInfoWindow();
+        endFrame(d);
+        
+        //ended = checkIfPlayerDead();
+        while (ended) {
+            //final screen returns 1 if restart button was pressed...
+            if (final_screen()){
+                ended = 0;
+            }
+        }
+        
+    } while(!terminal_window(d, pass, clear,&pause, *restart));
+		printf("finished\n");    
 }
 
 void startLevel(Display d, int *restart)	{
@@ -47,17 +186,12 @@ void startLevel(Display d, int *restart)	{
     clear = empty;
     int ended = 0;
    	int pause = 0; 
-    addMemory(100);
     int steps=0;
 
     //init_sound();
     //playBackgroundSound();
-
     do{
         startFrame(d);
-    //    while(started == 0){
-     //       menu_screen(d, &started);
-      //  }
 		while(pause)	{
 			pause_screen(d,&pause,restart);
 		}
@@ -100,9 +234,6 @@ void startLevel(Display d, int *restart)	{
 void quitGame()
 {
     //shutSound();
-    freeEnemyGroup();
-    freeLevelPaths();
-    freeParseLists();
 }
 
 void testing()	{
