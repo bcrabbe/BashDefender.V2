@@ -129,11 +129,8 @@ void psx_ability()
 				strcat(psxlist, newline);
 			}
 		}
-        //<<<<<<< HEAD
 		textToTowerMonitor(psxlist);
-        //=======
-		towerMonitor(-1, psxlist);
-        //>>>>>>> andys/master
+  
 		strcpy(psxlist, clear);
 	}
 }
@@ -170,4 +167,3 @@ int kill_all_ability()
 }
 
 
-	

@@ -25,4 +25,16 @@ char *commandToTerminalWindow(char *string);
 /*----------Function Prototypes (Testing)-----------*/
 void testingInformationWindowModule(void);
 
+void tutorial_one();
+void tutorial_two();
+void tutorial_three();
+void tutorial_four();
+void tutorial_five();
+void tutorial_five_error();
+void tutorial_six();
+void tutorial_seven();
+void tutorial_eight();
+void tutorial_nine();
+void tutorialUpdateAllInfoWindow(void);
+void tutorialTowerMonitor();
 #endif

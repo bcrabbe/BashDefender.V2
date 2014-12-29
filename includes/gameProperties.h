@@ -52,7 +52,8 @@ typedef enum clockType	{
 	enemyGroupCreated1 = 2,
 	singleEnemyCreated = 3,	//!delay between single enemies being created
 	groupDelay = 4, 	//!Delay between groups of enemies being created
-	testClock = 5 //! dummy clock type for testing
+	testClock = 5, //! dummy clock type for testing
+	tutorialClock =6
 } clockType;
 
 /*----------Symbolic Constants-----------*/
@@ -61,7 +62,8 @@ typedef enum clockType	{
 
 
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
-
+#define TUTORIALCOOLDOWN_SHORT	30 //!time between tutorial segments
+#define TUTORIALCOOLDOWN	100 //!time between tutorial segments
 #define INT_TYPE 1 //hasdefine to avoid enums when dealing with int and char enemies
 #define CHAR_TYPE 2
 

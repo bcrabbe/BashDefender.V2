@@ -189,7 +189,6 @@ int createEnemyCommand(Keyword makeEnemy)	{
 	//! only create enemy if all cooldowns are ready
 	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()) && (getWave(getGame(NULL)) == returnPropertyValue(makeEnemy,waveID)))	{
 		setCreateEnemyGroupDelay(0); //!setting delay back to zero
-		iprint(returnPropertyValue(makeEnemy,enemyType));
 		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
 		printf("enemy created\n");
 		return 1;
@@ -221,6 +220,16 @@ int addGroupCreationDelay(Keyword waveKW)	{
 	}
 
 	return 0;
+}
+
+void addRawDelay(int delay)	{
+	KeywordQueue kWQueue = getKWQueue(NULL);
+	Keyword newKey = createKeyword();
+	addKWtoQueue(newKey);
+	newKey->lCommand = delay;
+	addProperty(dTime);
+	kWQueue->end->propertiesList[kWQueue->end->nProperties-1]->propertyValue =delay;
+
 }
 
 void makeTowerCommand(Keyword setTower)	{
@@ -316,13 +325,22 @@ KeywordQueue getKWQueue(KeywordQueue kwQueue)	{
 /*
  *Initializes all data structures required for level
  */
-void initLevel()    {
+void initLevel(int level)    {
 	createKeywordQueue();
-	createLevel();
+	switch(level)	{
+		case 0:
+			readLevelSettingsFile("../data/tutorial.txt");
+			break;
+		case 1:
+			createLevel();
+			break;
+		default:
+			break;
+	}
     createLevelPaths();
     createTowerGroup();
     createActionQueue();
-    createGame();
+	createGame();
 	createLevelClocks();
     createEnemyGroup();
 	createTowerPos();
@@ -333,8 +351,8 @@ void initLevel()    {
 }
 
 void createLevelClocks()	{
-
 		addClock(singleEnemyCreated);
+		printf("first clock\n");
 		addClock(lastCmdAction);
 		addClock(groupDelay);
 }
