@@ -358,7 +358,7 @@ int popToTower()	{
 				break;
 			case cmd_aptget:
 				if(checkQueue(queue,Game,needed)) {
-					//unlock_ability(); //! needs to be updated
+					unlock_ability(KILL);
 					useMemory(Game, needed);					
 					removeQueueItem();
 				}

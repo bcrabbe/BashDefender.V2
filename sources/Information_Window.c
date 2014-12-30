@@ -76,13 +76,6 @@ void testTerminalWindow(void);
  @returns pointer to display string currently held in tower monitor
  */
 
-void updateAllInfoWindow(void) {
-    statsBar();
-    towerMonitor();
-    actionQueueMonitor();
-    towerInformation();
-    terminalWindow();
-}
 
 void tutorialUpdateAllInfoWindow(void) {
     statsBar();
@@ -96,11 +89,23 @@ void tutorialTowerMonitor()	{
 	TowerMonitor *tm = getTowerMonitor();
 	updateTowerMonitor(tm->string);
 }
+/**
+ Updates everything in information window
+ @param void
+ @returns void
+ */
+void updateAllInfoWindow(void) {
+    statsBar();
+    towerMonitor();
+    actionQueueMonitor();
+    towerInformation();
+    terminalWindow();
+}
 
 /**
  Update tower monitor according to information in tower monitor object
  */
-char * towerMonitor(void) {
+char* towerMonitor(void) {
     TowerMonitor *tm = getTowerMonitor();
     int time = SDL_GetTicks();
     
