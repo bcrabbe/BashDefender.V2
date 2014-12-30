@@ -13,8 +13,8 @@
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 struct display {
     //main objects
@@ -23,7 +23,7 @@ struct display {
     SDL_Renderer *renderer;
     SDL_Rect    srcRect;
     SDL_Rect    rect;
-	SDL_Rect	rect_backup;
+	  SDL_Rect	rect_backup;
     SDL_Event event;
     SDL_Color white;
     SDL_Color red;
@@ -158,6 +158,7 @@ Display init_SDL(){
     init_pic(&d->circ2_Texture[0], "Images/circ3_dark.png");
     init_pic(&d->circ2_Texture[1], "Images/circ3_light.png");
     init_pic(&d->bulletTexture[0], "Images/greenBullet.png");
+    init_pic(&d->bulletTexture[1], "Images/redBullet.png");
 
     return d;
 }
@@ -261,8 +262,13 @@ void getWindowSize(int *w, int *h){
 }
 
 /*draw damage line from X & Y to target X & Y*/
-void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target){
-    SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, 255);
+void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType){
+      // choose laser colour depending on type
+    if(laserType == INT_TYPE) {
+        SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, 255);
+    } else {
+        SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, 255);
+    }
     SDL_RenderDrawLine(d->renderer, X_from, Y_from, X_target, Y_target);
 }
 
@@ -328,10 +334,15 @@ void drawTower(Display d, int x, int y, int w, int h, int range, int type){
 }
 
 /* draws projectile */
-void drawBullet(int x, int y, int w, int h) {
+void drawBullet(int x, int y, int w, int h, int bulletType) {
     Display d = getDisplayPointer(NULL);
     d->rect = (SDL_Rect) {x, y, w, h};
-    SDL_RenderCopy(d->renderer, d->bulletTexture[0], NULL, &d->rect);
+      // draw red or green bullet depending on type
+    if(bulletType == INT_TYPE) {
+        SDL_RenderCopy(d->renderer, d->bulletTexture[0], NULL, &d->rect);
+    } else {
+        SDL_RenderCopy(d->renderer, d->bulletTexture[1], NULL, &d->rect);
+    }
 }
   
 

@@ -47,7 +47,7 @@ typedef struct terminalWindow {
 } TerminalWindow;
 
 /*---------- Hash Defines -----------*/
-#define MAX_OUTPUT_STRING 200
+#define MAX_OUTPUT_STRING 2000
 #define TOTAL_COMMANDS_DISPLAYED 5
 #define DEFAULT_TOWER_MONITOR_TIME 10000
 #define TERMINAL_ERROR_TIME 5000
@@ -175,7 +175,7 @@ TowerMonitor *getTowerMonitor(void) {
     if(!initialized) {
         tm = (TowerMonitor *) malloc(sizeof(TowerMonitor));
         
-        tm->string = (char *) malloc(sizeof(char) * MAX_OUTPUT_STRING);
+        tm->string = (char *) calloc(MAX_OUTPUT_STRING,sizeof(char));
         tm->timeSet = 0;
         tm->stringType = TOWER_DEFAULT;
         
