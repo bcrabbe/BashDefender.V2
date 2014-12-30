@@ -88,6 +88,13 @@ void clearQueue()	{
 	q->start = q->current = NULL;
 }
 
+void freeActionQueue()	{
+
+		clearQueue();
+		free(getQueue(NULL));
+
+}
+
 /*
  *puts node to back of queue
  */
@@ -124,6 +131,7 @@ ActionQueueStructure getQueue(ActionQueueStructure queue)	{
  * Pushes values to newly created node at back of queue
  */
 int pushToQueue(ActionQueueStructure queue, cmdType command, cmdOption option, int target)	{
+		printf("pushed to queue\n");
 		createNode(queue);
 		queue->current->command = command;
 		queue->current->option = option;
@@ -142,7 +150,6 @@ void testPushToQueue()	{
     cmdOption nStat_2=upgrade_range;
     int tar_2 = 2;
 
-    GameProperties newGame = getGame(NULL);
     ActionQueueStructure newQueue = getQueue(NULL);
 
 	sput_fail_unless(pushToQueue(newQueue,nCommand_1,nStat_1,tar_1) == 1,"Valid: 1 Queue Item");
@@ -208,13 +215,13 @@ int getLastTarget()	{
 /*
  *Returns costs of command based on current tower stats
  */
-int calulateCosts(cmdType cmd, cmdOption opt, int target)    {
+int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
 
     switch(cmd)
     {
         case cmd_upgrade:
         {
-            return ((getTowerLevel(target))*getCurrentStat(opt,target));
+            return ((getTowerLevel(target))*(2*getCurrentStat(opt,target)));
         }
         case cmd_mktwr:
         {
@@ -321,12 +328,10 @@ int popToTower()	{
 	GameProperties Game = getGame(NULL);
 	int needed;
 	if(queue->start != NULL) {
-		needed = calulateCosts(queue->start->command,queue->start->option,queue->start->target);
+		needed = calculateCosts(queue->start->command,queue->start->option,queue->start->target);
 		switch(queue->start->command)	{
 			case cmd_upgrade:
 				if (checkQueue(queue, Game,needed)) {
-					ActionQueueStructure queue = getQueue(NULL);
-					GameProperties Game = getGame(NULL);
 					upgradeTowerStat(queue->start->option,queue->start->target);
 					useMemory(Game, needed);
 					removeQueueItem();
@@ -335,11 +340,28 @@ int popToTower()	{
 			case cmd_mktwr:
 				//! request tower type ignored for now.
 				if (checkQueue(queue,Game,needed)) {
-					createTowerFromPositions(queue->start->target);
+					switch(queue->start->option)	{
+						case mktwr_int:
+							createTowerTypeFromPositions(queue->start->target,INT_TYPE);	
+							break;
+						case mktwr_char:
+							createTowerTypeFromPositions(queue->start->target,CHAR_TYPE);	
+							break;
+						default:
+							fprintf(stderr,"Unrecognised tower type\n");
+					        break;
+					}
+					//createTowerFromPositions(queue->start->target);
 					useMemory(Game, needed);
 					removeQueueItem();
 				}
 				break;
+			case cmd_aptget:
+				if(checkQueue(queue,Game,needed)) {
+					unlock_ability(KILL);
+					useMemory(Game, needed);					
+					removeQueueItem();
+				}
 			default:
 
 				break;
@@ -362,11 +384,11 @@ void removeQueueItem()	{
 
 
 /*
- *Pops from front of Queue.
+ *Pops from front of Queue. : replaced with popToTower()
  */
 int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int *target)	{
     GameProperties Game = getGame(NULL);
-    int needed = calulateCosts(*cmd,*stat,*target);
+    int needed = calculateCosts(*cmd,*stat,*target);
 
 	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available Memory, cooldown time 
 		*cmd = queue->start->command;
@@ -462,7 +484,21 @@ char *getActionQueueString(void) {
                 }
                 break;
             case cmd_mktwr:
-                strcat(outputString, "mktwr");
+                strcat(outputString, "mktwr ");
+                switch(option) {
+                    case mktwr_int:
+                        strcat(outputString, "INT ");
+                        break;
+                    case mktwr_char:
+                        strcat(outputString, "CHAR ");
+                        break;
+                }
+                
+                if(target) {
+                    sprintf(targetString, "%c", 'A' + (target - 1));
+                    strcat(outputString, targetString);
+                }
+
                 break;
             case cmd_aptget:
                 strcat(outputString, "aptget");
@@ -471,44 +507,6 @@ char *getActionQueueString(void) {
                 continue;
         }
         
-        strcat(outputString, " ");
-        
-        switch(option) {
-            case upgrade_power:
-                strcat(outputString, "p");
-                break;
-            case upgrade_range:
-                strcat(outputString, "r");
-                break;
-            case upgrade_speed:
-                strcat(outputString, "s");
-                break;
-            case upgrade_AOErange:
-                strcat(outputString, "AOEr");
-                break;
-            case upgrade_AOEpower:
-                strcat(outputString, "AOEp");
-                break;
-            case upgrade_level:
-                strcat(outputString, "level");
-                break;
-            case mktwr_int:
-                strcat(outputString, "INT");
-                break;
-            case mktwr_char:
-                strcat(outputString, "CHAR");
-                break;
-            case aptget_kill:
-                strcat(outputString, "kill");
-                break;
-            default:
-                continue;
-        }
-        
-        if(target) {
-            sprintf(targetString, " t%d", target);
-            strcat(outputString, targetString);
-        }
         strcat(outputString, "\n");
     }
     

@@ -18,6 +18,9 @@
 #include "../includes/Information_Window.h"
 #include "../includes/abilities.h"
 #include "../includes/enemy.h"
+#include "../includes/sput.h"
+#include "../includes/gameProperties.h"
+
 
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
 int parseMktwr(char ** commandArray, int numberOfTokens);
@@ -37,7 +40,6 @@ typedef enum operator {
     lessThanOrEqualTo = '<'+'=',
     sameAs = '='+'=',
     notEqualTo = '!'+'='
-    
 } operator;
 
 int parseWhile(char *inputString);
@@ -45,6 +47,9 @@ operator matchesOperator(char isThisAnOperator);
 operator combineOperators(operator firstOp, operator secondOp);
 operator getOperatorFromString(char * conditionString);
 void makeStringForOperator(operator op, char * string);
+unsigned long int stringToInt(const char * string);
+int parseChmod(char ** commandArray,int numberOfTokens);
+void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray);
 
 /*
  * Parse called with string of user input from terminal window.
@@ -53,6 +58,7 @@ void makeStringForOperator(operator op, char * string);
  */
 int parse(char *inputString)
 {
+    commandToTerminalWindow(inputString); //Display input string in terminal window, whether recognized or not
     size_t len = 1+strlen(inputString);//gets the size of inputString
     if( len < 3*sizeof(char) ) {
         optionUsageError();
@@ -82,9 +88,10 @@ int parse(char *inputString)
     freeCommandArray(commandArray, numberOfTokens);
     return specificReturns;//0 for error
 }
+
 int parseWhileNoOp(char ** bracketTokenArray)
 {
-    
+    return 0;
 }
 
 envVar * returnEnvVar(char * stringToMatch)
@@ -112,18 +119,19 @@ int parseWhile(char *inputString)
     if(numberOfBracketsTokens<3)
     {
         fprintf(stderr,"ERROR: was expecting condition and command e.g. ""while ( condition ) { command }"" \n");
-        terminalWindow("ERROR: was expecting condition and command e.g. ""while ( condition ) { command }"" ");
+        errorToTerminalWindow("ERROR: was expecting condition and command e.g. ""while ( condition ) { command }"" ");
         return 0;
     }
     else
     {
+        char ** commandArray =breakUpString( bracketTokenArray[2] );
         operator op = getOperatorFromString( bracketTokenArray[1] );
         printf("op = %c\n",op);
         int numberOfOperands=0;
         envVarList * envsListStruct = getEnvsList(NULL);
         envVar * var;
         int testsValue;
-        if(op==0 || op==not)
+        if(op==none || op==not)
         {
             if(op==not)
             {
@@ -134,7 +142,9 @@ int parseWhile(char *inputString)
             if(numberOfOperands>1 )
             {
                 fprintf(stderr,"ERROR: was expecting a single argument for condition with no operator or ! operator \n");
-                terminalWindow("ERROR: was expecting a single argument for condition with no operator or ! operator");
+                errorToTerminalWindow("ERROR: was expecting a single argument for condition with no operator or ! operator");
+                free(conditionArray);
+
                 return 0;
             }
             free(conditionArray);
@@ -145,8 +155,15 @@ int parseWhile(char *inputString)
                 sprintf(termErrString,"ERROR: use of undeclared variable %s in condition statement",
                         bracketTokenArray[1]);
                 fprintf(stderr,"%s \n",termErrString);
-                terminalWindow(termErrString);
+                errorToTerminalWindow(termErrString);
                 return 0;
+            }
+            if(op==none)
+            {
+                while(var->value)
+                {
+                    parseCommands(commandArray);
+                }
             }
             
         }
@@ -156,58 +173,56 @@ int parseWhile(char *inputString)
             makeStringForOperator(op, stringForOperator);
             char ** conditionArray = breakUpString(bracketTokenArray[1], &numberOfOperands,
                                                    stringForOperator);
-            if(op!=not && numberOfOperands!=2) {
+            if( numberOfOperands!=2 )
+            {
                 char termErrString[100];
                 sprintf(termErrString,"ERROR: was expecting two operands to %s in conditional \n",
                         stringForOperator);
                 fprintf(stderr,"%s \n",termErrString);
-                terminalWindow(termErrString);
+                errorToTerminalWindow(termErrString);
                 return 0;
             }
-            if(op==not &&numberOfOperands!=1) {
-                char termErrString[100];
-                sprintf(termErrString,"ERROR: was expecting one operand to ! operator in conditional \n",
-                        stringForOperator);
-                fprintf(stderr,"%s \n",termErrString);
-                terminalWindow(termErrString);
-                return 0;
-            }
-        }/*
+  
+        }
         switch (op)
         {
             case not:
-                string[0] = '!';
-                return;
+            {
+                
+            }
             case greaterThan:
-                string[0] = '>';
-                return;
+            {
+                
+            }
             case lessThan:
-                string[0] = '<';
-                return;
+            {
+                
+            }
             case equalTo:
-                string[0] = '=';
-                return;
+            {
+                
+            }
             case greaterThanOrEqualTo:
-                string[0] = '>';
-                string[1] = '=';
-                return;
+            {
+                
+            }
             case lessThanOrEqualTo:
-                string[0] = '<';
-                string[1] = '=';
-                return;
+            {
+                
+            }
             case sameAs:
-                string[0] = '=';
-                string[1] = '=';
-                return;
+            {
+                
+            }
             case notEqualTo:
-                string[0] = '!';
-                string[1] = '=';
-                return;
+            {
+                
+            }
             default:
                 string[0] = 'E';//error
                 string[1] = 'R';
                 return;
-        }*/
+        }
         
         
     }
@@ -341,6 +356,11 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             break;
             
         }
+        case cmd_chmod:
+        {
+            specificReturns = parseChmod(commandArray, numberOfTokens);
+            break;
+        }
         case cmd_man:
         {
             if(numberOfTokens!=2) {
@@ -391,7 +411,7 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         }
         case cmd_kill:
         {
-            parseKill(commandArray, numberOfTokens);
+            specificReturns = parseKill(commandArray, numberOfTokens);
             break;
         }
         case cmd_commandError:
@@ -400,14 +420,98 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             break;
         }
         case cmd_execute:
-        case cmd_set:
         default:
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
     }
+    return specificReturns ;
+
 }
 
 
+int parseChmod(char ** commandArray,int numberOfTokens)
+{
+    // get targets
+    printf(">>>>numberOfTokens is %d\n",numberOfTokens);
 
+    int atToken = 1;
+    int * targetArray = NULL;
+    int numberOfTargets = 0;
+    while( atToken < numberOfTokens)
+    {
+        if(commandArray[atToken][0]=='-')//eat leading minus
+        {
+            commandArray[atToken]=commandArray[atToken]+1;
+        }
+        for(int i = 0; commandArray[atToken][i]; i++)
+        {
+            commandArray[atToken][i] = tolower(commandArray[atToken][i]);
+        }
+        
+        if( strcmp(commandArray[atToken],"int")==0 || strcmp(commandArray[atToken],"char")==0 )
+        {
+            break;
+        }
+        
+        int target = getTargetTower(commandArray[atToken], false);
+        iprint(target);
+        if(target==0)
+        {
+            //bogus target error
+            printf("bogus target error\n");
+            optionUsageError();
+            cleanUpParseUpgrade(NULL, targetArray);
+            return 0;
+        }
+        else
+        {
+            ++numberOfTargets;
+            int * tmp = realloc(targetArray, numberOfTargets*sizeof(int));
+            if(tmp==NULL) {
+                fprintf(stderr,"realloc error parser.c parseUpgrade() 2\n");
+                exit(1);
+            }
+            targetArray=tmp;
+            targetArray[numberOfTargets-1] = target;
+        }
+        ++atToken;
+    }
+    if(!numberOfTargets)
+    {
+        //no targets error
+        printf("no targets error\n");
+        optionUsageError();
+        cleanUpParseUpgrade(NULL,targetArray);
+        return 0;
+    }
+    
+    cmdOption twrType = getCommandOption(commandArray[numberOfTokens-1]);
+    if( !(twrType==mktwr_int || twrType==mktwr_char) )
+    {
+        optionUsageError();
+        printf("bogus type\n");
+        errorToTerminalWindow("set expected a type (int, or char) as the last command");
+        return 0;
+    }
+    
+    for(int tarIter=0; tarIter<numberOfTargets; ++tarIter)
+    {
+        if(twrType==mktwr_int)
+        {
+            setTowerType(targetArray[tarIter], INT_TYPE);
+            printf("\n>>> changed t%d to int <<< \n",targetArray[tarIter]);
+
+        }
+        if(twrType==mktwr_char)
+        {
+            setTowerType(targetArray[tarIter], CHAR_TYPE);
+            printf("\n>>> changed t%d to char <<< \n",targetArray[tarIter]);
+
+        }
+    }
+    cleanUpParseUpgrade(NULL,targetArray);
+
+    return 1;
+}
 /*
  *
  */
@@ -432,7 +536,7 @@ int parseKill(char ** commandArray,int numberOfTokens)
         }
     }
     else if(option==kill_all) {
-        //kill_all_ability();
+        kill_all_ability();
         return 2;
     }
  
@@ -526,26 +630,30 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     {
         optionUsageError();
         
-        terminalWindow("mktwr expected a type (int, or char)");
+        errorToTerminalWindow("mktwr expected a type (int, or char)");
         return 0;
     }
     
     unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
     int token = 2;
-    while(token < numberOfTokens) {
+    while(token < numberOfTokens)
+    {
         int towerPosition = (int)tolower(commandArray[token][0]) - 'a' + 1;
-        if( isTowerPositionAvailable(towerPosition) ){
+		iprint(isTowerPositionAvailable(towerPosition));
+        if( isTowerPositionAvailable(towerPosition) )
+        {
             if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
             {
                 printf("pushing tower %d to queue\n",towerPosition);
             }
         }
         else {
-            if( towerPosition < 1 || towerPosition > maxTowerPosition() ) {
+            if( towerPosition < 1 || towerPosition > maxTowerPosition() )
+            {
                 char str[50];
                 sprintf(str,"mktwr expected a target positon A - %c",maxTowerPositionChar());
-                terminalWindow(str);
-                return 0;
+
+                errorToTerminalWindow(str);
             }
         }
         ++token;
@@ -564,27 +672,27 @@ int parseMan(char * inputStringCommandMan)
     {
         case cmd_upgrade:
         {
-            manUpgrade();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nupgrade\n\nType ""upgrade"" followed by a stat\n( p, r, s, AOEp, AOEr)\nfollowed by a target tower\ne.g. t1, t2, t3...\nExamples:\nupgrade r t2\nupgrade p t3");
             return 1;
         }
         case cmd_cat:
         {
-            manCat();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target, e.g. t1, t2, t3..., to display the stats of that target\n");
             return 1;
         }
         case cmd_man:
         {
-            manMan();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nman \n\ntype ""man"" followed by a command, e.g. upgrade or cat, to view the manual\nentry for that command\n");
             return 1;//0 for error
         }
         case cmd_ps:
         {
-            manPs();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""ps"" followed by a command\n ( -x\n ) to discover information about one or more enemies\nExamples:\nps -x\n");
             return 1;//0 for error
         }
         case cmd_kill:
         {
-            manKill();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""kill -9"" followed by a target enemyID (eg 6) or *all*\n to kill one or more enemies\nExamples:\nkill -9 7\n kill -9 all");
             return 1;//0 for error
         }
         case cmd_execute:
@@ -592,7 +700,7 @@ int parseMan(char * inputStringCommandMan)
             //manExecute();
             return 1;
         }
-        case cmd_set:
+        case cmd_chmod:
         {
             //manSet();
             return 1;
@@ -628,7 +736,7 @@ int parseCat(char * inputStringTargeting)
         unsigned int targetTower = getTargetTower(inputStringTargeting, true);
         if(targetTower)
         {
-            towerMonitor(targetTower, NULL);//function in Information_Window.c
+            displayTowerInfo(targetTower);//function in Information_Window.c
             return 1;
         }
         else
@@ -662,9 +770,26 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
 //    printf("start parseUpgrade\n");
     cmdOption * statsToUpgradeArray = NULL;
     int numberOfStatsBeingUpgraded = 0;
-    
-    cmdOption statToUpgrade = getCommandOption(commandArray[1]);
-    while(statToUpgrade>0 && statToUpgrade<=6) {
+    int atToken = 1;
+    while(atToken < numberOfChunks)
+    {
+        cmdOption statToUpgrade = getCommandOption(commandArray[atToken]);
+        iprint(statToUpgrade);
+        if(statToUpgrade<=0 || statToUpgrade>6)
+        {
+            if(tolower(commandArray[atToken][0])=='t' || tolower(commandArray[atToken][0])=='-')
+            {
+                break;//read a target tower
+            }
+            else
+            {
+                //unrecognised stat error
+                optionUsageError();
+                cleanUpParseUpgrade(statsToUpgradeArray,NULL);
+                return 0;
+            }
+        }
+
         ++numberOfStatsBeingUpgraded;
         cmdOption * tmp = realloc(statsToUpgradeArray, numberOfStatsBeingUpgraded*sizeof(cmdOption));
         if(tmp==NULL) {
@@ -673,10 +798,13 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
         statsToUpgradeArray=tmp;
         statsToUpgradeArray[numberOfStatsBeingUpgraded-1] = statToUpgrade;
-        statToUpgrade = getCommandOption(commandArray[1+numberOfStatsBeingUpgraded]);
+        
+        ++atToken;
     }
-    if(!numberOfStatsBeingUpgraded) {
-        //optionUsageError();
+           
+    if(!numberOfStatsBeingUpgraded)
+    {
+        //no stats being upgraded error
         cleanUpParseUpgrade(statsToUpgradeArray,NULL);
         return 0;
     }
@@ -690,9 +818,18 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     //now get targets
     int * targetArray = NULL;
     int numberOfTargets = 0;
-    int firstTargetToken = 1+numberOfStatsBeingUpgraded;
-    int target = getTargetTower(commandArray[firstTargetToken], true);
-    while( firstTargetToken+numberOfTargets < numberOfChunks) {
+    while( atToken < numberOfChunks)
+    {
+        int target = getTargetTower(commandArray[atToken], false);
+        iprint(target);
+        if(target==0)
+        {
+            //bogus target error
+            optionUsageError();
+            cleanUpParseUpgrade(statsToUpgradeArray, targetArray);
+            return 0;
+        }
+        
         ++numberOfTargets;
         int * tmp = realloc(targetArray, numberOfTargets*sizeof(int));
         if(tmp==NULL) {
@@ -701,18 +838,12 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
         targetArray=tmp;
         targetArray[numberOfTargets-1] = target;
-        if(firstTargetToken+numberOfTargets >= numberOfChunks ) {
-            break;
-        }
+ 
         
-        target = getTargetTower(commandArray[firstTargetToken+numberOfTargets], false);
-        if(target==0) {
-            optionUsageError();
-            cleanUpParseUpgrade(statsToUpgradeArray, targetArray);
-            return 0;
-        }
+        ++atToken;
     }
     if(!numberOfTargets) {
+        //no targets error
         optionUsageError();
         cleanUpParseUpgrade(statsToUpgradeArray,targetArray);
         return 0;
@@ -749,20 +880,19 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     size_t len = strlen(inputStringTargeting);//gets the size of string
     if( len<1  || ( needsIdentifier &&  len<2 ) )
     {
-        terminalWindow("ERROR: You must target a towers with this command");
         char str[100];
-        sprintf(str,"To target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-        terminalWindow(str);
+        sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
+        errorToTerminalWindow(str);
         fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
         fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
         return 0;
     }
     if ( needsIdentifier && !(inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T') )
     {
-        terminalWindow("ERROR: You must target a towers with this command");
+        errorToTerminalWindow("ERROR: You must target a towers with this command");
         char str[100];
-        sprintf(str,"To target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-        terminalWindow(str);
+        sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
+        errorToTerminalWindow(str);
         fprintf(stderr,"*** ERROR: You must target a towers with this command ***\n");
         fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
         return 0;
@@ -781,11 +911,10 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     }
     if(targetTower > numberOfTowers || targetTower < 1 )
     {
-        terminalWindow("ERROR: target tower does not exist");
         char str[100];
-        sprintf(str,"You have only %d towers you entered t%d",numberOfTowers,
+        sprintf(str,"ERROR: target tower does not existYou have only %d towers you entered t%d",numberOfTowers,
                 targetTower);
-        terminalWindow(str);
+        errorToTerminalWindow(str);
         
         fprintf(stderr,"*** ERROR: target tower does not exist ***\n");
         fprintf(stderr,"You have only %d towers you entered t%d\n",
@@ -886,8 +1015,8 @@ cmdOption getCommandOption(char * secondToken)
  */
 void optionUsageError()
 {
-    terminalWindow("ERROR: Could not execute command.");
-    terminalWindow("Type man [COMMAND] for help");
+    errorToTerminalWindow("ERROR: Could not execute command.");
+    errorToTerminalWindow("Type man [COMMAND] for help");
     fprintf(stderr,"*** Syntax error: Could not execute command.***\n");
     fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
     //error messages will need to be passed back to the terminal to be printed. hopefully can do this by setting up a custom stream. For now will print to stderr.
@@ -925,7 +1054,7 @@ cmdType getCommandType(char * firstToken )
                     command = cmd_execute;
                     break;
                 case 3:
-                    command = cmd_set;
+                    command = cmd_chmod;
                     break;
                 case 4:
                     command = cmd_man;
@@ -1115,7 +1244,7 @@ stringList * intialiseCommandList()
     validActions-=1;
     validActions[1]=strdup("upgrade");
     validActions[2]=strdup("execute");
-    validActions[3]=strdup("set");
+    validActions[3]=strdup("chmod");
     validActions[4]=strdup("man");
     validActions[5]=strdup("cat");
     validActions[6]=strdup("mktwr");
@@ -1198,4 +1327,5 @@ envVarList * intialiseEnvVarsList()
     
     return envsListStruct;
 }
+
 

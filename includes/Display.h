@@ -11,6 +11,8 @@
 #ifndef TEST_Display_h
 #define TEST_Display_h
 
+#include <SDL2/SDL.h>
+
 extern int SCREEN_WIDTH_GLOBAL;
 extern int SCREEN_HEIGHT_GLOBAL;
 
@@ -39,12 +41,12 @@ extern int SCREEN_HEIGHT_GLOBAL;
 //Action queue dimensions
 #define ACTION_QUEUE_WIDTH (SCREEN_WIDTH_GLOBAL / 5)
 #define ACTION_QUEUE_HEIGHT (SCREEN_HEIGHT_GLOBAL / 5)
-#define ACTION_QUEUE_X (SCREEN_WIDTH_GLOBAL / 2 - ACTION_QUEUE_WIDTH / 2)
+#define ACTION_QUEUE_X (SCREEN_WIDTH_GLOBAL / 2 - 120)
 #define ACTION_QUEUE_Y (SCREEN_HEIGHT_GLOBAL - TOWER_MONITOR_HEIGHT)
 #define ACTION_QUEUE_BORDER_X 40
 #define ACTION_QUEUE_BORDER_Y 40
 
-//Terminal monitor dimensions
+//Terminal window dimensions
 #define TERMINAL_WINDOW_HEIGHT (SCREEN_HEIGHT_GLOBAL / 3.5)
 #define TERMINAL_WINDOW_WIDTH (SCREEN_WIDTH_GLOBAL / 3.5)
 #define TERMINAL_WINDOW_X (0)
@@ -66,6 +68,8 @@ extern int SCREEN_HEIGHT_GLOBAL;
 
 
 typedef struct display *Display;
+
+enum font_types{solid, blended, blended_wrapped};
 
 typedef enum	{
 
@@ -102,6 +106,10 @@ void drawTower(Display d, int x, int y, int w, int h, int range, int type);
 void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target);
 void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon);
 
+//projectiles
+void drawBullet(int x, int y, int w, int h);
+
+
 //enemy
 void getBackgroundDimensions(int *w, int *h);
 void drawEnemy(int x, int y, int w, int h, int pic_width, int pic_height, int type, int frames, int anim_speed);
@@ -125,10 +133,12 @@ void updateStatsBar(char *outputString);
 void updateActionQueueMonitor(char *outputString);
 char *strdup2(char * s);
 void updateTerminalWindow(char *outputString);
+void updateTowerInformation(int towerX, int towerY, char *string, int towerID);
+void display_text(int x, int y, char *string, int text, SDL_Color colour);
+void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 
-
-int terminal_window(Display d, char *pass, char *clear);
-
+void pause_screen(Display d, int *pause, int *restart);
+int terminal_window(Display d, char *pass, char *clear, int *pause,int restart);
 void menu_screen(Display d, int *started);
 
 

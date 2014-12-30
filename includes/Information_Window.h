@@ -9,18 +9,31 @@
 #ifndef _Information_Window_h
 #define _Information_Window_h
 
-#include "../includes/Display.h"
+/*---------- Standard Headers -----------*/
+#include <stdbool.h>
 
-void towerMonitor(unsigned int targetTower, char *outputString);
-char *getDefaultTowerString();
-char *getTowerString(unsigned int targetTower);
-void terminalWindow(char *string);
-void statsBar();
-void actionQueueMonitor();
-void manUpgrade();
-void manCat();
-void manMan();
-void manPs();
-void manKill();
+/*---------- Incomplete Types -----------*/
+typedef struct towerMonitor TowerMonitor;
 
+/*----------Function Prototypes (External)-----------*/
+void updateAllInfoWindow(void);
+char *textToTowerMonitor(char *string);
+void displayTowerInfo(unsigned int targetTower);
+char *errorToTerminalWindow(char *string);
+char *commandToTerminalWindow(char *string);
+/*----------Function Prototypes (Testing)-----------*/
+void testingInformationWindowModule(void);
+
+void tutorial_one();
+void tutorial_two();
+void tutorial_three();
+void tutorial_four();
+void tutorial_five();
+void tutorial_five_error();
+void tutorial_six();
+void tutorial_seven();
+void tutorial_eight();
+void tutorial_nine();
+void tutorialUpdateAllInfoWindow(void);
+void tutorialTowerMonitor();
 #endif

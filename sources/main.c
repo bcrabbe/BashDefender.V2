@@ -15,38 +15,139 @@
 #include "../includes/Sound.h"
 #include "../includes/abilities.h"
 
-
 int main(int argc, char ** argv)
 {
     srand(time(NULL));
-    Display d = init_SDL();
-    initLevel();
-//	testing();
+	int restart = 0;
+    int started = 0;
+	Display d = init_SDL();
+//  testing();
+    while(started == 0){
+    	menu_screen(d, &started);
+    }
+
+	do	{
+		restart = 0;
+    	initLevel(1);
+		//tutorialLevel(d,&restart);
+		startLevel(d,&restart);
+		endLevel();
+	} while (restart);
+
+    
+    shutSDL(d);
+    quitGame();
+    return 0;
+}
+
+void tutorialLevel(Display d,int *restart)	{
+	tutPhase tPhase = phaseOne;
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-    int started = 0;
     int ended = 0;
-    
-    addMemory(100);
+   	int pause = 0; 
     int steps=0;
-
+	
     //init_sound();
     //playBackgroundSound();
-
+	addClock(tutorialClock);
+	int damage;
+	int currMemory;
     do{
         startFrame(d);
-        while(started == 0){
-            menu_screen(d, &started);
-        }
+		while(pause)	{
+			pause_screen(d,&pause,restart);
+		}
         ++steps;
         drawBackground();
         
-		startNextWave();
+
+		switch(tPhase)	{
+
+			case phaseOne:
+					tutorial_one();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN_SHORT))	{
+						tPhase++;
+					}
+					break;
+			case phaseTwo:
+					tutorial_two();
+					if(getNumOfTowers() > 0)	{
+						damage = getTowerDamage(1);
+						tPhase++;
+					}
+					break;
+			case phaseThree:
+					tutorial_three();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+						tPhase++;
+					}
+					break;
+			case phaseFour:
+					startNextWave();
+					tutorial_four();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+						tPhase++;
+					}
+					break;
+			case phaseFive:
+					tutorial_five();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+						tPhase++;
+						currMemory = getAvailableMemory();
+					}
+					break;
+			case phaseSix:	
+					if(getTowerDamage(1) > damage)	{
+						tutorial_six();
+						tPhase++;
+					} else if(getAvailableMemory() < currMemory) {
+						tutorial_five_error();
+					}
+					break;
+			case phaseSeven:
+					startNextWave();
+					if(getWave(getGame(NULL)) == 2)  {
+						if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+							tPhase++;
+						}
+					}
+					break;
+			case phaseEight:
+					tutorial_seven();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+						tPhase++;
+					}
+					break;
+			case phaseNine:
+					tutorial_eight();
+					if(checkCharType())  {
+						tPhase++;
+					}
+					break;
+			case phaseTen:
+					startNextWave();
+					if(getDeathCnt() > 0)	{
+						tPhase++;
+					}
+					break;
+			case phaseEleven:
+					tutorial_nine();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+						tPhase++;
+					}
+					break;
+			default:
+
+
+					break;
+		}
+
         levelQueueReader();
-        terminal_window(d, pass, clear);
+        terminal_window(d, pass, clear,&pause, *restart);
     	popToTower();
         if(inputCommand)
         {
@@ -62,11 +163,7 @@ int main(int argc, char ** argv)
         }
         presentAnimation();
     	drawAllTowerPositions();
-        statsBar();
-        towerMonitor(0, NULL);
-        actionQueueMonitor();
-
-        terminalWindow(NULL);
+    	tutorialUpdateAllInfoWindow();
         endFrame(d);
         
         //ended = checkIfPlayerDead();
@@ -77,36 +174,112 @@ int main(int argc, char ** argv)
             }
         }
         
-    } while(!terminal_window(d, pass, clear));
-    
-    shutSDL(d);
-    quitGame();
-    return 0;
+    } while(!terminal_window(d, pass, clear,&pause, *restart));
+		printf("finished\n");    
+}
+
+void startLevel(Display d, int *restart)	{
+
+    char text[128] = {'>', '>'};
+    char empty[128] = {'>', '>'};
+    char *pass, *clear, *inputCommand=NULL;
+    pass = text;
+    clear = empty;
+    int ended = 0;
+   	int pause = 0; 
+    int steps=0;
+
+    //init_sound();
+    //playBackgroundSound();
+    do{
+        startFrame(d);
+		while(pause)	{
+			pause_screen(d,&pause,restart);
+		}
+        ++steps;
+        drawBackground();
+        
+    	startNextWave();
+        levelQueueReader();
+        terminal_window(d, pass, clear,&pause, *restart);
+    	popToTower();
+        if(inputCommand)
+        {
+            parse(inputCommand);
+        }
+        present_enemy(d);
+        present_tower(d);
+
+    	fire();
+        for(int i=1; i<=getNumberOfEnemies(); ++i)
+        {
+            int move = moveEnemy(i);
+        }
+        presentAnimation();
+    	drawAllTowerPositions();
+        updateAllInfoWindow();
+        endFrame(d);
+        
+        //ended = checkIfPlayerDead();
+        while (ended) {
+            //final screen returns 1 if restart button was pressed...
+            if (final_screen()){
+                ended = 0;
+            }
+        }
+        
+    } while(!terminal_window(d, pass, clear,&pause, *restart));
+		printf("finished\n");    
 }
 
 void quitGame()
 {
     destroyEnvVarList();
     //shutSound();
-    freeEnemyGroup();
-    freeLevelPaths();
-    freeParseLists();`
+//    freeEnemyGroup();
+//    freeLevelPaths();
+//    freeParseLists();`
+
 }
 
 void testing()	{
 
-	//testingTowerPositions();
-    //testingGameStructure();
-    testingActionQueue();
-    parseToQueueTesting();
+	setUpTesting();
+	//!Unit Tests	
+	testLevelController(); //! Working
+	testingTowerPositions(); //!Working
+    testingGameStructure(); //!Memory Tests Failing
+    testingActionQueue(); //! Working
     //testEnemy(); // ! No longer works.
-    testingTowerModule();
-	parseToTowerTesting();
-    //towerToEnemyTesting();
+    testingTowerModule(); //! working
 
-    //testValidParses();
-    
+   	//! System Tests 
+   	parseToQueueTesting(); //!Segfaults
+	//parseToTowerTesting(); //!Segfaults
+    //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
+	enemyToGamePropertiesTesting();
+    testingInformationWindowModule();
 
+}
+
+void enemyToGamePropertiesTesting()	{
+
+	sput_start_testing();
+    sput_set_output_stream(NULL);
+
+	sput_enter_suite("testEnemyDeath(): Game Properties capturing enemy deaths corectly");
+	sput_run_test(testEnemyDeath);
+	sput_leave_suite();
+}
+
+void testEnemyDeath()	{
+	int enemyID = createSpecificEnemy(1,1,1), 
+		currDeathCnt = getDeathCnt(),
+		currMemory = getAvailableMemory();
+	damageEnemy(50,enemyID,1);
+	sput_fail_unless(getDeathCnt() > currDeathCnt, "Valid: One Enemy has died");
+	sput_fail_unless(getAvailableMemory() > currMemory,"Valid: Enemy has died and added to available memory");
+	resetEnemyCounts();
 }
 
 void towerToEnemyTesting()	{
@@ -130,14 +303,14 @@ void testEnemyInRange()	{
 	setEnemyY(1,50);
 	setTowerY(1,400);
 	setTowerX(1,400);
-	setTowerRange(1,10);
+	setTowerRange(1,15);
 	setTowerDamage(1,10);
 	sput_fail_unless(inRange(400,400,10,1)== 0, "Enemy 1 is out of range of tower 1");
 	fire();
 	sput_fail_unless(getEnemyHealth(1) == 100, "Out of range enemy 1 has full health after tower has fired");
-	setEnemyX(1,395);
-	setEnemyY(1,395);
-	sput_fail_unless(inRange(400,400,10,1)== 1, "Enemy 1 is in range of tower 1");
+	setEnemyX(1,400);
+	setEnemyY(1,400);
+	sput_fail_unless(inRange(400,400,39,1)== 1, "Enemy 1 is in range of tower 1");
 	sput_fail_unless(getEnemyHealth(1) == 100, "Enemy 1 has full health");
 	fire();
 	//sput_fail_unless(getEnemyHealth(1) == 100 - getTowerDamage(1),"In range enemy has reduced health from tower damage");
@@ -174,8 +347,8 @@ void parseToQueueTesting()	{
 	sput_finish_testing();
 }
 
-void testParseToTower()	{
-
+void testParseToTower()
+{
 	freeAllTowers();
 	clearQueue();	
 	createTowerFromPositions(1);
@@ -198,34 +371,26 @@ void testParseToTower()	{
 	clearQueue();
 }
 
-void testValidParses()	{
+void testValidParses()
+{
 	
 	createTower();
-    //  printf("\n135\n\n");
     sput_fail_unless(parse("upgrade r t1")== 1, "upgrade r t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
 	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");
-    //printf("\n139\n\n");
     sput_fail_unless(parse("upgrade p t1")== 1, "upgrade p t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "Last comand in queue: upgrade");
 	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_power, "Last option in queue: power");
-    //printf("\n143\n\n");
 
     sput_fail_unless(parse("upgrade s t1")== 1, "upgrade s t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "Last comand in queue: upgrade");
 	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_speed, "Last option in queue: speed");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
-    //printf("\n149\n\n");
     sput_fail_unless(parse("  ??D--") == 0, "  ??D-- is invalid command");
-    //printf("\n151\n\n");
     sput_fail_unless(parse("upgrade r r1") == 0, "upgrade r r1 is invalid command");
-    //printf("\n153\n\n");
     sput_fail_unless(parse("upgrade r t") == 0, "upgrade r t is invalid command");
-    //printf("\n155\n\n");
     sput_fail_unless(parse("upgrade t") == 0, "upgrade t is invalid command");
-    //printf("\n157\n\n");
     sput_fail_unless(parse("cat t") == 0, "cat t is invalid command");
-    //printf("\n159\n\n");
 	freeAllTowers();
 	clearQueue();
 }

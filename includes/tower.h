@@ -31,6 +31,8 @@ TowerPos getTowerPos(TowerPos tPos);
 void addTowerPosNode(int x, int y);
 tower createTower();
 void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY );
+void assignCalculatedFiringType(int towerID);
+void makePostUpgradeChanges(int TowerID);
 int userCreateTower(int inputTowerPositionX, int inputTowerPositionY);
 int getTowerRange(int towerID);
 int getTowerSpeed(int towerID);
@@ -78,6 +80,8 @@ void testTowerCreation();
 void testingTowerPositions();
 int createTowerFromPositions(int position);
 void drawAllTowerPositions();
+void createTowerTypeFromPositions(int position, int tType);
+int checkCharType();
 
 void createProjectileList();
 ProjectileList getProjectileList(ProjectileList pL);
@@ -93,6 +97,13 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
 void getBuildUpCoords(int originX, int originY, int *buildUpX, int *buildUpY);
 void moveMissile(ProjectileNode missile);
 
+void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType);
+void updateLaser(ProjectileNode laser);
+
+
+int getNumOfTowers(void);
+int getTowerWidth(int towerID);
+int isTowerPositionAvailable(int position);
 
 #endif
 

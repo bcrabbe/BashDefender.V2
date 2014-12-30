@@ -46,7 +46,7 @@ cmdOption getCommandOption(char * input);
 cmdType getCommandType(char * firstToken );
 
 
-void destroyEnvVarList()
+void destroyEnvVarList();
 void freeParseLists();
 void initialiseParseLists();
 stringList * getCommandList(stringList * commandList);
@@ -62,6 +62,7 @@ int parseCat(char * inputStringTargeting);
 int parseMan(char * inputStringCommandMan);
 int parseAptget(char * aptToGetString);
 int parseCommands(char ** commandArray, int numberOfTokens);
+
 int parsePs(char * optionString);
 int parseAptget(char * aptToGetString);
 int parseKill(char ** commandArray,int numberOfChunks);

@@ -9,23 +9,25 @@
 #define KILL_COST 2000
 #define KILLALL_COST 10000
 
-typedef struct Ability
+typedef enum AbilityID 
 {
-	int unlocked;
-	int cost;
-	
-}Ability;
+	PSX,
+	KILL
+}AbilityID;
+
 
 //void kill_ability(int enemyID, Ability *kill);
 
-//int kill_all_ability(Ability *killall);
+int kill_all_ability();
 
 void psx_ability();
 
-int is_available_ability(Ability *ability);
+int is_available_ability(AbilityID id);
 
-void unlock_ability(Ability *abilityx);
+void unlock_ability(AbilityID id);
 
 void init_abilities();
+
+int compare_health(const void*a, const void*b);
 
 #endif

@@ -11,7 +11,7 @@ enum cmdType
     cmd_commandError=-1,
     cmd_upgrade=1,
     cmd_execute=2,
-    cmd_set=3,
+    cmd_chmod=3,
     cmd_man=4,
     cmd_cat=5,
     cmd_mktwr=6,
@@ -51,14 +51,20 @@ typedef enum clockType	{
 	lastCmdAction = 1,
 	enemyGroupCreated1 = 2,
 	singleEnemyCreated = 3,	//!delay between single enemies being created
-	groupDelay = 4 	//!Delay between groups of enemies being created
+	groupDelay = 4, 	//!Delay between groups of enemies being created
+	testClock = 5, //! dummy clock type for testing
+	tutorialClock =6
 } clockType;
 
 /*----------Symbolic Constants-----------*/
 
-#define ACTIONCOOLDOWN	1	//! minimum time between actions being removed from queue
-#define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
+#define ACTIONCOOLDOWN	10	//! minimum time between actions being removed from queue
 
+
+
+#define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
+#define TUTORIALCOOLDOWN_SHORT	30 //!time between tutorial segments
+#define TUTORIALCOOLDOWN	100 //!time between tutorial segments
 #define INT_TYPE 1 //hasdefine to avoid enums when dealing with int and char enemies
 #define CHAR_TYPE 2
 
@@ -69,9 +75,10 @@ typedef enum cmdOption cmdOption;
 typedef struct gameProperties *GameProperties;
 typedef struct gameClock *GameClock;
 typedef struct clockNode *ClockNode;
+
 /*----------Function Prototypes-----------*/
 GameProperties createGame();
-int getAvailableMemory(GameProperties game);
+int getAvailableMemory();
 int useMemory(GameProperties game,int mem);
 int getWave(GameProperties game);
 int getHealth(GameProperties game);
@@ -79,13 +86,13 @@ clock_t delayGame(int delayN);
 int lastAction(GameProperties Game);
 int setlastAction(GameProperties Game);
 GameProperties getGame(GameProperties createdGame);
-void addClock(clockType type);
+int addClock(clockType type);
 GameClock getClock(GameClock clock);
 int checkUniqueClockType(clockType type);
 ClockNode createClockNode(clockType type);
 void damageHealth(int damage);
-void setCreateEnemyGroupDelay(int delay);
 int addMemory(int mem);
+int setCreateEnemyGroupDelay(int delay);
 int getCostOfNewTower();
 int getDeathCnt();
 void increaseDeathCnt();
@@ -93,8 +100,9 @@ int getEnemyGroupDelay();
 void increaseEnemyNumbersThisWave(int numberOfEnemies);
 int getTotalCurrentWaveEnemies();
 int checkIfPlayerDead();
-void startNextWave();
+int startNextWave();
 void setTotalWaveNo(int totalW);
+void resetEnemyCounts();
 int getTotalWaveNo();
 GameClock createClock();
 int checkClock(clockType cType,int coolDown);
@@ -102,8 +110,14 @@ void setCurrTime(ClockNode node);
 void testingGameStructure();
 void CreateGameTest();
 void TestGetAvailableMemory();
+void setCurrWaveNum(int newWave);
 void TestAddMemory();
 void TestUseMemory();
 void setEnemyCreated1();
 int getTotalMemory();
+int getTotalWaves(GameProperties game);
+void freeClocks();
+/*----------Test Functions-----------*/
+void testStartNextWave();
+void testClocks();
 #endif
