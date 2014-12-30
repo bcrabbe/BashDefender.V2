@@ -61,6 +61,7 @@ typedef enum clockType	{
 #define ACTIONCOOLDOWN	10	//! minimum time between actions being removed from queue
 
 
+
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 #define TUTORIALCOOLDOWN_SHORT	30 //!time between tutorial segments
 #define TUTORIALCOOLDOWN	100 //!time between tutorial segments
@@ -74,6 +75,7 @@ typedef enum cmdOption cmdOption;
 typedef struct gameProperties *GameProperties;
 typedef struct gameClock *GameClock;
 typedef struct clockNode *ClockNode;
+
 /*----------Function Prototypes-----------*/
 GameProperties createGame();
 int getAvailableMemory();

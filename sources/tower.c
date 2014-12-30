@@ -20,6 +20,9 @@
 #define MISSILE_STARTING_SIZE 3 // the starting height and width of missile projectiles
 #define MISSILE_ENDING_SIZE 15 // the size of missiles once they have finished their buildup stage
 
+//laser #defines
+#define LASER_DRAW_COUNT 20 // the number of steps that laser beams stay on the screen
+
 //#defines for tower type weighting
 #define DAMAGE_MOD 7
 #define SPEED_MOD 5
@@ -55,8 +58,6 @@ struct tower {
     int gunY;
     
     int firingCoolDown;
-    int drawLaserCount;
-    int drawLaserMaxCount;
 };
 
 struct towerGroup	{
@@ -103,6 +104,10 @@ struct projectileNode {
   int movesForBuildUp;
   int buildUpH, buildUpW;
   
+  int drawLaserCount;
+  int drawLaserMaxCount;
+  
+  
   ProjectileNode next;
 };
 
@@ -123,6 +128,33 @@ ProjectileNode newProjectileNode()
   
   return newNode;
 }
+
+void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType)
+{
+  
+  ProjectileNode newNode = newProjectileNode();
+  newNode->whatProjectile = laser;
+  
+  newNode->damage = damage;
+  newNode->damageType = firingType;
+  
+  newNode->movesToTarget = 5; // added some moves to target to draw line slightly in front of enemy. Visual effect, unused elsewhere
+  newNode->drawLaserCount = 0;
+  newNode->drawLaserMaxCount = LASER_DRAW_COUNT;
+  
+  newNode->originX = gunX;
+  newNode->originY = gunY;
+  
+  newNode->targetID = targetID;
+  getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
+  
+  newNode->aoeDamage = 0;
+  newNode->aoeRange = 0;
+  
+    // add it to the list
+  addToProjectileList(newNode);
+}
+  
 
 /*
 * creates a new bullet projectile and launches it at where the target will be
@@ -312,6 +344,21 @@ void moveBullet(ProjectileNode bullet) {
   }
 }
 
+void updateLaser(ProjectileNode laser) {
+
+  if(laser->drawLaserCount == 0) {
+    damageEnemy(laser->damage, laser->targetID, laser->damageType);
+  }
+  
+  laser->drawLaserCount++;
+  
+  if (laser->drawLaserCount == laser->drawLaserMaxCount) {
+    removeProjectileNode(laser);
+  }
+  
+}
+    
+
 void removeProjectileNode(ProjectileNode projNode) {
 
   ProjectileList pL = getProjectileList(NULL);
@@ -344,7 +391,6 @@ void removeProjectileNode(ProjectileNode projNode) {
       
   
 void moveProjectiles() {
-  
   int finished = 0;
   ProjectileList pL = getProjectileList(NULL);
   pL->current = pL->start;
@@ -357,9 +403,9 @@ void moveProjectiles() {
         case bullet :
           moveBullet(pL->current);
           break;
-        default :
-          fprintf(stderr,"****ERROR laser passed to projectile list as type of projectile \n");
-          exit(1);
+        case laser :
+          updateLaser(pL->current);
+          break;
       }
       if(pL->current->next == NULL) {
         finished = 1;
@@ -376,9 +422,18 @@ void drawProjectiles() {
   if(pL->start!=NULL) {
     pL->current = pL->start;
     int finished = 0;
+    Display d = getDisplayPointer(NULL);
     while(!finished) {
-      //drawRect(pL->current->x, pL->current->y, 208, 16, pL->current->w, pL->current->h, 1, 1); //bullets hard coded as rects for now
-      drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h);
+      switch(pL->current->whatProjectile) {
+        case missile :
+          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h);
+          break;
+        case bullet :
+          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h);
+          break;
+        case laser :
+          drawLine(d, pL->current->originX, pL->current->originY, pL->current->targetCoords[0], pL->current->targetCoords[1]);
+      }
       if(pL->current->next == NULL) {
         finished = 1;
       } else {
@@ -700,7 +755,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->upgradesCompleted = 0;
 
     newTow->damage = 20;
-    newTow->range = 200;
+    newTow->range = 100;
     newTow->firing = 0;
 	  newTow->level = 1;
     newTow->speed = 50;
@@ -711,8 +766,6 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->gunX = 40;
     newTow->gunY = 20;
     newTow->firingCoolDown = 0;
-    newTow->drawLaserCount = 0;
-    newTow->drawLaserMaxCount = 10;
     assignCalculatedFiringType(newTow->towerID);
     
 }
@@ -1023,8 +1076,7 @@ void fire() {
                 
                 switch (currentTower->firingType) {
                   case laser :
-                    currentTower->drawLaserCount = currentTower->drawLaserMaxCount;
-                    damageEnemy(currentTower->damage, currentTower->targetID, currentTower->towerType);
+                    fireLaser(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
                     break;
                   case missile :
                     launchMissile(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
@@ -1037,6 +1089,8 @@ void fire() {
         }
     }
 }
+
+  
 
 void printTower(tower t) {
 
@@ -1060,14 +1114,6 @@ void present_tower(Display d)
             tower currentTower = getTowerID(towerID);
             drawTower(d, currentTower->x, currentTower->y, currentTower->width,
                       currentTower->height,currentTower->range, 0);
-            // draw lasers
-            if(currentTower->drawLaserCount > 0)	{
-                drawLine(d, currentTower->x+currentTower->gunX,
-                         currentTower->y+currentTower->gunY, currentTower->targetPosition[0],
-                         currentTower->targetPosition[1]);
-                currentTower->drawLaserCount--;
-            }
-            // 80s for tow width and height - these are constant for now.
         }
     }
     // bullets added here temporarily

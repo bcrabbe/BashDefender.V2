@@ -89,6 +89,18 @@ void tutorialTowerMonitor()	{
 	TowerMonitor *tm = getTowerMonitor();
 	updateTowerMonitor(tm->string);
 }
+/**
+ Updates everything in information window
+ @param void
+ @returns void
+ */
+void updateAllInfoWindow(void) {
+    statsBar();
+    towerMonitor();
+    actionQueueMonitor();
+    towerInformation();
+    terminalWindow();
+}
 
 /**
  Update tower monitor according to information in tower monitor object
@@ -413,18 +425,6 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     return towerString;
 }
 
-/**
- Updates everything in information window
- @param void
- @returns void
- */
-void updateAllInfoWindow(void) {
-    statsBar();
-    towerMonitor();
-    actionQueueMonitor();
-    towerInformation();
-    terminalWindow();
-}
 
 /*Test functions*/
 

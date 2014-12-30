@@ -21,7 +21,6 @@ char *textToTowerMonitor(char *string);
 void displayTowerInfo(unsigned int targetTower);
 char *errorToTerminalWindow(char *string);
 char *commandToTerminalWindow(char *string);
-
 /*----------Function Prototypes (Testing)-----------*/
 void testingInformationWindowModule(void);
 
