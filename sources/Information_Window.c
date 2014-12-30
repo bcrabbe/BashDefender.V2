@@ -530,7 +530,7 @@ void testTowerMonitor(void) {
 }
 
 /**
- test if strings in terminal window are being stored correctly
+ test if strings in terminal window are being stored correctly.
  @param void
  @returns void
  */

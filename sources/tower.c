@@ -6,7 +6,7 @@
 #include "../includes/sput.h"
 #include "../includes/debug.h"
 
-#define MAX_COOLDOWN 100 // the longest number of ticks that a tower can take between shots
+#define MAX_COOLDOWN 100 //  the longest number of ticks that a tower can take between shots
 
 //bullet #defines
 #define BULLET_TO_TARGET 20 // the number of steps for a bullet to reach its target
