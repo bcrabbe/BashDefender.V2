@@ -28,9 +28,9 @@ int main(int argc, char ** argv)
 
 	do	{
 		restart = 0;
-    	initLevel(0);
-		tutorialLevel(d,&restart);
-		//startLevel(d,&restart);
+    	initLevel(1);
+		//tutorialLevel(d,&restart);
+		startLevel(d,&restart);
 		endLevel();
 	} while (restart);
 
