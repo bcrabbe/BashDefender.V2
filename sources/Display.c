@@ -23,7 +23,7 @@ struct display {
     SDL_Renderer *renderer;
     SDL_Rect    srcRect;
     SDL_Rect    rect;
-	SDL_Rect	rect_backup;
+	  SDL_Rect	rect_backup;
     SDL_Event event;
     SDL_Color white;
     SDL_Color red;

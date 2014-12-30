@@ -33,7 +33,6 @@ unsigned long int stringToInt(const char * string);
  * reads the first token and calls the relevant command function 
  * returns zero if syntax error.
  */
-
 int parse(char *inputString)
 {
     commandToTerminalWindow(inputString); //Display input string in terminal window, whether recognized or not
@@ -193,7 +192,7 @@ int parseKill(char ** commandArray,int numberOfTokens)
         }
     }
     else if(option==kill_all) {
-        //kill_all_ability();
+        kill_all_ability();
         return 2;
     }
  
@@ -284,8 +283,6 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     cmdOption twrType = getCommandOption(commandArray[1]);
     if( !(twrType==mktwr_int || twrType==mktwr_char) )
     {
-
-        
         optionUsageError();
         
         errorToTerminalWindow("mktwr expected a type (int, or char)");
@@ -424,11 +421,26 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
 //    printf("start parseUpgrade\n");
     cmdOption * statsToUpgradeArray = NULL;
     int numberOfStatsBeingUpgraded = 0;
-    
-    cmdOption statToUpgrade = getCommandOption(commandArray[1]);
-    while(statToUpgrade>0 && statToUpgrade<=6)
+    int atToken = 1;
+    while(atToken < numberOfChunks)
     {
+        cmdOption statToUpgrade = getCommandOption(commandArray[atToken]);
         iprint(statToUpgrade);
+        if(statToUpgrade<=0 || statToUpgrade>6)
+        {
+            if(tolower(commandArray[atToken][0])=='t' || tolower(commandArray[atToken][0])=='-')
+            {
+                break;//read a target tower
+            }
+            else
+            {
+                //unrecognised stat error
+                optionUsageError();
+                cleanUpParseUpgrade(statsToUpgradeArray,NULL);
+                return 0;
+            }
+        }
+
         ++numberOfStatsBeingUpgraded;
         cmdOption * tmp = realloc(statsToUpgradeArray, numberOfStatsBeingUpgraded*sizeof(cmdOption));
         if(tmp==NULL) {
@@ -438,14 +450,12 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         statsToUpgradeArray=tmp;
         statsToUpgradeArray[numberOfStatsBeingUpgraded-1] = statToUpgrade;
         
-        if(tolower(commandArray[1+numberOfStatsBeingUpgraded][0])=='t' || tolower(commandArray[1+numberOfStatsBeingUpgraded][0])=='-') {
-            break;
-        }
-        statToUpgrade = getCommandOption(commandArray[1+numberOfStatsBeingUpgraded]);
-        if(statToUpgrade<0 || statToUpgrade>6) break;
+        ++atToken;
     }
-    if(!numberOfStatsBeingUpgraded) {
-        //optionUsageError();
+           
+    if(!numberOfStatsBeingUpgraded)
+    {
+        //no stats being upgraded error
         cleanUpParseUpgrade(statsToUpgradeArray,NULL);
         return 0;
     }
@@ -459,16 +469,18 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     //now get targets
     int * targetArray = NULL;
     int numberOfTargets = 0;
-    int firstTargetToken = 1+numberOfStatsBeingUpgraded;
-    int target = getTargetTower(commandArray[firstTargetToken], true);
-    while( firstTargetToken + numberOfTargets < numberOfChunks)
+    while( atToken < numberOfChunks)
     {
+        int target = getTargetTower(commandArray[atToken], false);
         iprint(target);
-        if(target==0) {
+        if(target==0)
+        {
+            //bogus target error
             optionUsageError();
             cleanUpParseUpgrade(statsToUpgradeArray, targetArray);
             return 0;
         }
+        
         ++numberOfTargets;
         int * tmp = realloc(targetArray, numberOfTargets*sizeof(int));
         if(tmp==NULL) {
@@ -477,14 +489,12 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
         targetArray=tmp;
         targetArray[numberOfTargets-1] = target;
-        if(firstTargetToken+numberOfTargets >= numberOfChunks ) {
-            break;
-        }
-        
-        target = getTargetTower(commandArray[firstTargetToken+numberOfTargets], false);
  
+        
+        ++atToken;
     }
     if(!numberOfTargets) {
+        //no targets error
         optionUsageError();
         cleanUpParseUpgrade(statsToUpgradeArray,targetArray);
         return 0;
