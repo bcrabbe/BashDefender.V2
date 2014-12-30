@@ -6,6 +6,8 @@
 //
 //
 
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +26,8 @@
 
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
 int parseMktwr(char ** commandArray, int numberOfTokens);
+int numberOfMktwrLastPushed (int mktwrsPushed);
+int getStatsToUpgradeArrayAndTargetArray(cmdOption * statsToUpgradeArray, int * targetArray);
 
 
 unsigned long int stringToInt(const char * string);
@@ -73,7 +77,7 @@ int parse(char *inputString)
 
     int numberOfTokens;
     char **commandArray = breakUpString(inputString, &numberOfTokens, " ,");
-    testCommandArray(commandArray, numberOfTokens);
+    //testCommandArray(commandArray, numberOfTokens);
     //array of strings, each elem holds a token string from the input command
     int minNumberOfChunks = 2;//as of cat man and upgrade
     if( numberOfTokens < minNumberOfChunks )
@@ -89,10 +93,7 @@ int parse(char *inputString)
     return specificReturns;//0 for error
 }
 
-int parseWhileNoOp(char ** bracketTokenArray)
-{
-    return 0;
-}
+
 
 envVar * returnEnvVar(char * stringToMatch)
 {
@@ -107,6 +108,38 @@ envVar * returnEnvVar(char * stringToMatch)
     }
     return 0;
 
+}
+
+int getCommandsCost(cmdType command)
+{
+    int cost = 0;
+    if( command == cmd_mktwr )
+    {
+        int numberOfMktwrsPushed = numberOfMktwrsLastPushed(0);
+        for(int i = 0; i < numberOfMktwrsPushed; ++i)
+        {
+            cost += calculateCosts(cmd_mktwr,0,0);
+        }
+    }
+    else if( command == cmd_upgrade )
+    {
+        int * lastTargetArray = NULL;
+        cmdOption * lastStatArray = NULL;
+        if( getStatsToUpgradeArrayAndTargetArray(lastTargetArray, lastStatArray) )
+        {
+            
+        }
+        for(int i = 0; i < numberOfMktwrsPushed; ++i)
+        {
+            cost += calculateCosts(cmd_mktwr,0,0);
+        }
+    }
+}
+int checkConditionForInfiniteLoop(variable,commandArray)
+{
+    cmdType command = getCommandType(commandArray[1]);
+    cmdOption option = getCommandOption(commandArray[2])
+    int cost = getCommandsCost(command, getCommandOption();
 }
 
 /*
@@ -129,8 +162,7 @@ int parseWhile(char *inputString)
         printf("op = %c\n",op);
         int numberOfOperands=0;
         envVarList * envsListStruct = getEnvsList(NULL);
-        envVar * var;
-        int testsValue;
+        envVar * variable;
         if(op==none || op==not)
         {
             if(op==not)
@@ -148,7 +180,7 @@ int parseWhile(char *inputString)
                 return 0;
             }
             free(conditionArray);
-            var = returnEnvVar(bracketTokenArray[1]);
+            variable = returnEnvVar(bracketTokenArray[1]);
             if(!var)
             {
                 char termErrString[100];
@@ -160,9 +192,34 @@ int parseWhile(char *inputString)
             }
             if(op==none)
             {
-                while(var->value)
+                while(variable->value)
                 {
-                    parseCommands(commandArray);
+                    if( parseCommands(commandArray) )
+                    {
+                        checkConditionForInfiniteLoop(variable,commandArray);
+                        variable->value = variable->getValueFunc();
+
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+            if(op==not)
+            {
+                while(!variable->value)
+                {
+                    if( parseCommands(commandArray) )
+                    {
+                        
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                
+                    variable->value = variable->getValueFunc();
                 }
             }
             
@@ -181,6 +238,17 @@ int parseWhile(char *inputString)
                 fprintf(stderr,"%s \n",termErrString);
                 errorToTerminalWindow(termErrString);
                 return 0;
+            }
+            envVar * variable;
+            variable = returnEnvVar(conditionArray[1]);
+            
+            if(op==greaterThan)
+            {
+                while(!variable->value)
+                {
+                    parseCommands(commandArray);
+                    variable->value = variable->getValueFunc();
+                }
             }
   
         }
@@ -615,7 +683,16 @@ int parseAptget(char * aptToGetString)
     }
     else return 0;
 }
-
+                               
+int numberOfMktwrLastPushed (int mktwrsPushed)
+{
+    static int numberOfMktwrsPushedLastPushed = 0;
+    if(mktwrsPushed)
+    {
+        numberOfMktwrsPushedLastPushed = mktwrsPushed;
+    }
+    return numberOfMktwrsPushedLastPushed;
+}
 /*
  *  Called when we read mktwr cmd.
  *  gets tower position and pushes to queue
@@ -623,8 +700,9 @@ int parseAptget(char * aptToGetString)
  *  returns 0 if definately not succesful or if target or stat call failed
  */
 //some crash when no target tower!!
-int parseMktwr(char ** commandArray, int numberOfTokens)
+int parseMktwr(char ** commandArray)
 {
+    
     cmdOption twrType = getCommandOption(commandArray[1]);
     if( !(twrType==mktwr_int || twrType==mktwr_char) )
     {
@@ -633,7 +711,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         errorToTerminalWindow("mktwr expected a type (int, or char)");
         return 0;
     }
-    
+    static int numberOfCommandsPushed = 0;
     unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
     int token = 2;
     while(token < numberOfTokens)
@@ -644,6 +722,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         {
             if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
             {
+                ++numberOfCommandsPushed;
                 printf("pushing tower %d to queue\n",towerPosition);
             }
         }
@@ -658,7 +737,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         }
         ++token;
     }
-    return 1;
+    return numberOfCommandsPushed;
 }
 
 /*  calls man printing functions
@@ -759,6 +838,19 @@ void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray)
         free(targetArray);
     }
 }
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+#pragma mark parseUpgrade
+
 /*
  *  Called when we read upgrade cmd.
  *  gets stat and target and pushes to queue
@@ -767,8 +859,7 @@ void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray)
  */
 int parseUpgrade(char ** commandArray, int numberOfChunks)
 {
-//    printf("start parseUpgrade\n");
-    cmdOption * statsToUpgradeArray = NULL;
+    static cmdOption * statsToUpgradeArray = NULL;
     int numberOfStatsBeingUpgraded = 0;
     int atToken = 1;
     while(atToken < numberOfChunks)
@@ -857,14 +948,63 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         for(int tarIter=0; tarIter<numberOfTargets; ++tarIter) {
             if(pushToQueue(getQueue(NULL),cmd_upgrade, statsToUpgradeArray[statIter],
                            targetArray[tarIter])>=1) {
+                
                  printf("\n>>> pushed stat = %d tar = %d <<< \n",statsToUpgradeArray[statIter],targetArray[tarIter]);
             }
         }
     }
-    cleanUpParseUpgrade(statsToUpgradeArray,targetArray);
+    getStatsToUpgradeArrayAndTargetArray(statsToUpgradeArray,numberOfStatsBeingUpgraded,targetArray,numberOfTargets);//storeStatsToUpgradeArray and targetArray
     return 1;
 }
+                               
+                               
+/*  
+ *  called with pointers to the arrays if a parseUpgrade is successful in pushing its commands
+    the pointers a stored in statics
+    
+    then when calculating costs for parseWhile infinite loop check in getCommandsCost function
+    we retrieve the pointers to the last pushed arrays by calling with NULL pointers
+    which are then filled
+ */
+int getStatsToUpgradeArrayAndTargetArray(cmdOption * statsToUpgradeArray,
+                                         int numberOfStatsBeingUpgraded,
+                                         int * targetArray,
+                                         int numberOfTargets)
+{
+    static cmdOption * storedStatsToUpgradeArray = NULL;
+    static int * storedTargetArray = NULL;
+    int got=0;
+    if(statsToUpgradeArray!=NULL)
+    {
+        storedStatsToUpgradeArray = statsToUpgradeArray;
+    }
+    else
+    {
+        statsToUpgradeArray = storedStatsToUpgradeArray;
+        got = 1;
+    }
 
+    if(targetArray!=NULL)
+    {
+        storedTargetArray = targetArray;
+        got = 0;
+    }
+    else
+    {
+        targetArray = storedTargetArray;
+        got = got ? 1 : 0;
+        
+    }
+    return got;
+}
+
+int getTargetArray(  int * targetArray, int numberOfTargets)
+{
+
+}
+                               
+                               
+                               
 /* 
  *  Called on cat and upgrade commands with the target specifying token.
     looks at the 2nd char in the string to find an int 1-9 to be the target.
@@ -1303,11 +1443,10 @@ void destroyEnvVarList()
     }
     free(envsListStruct->array);
     free(envsListStruct);
-    
 }
+
 envVarList * intialiseEnvVarsList()
 {
-  
     envVarList * envsListStruct = malloc(sizeof(envVarList));
     envsListStruct->numberOfElements = 2;
     envsListStruct->array = malloc(envsListStruct->numberOfElements*sizeof(envVar *));
@@ -1324,7 +1463,6 @@ envVarList * intialiseEnvVarsList()
     envsListStruct->array[1]->getValueFunc = &getNumberOfTowers;
     envsListStruct->array[1]->value = envsListStruct->array[1]->getValueFunc();
 
-    
     return envsListStruct;
 }
 

@@ -454,7 +454,8 @@ GameProperties createGame()	{
 
 }
 
-int getEnemyGroupDelay()	{
+int getEnemyGroupDelay()
+{
 	return(getGame(NULL)->createEnemyGroupDelay);
 }
 
@@ -467,18 +468,19 @@ int setCreateEnemyGroupDelay(int delay)	{
 /*
  *Returns amount of Memory available
  */
-int getAvailableMemory()	{
-
+int getAvailableMemory()
+{
 	return getGame(NULL)->totalMemory - getGame(NULL)->memoryUsed;
 }
 
-int getTotalMemory()	{
-
+int getTotalMemory()
+{
 	return getGame(NULL)->totalMemory;
 }
 
 
-void TestGetAvailableMemory()	{
+void TestGetAvailableMemory()
+{
 	GameProperties testGame;
     testGame = createGame();
 	testGame->totalMemory = 10;
@@ -489,7 +491,7 @@ void TestGetAvailableMemory()	{
 /*
  *Adds specified amount of Memory to resources
  */
-int addMemory(int mem)	{
+int addMemory(int mem)          {
 	GameProperties game = getGame(NULL);
 	if(mem > 0)	{
 		game->totalMemory+=mem;	
