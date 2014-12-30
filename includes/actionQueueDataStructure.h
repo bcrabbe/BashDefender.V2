@@ -41,5 +41,5 @@ void testPushToQueue();
 char *getActionQueueString(void);
 int getCostOfAptget (cmdOption option);
 void freeActionQueue();
-
+int startOfQueueCalc();
 #endif

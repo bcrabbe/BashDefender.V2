@@ -54,7 +54,7 @@ void tutorialLevel(Display d,int *restart)	{
     //init_sound();
     //playBackgroundSound();
 	addClock(tutorialClock);
-	int damage;
+	int damage, range, speed, resetTime = 0, flag = 1;
 	int currMemory;
     do{
         startFrame(d);
@@ -68,6 +68,10 @@ void tutorialLevel(Display d,int *restart)	{
 		switch(tPhase)	{
 
 			case phaseOne:
+					if(flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 0;
+					}
 					tutorial_one();
 					if(checkClock(tutorialClock,TUTORIALCOOLDOWN_SHORT))	{
 						tPhase++;
@@ -81,6 +85,10 @@ void tutorialLevel(Display d,int *restart)	{
 					}
 					break;
 			case phaseThree:
+					if(!flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 1;
+					}
 					tutorial_three();
 					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
 						tPhase++;
@@ -89,12 +97,20 @@ void tutorialLevel(Display d,int *restart)	{
 			case phaseFour:
 					startNextWave();
 					tutorial_four();
+					if(flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 0;
+					}
 					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
 						tPhase++;
 					}
 					break;
 			case phaseFive:
 					tutorial_five();
+					if(!flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 1;
+					}
 					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
 						tPhase++;
 						currMemory = getAvailableMemory();
@@ -111,6 +127,10 @@ void tutorialLevel(Display d,int *restart)	{
 			case phaseSeven:
 					startNextWave();
 					if(getWave(getGame(NULL)) == 2)  {
+						if(flag)	{
+							setCurrTime(findClock(tutorialClock));
+							flag = 0;
+						}
 						if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
 							tPhase++;
 						}
@@ -118,6 +138,10 @@ void tutorialLevel(Display d,int *restart)	{
 					break;
 			case phaseEight:
 					tutorial_seven();
+					if(!flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 1;
+					}
 					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
 						tPhase++;
 					}
@@ -135,15 +159,86 @@ void tutorialLevel(Display d,int *restart)	{
 					}
 					break;
 			case phaseEleven:
+					if(flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 0;
+					}
 					tutorial_nine();
 					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
 						tPhase++;
+						speed = getTowerSpeed(1);
+					}
+					break;
+			case phaseTwelve:
+					tutorial_ten();
+					if(getTowerSpeed(1) > speed)	{
+						tPhase++;
+						range = getTowerRange(1);
+					}
+					break;
+			case phaseThirteen:
+					tutorial_eleven();
+					if(startOfQueueCalc() > getAvailableMemory(getGame(NULL))){
+						tPhase++;
+					}
+					break;
+			case phaseFourteen:
+					if(!flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 1;
+					}
+					if(startOfQueueCalc() > getAvailableMemory(getGame(NULL))){
+						tutorial_fourteen();
+					} else {
+						if(getTowerRange(1) > range)	{
+							tPhase++;
+						} else {
+							tutorial_sixteen();	
+						}
+					}
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+							addMemory(1000);
+					}
+					break;
+			case phaseFifteen:
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+						tutorial_fifteen();	
+						tPhase++;
+					}
+					break;
+			case phaseSixteen:
+					if(flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 0;
+					}
+					tutorial_twelve();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+						tPhase++;
+					}
+			case phaseSeventeen:
+					if(!flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 1;
+					}
+					tutorial_thirteen();
+					updateAllInfoWindow();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+
 					}
 					break;
 			default:
 
-
 					break;
+		}
+		/*
+		if(startOfQueueCalc() > getAvailableMemory(getGame(NULL)))	{
+			addMemory(1000);
+		}
+*/
+		if(resetTime)	{
+			setCurrTime(findClock(tutorialClock));
+			resetTime = 0;
+			
 		}
 
         levelQueueReader();

@@ -405,6 +405,18 @@ void freeClocks()	{
 	free(gClock);
 }
 
+ClockNode findClock(clockType cType)	{
+    GameClock gClock = getClock(NULL);
+    ClockNode currNode;
+    currNode = gClock->first;	
+	while(currNode != NULL)	{
+		if (currNode->type == cType)	{
+			return currNode;
+		}
+	   currNode = currNode->next;	
+	}
+	return 0;
+}
 
 int checkClock(clockType cType,int coolDown)	{
 	GameClock gClock = getClock(NULL);
