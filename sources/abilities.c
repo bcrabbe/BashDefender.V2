@@ -57,7 +57,7 @@ void unlock_ability(AbilityID id)
 			exit(1);
 		}
 	}
-	updateTowerMonitor(unlockstring);		
+	textToTowerMonitor(unlockstring);		
 }
 
 int is_available_ability(AbilityID id)
@@ -127,10 +127,7 @@ void psx_ability()
 				strcat(psxlist, line);
 			}
 		}
-        //textToTowerMonitor(psxlist);
-  
-
-		towerMonitor(-1, psxlist);
+        textToTowerMonitor(psxlist);
 		printf("%s\n", psxlist);
 		psxlist[0] = '\0';
 	}
