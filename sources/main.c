@@ -28,7 +28,7 @@ int main(int argc, char ** argv)
 
 	do	{
 		restart = 0;
-    	initLevel(1);
+    	initLevel(1); //Change to 0, uncomment tutorial level comment startlevel for tutorial
 		//tutorialLevel(d,&restart);
 		startLevel(d,&restart);
 		endLevel();

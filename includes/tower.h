@@ -73,7 +73,7 @@ int getTowerDamage(int towerID);
 void testingTowerModule();
 void testGetTower();
 void testUpgradeTowerStat();
-void getStats(int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID);
+void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID);
 int getNumOfTowerPositions();
 void freeAllTowerPositions();
 void testTowerCreation();
@@ -96,6 +96,10 @@ void moveBullet(ProjectileNode bullet);
 void launchMissile(int firedX, int firedY, int damage, int targetID, int firingType);
 void getBuildUpCoords(int originX, int originY, int *buildUpX, int *buildUpY);
 void moveMissile(ProjectileNode missile);
+
+void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType);
+void updateLaser(ProjectileNode laser);
+
 
 int getNumOfTowers(void);
 int getTowerWidth(int towerID);
