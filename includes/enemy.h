@@ -12,7 +12,7 @@
 #define DELAY_BETWEEN_ENEMIES	1
 #define INT_BASIC_HEALTH 100
 #define INT_BASIC_ARMOUR 0
-#define INT_BASIC_SPEED 2
+#define INT_BASIC_SPEED	2 
 #define INT_BASIC_DAMAGE 10
 #define INT_BASIC_HEIGHT 50
 #define INT_BASIC_WIDTH 50
@@ -26,7 +26,7 @@
 
 #define CHAR_BASIC_HEALTH 100
 #define CHAR_BASIC_ARMOUR 0
-#define CHAR_BASIC_SPEED 2
+#define CHAR_BASIC_SPEED 2 
 #define CHAR_BASIC_DAMAGE 10
 #define CHAR_BASIC_HEIGHT 50
 #define CHAR_BASIC_WIDTH 50
@@ -59,7 +59,7 @@ typedef enum BOOL {FALSE, TRUE} BOOL;
 void createEnemyGroup();
 void freeEnemyGroup();
 Enemy createEnemy();
-void createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum);
+int createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum);
 int getNumberOfEnemies();
 void Test_createEnemy();
 EnemyGroup getEnemyGroup(EnemyGroup enemyList);

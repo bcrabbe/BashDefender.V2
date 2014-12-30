@@ -80,6 +80,8 @@ void testTowerCreation();
 void testingTowerPositions();
 int createTowerFromPositions(int position);
 void drawAllTowerPositions();
+void createTowerTypeFromPositions(int position, int tType);
+int checkCharType();
 
 void createProjectileList();
 ProjectileList getProjectileList(ProjectileList pL);
@@ -101,7 +103,7 @@ void updateLaser(ProjectileNode laser);
 
 int getNumOfTowers(void);
 int getTowerWidth(int towerID);
-
+int isTowerPositionAvailable(int position);
 
 #endif
 

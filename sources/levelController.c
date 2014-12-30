@@ -190,7 +190,7 @@ int createEnemyCommand(Keyword makeEnemy)	{
 	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()) && (getWave(getGame(NULL)) == returnPropertyValue(makeEnemy,waveID)))	{
 		setCreateEnemyGroupDelay(0); //!setting delay back to zero
 		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
-
+		printf("enemy created\n");
 		return 1;
 	} 
 	return 0;
@@ -220,6 +220,16 @@ int addGroupCreationDelay(Keyword waveKW)	{
 	}
 
 	return 0;
+}
+
+void addRawDelay(int delay)	{
+	KeywordQueue kWQueue = getKWQueue(NULL);
+	Keyword newKey = createKeyword();
+	addKWtoQueue(newKey);
+	newKey->lCommand = delay;
+	addProperty(dTime);
+	kWQueue->end->propertiesList[kWQueue->end->nProperties-1]->propertyValue =delay;
+
 }
 
 void makeTowerCommand(Keyword setTower)	{
@@ -315,14 +325,22 @@ KeywordQueue getKWQueue(KeywordQueue kwQueue)	{
 /*
  *Initializes all data structures required for level
  */
-void initLevel()    {
+void initLevel(int level)    {
 	createKeywordQueue();
-	createLevel();
+	switch(level)	{
+		case 0:
+			readLevelSettingsFile("../data/tutorial.txt");
+			break;
+		case 1:
+			createLevel();
+			break;
+		default:
+			break;
+	}
     createLevelPaths();
-    layPaths(1, 1); //hard coded for now - waiting for Benji to use in function
     createTowerGroup();
     createActionQueue();
-    createGame();
+	createGame();
 	createLevelClocks();
     createEnemyGroup();
 	createTowerPos();
@@ -333,8 +351,8 @@ void initLevel()    {
 }
 
 void createLevelClocks()	{
-
 		addClock(singleEnemyCreated);
+		printf("first clock\n");
 		addClock(lastCmdAction);
 		addClock(groupDelay);
 }
@@ -500,12 +518,13 @@ void readLevelSettingsFile(char *file)	{
 void endLevel() {
 
     freeAllTowers();
-    free(getTowerGrp(NULL));
     free(getGame(NULL));
-    free(getQueue(NULL));
 	freeAllTowerPositions();
+    free(getTowerGrp(NULL));
 	freeEnemyGroup();
 	freeLevelPaths();
+	freeClocks();
+	freeActionQueue();
 }
 
 /*---------- Test Functions ----------*/
@@ -538,7 +557,7 @@ void testLevelController()	{
 }
 
 void testReadLevelSettingsFile()	{
-	sput_fail_unless(countKeywords() == 8,"8 Keywords Should Exist in the level settings queue");
+	sput_fail_unless(countKeywords() == 9,"9 Keywords Should Exist in the level settings queue");
 	initialQueueReader();	//! Removing set up commands
 	sput_fail_unless(countKeywords() == 3,"Valid: 3 Keywords Should Exist in the level settings queue");
 	setCurrWaveNum(1);
@@ -549,7 +568,7 @@ void testReadLevelSettingsFile()	{
 	sput_fail_unless(getKeywordTypeFromQueue(3) == wave,"Valid: Third command is queue should be wave");
 	sput_fail_unless(getKeywordTypeFromQueue(4) == makeEnemy,"Valid: Fourth command is queue should be makeEnemy");
 	sput_fail_unless(createEnemyCommand(getKeywordFromQueue(4)) == 0,"Invalid:Cooldown for single enemy creation not yet ready");
-	delayGame(ENEMYSPAWNCOOLDOWN);
+	delayGame(10);
 	sput_fail_unless(createEnemyCommand(getKeywordFromQueue(4)) == 1,"Valid: Cooldown for single enemy creation is ready");
 	sput_fail_unless(getKeywordTypeFromQueue(7) == delay,"Valid: Seventh Keyword in queue is delay");
 	sput_fail_unless(setCreateEnemyGroupDelay(returnPropertyValue(getKeywordFromQueue(7),dTime)) == 30, "group delay is 30");

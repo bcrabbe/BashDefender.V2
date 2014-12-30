@@ -88,6 +88,13 @@ void clearQueue()	{
 	q->start = q->current = NULL;
 }
 
+void freeActionQueue()	{
+
+		clearQueue();
+		free(getQueue(NULL));
+
+}
+
 /*
  *puts node to back of queue
  */
@@ -208,13 +215,13 @@ int getLastTarget()	{
 /*
  *Returns costs of command based on current tower stats
  */
-int calulateCosts(cmdType cmd, cmdOption opt, int target)    {
+int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
 
     switch(cmd)
     {
         case cmd_upgrade:
         {
-            return ((getTowerLevel(target))*getCurrentStat(opt,target));
+            return ((getTowerLevel(target))*(2*getCurrentStat(opt,target)));
         }
         case cmd_mktwr:
         {
@@ -321,7 +328,7 @@ int popToTower()	{
 	GameProperties Game = getGame(NULL);
 	int needed;
 	if(queue->start != NULL) {
-		needed = calulateCosts(queue->start->command,queue->start->option,queue->start->target);
+		needed = calculateCosts(queue->start->command,queue->start->option,queue->start->target);
 		switch(queue->start->command)	{
 			case cmd_upgrade:
 				if (checkQueue(queue, Game,needed)) {
@@ -333,7 +340,18 @@ int popToTower()	{
 			case cmd_mktwr:
 				//! request tower type ignored for now.
 				if (checkQueue(queue,Game,needed)) {
-					createTowerFromPositions(queue->start->target);
+					switch(queue->start->option)	{
+						case mktwr_int:
+							createTowerTypeFromPositions(queue->start->target,INT_TYPE);	
+							break;
+						case mktwr_char:
+							createTowerTypeFromPositions(queue->start->target,CHAR_TYPE);	
+							break;
+						default:
+							fprintf(stderr,"Unrecognised tower type\n");
+					        break;
+					}
+					//createTowerFromPositions(queue->start->target);
 					useMemory(Game, needed);
 					removeQueueItem();
 				}
@@ -366,11 +384,11 @@ void removeQueueItem()	{
 
 
 /*
- *Pops from front of Queue.
+ *Pops from front of Queue. : replaced with popToTower()
  */
 int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int *target)	{
     GameProperties Game = getGame(NULL);
-    int needed = calulateCosts(*cmd,*stat,*target);
+    int needed = calculateCosts(*cmd,*stat,*target);
 
 	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available Memory, cooldown time 
 		*cmd = queue->start->command;

@@ -137,9 +137,8 @@ void updateTowerInformation(int towerX, int towerY, char *string, int towerID);
 void display_text(int x, int y, char *string, int text, SDL_Color colour);
 void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 
-
-int terminal_window(Display d, char *pass, char *clear);
-
+void pause_screen(Display d, int *pause, int *restart);
+int terminal_window(Display d, char *pass, char *clear, int *pause,int restart);
 void menu_screen(Display d, int *started);
 
 

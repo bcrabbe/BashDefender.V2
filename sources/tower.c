@@ -667,6 +667,14 @@ int createTowerFromPositions(int position)	{
 	}
 	return 0;
 }
+
+void createTowerTypeFromPositions(int position, int tType)	{
+	iprint(tType);
+	TowerGroup TG = getTowerGrp(NULL);
+	createTowerFromPositions(position);
+	TG->listOfTowers[TG->numOfTowers]->towerType = tType;
+}
+
 char maxTowerPositionChar()
 {
     TowerPos tPos = getTowerPos(NULL);
@@ -745,6 +753,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->towerType = INT_TYPE;
 
     newTow->upgradesCompleted = 0;
+
     newTow->damage = 20;
     newTow->range = 100;
     newTow->firing = 0;
@@ -865,11 +874,20 @@ unsigned int getNumberOfTowers()	{
 	return ((getTowerGrp(NULL))->numOfTowers);
 }
 
-
+int checkCharType()	{
+	int i = 1;
+	while(i <= getTowerGrp(NULL)->numOfTowers)	{
+		if(getTowerGrp(NULL)->listOfTowers[i]->towerType == CHAR_TYPE) {
+			return 1;
+		}
+		i++;
+	}
+	return 0;
+}
 void freeAllTowers()	{
 
 	int i = 1;
-	while(i < getTowerGrp(NULL)->numOfTowers)	{
+	while(i <= getTowerGrp(NULL)->numOfTowers)	{
 		free(getTowerGrp(NULL)->listOfTowers[i]);
 		i++;
 	}

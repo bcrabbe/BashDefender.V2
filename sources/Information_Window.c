@@ -53,49 +53,61 @@ typedef struct terminalWindow {
 #define TERMINAL_ERROR_TIME 5000
 
 /*----------Function Prototypes (Internal)-----------*/
-void towerMonitor(void);
-void terminalWindow(void);
+char *towerMonitor(void);
+char *terminalWindow(void);
 void statsBar(void);
 void towerInformation(void);
 void actionQueueMonitor(void);
 TowerMonitor *getTowerMonitor(void);
-void getDefaultTowerString(char **inputString);
-void getTowerString(unsigned int targetTower, char **inputString);
+char *getDefaultTowerString(TowerMonitor *tm);
+char *getTowerString(unsigned int targetTower, TowerMonitor *tm);
 TerminalWindow *getTerminalWindow(void);
 CommandNode *createCommandNode(void);
 void destroyCommandNode(CommandNode **start);
 
-
+/*----------Function Prototypes (Testing)-----------*/
+void testTowerMonitor(void);
+void testTerminalWindow(void);
 
 
 /**
- Updates all information windows and bars
+ update tower monitor according to information in tower monitor object
+ @param void
+ @returns pointer to display string currently held in tower monitor
  */
-void updateAllInfoWindow(void) {
+
+
+void tutorialUpdateAllInfoWindow(void) {
     statsBar();
-    towerMonitor();
+	tutorialTowerMonitor();
     actionQueueMonitor();
     towerInformation();
     terminalWindow();
 }
 
+void tutorialTowerMonitor()	{
+	TowerMonitor *tm = getTowerMonitor();
+	updateTowerMonitor(tm->string);
+}
+
 /**
  Update tower monitor according to information in tower monitor object
  */
-void towerMonitor(void) {
+char *towerMonitor(void) {
     TowerMonitor *tm = getTowerMonitor();
     int time = SDL_GetTicks();
     
     //Set output string accordingly
     switch (tm->stringType) {
         case TOWER_DEFAULT:
-            getDefaultTowerString(&tm->string);
+            getDefaultTowerString(tm);
             break;
         case TOWER_INFO:
-            getTowerString(tm->targetTower, &tm->string);
+            getTowerString(tm->targetTower, tm);
             break;
         case OTHER_INFO:
             break;
+
     }
     
     //If another string has been set and a period of time has elapsed, reset to default
@@ -104,23 +116,31 @@ void towerMonitor(void) {
     }
     
     updateTowerMonitor(tm->string);
+    
+    return tm->string;
 }
 
+
 /**
- Sends any string to tower monitor and displays for set period of time
- */
-void textToTowerMonitor(char *string) {
+send string to tower monitor and display for set period of time
+@param string to be displayed
+@returns pointer to string to be displayed in tower monitor object
+*/
+char *textToTowerMonitor(char *string) {
     TowerMonitor *tm = getTowerMonitor();
     
     strcpy(tm->string, string);
     tm->stringType = OTHER_INFO;
     tm->timeSet = SDL_GetTicks();
     
+    return tm->string;
 }
 
 /**
- Alerts tower monitor that tower information has been requested, information for that tower will be displayed for set period of
- time
+ alerts tower monitor that tower information has been requested, information for that
+ tower will be displayed for set period of time
+ @param the tower for which information is to be displayed
+ @returns void
  */
 void displayTowerInfo(unsigned int targetTower) {
     TowerMonitor *tm = getTowerMonitor();
@@ -132,7 +152,9 @@ void displayTowerInfo(unsigned int targetTower) {
 
 
 /**
- Initialize tower monitor object when first called, return pointer to object each subsequent call
+ initialize tower monitor object when first called, return pointer to object each subsequent call
+ @param void
+ @returns the Tower Monitor object
  */
 TowerMonitor *getTowerMonitor(void) {
     static TowerMonitor *tm;
@@ -153,8 +175,10 @@ TowerMonitor *getTowerMonitor(void) {
 
 /**
  update terminal window according to information in terminal window object
+ @param void
+ @returns the display string currently stored in terminal window object
  */
-void terminalWindow() {
+char *terminalWindow(void) {
     TerminalWindow *tw = getTerminalWindow();
     int time = SDL_GetTicks();
     
@@ -178,14 +202,20 @@ void terminalWindow() {
             break;
     }
 
+    
+    //Send string to display if not empty
     if(strlen(tw->outputString) > 0) {
         updateTerminalWindow(tw->outputString);
     }
+    
+    return tw->outputString;
 }
 
 /**
-Initialize terminal window object when first called, return pointer to object each subsequent call
-*/
+ initialize terminal window object when first called, return pointer to object each subsequent call
+ @param void
+ @returns pointer to the terminal window object
+ */
 TerminalWindow *getTerminalWindow(void) {
     static TerminalWindow *tw;
     static bool initialized = false;
@@ -206,20 +236,29 @@ TerminalWindow *getTerminalWindow(void) {
 }
 
 /**
- Send error to terminal window object
+ send error to terminal window object
+ @param string to be sent to terminal window after formatting
+ @returns void
  */
-void errorToTerminalWindow(char *string) {
+char *errorToTerminalWindow(char *string) {
     TerminalWindow *tw = getTerminalWindow();
     
-    sprintf(tw->errorString, "******************************\n%s\n******************************", string);
+    static char errorString[MAX_OUTPUT_STRING];
+    sprintf(errorString, "******************************\n%s\n******************************", string);
+    
+    strcpy(tw->errorString, errorString);
     tw->stringType = ERROR_MESSAGE;
     tw->timeSet = SDL_GetTicks();
+    
+    return errorString;
 }
 
 /**
- Send command to terminal window object
+ send command to terminal window object
+ @param the command to be added to terminal window
+ @returns a pointer to the display string with last N commands stored in terminal window
  */
-void commandToTerminalWindow(char *string) {
+char *commandToTerminalWindow(char *string) {
     TerminalWindow *tw = getTerminalWindow();
     
     //Create command node and add command string to it
@@ -247,11 +286,15 @@ void commandToTerminalWindow(char *string) {
     if(tw->commands > TOTAL_COMMANDS_DISPLAYED) {
         destroyCommandNode(&tw->start);
     }
+    
+    return tw->outputString;
 }
 
 /**
- Creates command node for inserting into list
-*/
+ Creates command node that will store command string
+ @param void
+ @returns pointer to the command node
+ */
 CommandNode *createCommandNode(void) {
     
     CommandNode *commandNode = (CommandNode*) malloc(sizeof(CommandNode));
@@ -268,17 +311,22 @@ CommandNode *createCommandNode(void) {
 }
 
 /**
- Deallocate memory for previously created command node and command string
+ Deallocate memory for previously created command node and command string and relink list
+ @param pointer to the command node pointer
+ @returns void
  */
 void destroyCommandNode(CommandNode **start) {
     CommandNode *temp = *start;
     *start = (*start)->next;
     free(temp->commandString);
     free(temp);
+
 }
 
 /**
- Creates output string for stats monitor and updates stats monitor
+ Creates output string for stats bar and updates it
+ @param void
+ @returns void
  */
 void statsBar() {
     
@@ -297,8 +345,10 @@ void statsBar() {
 }
 
 /**
-Creates output string for action queue monitor and updates it
-*/
+ Creates output string for action queue monitor and updates it
+ @param void
+ @returns void
+ */
 void actionQueueMonitor() {
     
     char *outputString = getActionQueueString();
@@ -308,6 +358,8 @@ void actionQueueMonitor() {
 
 /**
  Creates tower string for every drawn tower and displays it
+ @param void
+ @returns void
  */
 void towerInformation() {
     
@@ -328,82 +380,165 @@ void towerInformation() {
 }
 
 /**
- Creates default string for tower monitor
+ Creates default tower monitor string and stores in tower monitor object
+ @param Tower monitor object
+ @returns Pointer to the created display string
  */
-void getDefaultTowerString(char **inputString) {
+char *getDefaultTowerString(TowerMonitor *tm) {
     
-    sprintf(*inputString, "TOWER MONITOR\n\nActive Towers: %d", getNumberOfTowers());
+    static char defaultTowerString[MAX_OUTPUT_STRING];
     
+    sprintf(defaultTowerString, "TOWER MONITOR\n\nActive Towers: %d", getNumberOfTowers());
+    strcpy(tm->string, defaultTowerString);
+    
+    return defaultTowerString;
 }
 
 /**
- Creates output string for specific tower
+ Creates display string for specific tower and stores in tower monitor object
+ @param Tower for which to create display string, tower monitor object
+ @returns Pointer to the created display string
  */
-void getTowerString(unsigned int targetTower, char **inputString) {
+char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
+    
+    static char towerString[MAX_OUTPUT_STRING];
     
     int range, damage, speed, AOEpower, AOErange;
     getStats(&range, &damage, &speed, &AOEpower, &AOErange, targetTower);
+
+
+    sprintf(towerString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
+    strcpy(tm->string, towerString);
     
-
-    sprintf(*inputString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
-}
-
-
-/**
- Sends "upgrade" command help string to tower monitor
- */
-void manUpgrade()
-{
-    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nupgrade\n\nType ""upgrade"" followed by a stat\n( p, r, s, AOEp, AOEr)\nfollowed by a target tower\ne.g. t1, t2, t3...\nExamples:\nupgrade r t2\nupgrade p t3");
+    return towerString;
 }
 
 /**
- Sends "cat" command help string to tower monitor
+ Updates everything in information window
+ @param void
+ @returns void
  */
-void manCat()
-{
-    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target, e.g. t1, t2, t3..., to display the stats of that target\n");
+void updateAllInfoWindow(void) {
+    statsBar();
+    towerMonitor();
+    actionQueueMonitor();
+    towerInformation();
+    terminalWindow();
 }
-
-/**
- Sends "man" command help string to tower monitor
- */
-void manMan()
-{
-    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nman \n\ntype ""man"" followed by a command, e.g. upgrade or cat, to view the manual\nentry for that command\n");
-}
-
-/**
- Sends "manPs" command help string to tower monitor
- */
-void manPs()
-{
-    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""ps"" followed by a command\n ( -x\n ) to discover information about one or more enemies\nExamples:\nps -x\n");
-}
-
-/**
- Sends "manKill" command help string to tower monitor
- */
-void manKill()
-{
-    textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""kill -9"" followed by a target enemyID (eg 6) or *all*\n to kill one or more enemies\nExamples:\nkill -9 7\n kill -9 all");
-}
-
 
 /*Test functions*/
 
 /**
- Tests functions in information window module
+ test important function in information window
+ @param void
+ @returns void
  */
 void testingInformationWindowModule()	{
+    
     sput_start_testing();
     sput_set_output_stream(NULL);
     
-    //sput_enter_suite("");
-    //sput_run_test();
+    sput_enter_suite("testTowerMonitor");
+    sput_run_test(testTowerMonitor);
+    sput_leave_suite();
+    
+    sput_enter_suite("testTerminalWindow");
+    sput_run_test(testTerminalWindow);
     sput_leave_suite();
     
     sput_finish_testing();
+}
+
+/**
+ test if strings in tower monitor are being stored correctly
+ @param void
+ @returns void
+ */
+void testTowerMonitor(void) {
+    TowerMonitor *tm= getTowerMonitor(); //initialize tower monitor
     
+    createTowerGroup(); //Create tower group to test retrieving default tower string
+    sput_fail_if(strcmp(getDefaultTowerString(tm), tm->string) != 0, "Testing default string");
+    
+    textToTowerMonitor("This is a test string");
+    sput_fail_if(strcmp(tm->string, "This is a test string") != 0, "Testing random string");
+    
+    userCreateTower(200, 200); //Create random tower to test retrieving specific tower string.
+    sput_fail_if(strcmp(getTowerString(1, tm), tm->string) != 0, "Testing specific tower string");
+}
+
+
+void tutorial_one()	{
+
+	textToTowerMonitor("Hi!  Welcome to your first day as a Bash Defender.  \n Lets get started!\n");
+
+}
+
+void tutorial_two()	{
+
+	textToTowerMonitor("lets try making a tower!\n please type:\n mktwr int a\n to make an integer tower in position a.  You can try another position if you like!\n\n This command looks like a lot like linux command 'mkdir' for making directories - but thats not too important right now.\n");
+
+}
+
+void tutorial_three()	{
+
+		textToTowerMonitor("Well done!  You have made a tower of type integer.\n You should use this tower type against integer enemies - those are the ones with numbers.\n\n  In Computer Science, an integer is data type for storing whole numbers.\n");
+
+}
+void tutorial_four()	{
+		textToTowerMonitor("I know what you are thinking, why would you need to build towers when its so calm and peaceful round here?\n Well, its not always like this.  In your job as a linux administrator, you will be under constant attack from virus's.\n.  In fact, it looks like there is one on its way right now!\n");
+
+}
+
+void tutorial_five()	{
+
+	textToTowerMonitor("Oh no!  It looks like that enemy got away.  We need to prepare before the next enemy comes.\n  Upgrade your tower's damage by typing\n upgrade p t1");
+
+}
+
+void tutorial_six()	{
+
+	textToTowerMonitor("Well Done!  Now your tower will do more damage against those pesky virus'\n.  Check it out, here comes another one!\n");
+
+}
+
+void tutorial_five_error()	{
+
+	textToTowerMonitor("Thats not the correct stat to upgrade.\n  Please upgrade power by typing \n upgrade p t1\n");
+}
+
+void tutorial_seven()	{
+
+	textToTowerMonitor("Well That was weird.\n Why didn't your upgraded tower kill that enemy?  Its because your tower was the wrong type!  That enemy was a char enemy - You can tell because it was red.  \n\nYou should also note that your health is going down with each enemy to break through your defenses (top right corner!).  Let this get to zero and your lose!");
+
+}
+
+void tutorial_eight()	{
+
+		textToTowerMonitor("Right!  No more losing.  Lets create a char tower with mktwr char c\n  Char is data type in computer science for storing characters");
+
+}
+
+void tutorial_nine()	{
+
+		textToTowerMonitor("Bam!  that char virus didn't stand a chance.  Lets look at some other upgrade commands before we finish up.  \n");
+
+}
+/*Test functions*/
+
+/**
+ test if strings in terminal window are being stored correctly
+ @param void
+ @returns void
+ */
+void testTerminalWindow(void) {
+    TerminalWindow *tw = getTerminalWindow();
+    
+    sput_fail_if(strcmp(errorToTerminalWindow("This is a test string"), tw->errorString) != 0, "Testing error string");
+    
+    commandToTerminalWindow("A random command");
+    sput_fail_if(strcmp(tw->start->commandString, "A random command") != 0, "Testing sending a command");
+    commandToTerminalWindow("Another random command");
+    sput_fail_if(strcmp(tw->start->next->commandString, "Another random command") != 0, "Testing sending another command");
 }
 

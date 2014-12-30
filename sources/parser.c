@@ -326,27 +326,27 @@ int parseMan(char * inputStringCommandMan)
     {
         case cmd_upgrade:
         {
-            manUpgrade();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nupgrade\n\nType ""upgrade"" followed by a stat\n( p, r, s, AOEp, AOEr)\nfollowed by a target tower\ne.g. t1, t2, t3...\nExamples:\nupgrade r t2\nupgrade p t3");
             return 1;
         }
         case cmd_cat:
         {
-            manCat();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target, e.g. t1, t2, t3..., to display the stats of that target\n");
             return 1;
         }
         case cmd_man:
         {
-            manMan();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nman \n\ntype ""man"" followed by a command, e.g. upgrade or cat, to view the manual\nentry for that command\n");
             return 1;//0 for error
         }
         case cmd_ps:
         {
-            manPs();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""ps"" followed by a command\n ( -x\n ) to discover information about one or more enemies\nExamples:\nps -x\n");
             return 1;//0 for error
         }
         case cmd_kill:
         {
-            manKill();
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nps\n\ntype ""kill -9"" followed by a target enemyID (eg 6) or *all*\n to kill one or more enemies\nExamples:\nkill -9 7\n kill -9 all");
             return 1;//0 for error
         }
         case cmd_execute:

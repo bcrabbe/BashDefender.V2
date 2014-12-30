@@ -41,7 +41,7 @@ typedef struct parseLineArray *ParseLineArray;
 /*---------- Functions ----------*/
 void createKeywordQueue();
 KeywordQueue getKWQueue(KeywordQueue kwQueue);
-void initLevel();
+void initLevel(int level);
 void endLevel();
 void addKeyWordToken(char *token);
 void readLevelSettingsFile(char *file);
@@ -74,6 +74,7 @@ Keyword getKeywordFromQueue(int place);
 KeywordProp* returnPropertiesListFromQueue(int place);
 int getNumberOfPropertiesFromQueue(int place);
 levelCommand getKeywordTypeFromQueue(int place);
+void addRawDelay(int delay);
 /*---------- Test Functions ----------*/
 void setUpTesting();
 void testLevelController();
