@@ -699,8 +699,8 @@ int isTowerPositionAvailable(int position)	{
 /*
 * changes the type of the tower (int/char) to the specified type. Returns 1 if successful, 0 if tower ID doesn't exist.
 */
-int setTowerType(int towerID, int newType) {
-
+int setTowerType(int towerID, int newType)
+{
   tower t;
   if((t = getTowerID(towerID)) == NULL) {
     return 0;

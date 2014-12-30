@@ -342,8 +342,8 @@ void parseToQueueTesting()	{
 	sput_finish_testing();
 }
 
-void testParseToTower()	{
-
+void testParseToTower()
+{
 	freeAllTowers();
 	clearQueue();	
 	createTowerFromPositions(1);
@@ -366,7 +366,8 @@ void testParseToTower()	{
 	clearQueue();
 }
 
-void testValidParses()	{
+void testValidParses()
+{
 	
 	createTower();
     sput_fail_unless(parse("upgrade r t1")== 1, "upgrade r t1 is valid command");

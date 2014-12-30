@@ -19,14 +19,14 @@
 #include "../includes/abilities.h"
 #include "../includes/enemy.h"
 #include "../includes/sput.h"
+#include "../includes/gameProperties.h"
+
 
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
 int parseMktwr(char ** commandArray, int numberOfTokens);
-
-
-
-
 unsigned long int stringToInt(const char * string);
+int parseChmod(char ** commandArray,int numberOfTokens);
+void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray);
 
 /*
  * Parse called with string of user input from terminal window.
@@ -101,6 +101,11 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             break;
             
         }
+        case cmd_chmod:
+        {
+            parseChmod(commandArray, numberOfTokens);
+            break;
+        }
         case cmd_man:
         {
             if(numberOfTokens!=2) {
@@ -160,7 +165,6 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             break;
         }
         case cmd_execute:
-        case cmd_set:
         default:
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
     }
@@ -168,6 +172,90 @@ int parseCommands(char ** commandArray, int numberOfTokens)
 
 }
 
+int parseChmod(char ** commandArray,int numberOfTokens)
+{
+    // get targets
+    printf(">>>>numberOfTokens is %d\n",numberOfTokens);
+
+    int atToken = 1;
+    int * targetArray = NULL;
+    int numberOfTargets = 0;
+    while( atToken < numberOfTokens)
+    {
+        if(commandArray[atToken][0]=='-')//eat leading minus
+        {
+            commandArray[atToken]=commandArray[atToken]+1;
+        }
+        for(int i = 0; commandArray[atToken][i]; i++)
+        {
+            commandArray[atToken][i] = tolower(commandArray[atToken][i]);
+        }
+        
+        if( strcmp(commandArray[atToken],"int")==0 || strcmp(commandArray[atToken],"char")==0 )
+        {
+            break;
+        }
+        
+        int target = getTargetTower(commandArray[atToken], false);
+        iprint(target);
+        if(target==0)
+        {
+            //bogus target error
+            printf("bogus target error\n");
+            optionUsageError();
+            cleanUpParseUpgrade(NULL, targetArray);
+            return 0;
+        }
+        else
+        {
+            ++numberOfTargets;
+            int * tmp = realloc(targetArray, numberOfTargets*sizeof(int));
+            if(tmp==NULL) {
+                fprintf(stderr,"realloc error parser.c parseUpgrade() 2\n");
+                exit(1);
+            }
+            targetArray=tmp;
+            targetArray[numberOfTargets-1] = target;
+        }
+        ++atToken;
+    }
+    if(!numberOfTargets)
+    {
+        //no targets error
+        printf("no targets error\n");
+        optionUsageError();
+        cleanUpParseUpgrade(NULL,targetArray);
+        return 0;
+    }
+    
+    cmdOption twrType = getCommandOption(commandArray[numberOfTokens-1]);
+    if( !(twrType==mktwr_int || twrType==mktwr_char) )
+    {
+        optionUsageError();
+        printf("bogus type\n");
+        errorToTerminalWindow("set expected a type (int, or char) as the last command");
+        return 0;
+    }
+    
+    for(int tarIter=0; tarIter<numberOfTargets; ++tarIter)
+    {
+        if(twrType==mktwr_int)
+        {
+            setTowerType(targetArray[tarIter], INT_TYPE);
+            printf("\n>>> changed t%d to int <<< \n",targetArray[tarIter]);
+
+        }
+        if(twrType==mktwr_char)
+        {
+            setTowerType(targetArray[tarIter], CHAR_TYPE);
+            printf("\n>>> changed t%d to char <<< \n",targetArray[tarIter]);
+
+        }
+    }
+    cleanUpParseUpgrade(NULL,targetArray);
+
+    return 1;
+}
 /*
  *
  */
@@ -291,7 +379,8 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     
     unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
     int token = 2;
-    while(token < numberOfTokens) {
+    while(token < numberOfTokens)
+    {
         int towerPosition = (int)tolower(commandArray[token][0]) - 'a' + 1;
 		iprint(isTowerPositionAvailable(towerPosition));
         if( isTowerPositionAvailable(towerPosition) ){
@@ -351,7 +440,7 @@ int parseMan(char * inputStringCommandMan)
             //manExecute();
             return 1;
         }
-        case cmd_set:
+        case cmd_chmod:
         {
             //manSet();
             return 1;
@@ -705,7 +794,7 @@ cmdType getCommandType(char * firstToken )
                     command = cmd_execute;
                     break;
                 case 3:
-                    command = cmd_set;
+                    command = cmd_chmod;
                     break;
                 case 4:
                     command = cmd_man;
@@ -884,7 +973,7 @@ stringList * intialiseCommandList()
     validActions-=1;
     validActions[1]=strdup("upgrade");
     validActions[2]=strdup("execute");
-    validActions[3]=strdup("set");
+    validActions[3]=strdup("chmod");
     validActions[4]=strdup("man");
     validActions[5]=strdup("cat");
     validActions[6]=strdup("mktwr");
