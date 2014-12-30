@@ -100,7 +100,7 @@ void tutorialTowerMonitor()	{
 /**
  Update tower monitor according to information in tower monitor object
  */
-void towerMonitor(void) {
+char * towerMonitor(void) {
     TowerMonitor *tm = getTowerMonitor();
     int time = SDL_GetTicks();
     
@@ -420,18 +420,6 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     return towerString;
 }
 
-/**
- Updates everything in information window
- @param void
- @returns void
- */
-void updateAllInfoWindow(void) {
-    statsBar();
-    towerMonitor();
-    actionQueueMonitor();
-    towerInformation();
-    terminalWindow();
-}
 
 /*Test functions*/
 
