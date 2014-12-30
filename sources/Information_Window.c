@@ -69,13 +69,6 @@ void destroyCommandNode(CommandNode **start);
 void testTowerMonitor(void);
 void testTerminalWindow(void);
 
-
-/**
- update tower monitor according to information in tower monitor object
- @param void
- @returns pointer to display string currently held in tower monitor
- */
-
 void updateAllInfoWindow(void) {
     statsBar();
     towerMonitor();
@@ -98,9 +91,11 @@ void tutorialTowerMonitor()	{
 }
 
 /**
- Update tower monitor according to information in tower monitor object
+ update tower monitor according to information in tower monitor object
+ @param void
+ @returns pointer to display string currently held in tower monitor
  */
-void towerMonitor(void) {
+char *towerMonitor(void) {
     TowerMonitor *tm = getTowerMonitor();
     int time = SDL_GetTicks();
     
@@ -418,19 +413,6 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     strcpy(tm->string, towerString);
     
     return towerString;
-}
-
-/**
- Updates everything in information window
- @param void
- @returns void
- */
-void updateAllInfoWindow(void) {
-    statsBar();
-    towerMonitor();
-    actionQueueMonitor();
-    towerInformation();
-    terminalWindow();
 }
 
 /*Test functions*/
