@@ -196,6 +196,7 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
   // make the missile
   ProjectileNode newNode = newProjectileNode();
   newNode->whatProjectile = missile;
+  newNode->damageType = firingType;
   
   newNode->movesMade = 0;
   newNode->movesForBuildUp = BUILDUP_STEPS;
@@ -426,13 +427,13 @@ void drawProjectiles() {
     while(!finished) {
       switch(pL->current->whatProjectile) {
         case missile :
-          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h);
+          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h, pL->current->damageType);
           break;
         case bullet :
-          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h);
+          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h, pL->current->damageType);
           break;
         case laser :
-          drawLine(d, pL->current->originX, pL->current->originY, pL->current->targetCoords[0], pL->current->targetCoords[1]);
+          drawLine(d, pL->current->originX, pL->current->originY, pL->current->targetCoords[0], pL->current->targetCoords[1], pL->current->damageType);
       }
       if(pL->current->next == NULL) {
         finished = 1;
@@ -699,8 +700,8 @@ int isTowerPositionAvailable(int position)	{
 /*
 * changes the type of the tower (int/char) to the specified type. Returns 1 if successful, 0 if tower ID doesn't exist.
 */
-int setTowerType(int towerID, int newType) {
-
+int setTowerType(int towerID, int newType)
+{
   tower t;
   if((t = getTowerID(towerID)) == NULL) {
     return 0;

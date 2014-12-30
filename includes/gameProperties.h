@@ -11,7 +11,7 @@ enum cmdType
     cmd_commandError=-1,
     cmd_upgrade=1,
     cmd_execute=2,
-    cmd_set=3,
+    cmd_chmod=3,
     cmd_man=4,
     cmd_cat=5,
     cmd_mktwr=6,
