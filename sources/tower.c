@@ -196,6 +196,7 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
   // make the missile
   ProjectileNode newNode = newProjectileNode();
   newNode->whatProjectile = missile;
+  newNode->damageType = firingType;
   
   newNode->movesMade = 0;
   newNode->movesForBuildUp = BUILDUP_STEPS;
@@ -426,13 +427,13 @@ void drawProjectiles() {
     while(!finished) {
       switch(pL->current->whatProjectile) {
         case missile :
-          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h);
+          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h, pL->current->damageType);
           break;
         case bullet :
-          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h);
+          drawBullet(pL->current->x, pL->current->y, pL->current->w, pL->current->h, pL->current->damageType);
           break;
         case laser :
-          drawLine(d, pL->current->originX, pL->current->originY, pL->current->targetCoords[0], pL->current->targetCoords[1]);
+          drawLine(d, pL->current->originX, pL->current->originY, pL->current->targetCoords[0], pL->current->targetCoords[1], pL->current->damageType);
       }
       if(pL->current->next == NULL) {
         finished = 1;
@@ -699,8 +700,8 @@ int isTowerPositionAvailable(int position)	{
 /*
 * changes the type of the tower (int/char) to the specified type. Returns 1 if successful, 0 if tower ID doesn't exist.
 */
-int setTowerType(int towerID, int newType) {
-
+int setTowerType(int towerID, int newType)
+{
   tower t;
   if((t = getTowerID(towerID)) == NULL) {
     return 0;
@@ -761,10 +762,10 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->speed = 50;
     newTow->AOEpower = 10;
     newTow->AOErange = 10;
-    newTow->height = 80;
-    newTow->width = 80;
-    newTow->gunX = 40;
-    newTow->gunY = 20;
+    newTow->height = 50;
+    newTow->width = 50;
+    newTow->gunX = 23;
+    newTow->gunY = 18;
     newTow->firingCoolDown = 0;
     assignCalculatedFiringType(newTow->towerID);
     
@@ -837,13 +838,15 @@ int upgradeRange(int target)
 int upgradeSpeed(int target)
 {
 	
-	tower upgradeT;
-	if((upgradeT = getTowerID(target))!= NULL)	{
-		upgradeT->speed+=SPEED_UPGR_VAL;
-    makePostUpgradeChanges(target);
-    return upgradeT->speed;
-	}
-	return 0;
+	  tower upgradeT;
+	  if((upgradeT = getTowerID(target))!= NULL)	{
+	      if(upgradeT->speed + SPEED_UPGR_VAL < MAX_COOLDOWN) { //make sure speed doesn't overflow cooldown value
+		        upgradeT->speed+=SPEED_UPGR_VAL;
+            makePostUpgradeChanges(target);
+            return upgradeT->speed;
+        }
+	  }
+	  return 0;
 }
 int upgradeAOEpower(int target)
 {
@@ -1113,8 +1116,8 @@ void present_tower(Display d)
         for(int towerID=1; towerID<=TG->numOfTowers; ++towerID)
         {
             tower currentTower = getTowerID(towerID);
-            drawTower(d, currentTower->x, currentTower->y, currentTower->width,
-                      currentTower->height,currentTower->range, 0);
+            drawTower(currentTower->x, currentTower->y, currentTower->width,currentTower->height, currentTower->towerType, currentTower->range,
+                      8/*frames*/, 300/*anim_speed*/, 2080 /*pic_width*/, 258/*pic_height*/);
         }
     }
     // bullets added here temporarily

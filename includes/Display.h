@@ -102,12 +102,12 @@ void drawRect(int x, int y, int red, int blue, int max_width, int max_height, in
 
 
 //tower
-void drawTower(Display d, int x, int y, int w, int h, int range, int type);
-void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target);
+void drawTower(int x, int y, int w, int h, int type, int range, int frames, int anim_speed, int pic_width, int pic_height);
 void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon);
 
 //projectiles
-void drawBullet(int x, int y, int w, int h);
+void drawBullet(int x, int y, int w, int h, int bulletType);
+void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType);
 
 
 //enemy
@@ -123,6 +123,7 @@ void drawKillAll();
 
 #include <stdio.h>
 #include "Information_Window.h"
+#include "gameProperties.h"
 
 
 void displayTowerMonitor();

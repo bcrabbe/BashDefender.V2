@@ -31,7 +31,7 @@ void init_abilities()
 	Abilities * abl = get_abilities();
 	abl->psx.unlocked = 1;
 	abl->psx.cost = PSX_COST;
-	abl->kill.unlocked = 1;
+	abl->kill.unlocked = 0;
 	abl->kill.cost = KILL_COST;
 }
 	
