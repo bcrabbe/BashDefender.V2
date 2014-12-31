@@ -756,7 +756,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->upgradesCompleted = 0;
 
     newTow->damage = 20;
-    newTow->range = 100;
+    newTow->range = 200;
     newTow->firing = 0;
 	  newTow->level = 1;
     newTow->speed = 50;
