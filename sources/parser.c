@@ -28,11 +28,9 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
 int parseMktwr(char ** commandArray, int numberOfTokens);
 int numberOfMktwrLastPushed (int mktwrsPushed);
 int shouldBrakeInfiniteLoop(envVar * variable, char ** commandArray);
-int getCommandsCost(cmdType command);
+int getCommandMemCost(cmdType command, envVar * mem);
 int numberOfMktwrLastPushed (int mktwrsPushed);
-int getStatsToUpgradeArrayAndTargetArray(statArrayStruct * statArray,
-                                         targetArrayStruct * targetArray);
-
+upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct);
 unsigned long int stringToInt(const char * string);
 
 
@@ -113,7 +111,7 @@ envVar * returnEnvVar(char * stringToMatch)
 
 }
 
-int getCommandsCost(cmdType command)
+int getCommandMemCost(cmdType command, envVar * mem)
 {
     printf("start getCommandsCost\n");
     int costs = 0;
@@ -128,17 +126,15 @@ int getCommandsCost(cmdType command)
 
     if( command == cmd_upgrade )
     {
-        targetArrayStruct * lastTargetArray = NULL;
-        statArrayStruct * lastStatArray = NULL;
-        if( getStatsToUpgradeArrayAndTargetArray(lastStatArray,lastTargetArray) )
+        upgradeArraysStruct * upgradeStuct = getStatsToUpgradeArrayAndTargetArray(NULL);
+        if( upgradeStuct )
         {
-            printf("%p %p\n",lastTargetArray,lastStatArray );
-            for(int statIter=0; statIter<lastStatArray->numberOfElements; ++statIter)
+            for(int statIter=0; statIter < upgradeStuct->statArray->numberOfElements; ++statIter)
             {
-                for(int tarIter=0; tarIter<lastTargetArray->numberOfElements; ++tarIter)
+                for(int tarIter=0; tarIter < upgradeStuct->tarArray->numberOfElements; ++tarIter)
                 {
-                   costs += calculateCosts(cmd_upgrade,lastStatArray->array[statIter] ,
-                                          lastTargetArray->array[tarIter]);
+                   costs += calculateCosts(cmd_upgrade,upgradeStuct->statArray->array[statIter] ,
+                                          upgradeStuct->tarArray->array[tarIter]);
                 }
             }
         }
@@ -153,7 +149,7 @@ int getCommandsCost(cmdType command)
         fprintf(stderr,"int getCommandsCost(cmdType command) parser error line 148\n");
     }
     printf("end getCommandsCost\n");
-
+    mem->value -= costs;
     return costs;
 }
     
@@ -168,7 +164,8 @@ int shouldBrakeInfiniteLoop(envVar * variable, char ** commandArray)
     }
     if(strcmp(variable->name2,"mem")==0)
     {
-        int costs = getCommandsCost(command);
+        int costs = getCommandMemCost(command, variable);
+        printf("cost = %d\n",costs);
         if(costs>variable->value)
         {
             return 1;
@@ -243,9 +240,9 @@ int parseWhile(char *inputString)
                     if( parseCommands(commandArray,numberOfTokensInCommandArray) )
                     {
                         printf("WHILE commandPushed\n");
-                        testCommandArray( commandArray,numberOfTokensInCommandArray );
+                        printf(" variable = %d \n",variable->value);
 
-                        variable->value = variable->getValueFunc();
+                        // variable->value = variable->getValueFunc();
                         if(shouldBrakeInfiniteLoop(variable,commandArray))
                         {
                             printf("shouldBrakeInfiniteLoop\n");
@@ -975,18 +972,19 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         }
     }
     
-    targetArrayStruct * pushedTargetArray;
-    pushedTargetArray = malloc(sizeof(targetArrayStruct));
+    targetArrayStruct * pushedTargetArray = malloc(sizeof(targetArrayStruct));
     pushedTargetArray->array = targetArray;
     pushedTargetArray->numberOfElements = numberOfTargets;
     
-    statArrayStruct * pushedStatArray;
-    pushedStatArray = malloc(sizeof(statArrayStruct));
+    statArrayStruct * pushedStatArray = malloc(sizeof(statArrayStruct));
     pushedStatArray->array = statsToUpgradeArray;
     pushedStatArray->numberOfElements = numberOfStatsBeingUpgraded;
     
-    
-    getStatsToUpgradeArrayAndTargetArray( pushedStatArray, pushedTargetArray);//storeStatsToUpgradeArray and targetArray
+    upgradeArraysStruct * upgradeStruct = malloc(sizeof(upgradeArraysStruct));
+    upgradeStruct->statArray = pushedStatArray;
+    upgradeStruct->tarArray = pushedTargetArray;
+
+    getStatsToUpgradeArrayAndTargetArray(upgradeStruct);//storeStatsToUpgradeArray and targetArray
     return 1;
 }
                                
@@ -999,48 +997,15 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     we retrieve the pointers to the last pushed arrays by calling with NULL pointers
     which are then filled
  */
-int getStatsToUpgradeArrayAndTargetArray(statArrayStruct * statArray,
-                                         targetArrayStruct * targetArray)
+upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct)
 {
-    printf("started getStatsToUpgradeArrayAndTargetArray\n");
-    static statArrayStruct * storedStatArray = NULL;
-    static targetArrayStruct * storedTargetArray = NULL;
-    int got=0;
-    printf("storedStatArray = %p \n storedTargetArray = %p\n",storedStatArray,storedTargetArray);
+    static upgradeArraysStruct * storedUpgradeStuct = NULL;
+    if(upgradeStruct!=NULL)
+    {
+        storedUpgradeStuct = upgradeStruct;
+    }
+    return storedUpgradeStuct;
 
-    if( statArray!=NULL )
-    {
-        if(storedStatArray!=NULL)
-        {
-            free(storedStatArray);
-        }
-        storedStatArray = statArray;
-    }
-    else
-    {
-        statArray = storedStatArray;
-        got = 1;
-    }
-
-    if( targetArray!=NULL )
-    {
-        if(storedTargetArray!=NULL)
-        {
-            free(storedTargetArray);
-        }
-        storedTargetArray = targetArray;
-        got = 0;
-    }
-    else
-    {
-        targetArray = storedTargetArray;
-        got = got ? 1 : 0;
-        
-    }
-    printf("storedStatArray = %p \n storedTargetArray = %p\n",storedStatArray,storedTargetArray);
-    printf("ended getStatsToUpgradeArrayAndTargetArray\n");
-
-    return got;
 }
 
 

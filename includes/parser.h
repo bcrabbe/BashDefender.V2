@@ -39,6 +39,11 @@ typedef struct statArray {
     int numberOfElements;
 } statArrayStruct;
 
+typedef struct upgradeArrays {
+    statArrayStruct * statArray;
+    targetArrayStruct * tarArray;
+} upgradeArraysStruct;
+
 int parse(char *inputString);
 
 char * strdup(const char * s);
