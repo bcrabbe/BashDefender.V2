@@ -14,8 +14,9 @@
 #include "../includes/enemy.h"
 #include "../includes/Sound.h"
 #include "../includes/abilities.h"
+#include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
 
 int main(int argc, char ** argv)
 {
@@ -249,18 +250,19 @@ void testing()	{
 	setUpTesting();
 	//!Unit Tests	
 	//testLevelController(); //! Working
-	testingTowerPositions(); //!Working
+	//testingTowerPositions(); //!Working
     //testingGameStructure(); //!Memory Tests Failing
     //testingActionQueue(); //! Working
     //testEnemy(); // ! No longer works.
     //testingTowerModule(); //! working
     testingInformationWindowModule();
 
-   	//! System Tests 
+   	//! Integration Tests
    	//parseToQueueTesting(); //!Segfaults
 	//parseToTowerTesting(); //!Segfaults
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 	//enemyToGamePropertiesTesting();
+    testParserToInfoWindow;
 
 }
 
@@ -396,4 +398,3 @@ void testValidParses()
 	freeAllTowers();
 	clearQueue();
 }
-

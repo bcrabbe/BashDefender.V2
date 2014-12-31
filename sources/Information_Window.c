@@ -20,6 +20,7 @@
 #include "../includes/actionQueueDataStructure.h"
 #include "../includes/Display.h"
 #include "../includes/sput.h"
+#include "../includes/parser.h"
 
 /*---------- Data Types -----------*/
 typedef enum towerMonitorString {TOWER_DEFAULT, TOWER_INFO, OTHER_INFO} TowerMonitorString;
@@ -37,14 +38,14 @@ typedef struct commandNode {
     struct commandNode *next;
 } CommandNode;
 
-typedef struct terminalWindow {
+struct terminalWindow {
     CommandNode *start;
     TerminalWindowString stringType;
     int commands;
     char *outputString;
     char *errorString;
     int timeSet;
-} TerminalWindow;
+};
 
 /*---------- Hash Defines -----------*/
 #define MAX_OUTPUT_STRING 2000
@@ -430,29 +431,6 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     return towerString;
 }
 
-/*Test functions*/
-
-/**
- test important function in information window
- @param void
- @returns void
- */
-void testingInformationWindowModule()	{
-    
-    sput_start_testing();
-    sput_set_output_stream(stderr);
-    
-    sput_enter_suite("testTowerMonitor");
-    sput_run_test(testTowerMonitor);
-    sput_leave_suite();
-    
-    sput_enter_suite("testTerminalWindow");
-    sput_run_test(testTerminalWindow);
-    sput_leave_suite();
-    
-    sput_finish_testing();
-}
-
 void tutorial_one()	{
 
 	textToTowerMonitor("Hi!  Welcome to your first day as a Bash Defender.  \n Lets get started!\n");
@@ -509,7 +487,34 @@ void tutorial_nine()	{
 		textToTowerMonitor("Bam!  that char virus didn't stand a chance.  Lets look at some other upgrade commands before we finish up.  \n");
 
 }
+
 /*Test functions*/
+
+/**
+ test important function in information window
+ @param void
+ @returns void
+ */
+void testingInformationWindowModule()	{
+    
+    sput_start_testing();
+    sput_set_output_stream(NULL);
+    
+    sput_enter_suite("testTowerMonitor");
+    sput_run_test(testTowerMonitor);
+    sput_leave_suite();
+    
+    sput_enter_suite("testTerminalWindow");
+    sput_run_test(testTerminalWindow);
+    sput_leave_suite();
+    
+    sput_enter_suite("testParserToInfoWindow");
+    sput_run_test(testParserToInfoWindow);
+    sput_leave_suite();
+    
+    sput_finish_testing();
+}
+
 
 /**
  test if strings in tower monitor are being stored correctly
@@ -545,3 +550,19 @@ void testTerminalWindow(void) {
     sput_fail_if(strcmp(tw->start->next->commandString, "Another random command") != 0, "Testing sending another command");
 }
 
+void testParserToInfoWindow(void) {
+    TerminalWindow *tw = getTerminalWindow();
+    
+    parse("");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse empty string, should send appropriate error message to terminal window");
+    
+    parse("unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse unrecognized command, should send appropriate error message to terminal window");
+    
+    parse("unrecognized unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse 2 unrecognized commands, should send appropriate error message to terminal window");
+    
+    parse("unrecognized unrecognized unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse 3 unrecognized commands, should send appropriate error message to terminal window");
+    
+}
