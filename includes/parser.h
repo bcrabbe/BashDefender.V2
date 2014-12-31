@@ -29,6 +29,16 @@ typedef struct environmentVariableList {
     int numberOfElements;
 } envVarList;
 
+typedef struct targetArray {
+    int * array;
+    int numberOfElements;
+} targetArrayStruct;
+
+typedef struct statArray {
+    cmdOption * array;
+    int numberOfElements;
+} statArrayStruct;
+
 int parse(char *inputString);
 
 char * strdup(const char * s);
