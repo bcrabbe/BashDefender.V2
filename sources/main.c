@@ -242,7 +242,12 @@ void startLevel(Display d, int *restart)	{
 
 void quitGame()
 {
+    destroyEnvVarList();
     //shutSound();
+//    freeEnemyGroup();
+//    freeLevelPaths();
+//    freeParseLists();`
+
 }
 
 void testing()	{

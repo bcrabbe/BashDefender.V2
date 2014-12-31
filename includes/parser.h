@@ -17,34 +17,72 @@ typedef struct stringList {
     int numberOfStrings;
 } stringList;
 
-cmdType getCommandType(char * firstToken );
-char * strdup(const char * s);
+typedef struct  environmentVariable {
+    char * name;
+    char * name2;
+    int value;
+    int (*getValueFunc)();
+} envVar;
+
+typedef struct environmentVariableList {
+    envVar ** array;
+    int numberOfElements;
+} envVarList;
+
+typedef struct targetArray {
+    int * array;
+    int numberOfElements;
+} targetArrayStruct;
+
+typedef struct statArray {
+    cmdOption * array;
+    int numberOfElements;
+} statArrayStruct;
+
+typedef struct upgradeArrays {
+    statArrayStruct * statArray;
+    targetArrayStruct * tarArray;
+} upgradeArraysStruct;
+
 int parse(char *inputString);
+
+char * strdup(const char * s);
 void freeCommandArray(char **commandArray,int numberOfChunks);
 char ** breakUpString(const char * inputString, int *numberOfChunksPtr, const char * delimiter);
 void testCommandArray(char ** commandArray, int numberOfChunks);
 void testGetAction(enum cmdType action);
-void actionUsageError();
-cmdOption getCommandOption(char * input);
-int parseUpgrade(char ** commandArray, int numberOfChunks);
 void testGetUpgradeStat(cmdOption statToUpgrade);
+
 void optionUsageError();
-int parseKill(char ** commandArray,int numberOfChunks);
+void actionUsageError();
+
 unsigned int getTargetEnemy(const char * inputStringTargeting);
-int parsePs(char * optionString);
-int parseAptget(char * aptToGetString);
+cmdOption getCommandOption(char * input);
+cmdType getCommandType(char * firstToken );
+
+
+void destroyEnvVarList();
 void freeParseLists();
 void initialiseParseLists();
 stringList * getCommandList(stringList * commandList);
-stringList *  getOptionList(stringList * optionList);
+stringList * getOptionList(stringList * optionList);
+envVarList * getEnvsList(envVarList * envsList);
 stringList * intialiseCommandList();
 stringList * intialiseOptionList();
+envVarList * intialiseEnvVarsList();
+
 void testStringLists();
 
 int parseCat(char * inputStringTargeting);
 int parseMan(char * inputStringCommandMan);
 int parseAptget(char * aptToGetString);
 int parseCommands(char ** commandArray, int numberOfTokens);
+
+int parsePs(char * optionString);
+int parseAptget(char * aptToGetString);
+int parseKill(char ** commandArray,int numberOfChunks);
+int parseUpgrade(char ** commandArray, int numberOfChunks);
+
 
 
 #endif

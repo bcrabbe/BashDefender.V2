@@ -20,7 +20,7 @@ typedef enum firingMethod	{
 	
 } FiringMethod;
 
-
+int isTowerPositionAvailable(int position);
 void createTowerPos();
 int getSpecifiedTowerPosY(int postion);
 int getSpecifiedTowerPosX(int postion);
