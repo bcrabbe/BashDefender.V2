@@ -190,7 +190,7 @@ void drawKillAll(){
     SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
     int saturation = 0;
     while (saturation < 255) {
-        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 2.5);
+        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 4);
         SDL_RenderFillRect(d->renderer, &d->rect);
         SDL_RenderPresent(d->renderer);
     }
