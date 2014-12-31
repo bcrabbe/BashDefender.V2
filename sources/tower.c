@@ -6,7 +6,7 @@
 #include "../includes/sput.h"
 #include "../includes/debug.h"
 
-#define MAX_COOLDOWN 100 // the longest number of ticks that a tower can take between shots
+#define MAX_COOLDOWN 100 //  the longest number of ticks that a tower can take between shots
 
 //bullet #defines
 #define BULLET_TO_TARGET 20 // the number of steps for a bullet to reach its target
@@ -550,9 +550,9 @@ int getNumOfTowerPositions()	{
 }
 
 void testingTowerPositions()	{
-
-	sput_start_testing();
-	sput_set_output_stream(NULL);
+    
+    sput_start_testing();
+	sput_set_output_stream(stderr);
 
 	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
 	sput_run_test(testTowerCreation);
@@ -900,8 +900,8 @@ void freeAllTowers()	{
 }
 
 void testGetTower()	{
-	
-	freeAllTowers();
+
+    freeAllTowers();
 	createTowerFromPositions(1);
 	sput_fail_unless(getNumberOfTowers() == 1, "Valid: Number of towers held in group is one.");
 	sput_fail_unless(getTowerID(1) != NULL,"Valid: Tower with ID 1 exists.");
@@ -956,7 +956,7 @@ void populateTower(tower newTow, int id) {
 
 }
 
-void getStats(int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID)
+void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID)
 {
     TowerGroup towers = getTowerGrp(NULL);
      *range = towers->listOfTowers[towerID]->range;
@@ -964,6 +964,7 @@ void getStats(int *range, int *damage, int *speed, int *AOEpower, int *AOErange,
      *speed = towers->listOfTowers[towerID]->speed;
      *AOEpower = towers->listOfTowers[towerID]->AOEpower;
      *AOErange = towers->listOfTowers[towerID]->AOErange;
+     *towerType = towers->listOfTowers[towerID]->towerType;
 }
 
 int getTowerX(int towerID)

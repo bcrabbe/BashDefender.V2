@@ -15,22 +15,30 @@
 #include "../includes/Sound.h"
 #include "../includes/abilities.h"
 
+#define TESTING 0
+
 int main(int argc, char ** argv)
 {
+    
+    if(TESTING) {
+        testing();
+        exit(EXIT_SUCCESS);
+    }
+    
     srand(time(NULL));
 	int restart = 0;
     int started = 0;
 	Display d = init_SDL();
-//  testing();
     while(started == 0){
     	menu_screen(d, &started);
     }
 
 	do	{
 		restart = 0;
-    	initLevel(0);
-		tutorialLevel(d,&restart);
-		//startLevel(d,&restart);
+
+    	initLevel(1); //For tutorial level, change to 0, uncomment tutorial level, comment startlevel for tutorial
+		//tutorialLevel(d,&restart);
+		startLevel(d,&restart);
 		endLevel();
 	} while (restart);
 
@@ -341,19 +349,19 @@ void testing()	{
 
 	setUpTesting();
 	//!Unit Tests	
-	testLevelController(); //! Working
+	//testLevelController(); //! Working
 	testingTowerPositions(); //!Working
-    testingGameStructure(); //!Memory Tests Failing
-    testingActionQueue(); //! Working
+    //testingGameStructure(); //!Memory Tests Failing
+    //testingActionQueue(); //! Working
     //testEnemy(); // ! No longer works.
-    testingTowerModule(); //! working
+    //testingTowerModule(); //! working
+    testingInformationWindowModule();
 
    	//! System Tests 
-   	parseToQueueTesting(); //!Segfaults
+   	//parseToQueueTesting(); //!Segfaults
 	//parseToTowerTesting(); //!Segfaults
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
-	enemyToGamePropertiesTesting();
-    testingInformationWindowModule();
+	//enemyToGamePropertiesTesting();
 
 }
 
