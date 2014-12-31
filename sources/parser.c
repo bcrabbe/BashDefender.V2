@@ -27,7 +27,7 @@
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
 int parseMktwr(char ** commandArray, int numberOfTokens);
 int numberOfMktwrLastPushed (int mktwrsPushed);
-int shouldBrakeInfiniteLoop(envVar * variable, char ** commandArray);
+int shouldBrakeInfiniteLoop(envVar * variable, int condition, char ** commandArray);
 int getCommandMemCost(cmdType command, envVar * mem);
 int numberOfMktwrLastPushed (int mktwrsPushed);
 upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct);
@@ -94,8 +94,6 @@ int parse(char *inputString)
     return specificReturns;//0 for error
 }
 
-
-
 envVar * returnEnvVar(char * stringToMatch)
 {
     envVarList * envsListStruct = getEnvsList(NULL);
@@ -155,7 +153,7 @@ int getCommandMemCost(cmdType command, envVar * mem)
     
             
             
-int shouldBrakeInfiniteLoop(envVar * variable, char ** commandArray)
+int shouldBrakeInfiniteLoop(envVar * variable, int condition, char ** commandArray)
 {
     cmdType command = getCommandType(commandArray[0]);
     if(command != cmd_upgrade && command != cmd_mktwr)
@@ -166,7 +164,19 @@ int shouldBrakeInfiniteLoop(envVar * variable, char ** commandArray)
     {
         int costs = getCommandMemCost(command, variable);
         printf("cost = %d\n",costs);
-        if(costs>variable->value)
+        if(costs>variable->value-condition)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    if(strcmp(variable->name,"tow")==0)
+    {
+        int newNumberOfTowers = numberOfMktwrLastPushed(0) + variable->getValueFunc();
+        if(newNumberOfTowers>variable->value-condition)
         {
             return 1;
         }
@@ -243,7 +253,7 @@ int parseWhile(char *inputString)
                         printf(" variable = %d \n",variable->value);
 
                         // variable->value = variable->getValueFunc();
-                        if(shouldBrakeInfiniteLoop(variable,commandArray))
+                        if(shouldBrakeInfiniteLoop(variable,0,commandArray))
                         {
                             printf("shouldBrakeInfiniteLoop\n");
                             return 1;
@@ -258,19 +268,7 @@ int parseWhile(char *inputString)
             }
             if(op==not)
             {
-                while(!variable->value)
-                {
-                    if( parseCommands(commandArray,numberOfTokensInCommandArray) )
-                    {
-                        
-                    }
-                    else
-                    {
-                        return 0;
-                    }
-                
-                    variable->value = variable->getValueFunc();
-                }
+                return 0;
             }
             
         }
@@ -280,6 +278,7 @@ int parseWhile(char *inputString)
             makeStringForOperator(op, stringForOperator);
             char ** conditionArray = breakUpString(bracketTokenArray[1], &numberOfOperands,
                                                    stringForOperator);
+            testCommandArray(conditionArray,numberOfOperands);
             if( numberOfOperands!=2 )
             {
                 char termErrString[100];
@@ -289,21 +288,45 @@ int parseWhile(char *inputString)
                 errorToTerminalWindow(termErrString);
                 return 0;
             }
-            envVar * variable;
-            variable = returnEnvVar(conditionArray[1]);
-            
-            if(op==greaterThan)
+            envVar * variable = returnEnvVar(conditionArray[0]);
+            int conditionTokenIs=1;
+            if(variable==0)
             {
-                while(!variable->value)
+                variable = returnEnvVar(conditionArray[1]);
+                if(variable==0)
                 {
-                    parseCommands(commandArray,numberOfTokensInCommandArray);
-                    variable->value = variable->getValueFunc();
+                    //could not read variable error
+                    return 0;
+                }
+                conditionTokenIs=0;
+
+            }
+            iprint(conditionTokenIs);
+            int condition = stringToInt(conditionArray[conditionTokenIs]);
+            iprint(condition);
+            if(op==greaterThan)//while (mem>
+            {
+                while( conditionTokenIs ? variable->value>condition : condition>variable->value)
+                {
+                    if( parseCommands(commandArray,numberOfTokensInCommandArray) )
+                    {
+                        printf("WHILE commandPushed\n");
+                        printf(" variable = %d \n",variable->value);
+                        
+                        // variable->value = variable->getValueFunc();
+                        if(shouldBrakeInfiniteLoop(variable,condition,commandArray))
+                        {
+                            printf("shouldBrakeInfiniteLoop\n");
+                            return 1;
+                        }
+                    }
+                    else
+                    {
+                        return 0;
+                    }
                 }
             }
-  
         }
-
-        
     }
     freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
     return 0;
@@ -317,40 +340,53 @@ void makeStringForOperator(operator op, char * string)
     {
         case not:
             string[0] = '!';
+            string[1] = '\0';
+
             return;
         case greaterThan:
             string[0] = '>';
+            string[1] = '\0';
             return;
         case lessThan:
             string[0] = '<';
+            string[1] = '\0';
             return;
         case equalTo:
             string[0] = '=';
+            string[1] = '\0';
             return;
         case greaterThanOrEqualTo:
             string[0] = '>';
             string[1] = '=';
+            string[2] = '\0';
             return;
         case lessThanOrEqualTo:
             string[0] = '<';
             string[1] = '=';
+            string[2] = '\0';
             return;
         case sameAs:
             string[0] = '=';
             string[1] = '=';
+            string[2] = '\0';
             return;
         case notEqualTo:
             string[0] = '!';
             string[1] = '=';
+            string[2] = '\0';
             return;
         case none:
             string[0] = 'n';//no op just a while var is none zero
             string[1] = 'o';
             string[2] = 'n';
             string[3] = 'e';
+            string[4] = '\0';
             return;
         default:
-            string[0] = '\0';
+            string[0] = 'e';
+            string[1] = 'r';
+            string[2] = 'r';
+            string[3] = '\0';
             return;
     }
 }
