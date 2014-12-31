@@ -184,7 +184,7 @@ void getBackgroundDimensions(int *w, int *h){
 }
 /* Draw kill all ability*/
 void drawKillAll(){
-    SDL_Delay(10);
+    SDL_Delay(3);
     Display d = getDisplayPointer(NULL);
     d->rect = (SDL_Rect) {0,0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL};
     SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);

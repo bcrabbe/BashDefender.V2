@@ -10,7 +10,13 @@ typedef enum tutPhase {
 	phaseEight = 8,
 	phaseNine = 9,
 	phaseTen = 10,
-	phaseEleven = 11
+	phaseEleven = 11,
+	phaseTwelve = 12,
+	phaseThirteen = 13,
+	phaseFourteen = 14,
+	phaseFifteen = 15,
+	phaseSixteen = 16,
+	phaseSeventeen = 17
 } tutPhase;
 
 

@@ -320,6 +320,14 @@ cmdOption upgradeTowerStat(cmdOption stat, int target)  {
             return optionError;
     }
 }
+
+int startOfQueueCalc()	{
+	ActionQueueStructure queue = getQueue(NULL);
+	if(queue->start != NULL)	{
+		return calculateCosts(queue->start->command,queue->start->option,queue->start->target);
+	}
+	return 0;
+}
 /*
  *Checks start of action Queue for command, and actions it if all criteria are met
  */
@@ -476,6 +484,8 @@ char *getActionQueueString(void) {
                         break;
                     case upgrade_level:
                         strcat(outputString, "level ");
+					default:
+						break;
                 }
                 
                 if(target) {
@@ -492,6 +502,8 @@ char *getActionQueueString(void) {
                     case mktwr_char:
                         strcat(outputString, "CHAR ");
                         break;
+					default:
+						break;
                 }
                 
                 if(target) {

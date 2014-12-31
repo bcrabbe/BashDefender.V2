@@ -471,7 +471,7 @@ void testTowerMonitor(void) {
 
 void tutorial_one()	{
 
-	textToTowerMonitor("Hi!  Welcome to your first day as a Bash Defender.  \n Lets get started!\n");
+	textToTowerMonitor("Hi!  Welcome to your first day as a Bash Defender.  We expect you to defend our precious systems against all kinds of computing nasties.\n Lets get started!\n");
 
 }
 
@@ -487,7 +487,7 @@ void tutorial_three()	{
 
 }
 void tutorial_four()	{
-		textToTowerMonitor("I know what you are thinking, why would you need to build towers when its so calm and peaceful round here?\n Well, its not always like this.  In your job as a linux administrator, you will be under constant attack from virus's.\n.  In fact, it looks like there is one on its way right now!\n");
+		textToTowerMonitor("I know what you are thinking, why would you need to build towers when its so calm and peaceful round here?\n Well, its not always like this.  In your job as a linux administrator, you will be under constant attack from virus's.\n  In fact, it looks like there is one on its way right now!\n");
 
 }
 
@@ -523,6 +523,38 @@ void tutorial_eight()	{
 void tutorial_nine()	{
 
 		textToTowerMonitor("Bam!  that char virus didn't stand a chance.  Lets look at some other upgrade commands before we finish up.  \n");
+
+}
+
+void tutorial_ten()	{
+	textToTowerMonitor("Try upgrading your tower's speed.  This will increase the speed that you tower fires at enemies!\n  Type upgrade s t1");
+}
+
+void tutorial_eleven()	{
+	textToTowerMonitor("Now lets upgrade your tower's range.  This allows you towers to hit farther aware enemies.\n type \n upgrade r t1\n You'll be becoming very familiar with this style of command - they are closely modeled on real linux command line utilities.  You have command, an option and a target!  \n");
+}
+
+void tutorial_twelve()	{
+	textToTowerMonitor("Hey, you are getting pretty good at this!  \n Lets hope you perform this well when faced with a REAL threat...\n  So, we have upgraded your tower quite a bit now, do you want to see what its stats are in some more detail?");
+}
+
+void tutorial_thirteen()	{
+
+	textToTowerMonitor("Lets try using the cat command: type cat t1\n This command tells you the current stats of your tower, and how much it will cost you to upgrade each.\n You can use the cat command on a linux machine to check the contents of files too!");
+}
+
+void tutorial_fourteen()	{
+
+		textToTowerMonitor("That command doesn't seem to have worked...  Its because you have been using all your memory on upgrades and towers!\n  Check your memory (top left) and check the amount needed to do the upgrade you are attempting by typing\n cat t1\n  In the field, you'd need to kill more enemies to get more memory.  Since this is training, we will give you some for free.\n");
+
+}
+
+void tutorial_fifteen()	{
+	textToTowerMonitor("You can see that your command is waiting in the action queue.  This is where commands get put that can't be actioned right now - don't worry, when we give you some more memory your command will get removed from the queue and put into action!\n");
+}
+
+void tutorial_sixteen()	{
+	textToTowerMonitor("No, you have to upgrade the tower's range!\n Please type\n upgrade r t1 \n");
 
 }
 /*Test functions*/
