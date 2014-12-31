@@ -655,10 +655,11 @@ int parseKill(char ** commandArray,int numberOfTokens)
             optionUsageError();
             return 0;
         }
+
         else
         {
-//            int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
-//            kill_ability(targetEnemyID);
+            //int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
+            //kill_ability(targetEnemyID);
             return 1;
         }
     }
@@ -772,6 +773,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         return 0;
     }
     static int numberOfCommandsPushed = 0;
+
     int token = 2;
     while(token < numberOfTokens)
     {
