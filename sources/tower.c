@@ -762,10 +762,10 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->speed = 50;
     newTow->AOEpower = 10;
     newTow->AOErange = 10;
-    newTow->height = 80;
-    newTow->width = 80;
-    newTow->gunX = 40;
-    newTow->gunY = 20;
+    newTow->height = 50;
+    newTow->width = 50;
+    newTow->gunX = 23;
+    newTow->gunY = 18;
     newTow->firingCoolDown = 0;
     assignCalculatedFiringType(newTow->towerID);
     
@@ -838,13 +838,15 @@ int upgradeRange(int target)
 int upgradeSpeed(int target)
 {
 	
-	tower upgradeT;
-	if((upgradeT = getTowerID(target))!= NULL)	{
-		upgradeT->speed+=SPEED_UPGR_VAL;
-    makePostUpgradeChanges(target);
-    return upgradeT->speed;
-	}
-	return 0;
+	  tower upgradeT;
+	  if((upgradeT = getTowerID(target))!= NULL)	{
+	      if(upgradeT->speed + SPEED_UPGR_VAL < MAX_COOLDOWN) { //make sure speed doesn't overflow cooldown value
+		        upgradeT->speed+=SPEED_UPGR_VAL;
+            makePostUpgradeChanges(target);
+            return upgradeT->speed;
+        }
+	  }
+	  return 0;
 }
 int upgradeAOEpower(int target)
 {
@@ -1113,8 +1115,8 @@ void present_tower(Display d)
         for(int towerID=1; towerID<=TG->numOfTowers; ++towerID)
         {
             tower currentTower = getTowerID(towerID);
-            drawTower(d, currentTower->x, currentTower->y, currentTower->width,
-                      currentTower->height,currentTower->range, 0);
+            drawTower(currentTower->x, currentTower->y, currentTower->width,currentTower->height, currentTower->towerType, currentTower->range,
+                      8/*frames*/, 300/*anim_speed*/, 2080 /*pic_width*/, 258/*pic_height*/);
         }
     }
     // bullets added here temporarily
