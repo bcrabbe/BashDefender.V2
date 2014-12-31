@@ -549,9 +549,9 @@ int getNumOfTowerPositions()	{
 }
 
 void testingTowerPositions()	{
-
-	sput_start_testing();
-	sput_set_output_stream(NULL);
+    
+    sput_start_testing();
+	sput_set_output_stream(stderr);
 
 	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
 	sput_run_test(testTowerCreation);
@@ -897,8 +897,8 @@ void freeAllTowers()	{
 }
 
 void testGetTower()	{
-	
-	freeAllTowers();
+
+    freeAllTowers();
 	createTowerFromPositions(1);
 	sput_fail_unless(getNumberOfTowers() == 1, "Valid: Number of towers held in group is one.");
 	sput_fail_unless(getTowerID(1) != NULL,"Valid: Tower with ID 1 exists.");

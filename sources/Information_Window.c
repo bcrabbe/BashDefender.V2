@@ -440,7 +440,7 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
 void testingInformationWindowModule()	{
     
     sput_start_testing();
-    sput_set_output_stream(NULL);
+    sput_set_output_stream(stderr);
     
     sput_enter_suite("testTowerMonitor");
     sput_run_test(testTowerMonitor);
