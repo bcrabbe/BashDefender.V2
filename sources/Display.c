@@ -13,8 +13,8 @@
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 struct display {
     //main objects
@@ -55,7 +55,7 @@ struct display {
     SDL_Texture *actionQueueTexture;
 
     //Tower objects
-    SDL_Texture *towerTexture[2];
+    SDL_Texture *towerTexture[3];
     SDL_Texture *towerPositionTexture[26];
 
     //Projectile objects
@@ -152,7 +152,8 @@ Display init_SDL(){
     init_pic(&d->enemyTexture[3], "Images/char_enemy_basic.png");
     init_pic(&d->enemyTexture[4], "Images/char_enemy_basic.png");
     init_pic(&d->towerTexture[0], "Images/tower.png");
-    init_pic(&d->towerTexture[1], "Images/tower1.png");
+    init_pic(&d->towerTexture[1], "Images/intTower.png");
+    init_pic(&d->towerTexture[2], "Images/charTower.png");
     init_pic(&d->circ1_Texture[0], "Images/circ1_dark.png");
     init_pic(&d->circ1_Texture[1], "Images/circ1_light.png");
     init_pic(&d->circ2_Texture[0], "Images/circ3_dark.png");
@@ -326,12 +327,17 @@ void draw_filled_range(int cx, int cy, int r)
 }
 
 /* draws the tower at x and y coor */
-void drawTower(Display d, int x, int y, int w, int h, int range, int type){
-    d->rect= (SDL_Rect) {x, y ,w, h};
-    SDL_RenderCopy(d->renderer, d->towerTexture[type], NULL, &d->rect);
-    SDL_SetRenderDrawColor(d->renderer, 0, 0, 0, 255);
+void drawTower(int x, int y, int w, int h, int type, int range, int frames, int anim_speed, int pic_width, int pic_height){
+    Display d = getDisplayPointer(NULL);
+    Uint32 ticks = SDL_GetTicks();
+    Uint32 sprite = (ticks / anim_speed) % frames;
+    d->srcRect = (SDL_Rect){sprite * (pic_width/frames), 0, (pic_width/frames), pic_height};
+    d->rect = (SDL_Rect) {x, y, w, h};
+    /*create animation by putting part of a spritesheet(image) into destination rect*/
+    SDL_RenderCopy(d->renderer, d->towerTexture[type], &d->srcRect, &d->rect);
     draw_filled_range(x + (double)w/2, y + (double)h/2, range);
 }
+
 
 /* draws projectile */
 void drawBullet(int x, int y, int w, int h, int bulletType) {
@@ -440,8 +446,8 @@ void updateTowerInformation(int towerX, int towerY, char *string, int towerID) {
     
     int towerWidth = getTowerWidth(towerID);
     
-    displayMonitor(towerX, towerY - 20, towerWidth, 30, d->towerInfoTexture);
-    display_text(towerX + 20, towerY - 10, string, blended, d->red);
+    displayMonitor(towerX - 5, towerY - 20, towerWidth + 10, 30, d->towerInfoTexture);
+    display_text(towerX + 5, towerY - 10, string, blended, d->red);
 }
 
 /**Display output string in terminal window*/

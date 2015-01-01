@@ -47,6 +47,7 @@ typedef struct terminalWindow {
 } TerminalWindow;
 
 /*---------- Hash Defines -----------*/
+
 #define MAX_OUTPUT_STRING 2000
 #define TOTAL_COMMANDS_DISPLAYED 5
 #define DEFAULT_TOWER_MONITOR_TIME 10000
