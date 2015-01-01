@@ -847,6 +847,7 @@ int parseMan(char * inputStringCommandMan)
         }
         case cmd_mktwr:
         {
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nmktwr\n\ntype ""mktwr"" followed by the tower type and the letter of a field where you would like the tower to appear\nExamples:\nmktwr INT a\nmktwr CHAR f");
             return 1;
         }
         default:

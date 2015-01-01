@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 int main(int argc, char ** argv)
 {
@@ -267,7 +267,7 @@ void testing()	{
 	//parseToTowerTesting(); //!Segfaults
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 	//enemyToGamePropertiesTesting();
-    testParserToInfoWindow;
+    testParserToInfoWindow();
 
 }
 

@@ -326,7 +326,7 @@ KeywordQueue getKWQueue(KeywordQueue kwQueue)	{
  *Initializes all data structures required for level
  */
 void initLevel(int level)    {
-	createKeywordQueue();
+    createKeywordQueue();
 	switch(level)	{
 		case 0:
 			readLevelSettingsFile("../data/tutorial.txt");

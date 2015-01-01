@@ -27,6 +27,7 @@ char *errorToTerminalWindow(char *string);
 char *commandToTerminalWindow(char *string);
 TowerMonitor *getTowerMonitor(void);
 TerminalWindow *getTerminalWindow(void);
+void destroyCommandList(void);
 /*----------Function Prototypes (Testing)------------*/
 void testingInformationWindowModule(void);
 void testParserToInfoWindow(void);
