@@ -17,27 +17,27 @@
 
 int main(int argc, char ** argv)
 {
-    srand(time(NULL));
-	int restart = 0;
-    int started = 0;
+    //srand(time(NULL));
+	//int restart = 0;
+    //int started = 0;
 	Display d = init_SDL();
-//  testing();
-    while(started == 0){
-    	menu_screen(d, &started);
-    }
+  	testing();
+    //while(started == 0){
+    //	menu_screen(d, &started);
+    //}
 
-	do	{
-		restart = 0;
-    	initLevel(0);
-		tutorialLevel(d,&restart);
-		//startLevel(d,&restart);
-		endLevel();
-	} while (restart);
+	//do	{
+	//	restart = 0;
+    //	initLevel(1);
+	//	//tutorialLevel(d,&restart);
+	//	startLevel(d,&restart);
+	//	endLevel();
+	//} while (restart);
 
-    
-    shutSDL(d);
-    quitGame();
-    return 0;
+    //
+    //shutSDL(d);
+    //quitGame();
+    //return 0;
 }
 
 void tutorialLevel(Display d,int *restart)	{
@@ -341,19 +341,19 @@ void testing()	{
 
 	setUpTesting();
 	//!Unit Tests	
-	testLevelController(); //! Working
-	testingTowerPositions(); //!Working
+	//testLevelController(); //! Working
+	//testingTowerPositions(); //!Working
     testingGameStructure(); //!Memory Tests Failing
-    testingActionQueue(); //! Working
+    //testingActionQueue(); //! Working
     //testEnemy(); // ! No longer works.
-    testingTowerModule(); //! working
+    //testingTowerModule(); //! working
 
    	//! System Tests 
-   	parseToQueueTesting(); //!Segfaults
+   	//parseToQueueTesting(); //!Segfaults
 	//parseToTowerTesting(); //!Segfaults
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
-	enemyToGamePropertiesTesting();
-    testingInformationWindowModule();
+	//enemyToGamePropertiesTesting();
+    //testingInformationWindowModule();
 
 }
 
