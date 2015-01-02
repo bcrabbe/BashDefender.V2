@@ -478,6 +478,13 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     int token = 2;
     while(token < numberOfTokens)
     {
+        if(strlen(commandArray[token])>1)
+        {
+            char str[100];
+            sprintf(str,"ERROR: mktwr expected a target positon A - %c it read %s",maxTowerPositionChar(),commandArray[token]);
+            errorToTerminalWindow(str);
+            return 0;
+        }
         int towerPosition = (int)tolower(commandArray[token][0]) - 'a' + 1;
         if( towerPosition < 1 || towerPosition > maxTowerPosition() )
         {
@@ -601,7 +608,6 @@ int parseCat(char * inputStringTargeting)
         errorToTerminalWindow(str);
         return 0;
     }
-    
 }
 
                                
@@ -662,7 +668,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         cleanUpParseUpgrade(statsToUpgradeArray,NULL);
         return 0;
     }
-    
+
     //now get targets
     int * targetArray = NULL;
     int numberOfTargets = 0;
@@ -738,6 +744,24 @@ void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray)
     }
 }
 
+upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct)
+{
+    static upgradeArraysStruct * storedUpgradeStuct = NULL;
+    if(upgradeStruct!=NULL)
+    {
+        if(storedUpgradeStuct)
+        {
+            
+            free(storedUpgradeStuct->tarArray);
+            free(storedUpgradeStuct->statArray);
+            free(storedUpgradeStuct);
+        }
+        storedUpgradeStuct = upgradeStruct;
+    }
+    return storedUpgradeStuct;
+ 
+}
+ 
 
 
 
@@ -1090,24 +1114,6 @@ operator matchesOperator(char isThisAnOperator)
 }
 
 
-/*  
- *  called with pointers to the arrays if a parseUpgrade is successful in pushing its commands
-    the pointers a stored in statics
-    
-    then when calculating costs for parseWhile infinite loop check in getCommandsCost function
-    we retrieve the pointers to the last pushed arrays by calling with NULL pointers
-    which are then filled
- */
-upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct)
-{
-    static upgradeArraysStruct * storedUpgradeStuct = NULL;
-    if(upgradeStruct!=NULL)
-    {
-        storedUpgradeStuct = upgradeStruct;
-    }
-    return storedUpgradeStuct;
-
-}
 
 
                                
