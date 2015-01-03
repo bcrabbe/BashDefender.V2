@@ -980,6 +980,7 @@ int shouldBrakeInfiniteLoop(envVar * variable, int condition, char ** commandArr
         printf("cost = %d\n",costs);
         if(costs>variable->value-condition)
         {
+            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nmktwr\n\ntype ""mktwr"" followed by the tower type and the letter of a field where you would like the tower to appear\nExamples:\nmktwr INT a\nmktwr CHAR f");
             return 1;
         }
         else
@@ -1266,8 +1267,7 @@ cmdOption getCommandOption(char * secondToken)
  */
 void optionUsageError()
 {
-    errorToTerminalWindow("ERROR: Could not execute command.");
-    errorToTerminalWindow("Type man [COMMAND] for help");
+    errorToTerminalWindow("ERROR: Could not execute command. Type man [COMMAND] for help");
     fprintf(stderr,"*** Syntax error: Could not execute command.***\n");
     fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
     //error messages will need to be passed back to the terminal to be printed. hopefully can do this by setting up a custom stream. For now will print to stderr.
