@@ -70,26 +70,6 @@ void destroyCommandNode(CommandNode **start);
 void testTowerMonitor(void);
 void testTerminalWindow(void);
 
-
-/**
- update tower monitor according to information in tower monitor object
- @param void
- @returns pointer to display string currently held in tower monitor
- */
-
-
-void tutorialUpdateAllInfoWindow(void) {
-    statsBar();
-	tutorialTowerMonitor();
-    actionQueueMonitor();
-    towerInformation();
-    terminalWindow();
-}
-
-void tutorialTowerMonitor()	{
-	TowerMonitor *tm = getTowerMonitor();
-	updateTowerMonitor(tm->string);
-}
 /**
  Updates everything in information window
  @param void
@@ -103,8 +83,23 @@ void updateAllInfoWindow(void) {
     terminalWindow();
 }
 
+void tutorialUpdateAllInfoWindow(void) {
+    statsBar();
+	tutorialTowerMonitor();
+    actionQueueMonitor();
+    towerInformation();
+    terminalWindow();
+}
+
+void tutorialTowerMonitor()	{
+	TowerMonitor *tm = getTowerMonitor();
+	updateTowerMonitor(tm->string);
+}
+
 /**
- Update tower monitor according to information in tower monitor object
+ update tower monitor according to information in tower monitor object
+ @param void
+ @returns pointer to display string currently held in tower monitor
  */
 char* towerMonitor(void) {
     TowerMonitor *tm = getTowerMonitor();
@@ -415,17 +410,26 @@ char *getDefaultTowerString(TowerMonitor *tm) {
 char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     
     static char towerString[MAX_OUTPUT_STRING];
+    char type[10];
     
-    int range, damage, speed, AOEpower, AOErange;
-    getStats(&range, &damage, &speed, &AOEpower, &AOErange, targetTower);
+    int towerType, range, damage, speed, AOEpower, AOErange;
 
+    getStats(&towerType, &range, &damage, &speed, &AOEpower, &AOErange, targetTower);
+    
+    switch(towerType) {
+        case INT_TYPE:
+            strcpy(type, "INT");
+            break;
+        case CHAR_TYPE:
+            strcpy(type, "CHAR");
+            break;
+    }
 
-    sprintf(towerString, "TOWER %d\n\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, range, damage, speed, AOEpower, AOErange);
+    sprintf(towerString, "TOWER %d\n\nType: %s\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, type, range, damage, speed, AOEpower, AOErange);
     strcpy(tm->string, towerString);
     
     return towerString;
 }
-
 
 /*Test functions*/
 
@@ -437,7 +441,7 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
 void testingInformationWindowModule()	{
     
     sput_start_testing();
-    sput_set_output_stream(NULL);
+    sput_set_output_stream(stderr);
     
     sput_enter_suite("testTowerMonitor");
     sput_run_test(testTowerMonitor);
@@ -449,25 +453,6 @@ void testingInformationWindowModule()	{
     
     sput_finish_testing();
 }
-
-/**
- test if strings in tower monitor are being stored correctly
- @param void
- @returns void
- */
-void testTowerMonitor(void) {
-    TowerMonitor *tm= getTowerMonitor(); //initialize tower monitor
-    
-    createTowerGroup(); //Create tower group to test retrieving default tower string
-    sput_fail_if(strcmp(getDefaultTowerString(tm), tm->string) != 0, "Testing default string");
-    
-    textToTowerMonitor("This is a test string");
-    sput_fail_if(strcmp(tm->string, "This is a test string") != 0, "Testing random string");
-    
-    userCreateTower(200, 200); //Create random tower to test retrieving specific tower string.
-    sput_fail_if(strcmp(getTowerString(1, tm), tm->string) != 0, "Testing specific tower string");
-}
-
 
 void tutorial_one()	{
 
@@ -560,7 +545,25 @@ void tutorial_sixteen()	{
 /*Test functions*/
 
 /**
- test if strings in terminal window are being stored correctly
+ test if strings in tower monitor are being stored correctly
+ @param void
+ @returns void
+ */
+void testTowerMonitor(void) {
+    TowerMonitor *tm= getTowerMonitor(); //initialize tower monitor
+    
+    createTowerGroup(); //Create tower group to test retrieving default tower string
+    sput_fail_if(strcmp(getDefaultTowerString(tm), tm->string) != 0, "Testing default string");
+    
+    textToTowerMonitor("This is a test string");
+    sput_fail_if(strcmp(tm->string, "This is a test string") != 0, "Testing random string");
+    
+    userCreateTower(200, 200); //Create random tower to test retrieving specific tower string.
+    sput_fail_if(strcmp(getTowerString(1, tm), tm->string) != 0, "Testing specific tower string");
+}
+
+/**
+ test if strings in terminal window are being stored correctly.
  @param void
  @returns void
  */

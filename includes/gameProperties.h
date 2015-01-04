@@ -80,6 +80,7 @@ typedef struct clockNode *ClockNode;
 GameProperties createGame();
 int getAvailableMemory();
 int useMemory(GameProperties game,int mem);
+void setMemory(int newMem);
 int getWave(GameProperties game);
 int getHealth(GameProperties game);
 clock_t delayGame(int delayN);

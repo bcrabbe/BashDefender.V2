@@ -6,7 +6,7 @@
 #include "../includes/sput.h"
 #include "../includes/debug.h"
 
-#define MAX_COOLDOWN 100 // the longest number of ticks that a tower can take between shots
+#define MAX_COOLDOWN 100 //  the longest number of ticks that a tower can take between shots
 
 //bullet #defines
 #define BULLET_TO_TARGET 20 // the number of steps for a bullet to reach its target
@@ -516,6 +516,14 @@ void addTowerPosNode(int x, int y)	{
 		tPos->towerPositions[tPos->numberOfPositions] = newTower;
 }
 
+void makeAllTowPosAvailable()	{
+	TowerPos tPos = getTowerPos(NULL);
+	int i;
+	for(i = 1; i <= tPos->numberOfPositions; i++)	{
+		tPos->towerPositions[i]->empty = TRUE;
+	}
+}
+
 double scaleTowerPos(int coord, int scaleAxis, int scaleMax)	{
 	return ((double) coord * ((double) scaleAxis/ (double) scaleMax) );
 }
@@ -550,9 +558,9 @@ int getNumOfTowerPositions()	{
 }
 
 void testingTowerPositions()	{
-
-	sput_start_testing();
-	sput_set_output_stream(NULL);
+    
+    sput_start_testing();
+	sput_set_output_stream(stderr);
 
 	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
 	sput_run_test(testTowerCreation);
@@ -662,6 +670,7 @@ tower createTower() {
 int createTowerFromPositions(int position)	{
 	TowerPos tPos = getTowerPos(NULL);
 	if((position > 0) && (position <= tPos->numberOfPositions) && (tPos->towerPositions[position]->empty == TRUE))	{
+		printf("###can create tower###\n");
 		userCreateTower(tPos->towerPositions[position]->x,tPos->towerPositions[position]->y);
 		tPos->towerPositions[position]->empty = FALSE;
 		return 1;
@@ -669,8 +678,15 @@ int createTowerFromPositions(int position)	{
 	return 0;
 }
 
+int getTowerPositionX(int position)	{
+	return getTowerPos(NULL)->towerPositions[position]->x;
+}
+
+int getTowerPositionY(int position)	{
+	return getTowerPos(NULL)->towerPositions[position]->y;
+}
+
 void createTowerTypeFromPositions(int position, int tType)	{
-	iprint(tType);
 	TowerGroup TG = getTowerGrp(NULL);
 	createTowerFromPositions(position);
 	TG->listOfTowers[TG->numOfTowers]->towerType = tType;
@@ -819,8 +835,8 @@ int upgradeDmg(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->damage+=DAMAGE_UPGR_VAL;
-    makePostUpgradeChanges(target);
-    return upgradeT->damage;
+    	makePostUpgradeChanges(target);
+    	return upgradeT->damage;
 	}
 	return 0;
 }
@@ -830,8 +846,8 @@ int upgradeRange(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->range+=RANGE_UPGR_VAL;
-    makePostUpgradeChanges(target);
-    return upgradeT->range;
+    	makePostUpgradeChanges(target);
+    	return upgradeT->range;
 	}
 	return 0;
 }
@@ -890,18 +906,20 @@ int checkCharType()	{
 void freeAllTowers()	{
 
 	int i = 1;
+	makeAllTowPosAvailable();
 	while(i <= getTowerGrp(NULL)->numOfTowers)	{
 		free(getTowerGrp(NULL)->listOfTowers[i]);
 		i++;
 	}
 	if(getTowerGrp(NULL)->numOfTowers != 0)	{
+		i--;
 		getTowerGrp(NULL)->numOfTowers -=i;
 	}
 }
 
 void testGetTower()	{
-	
-	freeAllTowers();
+
+    freeAllTowers();
 	createTowerFromPositions(1);
 	sput_fail_unless(getNumberOfTowers() == 1, "Valid: Number of towers held in group is one.");
 	sput_fail_unless(getTowerID(1) != NULL,"Valid: Tower with ID 1 exists.");
@@ -956,7 +974,7 @@ void populateTower(tower newTow, int id) {
 
 }
 
-void getStats(int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID)
+void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID)
 {
     TowerGroup towers = getTowerGrp(NULL);
      *range = towers->listOfTowers[towerID]->range;
@@ -964,6 +982,7 @@ void getStats(int *range, int *damage, int *speed, int *AOEpower, int *AOErange,
      *speed = towers->listOfTowers[towerID]->speed;
      *AOEpower = towers->listOfTowers[towerID]->AOEpower;
      *AOErange = towers->listOfTowers[towerID]->AOErange;
+     *towerType = towers->listOfTowers[towerID]->towerType;
 }
 
 int getTowerX(int towerID)

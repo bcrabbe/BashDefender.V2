@@ -541,7 +541,6 @@ void setUpTesting()	{
     createProjectileList();
     initialiseParseLists();
     init_abilities();
-	initialQueueReader();
 }
 
 void testLevelController()	{
@@ -561,6 +560,11 @@ void testReadLevelSettingsFile()	{
 	sput_fail_unless(countKeywords() == 9,"9 Keywords Should Exist in the level settings queue");
 	initialQueueReader();	//! Removing set up commands
 	sput_fail_unless(countKeywords() == 3,"Valid: 3 Keywords Should Exist in the level settings queue");
+	sput_fail_unless(getNumberOfPaths() == 1,"Valid: Number of paths that have been set is 1");
+	sput_fail_unless(getNumOfTowerPositions() == 4,"Valid: Number of tower positions that have been created is 4");
+	sput_fail_unless(getTowerPositionX(1) == scaleTowerPos(10,SCREEN_WIDTH_GLOBAL,MAX_TOWER_X),"Valid: Tower position 1 x value is as expected after scaling");
+	sput_fail_unless(getTowerPositionY(1) == scaleTowerPos(500,SCREEN_HEIGHT_GLOBAL,MAX_TOWER_Y),"Valid: Tower position 1 y value is as expected after scaling");
+	sput_fail_unless(getTotalWaveNo() == 3,"Valid: Total Waves set to three");
 	setCurrWaveNum(1);
 	sput_fail_unless(returnPropertyValueFromQueue(1,waveID) == 1,"Valid: First keyword has waveID 1");
 	sput_fail_unless(returnPropertyValueFromQueue(2,waveID) == 2,"Valid: Second keyword has waveID 2");

@@ -26,13 +26,17 @@ void testing();
 void tutorialLevel(Display d,int *restart);
 /*----------System Test Functions-----------*/
 
+void queueToTowerTesting();
 void parseToQueueTesting();
 void parseToTowerTesting();
 void towerToEnemyTesting();
 void enemyToGamePropertiesTesting();
 
 /*----------Testing Suites-----------*/
+
+void testPopFromQueue();
 void testEnemyDeath();
 void testParseToTower();
 void testValidParses();
 void testEnemyInRange();
+

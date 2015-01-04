@@ -158,8 +158,8 @@ Display init_SDL(){
     init_pic(&d->circ1_Texture[1], "Images/circ1_light.png");
     init_pic(&d->circ2_Texture[0], "Images/circ3_dark.png");
     init_pic(&d->circ2_Texture[1], "Images/circ3_light.png");
-    init_pic(&d->bulletTexture[0], "Images/greenBullet.png");
-    init_pic(&d->bulletTexture[1], "Images/redBullet.png");
+    init_pic(&d->bulletTexture[0], "Images/greenBullet2.png");
+    init_pic(&d->bulletTexture[1], "Images/redBullet2.png");
 
     return d;
 }
@@ -190,7 +190,7 @@ void drawKillAll(){
     SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
     int saturation = 0;
     while (saturation < 255) {
-        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 2.5);
+        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 4);
         SDL_RenderFillRect(d->renderer, &d->rect);
         SDL_RenderPresent(d->renderer);
     }
@@ -265,12 +265,24 @@ void getWindowSize(int *w, int *h){
 /*draw damage line from X & Y to target X & Y*/
 void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType){
       // choose laser colour depending on type
-    if(laserType == INT_TYPE) {
-        SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, 255);
-    } else {
-        SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, 255);
+      int sat = 5;
+      int adjust = -5;
+    for(int i = 0; i < 10; i++) {
+        
+        if(laserType == INT_TYPE) {
+            SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, sat);
+        } else {
+            SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, sat);
+        }
+        SDL_RenderDrawLine(d->renderer, X_from+adjust, Y_from-adjust, X_target, Y_target);
+        
+        adjust++;
+        if(i < 5) {
+            sat+=25;
+        } else {
+            sat-=25;
+        }
     }
-    SDL_RenderDrawLine(d->renderer, X_from, Y_from, X_target, Y_target);
 }
 
 /* draw an enemy at x and y coor with the health bar above it*/

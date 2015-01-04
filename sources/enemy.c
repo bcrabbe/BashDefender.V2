@@ -183,6 +183,10 @@ void assignMemoryForPaths(int numberOfPaths)
       }
 }
 
+int getNumberOfPaths()	{
+	return getLevelPaths(NULL)->numberOfPaths;
+}
+
 /*
 * if passed NULL, returns static LevelPaths pointer. If passed pointer, reassigns static LevelPaths pointer.
 */

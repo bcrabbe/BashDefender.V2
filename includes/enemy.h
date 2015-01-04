@@ -89,6 +89,7 @@ void assignMemoryForPaths(int numberOfPaths);
 void layPaths(int numberOfPaths, int levelNum);
 char *getFilePath(int levelNum, int pathNum);
 void readInPath(int levelNum, int pathNum);
+int getNumberOfPaths();
 
 void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width);
 int distanceToEndOfPath(int enemyID);
