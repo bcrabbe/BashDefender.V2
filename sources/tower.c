@@ -516,6 +516,14 @@ void addTowerPosNode(int x, int y)	{
 		tPos->towerPositions[tPos->numberOfPositions] = newTower;
 }
 
+void makeAllTowPosAvailable()	{
+	TowerPos tPos = getTowerPos(NULL);
+	int i;
+	for(i = 1; i <= tPos->numberOfPositions; i++)	{
+		tPos->towerPositions[i]->empty = TRUE;
+	}
+}
+
 double scaleTowerPos(int coord, int scaleAxis, int scaleMax)	{
 	return ((double) coord * ((double) scaleAxis/ (double) scaleMax) );
 }
@@ -662,6 +670,7 @@ tower createTower() {
 int createTowerFromPositions(int position)	{
 	TowerPos tPos = getTowerPos(NULL);
 	if((position > 0) && (position <= tPos->numberOfPositions) && (tPos->towerPositions[position]->empty == TRUE))	{
+		printf("###can create tower###\n");
 		userCreateTower(tPos->towerPositions[position]->x,tPos->towerPositions[position]->y);
 		tPos->towerPositions[position]->empty = FALSE;
 		return 1;
@@ -669,8 +678,15 @@ int createTowerFromPositions(int position)	{
 	return 0;
 }
 
+int getTowerPositionX(int position)	{
+	return getTowerPos(NULL)->towerPositions[position]->x;
+}
+
+int getTowerPositionY(int position)	{
+	return getTowerPos(NULL)->towerPositions[position]->y;
+}
+
 void createTowerTypeFromPositions(int position, int tType)	{
-	iprint(tType);
 	TowerGroup TG = getTowerGrp(NULL);
 	createTowerFromPositions(position);
 	TG->listOfTowers[TG->numOfTowers]->towerType = tType;
@@ -819,8 +835,8 @@ int upgradeDmg(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->damage+=DAMAGE_UPGR_VAL;
-    makePostUpgradeChanges(target);
-    return upgradeT->damage;
+    	makePostUpgradeChanges(target);
+    	return upgradeT->damage;
 	}
 	return 0;
 }
@@ -830,8 +846,8 @@ int upgradeRange(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->range+=RANGE_UPGR_VAL;
-    makePostUpgradeChanges(target);
-    return upgradeT->range;
+    	makePostUpgradeChanges(target);
+    	return upgradeT->range;
 	}
 	return 0;
 }
@@ -890,11 +906,13 @@ int checkCharType()	{
 void freeAllTowers()	{
 
 	int i = 1;
+	makeAllTowPosAvailable();
 	while(i <= getTowerGrp(NULL)->numOfTowers)	{
 		free(getTowerGrp(NULL)->listOfTowers[i]);
 		i++;
 	}
 	if(getTowerGrp(NULL)->numOfTowers != 0)	{
+		i--;
 		getTowerGrp(NULL)->numOfTowers -=i;
 	}
 }

@@ -512,6 +512,15 @@ int addMemory(int mem)          {
 
 	return 0;
 }
+/*
+ *Setting available memory to specified value
+ */
+void setMemory(int newMem)	{
+	GameProperties game = getGame(NULL);
+	if(newMem>= 0)	{
+		game->totalMemory = newMem;
+	}
+}
 
 void TestAddMemory()	{
 

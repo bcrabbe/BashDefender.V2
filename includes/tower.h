@@ -74,6 +74,7 @@ void testingTowerModule();
 void testGetTower();
 void testUpgradeTowerStat();
 void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID);
+
 int getNumOfTowerPositions();
 void freeAllTowerPositions();
 void testTowerCreation();
@@ -81,6 +82,10 @@ void testingTowerPositions();
 int createTowerFromPositions(int position);
 void drawAllTowerPositions();
 void createTowerTypeFromPositions(int position, int tType);
+int getTowerPositionX(int position);
+int getTowerPositionY(int position);
+void makeAllTowPosAvailable();
+
 int checkCharType();
 
 void createProjectileList();

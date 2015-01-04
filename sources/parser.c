@@ -637,7 +637,6 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
             {
                 //unrecognised stat error
                 optionUsageError();
-                cleanUpParseUpgrade(statsToUpgradeArray,NULL);
                 return 0;
             }
         }
