@@ -62,8 +62,8 @@ void tutorialLevel(Display d,int *restart)	{
     //init_sound();
     //playBackgroundSound();
 	addClock(tutorialClock);
-	int damage, range, speed, resetTime = 0, flag = 1;
-	int currMemory;
+	int damage = 0, range = 0, speed = 0, resetTime = 0, flag = 1;
+	int currMemory = 0;
     do{
         startFrame(d);
 		while(pause)	{
@@ -87,7 +87,7 @@ void tutorialLevel(Display d,int *restart)	{
 					break;
 			case phaseTwo:
 					tutorial_two();
-					if(getNumOfTowers() > 0)	{
+					if(getNumberOfTowers() > 0)	{
 						damage = getTowerDamage(1);
 						tPhase++;
 					}
@@ -257,12 +257,12 @@ void tutorialLevel(Display d,int *restart)	{
             parse(inputCommand);
         }
         present_enemy(d);
-        present_tower(d);
+        present_tower();
 
     	fire();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
-            int move = moveEnemy(i);
+            moveEnemy(i);
         }
         presentAnimation();
     	drawAllTowerPositions();
@@ -311,12 +311,12 @@ void startLevel(Display d, int *restart)	{
             parse(inputCommand);
         }
         present_enemy(d);
-        present_tower(d);
+        present_tower();
 
     	fire();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
-            int move = moveEnemy(i);
+            moveEnemy(i);
         }
         presentAnimation();
     	drawAllTowerPositions();
@@ -350,11 +350,12 @@ void testing()	{
 	setUpTesting();
 	//!Unit Tests	
 	//testLevelController(); //! Working
+	testingProjectiles();
 	testingTowerPositions(); //!Working
     //testingGameStructure(); //!Memory Tests Failing
     //testingActionQueue(); //! Working
-    //testEnemy(); // ! No longer works.
-    //testingTowerModule(); //! working
+    testEnemy(); // ! No longer works.
+    testingTowerModule(); //! working
     testingInformationWindowModule();
 
    	//! System Tests 
@@ -477,7 +478,7 @@ void testParseToTower()
 void testValidParses()
 {
 	
-	createTower();
+	userCreateTower(0, 0); // create tower at x: 0, y: 0. Position is irrelevant for this test
     sput_fail_unless(parse("upgrade r t1")== 1, "upgrade r t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
 	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");

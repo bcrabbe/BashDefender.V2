@@ -97,6 +97,23 @@ void layPaths(int numberOfPaths, int levelNum)
     }
 }
 
+/*
+* lays one straight, horizontal path for testing
+*/
+void layTestPath()
+{
+    assignMemoryForPaths(1);
+    Path p = getLevelPaths(NULL)->paths[0];
+    p->pathLength = 500;
+    p->pathCoords = (int **) malloc(sizeof(int *) * p->pathLength);
+    for(int i = 0; i < 500; i++) {
+        p->pathCoords[i] = (int *)malloc(sizeof(int) * 2);
+        p->pathCoords[i][0] = i;
+        p->pathCoords[i][1] = 100;
+    }
+}
+    
+
 void readInPath(int levelNum, int pathNum) {
   
   char *filePath = getFilePath(levelNum, pathNum);
@@ -222,6 +239,15 @@ void freeEnemyGroup()
     free(enemyList);
 }
 
+void freeAllEnemies()
+{
+    EnemyGroup enemyList =  getEnemyGroup(NULL);
+    for(int i = 1; i <= enemyList->numberOfEnemies; i++) {
+        free(enemyList->enemyArray[i]);
+    }
+    enemyList->numberOfEnemies = 0;
+}
+
 
 /*
 * creates a new blank enemy within the enemy list structure, updates the enemy list structure to reflect the new number of enemies and populates the enemy (currently running for standard enemy only)
@@ -242,6 +268,9 @@ Enemy createEnemy()
 	      printf("****ERROR malloc in createEnemy failed****\n");
         exit(1);
     }
+    
+     // initially set health to 100. overwritten by InitialiseEnemy, but createEnemy() is used alone for testing
+    enemyList->enemyArray[enemyList->numberOfEnemies]->health = 100;
     
     return enemyList->enemyArray[enemyList->numberOfEnemies];
 
@@ -397,7 +426,7 @@ void freeEnemy(int enemyID)
 /*
 * moves specified enemy along their assigned path by a set number of steps as designated by the enemy's speed characteristic
 */
-int moveEnemy(int enemyID )
+void moveEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
     if(!isDead(enemyID) ) {
@@ -405,17 +434,13 @@ int moveEnemy(int enemyID )
             e->pathProgress += e->speed;
             e->x = e->enemyPath->pathCoords[e->pathProgress][0];
             e->y = e->enemyPath->pathCoords[e->pathProgress][1];
-            return 0;
         }
         else {
             damageHealth(e->damage); 
             e->dead = 1;
-			increaseDeathCnt();
-            return 0;
+			      increaseDeathCnt();
         }
     }
-    return 1;
-
 }
 
 

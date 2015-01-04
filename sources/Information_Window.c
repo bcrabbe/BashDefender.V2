@@ -371,7 +371,7 @@ void actionQueueMonitor() {
  */
 void towerInformation() {
     
-    int numOfTowers = getNumOfTowers();
+    int numOfTowers = getNumberOfTowers();
     
     if(numOfTowers > 0) {
         for(int towerID = 1; towerID <= numOfTowers; ++towerID) {
