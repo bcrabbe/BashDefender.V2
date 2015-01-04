@@ -16,9 +16,13 @@ typedef enum tutPhase {
 	phaseFourteen = 14,
 	phaseFifteen = 15,
 	phaseSixteen = 16,
-	phaseSeventeen = 17
+	phaseSeventeen = 17,
+	phaseEighteen = 18,
+	phaseNineteen = 19,
+	phaseTwenty = 20,
+	phaseTwentyOne = 21,
+	phaseTwentyTwo = 22
 } tutPhase;
-
 
 void quitGame();
 void startLevel(Display d, int *restart);

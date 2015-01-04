@@ -18,6 +18,7 @@
 
 #define TESTING 0
 
+
 int main(int argc, char ** argv)
 {
     
@@ -26,15 +27,39 @@ int main(int argc, char ** argv)
         testing();
         exit(EXIT_SUCCESS);
     }
-    
-    srand(time(NULL));
 	int restart = 0;
     int started = 0;
-  //  testing();
-    while(started == 0){
-    	menu_screen(d, &started);
-    }
+    
+    srand(time(NULL));
+	gameState state = menu;
+	do{
+		switch(state)	{
+			case menu:
+			    while(state == menu){
+			        menu_screen(d, &state);
+			    }
+				break;
+			case tutorial:
+					initLevel(0);
+					tutorialLevel(d,&restart);
+					endLevel(&restart);
+					state = menu;
+				break;
+			case level1:
+					initLevel(1);
+					startLevel(d,&restart);
+					endLevel(&restart);
+					state = menu;
+				break;
+			default:
+				exit(1);	
+		}
+	}	while(1);
 
+    /*while(started == 0){
+    	menu_screen(d, &state);
+    }*/
+/*
 	do	{
 		restart = 0;
     	initLevel(1); //For tutorial level, change to 0, uncomment tutorial level, comment startlevel for tutorial
@@ -42,68 +67,15 @@ int main(int argc, char ** argv)
 		startLevel(d,&restart);
 		endLevel();
 	} while (restart);
-
+*/
     
     shutSDL(d);
     quitGame();
     return 0;
 }
 
-
-void startLevel(Display d, int *restart)	{
-
-    char text[128] = {'>', '>'};
-    char empty[128] = {'>', '>'};
-    char *pass, *clear, *inputCommand=NULL;
-    pass = text;
-    clear = empty;
-    int ended = 0;
-   	int pause = 0; 
-    int steps=0;
-
-    //init_sound();
-    //playBackgroundSound();
-    do{
-        startFrame(d);
-		while(pause)	{
-			pause_screen(d,&pause,restart);
-		}
-        ++steps;
-        drawBackground();
-        
-    	startNextWave();
-        levelQueueReader();
-        terminal_window(d, pass, clear,&pause, *restart);
-    	popToTower();
-        if(inputCommand)
-        {
-            parse(inputCommand);
-        }
-        present_enemy(d);
-        present_tower(d);
-
-    	fire();
-        for(int i=1; i<=getNumberOfEnemies(); ++i)
-        {
-            int move = moveEnemy(i);
-        }
-        presentAnimation();
-    	drawAllTowerPositions();
-        updateAllInfoWindow();
-        endFrame(d);
-        
-        //ended = checkIfPlayerDead();
-        while (ended) {
-            //final screen returns 1 if restart button was pressed...
-            if (final_screen()){
-                ended = 0;
-            }
-        }
-        
-    } while(!terminal_window(d, pass, clear,&pause, *restart));
-		printf("finished\n");    
-}
 void tutorialLevel(Display d,int *restart)	{
+
     tutPhase tPhase = phaseOne;
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
@@ -127,7 +99,6 @@ void tutorialLevel(Display d,int *restart)	{
         ++steps;
         drawBackground();
         
-        
         switch(tPhase)	{
                 
             case phaseOne:
@@ -136,7 +107,7 @@ void tutorialLevel(Display d,int *restart)	{
                     flag = 0;
                 }
                 tutorial_one();
-                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_SHORT))	{
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
                     tPhase++;
                 }
                 break;
@@ -241,9 +212,10 @@ void tutorialLevel(Display d,int *restart)	{
                 break;
             case phaseThirteen:
                 tutorial_eleven();
-                if(startOfQueueCalc() > getAvailableMemory(getGame(NULL))){
+				if(getFirstOption(getQueue(NULL)) == upgrade_range)	{
                     tPhase++;
-                }
+					setMemory(0);
+				}
                 break;
             case phaseFourteen:
                 if(!flag)	{
@@ -259,7 +231,7 @@ void tutorialLevel(Display d,int *restart)	{
                         tutorial_sixteen();
                     }
                 }
-                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
                     addMemory(1000);
                 }
                 break;
@@ -278,26 +250,67 @@ void tutorialLevel(Display d,int *restart)	{
                 if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
                     tPhase++;
                 }
+				break;
             case phaseSeventeen:
-                if(!flag)	{
-                    setCurrTime(findClock(tutorialClock));
+                    if(!flag)   {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 1;
+                    }
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                    	tutorial_thirteen();
+                        tPhase++;
+                    }
+					break;
+            case phaseEighteen:
+                    if(flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+                    updateAllInfoWindow();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                        tPhase++;
+                    }
+                    break;  
+		 	case phaseNineteen:
+				if(!flag)	{
+                	setCurrTime(findClock(tutorialClock));
                     flag = 1;
+				}	
+				tutorial_seventeen();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                	tPhase++;
                 }
-                tutorial_thirteen();
-                updateAllInfoWindow();
-                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-                    
+				break;
+			case phaseTwenty:
+				if(flag)	{
+                	setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+				}	
+				tutorial_seventeen();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                	tPhase++;
                 }
-                break;
-            default:
-                
+				break;
+			case phaseTwentyOne:
+				if(flag)	{
+                	setCurrTime(findClock(tutorialClock));
+                    flag = 0;
+				}
+				tutorial_eighteen();
+				if(getTowerType(1) == CHAR_TYPE && getTowerType(2) == INT_TYPE)	{
+					tPhase++;
+				}
+				break;
+			case phaseTwentyTwo:
+				if(!flag)	{
+                	setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+				}
+				exit(1);	
+			default:
                 break;
         }
-        /*
-         if(startOfQueueCalc() > getAvailableMemory(getGame(NULL)))	{
-         addMemory(1000);
-         }
-         */
+        
         if(resetTime)	{
             setCurrTime(findClock(tutorialClock));
             resetTime = 0;
@@ -333,8 +346,61 @@ void tutorialLevel(Display d,int *restart)	{
         }
         
     } while(!terminal_window(d, pass, clear,&pause, *restart));
-    printf("finished\n");    
 }
+
+
+void startLevel(Display d, int *restart)	{
+
+    char text[128] = {'>', '>'};
+    char empty[128] = {'>', '>'};
+    char *pass, *clear, *inputCommand=NULL;
+    pass = text;
+    clear = empty;
+    int ended = 0;
+   	int pause = 0; 
+    int steps=0;
+
+    //init_sound();
+    //playBackgroundSound();
+    do{
+        startFrame(d);
+		while(pause)	{
+			pause_screen(d,&pause,restart);
+		}
+        ++steps;
+        drawBackground();
+        
+    	startNextWave();
+        levelQueueReader();
+        terminal_window(d, pass, clear,&pause, *restart);
+    	popToTower();
+        if(inputCommand)
+        {
+            parse(inputCommand);
+        }
+        present_enemy(d);
+        present_tower(d);
+
+    	fire();
+        for(int i=1; i<=getNumberOfEnemies(); ++i)
+        {
+            int move = moveEnemy(i);
+        }
+        presentAnimation();
+    	drawAllTowerPositions();
+        updateAllInfoWindow();
+        endFrame(d);
+        
+        //ended = checkIfPlayerDead();
+        while (ended) {
+            //final screen returns 1 if restart button was pressed...
+            if (final_screen())	{
+                ended = 0;
+            }
+        }
+    } while(!terminal_window(d, pass, clear,&pause, *restart));
+}
+
 
 void quitGame()
 {
@@ -352,7 +418,6 @@ void testing()	{
 	//!Unit Tests	
 
 	testLevelController(); //! Working
-	testingTowerPositions(); //!Working
     //testingGameStructure(); //!Memory Tests Failing
     testingActionQueue(); //! Working
     //testEnemy(); // ! No longer works.
@@ -361,9 +426,9 @@ void testing()	{
     testingTowerModule(); //! working
     //testingInformationWindowModule();
    	//! System Tests 
-	queueToTowerTesting();
-    parseToQueueTesting(); //!Working
-	parseToTowerTesting(); //!Working
+	//queueToTowerTesting();
+    //parseToQueueTesting(); //!Working
+	//parseToTowerTesting(); //!Working
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 	//enemyToGamePropertiesTesting();
     //testParserToInfoWindow();

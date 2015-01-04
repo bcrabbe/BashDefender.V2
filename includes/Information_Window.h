@@ -50,6 +50,9 @@ void tutorial_thirteen();
 void tutorial_fourteen();
 void tutorial_fifteen();
 void tutorial_sixteen();
+void tutorial_seventeen();
+void tutorial_eighteen();
+
 void tutorialUpdateAllInfoWindow(void);
 void tutorialTowerMonitor();
 #endif

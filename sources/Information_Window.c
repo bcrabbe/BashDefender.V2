@@ -441,12 +441,13 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
             break;
     }
 
-    // sprintf(towerString, "TOWER %d\n\nType: %s\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, type, range, damage, speed, AOEpower, AOErange);
-    sprintf(towerString, "TOWER %d\n\nRange: %d Cost to Upgrade: %d \nDamage: %d Cost to Upgrade: %d\nSpeed: %d Cost to Upgrade: %d \nAOE Power: %d\nAOE Range: %d", targetTower,
-            range, calculateCosts(cmd_upgrade,upgrade_range,targetTower),
-            damage, calculateCosts(cmd_upgrade,upgrade_power,targetTower),
-            speed, calculateCosts(cmd_upgrade,upgrade_speed,targetTower),
-            AOEpower, AOErange);
+
+    sprintf(towerString, "TOWER %d\n\nRange: %d Cost to Upgrade: %d \nDamage: %d Cost to Upgrade: %d\nSpeed: %d Cost to Upgrade: %d \nAOE Power: %d\nAOE Range: %d", targetTower, 
+					range, calculateCosts(cmd_upgrade,upgrade_range,targetTower), 
+					damage, calculateCosts(cmd_upgrade,upgrade_power,targetTower), 
+					speed, calculateCosts(cmd_upgrade,upgrade_speed,targetTower),
+					AOEpower, AOErange);
+
     strcpy(tm->string, towerString);
     
     return towerString;
@@ -533,12 +534,25 @@ void tutorial_fourteen()	{
 }
 
 void tutorial_fifteen()	{
-	textToTowerMonitor("You can see that your command is waiting in the action queue.  This is where commands get put that can't be actioned right now - don't worry, when we give you some more memory your command will get removed from the queue and put into action!\n");
+		textToTowerMonitor("You should think carefully about what commands you try to use.  If you place a very expensive command in your action queue, you will not be able to do anything else until this command gets actioned!\n  There is also a limit on how quickly you can execute command: commands that aren't ready yet will also be placed in the queue.\n");
+
 }
 
 void tutorial_sixteen()	{
 	textToTowerMonitor("No, you have to upgrade the tower's range!\n Please type\n upgrade r t1 \n");
 
+}
+
+void tutorial_seventeen()	{
+	textToTowerMonitor("Right - listen up because this next bit advice will be key to you keeping your job! \n What are you going to do if you have only int towers and lots of char virus' attack?  You could build another char tower, but that gets expensive...  Why dont you just change the type of your current towers? \n");
+}
+
+void tutorial_eighteen()	{
+	textToTowerMonitor("Type:\n chmod int t2 to change tower 2 to an int type.  \nType: \n chmod char t1\n to change tower 2 to a char type.\n  On a proper linux system, you can use the chmod command to change properties of files, not towers!: it will change the file permisions.\n");
+}
+
+void tutorial_nineteen()	{
+	textToTowerMonitor("There is one more thing you need to know about.  You can install new abilities with the apt-get command.  This command installs a new specified ability from a package repository do give you some more fire-power to fight off virus' - Just like in a Linux Environment when you need a new utility!.\n type apt-get install");
 }
 
 /*Test functions*/

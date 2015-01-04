@@ -519,6 +519,7 @@ void setMemory(int newMem)	{
 	GameProperties game = getGame(NULL);
 	if(newMem>= 0)	{
 		game->totalMemory = newMem;
+		game->memoryUsed = 0;
 	}
 }
 
