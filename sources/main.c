@@ -15,7 +15,7 @@
 #include "../includes/Sound.h"
 #include "../includes/abilities.h"
 
-#define TESTING	1 
+#define TESTING	0 
 
 int main(int argc, char ** argv)
 {
@@ -29,16 +29,15 @@ int main(int argc, char ** argv)
     srand(time(NULL));
 	int restart = 0;
     int started = 0;
-  //  testing();
     while(started == 0){
     	menu_screen(d, &started);
     }
 
 	do	{
 		restart = 0;
-    	initLevel(1); //For tutorial level, change to 0, uncomment tutorial level, comment startlevel for tutorial
-		//tutorialLevel(d,&restart);
-		startLevel(d,&restart);
+    	initLevel(0); //For tutorial level, change to 0, uncomment tutorial level, comment startlevel for tutorial
+		tutorialLevel(d,&restart);
+		//startLevel(d,&restart);
 		endLevel();
 	} while (restart);
 
@@ -49,7 +48,7 @@ int main(int argc, char ** argv)
 }
 
 void tutorialLevel(Display d,int *restart)	{
-	tutPhase tPhase = phaseOne;
+	tutPhase tPhase = phaseSeventeen;
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -229,9 +228,17 @@ void tutorialLevel(Display d,int *restart)	{
 						flag = 1;
 					}
 					tutorial_thirteen();
+					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+						tPhase++;
+					}
+			case phaseEighteen:
+					if(flag)	{
+						setCurrTime(findClock(tutorialClock));
+						flag = 0;
+					}
 					updateAllInfoWindow();
 					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-
+						tPhase++;
 					}
 					break;
 			default:
@@ -350,16 +357,15 @@ void testing()	{
 	setUpTesting();
 	//!Unit Tests	
 	testLevelController(); //! Working
-	testingTowerPositions(); //!Working
     //testingGameStructure(); //!Memory Tests Failing
     testingActionQueue(); //! Working
     //testEnemy(); // ! No longer works.
     testingTowerModule(); //! working
     //testingInformationWindowModule();
    	//! System Tests 
-	queueToTowerTesting();
-    parseToQueueTesting(); //!Working
-	parseToTowerTesting(); //!Working
+	//queueToTowerTesting();
+    //parseToQueueTesting(); //!Working
+	//parseToTowerTesting(); //!Working
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 	//enemyToGamePropertiesTesting();
 

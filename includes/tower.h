@@ -78,7 +78,6 @@ void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower
 int getNumOfTowerPositions();
 void freeAllTowerPositions();
 void testTowerCreation();
-void testingTowerPositions();
 int createTowerFromPositions(int position);
 void drawAllTowerPositions();
 void createTowerTypeFromPositions(int position, int tType);

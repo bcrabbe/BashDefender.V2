@@ -557,19 +557,6 @@ int getNumOfTowerPositions()	{
 
 }
 
-void testingTowerPositions()	{
-    
-    sput_start_testing();
-	sput_set_output_stream(stderr);
-
-	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
-	sput_run_test(testTowerCreation);
-	sput_leave_suite();
-
-	sput_finish_testing();	
-
-}
-
 void testTowerCreation()	{
 	
 	addTowerPosNode(100,200);
@@ -620,6 +607,10 @@ void testingTowerModule()	{
 
 	sput_enter_suite("testGetTower(): Tower creation at valid positions and being placed in tower array");
 	sput_run_test(testGetTower);
+	sput_leave_suite();
+
+	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
+	sput_run_test(testTowerCreation);
 	sput_leave_suite();
 
 	sput_finish_testing();
