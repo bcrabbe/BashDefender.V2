@@ -34,6 +34,7 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY );
 void assignCalculatedFiringType(int towerID);
 void makePostUpgradeChanges(int TowerID);
 int userCreateTower(int inputTowerPositionX, int inputTowerPositionY);
+int getTowerType(int towerID);
 int getTowerRange(int towerID);
 int getTowerSpeed(int towerID);
 int getTowerAOErange(int towerID);

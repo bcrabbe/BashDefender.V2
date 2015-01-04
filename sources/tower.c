@@ -583,22 +583,47 @@ int getLastTowerPositionX()	{
 }
 
 int getTowerRange(int towerID)	{
-	return getTowerID(towerID)->range;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->range;     
+	}
+	return 0;
+}
+
+int getTowerType(int towerID)	{
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->towerType;
+	}
+	return 0;
 }
 int getTowerSpeed(int towerID)	{
-	return getTowerID(towerID)->speed;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->speed;   
+	}	
+	return 0;
 }
 int getTowerDamage(int towerID)	{
-	return getTowerID(towerID)->damage;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->damage;     
+	}
+	return 0;
 }
 int getTowerAOErange(int towerID)	{
-	return getTowerID(towerID)->level;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->level;     
+	}
+	return 0;
 }
 int getTowerAOEpower(int towerID)	{
-	return getTowerID(towerID)->AOEpower;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->AOEpower;     
+	}
+	return 0;
 }
 int getTowerLevel(int towerID)	{
-	return getTowerID(towerID)->level;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->level;     
+	}
+	return 0;
 }
 
 void testingTowerModule()	{

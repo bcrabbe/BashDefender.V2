@@ -14,6 +14,7 @@
 #include "../includes/enemy.h"
 #include "../includes/Sound.h"
 #include "../includes/abilities.h"
+#include "../includes/Information_Window.h"
 
 #define TESTING	0 
 
@@ -25,22 +26,47 @@ int main(int argc, char ** argv)
         testing();
         exit(EXIT_SUCCESS);
     }
-    
-    srand(time(NULL));
 	int restart = 0;
     int started = 0;
-    while(started == 0){
-    	menu_screen(d, &started);
-    }
+    
+    srand(time(NULL));
+	gameState state = menu;
+	do{
+		switch(state)	{
+			case menu:
+			    while(state == menu){
+			        menu_screen(d, &state);
+			    }
+				break;
+			case tutorial:
+					initLevel(0);
+					tutorialLevel(d,&restart);
+					endLevel(&restart);
+					state = menu;
+				break;
+			case level1:
+					initLevel(1);
+					startLevel(d,&restart);
+					endLevel(&restart);
+					state = menu;
+				break;
+			default:
+				exit(1);	
+		}
+	}	while(1);
 
+    /*while(started == 0){
+    	menu_screen(d, &state);
+    }*/
+/*
 	do	{
 		restart = 0;
-    	initLevel(0); //For tutorial level, change to 0, uncomment tutorial level, comment startlevel for tutorial
-		tutorialLevel(d,&restart);
-		//startLevel(d,&restart);
+    	initLevel(1); //For tutorial level, change to 0, uncomment tutorial level, comment startlevel for tutorial
+		//tutorialLevel(d,&restart);
+		startLevel(d,&restart);
 		endLevel();
 	} while (restart);
-
+*/
     
     shutSDL(d);
     quitGame();
@@ -48,232 +74,266 @@ int main(int argc, char ** argv)
 }
 
 void tutorialLevel(Display d,int *restart)	{
-	tutPhase tPhase = phaseSeventeen;
+
+    tutPhase tPhase = phaseOne;
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
     int ended = 0;
-   	int pause = 0; 
+   	int pause = 0;
     int steps=0;
-	
+    
     //init_sound();
     //playBackgroundSound();
-	addClock(tutorialClock);
-	int damage, range, speed, resetTime = 0, flag = 1;
-	int currMemory;
+    addClock(tutorialClock);
+    int damage, range, speed, resetTime = 0, flag = 1;
+    int currMemory;
     do{
         startFrame(d);
-		while(pause)	{
-			pause_screen(d,&pause,restart);
-		}
+        while(pause)	{
+            pause_screen(d,&pause,restart);
+        }
         ++steps;
         drawBackground();
         
-
-		switch(tPhase)	{
-
-			case phaseOne:
-					if(flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 0;
-					}
-					tutorial_one();
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN_SHORT))	{
-						tPhase++;
-					}
+        switch(tPhase)	{
+                
+            case phaseOne:
+                if(flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 0;
+                }
+                tutorial_one();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+                    tPhase++;
+                }
+                break;
+            case phaseTwo:
+                tutorial_two();
+                if(getNumOfTowers() > 0)	{
+                    damage = getTowerDamage(1);
+                    tPhase++;
+                }
+                break;
+            case phaseThree:
+                if(!flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+                }
+                tutorial_three();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+                    tPhase++;
+                }
+                break;
+            case phaseFour:
+                startNextWave();
+                tutorial_four();
+                if(flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 0;
+                }
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                    tPhase++;
+                }
+                break;
+            case phaseFive:
+                tutorial_five();
+                if(!flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+                }
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                    tPhase++;
+                    currMemory = getAvailableMemory();
+                }
+                break;
+            case phaseSix:
+                if(getTowerDamage(1) > damage)	{
+                    tutorial_six();
+                    tPhase++;
+                } else if(getAvailableMemory() < currMemory) {
+                    tutorial_five_error();
+                }
+                break;
+            case phaseSeven:
+                startNextWave();
+                if(getWave(getGame(NULL)) == 2)  {
+                    if(flag)	{
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+                        tPhase++;
+                    }
+                }
+                break;
+            case phaseEight:
+                tutorial_seven();
+                if(!flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+                }
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+                    tPhase++;
+                }
+                break;
+            case phaseNine:
+                tutorial_eight();
+                if(checkCharType())  {
+                    tPhase++;
+                }
+                break;
+            case phaseTen:
+                startNextWave();
+                if(getDeathCnt() > 0)	{
+                    tPhase++;
+                }
+                break;
+            case phaseEleven:
+                if(flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 0;
+                }
+                tutorial_nine();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                    tPhase++;
+                    speed = getTowerSpeed(1);
+                }
+                break;
+            case phaseTwelve:
+                tutorial_ten();
+                if(getTowerSpeed(1) > speed)	{
+                    tPhase++;
+                    range = getTowerRange(1);
+                }
+                break;
+            case phaseThirteen:
+                tutorial_eleven();
+				if(getFirstOption(getQueue(NULL)) == upgrade_range)	{
+                    tPhase++;
+					setMemory(0);
+				}
+                break;
+            case phaseFourteen:
+                if(!flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+                }
+                if(startOfQueueCalc() > getAvailableMemory(getGame(NULL))){
+                    tutorial_fourteen();
+                } else {
+                    if(getTowerRange(1) > range)	{
+                        tPhase++;
+                    } else {
+                        tutorial_sixteen();
+                    }
+                }
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                    addMemory(1000);
+                }
+                break;
+            case phaseFifteen:
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+                    tutorial_fifteen();	
+                    tPhase++;
+                }
+                break;
+            case phaseSixteen:
+                if(flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 0;
+                }
+                tutorial_twelve();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+                    tPhase++;
+                }
+				break;
+            case phaseSeventeen:
+                    if(!flag)   {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 1;
+                    }
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                    	tutorial_thirteen();
+                        tPhase++;
+                    }
 					break;
-			case phaseTwo:
-					tutorial_two();
-					if(getNumOfTowers() > 0)	{
-						damage = getTowerDamage(1);
-						tPhase++;
-					}
-					break;
-			case phaseThree:
-					if(!flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 1;
-					}
-					tutorial_three();
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-						tPhase++;
-					}
-					break;
-			case phaseFour:
-					startNextWave();
-					tutorial_four();
-					if(flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 0;
-					}
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
-						tPhase++;
-					}
-					break;
-			case phaseFive:
-					tutorial_five();
-					if(!flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 1;
-					}
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
-						tPhase++;
-						currMemory = getAvailableMemory();
-					}
-					break;
-			case phaseSix:	
-					if(getTowerDamage(1) > damage)	{
-						tutorial_six();
-						tPhase++;
-					} else if(getAvailableMemory() < currMemory) {
-						tutorial_five_error();
-					}
-					break;
-			case phaseSeven:
-					startNextWave();
-					if(getWave(getGame(NULL)) == 2)  {
-						if(flag)	{
-							setCurrTime(findClock(tutorialClock));
-							flag = 0;
-						}
-						if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-							tPhase++;
-						}
-					}
-					break;
-			case phaseEight:
-					tutorial_seven();
-					if(!flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 1;
-					}
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-						tPhase++;
-					}
-					break;
-			case phaseNine:
-					tutorial_eight();
-					if(checkCharType())  {
-						tPhase++;
-					}
-					break;
-			case phaseTen:
-					startNextWave();
-					if(getDeathCnt() > 0)	{
-						tPhase++;
-					}
-					break;
-			case phaseEleven:
-					if(flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 0;
-					}
-					tutorial_nine();
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
-						tPhase++;
-						speed = getTowerSpeed(1);
-					}
-					break;
-			case phaseTwelve:
-					tutorial_ten();
-					if(getTowerSpeed(1) > speed)	{
-						tPhase++;
-						range = getTowerRange(1);
-					}
-					break;
-			case phaseThirteen:
-					tutorial_eleven();
-					if(startOfQueueCalc() > getAvailableMemory(getGame(NULL))){
-						tPhase++;
-					}
-					break;
-			case phaseFourteen:
-					if(!flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 1;
-					}
-					if(startOfQueueCalc() > getAvailableMemory(getGame(NULL))){
-						tutorial_fourteen();
-					} else {
-						if(getTowerRange(1) > range)	{
-							tPhase++;
-						} else {
-							tutorial_sixteen();	
-						}
-					}
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
-							addMemory(1000);
-					}
-					break;
-			case phaseFifteen:
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-						tutorial_fifteen();	
-						tPhase++;
-					}
-					break;
-			case phaseSixteen:
-					if(flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 0;
-					}
-					tutorial_twelve();
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-						tPhase++;
-					}
-			case phaseSeventeen:
-					if(!flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 1;
-					}
-					tutorial_thirteen();
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-						tPhase++;
-					}
-			case phaseEighteen:
-					if(flag)	{
-						setCurrTime(findClock(tutorialClock));
-						flag = 0;
-					}
-					updateAllInfoWindow();
-					if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-						tPhase++;
-					}
-					break;
+            case phaseEighteen:
+                    if(flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+                    updateAllInfoWindow();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                        tPhase++;
+                    }
+                    break;  
+		 	case phaseNineteen:
+				if(!flag)	{
+                	setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+				}	
+				tutorial_seventeen();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                	tPhase++;
+                }
+				break;
+			case phaseTwenty:
+				if(flag)	{
+                	setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+				}	
+				tutorial_seventeen();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                	tPhase++;
+                }
+				break;
+			case phaseTwentyOne:
+				if(flag)	{
+                	setCurrTime(findClock(tutorialClock));
+                    flag = 0;
+				}
+				tutorial_eighteen();
+				if(getTowerType(1) == CHAR_TYPE && getTowerType(2) == INT_TYPE)	{
+					tPhase++;
+				}
+				break;
+			case phaseTwentyTwo:
+				if(!flag)	{
+                	setCurrTime(findClock(tutorialClock));
+                    flag = 1;
+				}
+				exit(1);	
 			default:
-
-					break;
-		}
-		/*
-		if(startOfQueueCalc() > getAvailableMemory(getGame(NULL)))	{
-			addMemory(1000);
-		}
-*/
-		if(resetTime)	{
-			setCurrTime(findClock(tutorialClock));
-			resetTime = 0;
-			
-		}
-
+                break;
+        }
+        
+        if(resetTime)	{
+            setCurrTime(findClock(tutorialClock));
+            resetTime = 0;
+            
+        }
+        
         levelQueueReader();
         terminal_window(d, pass, clear,&pause, *restart);
-    	popToTower();
+        popToTower();
         if(inputCommand)
         {
             parse(inputCommand);
         }
         present_enemy(d);
         present_tower(d);
-
-    	fire();
+        
+        fire();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             int move = moveEnemy(i);
         }
         presentAnimation();
-    	drawAllTowerPositions();
-    	tutorialUpdateAllInfoWindow();
+        drawAllTowerPositions();
+        tutorialUpdateAllInfoWindow();
         endFrame(d);
         
         //ended = checkIfPlayerDead();
@@ -285,8 +345,8 @@ void tutorialLevel(Display d,int *restart)	{
         }
         
     } while(!terminal_window(d, pass, clear,&pause, *restart));
-		printf("finished\n");    
 }
+
 
 void startLevel(Display d, int *restart)	{
 
@@ -333,22 +393,21 @@ void startLevel(Display d, int *restart)	{
         //ended = checkIfPlayerDead();
         while (ended) {
             //final screen returns 1 if restart button was pressed...
-            if (final_screen()){
+            if (final_screen())	{
                 ended = 0;
             }
         }
-        
     } while(!terminal_window(d, pass, clear,&pause, *restart));
-		printf("finished\n");    
 }
+
 
 void quitGame()
 {
+    freeParseLists();
     destroyEnvVarList();
     //shutSound();
 //    freeEnemyGroup();
 //    freeLevelPaths();
-//    freeParseLists();`
 
 }
 
@@ -356,10 +415,13 @@ void testing()	{
 
 	setUpTesting();
 	//!Unit Tests	
+
 	testLevelController(); //! Working
     //testingGameStructure(); //!Memory Tests Failing
     testingActionQueue(); //! Working
     //testEnemy(); // ! No longer works.
+    testParser();
+    
     testingTowerModule(); //! working
     //testingInformationWindowModule();
    	//! System Tests 
@@ -368,6 +430,7 @@ void testing()	{
 	//parseToTowerTesting(); //!Working
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 	//enemyToGamePropertiesTesting();
+    //testParserToInfoWindow();
 
 }
 
@@ -558,4 +621,3 @@ void testValidParses()
 	freeAllTowers();
 	clearQueue();
 }
-
