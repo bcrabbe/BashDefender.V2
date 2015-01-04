@@ -24,8 +24,9 @@
 #include "../includes/gameProperties.h"
 
 #pragma mark ProtoTypes
+//top level command parser:
 int parseCommands(char ** commandArray, int numberOfTokens);
-
+//specific command parsers:
 int parseCat(char * inputStringTargeting);
 int parseMan(char * inputStringCommandMan);
 int parseAptget(char * aptToGetString);
@@ -297,10 +298,6 @@ int parseChmod(char ** commandArray,int numberOfTokens)
     int numberOfTargets = 0;
     while( atToken < numberOfTokens )
     {
-//        if(commandArray[atToken][0]=='-')//eat leading minus
-//        {
-//            commandArray[atToken]=commandArray[atToken]+1;
-//        }
         for(int i = 0; commandArray[atToken][i]; i++)
         {
             commandArray[atToken][i] = tolower(commandArray[atToken][i]);
@@ -1165,11 +1162,6 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
 
 /*
  *  Called on cat and upgrade commands with the target specifying token.
- looks at the 2nd char in the string to find an int 1-9 to be the target.
- Note, wont work for anything > 9, would just see 1.
- Will print its own error message.
- Returns TargetTowerID if sucessful
- Returns 0 if error
  */
 unsigned int getTargetEnemy(const char * inputStringTargeting)
 {
@@ -1193,15 +1185,13 @@ unsigned int getTargetEnemy(const char * inputStringTargeting)
         return 0;
     }
     
-    unsigned int targetEnemyID = (unsigned int)(inputStringTargeting[1]-'0');
+    unsigned int targetEnemyID = (unsigned int) stringToInt(inputStringTargeting+1);
     
     if(targetEnemyID > numberOfEnemies || targetEnemyID<1)
     {
-        
         char str[100];
         sprintf(str,"ERROR: target enemy does not exist there are only %d enemies you entered e%d\n",
                 numberOfEnemies,targetEnemyID);
-        
         errorToTerminalWindow(str);
         return 0;
     }
@@ -1217,7 +1207,7 @@ unsigned long int stringToInt(const char * string)
     size_t length = strlen(string);
     for(int i=0; i<length; ++i)
     {
-        converted += (unsigned int)(string[i]-'0') * pow( 10, (length-i-1)) ;
+        converted += (unsigned int)(string[i]-'0') * pow( 10, (length-i-1));
     }
     return converted;
 }
@@ -1227,7 +1217,7 @@ unsigned long int stringToInt(const char * string)
  as a enum cmdType variable. Returns cmdType correspodning to the
  validated command or a commandError cmdType
  */
-cmdType getCommandType(char * firstToken )
+cmdType getCommandType(char * firstToken)
 {
     for(int i = 0; firstToken[i]; i++) {
         firstToken[i] = tolower(firstToken[i]);
@@ -1291,10 +1281,6 @@ cmdOption getCommandOption(char * secondToken)
     {
         secondToken[i] = tolower(secondToken[i]);
     }
-//    if(secondToken[0]=='-')//eat leading minus
-//    {
-//        secondToken=secondToken+1;
-//    }
     /*first lets get the array of strings that hold all the possible action commands*/
     stringList * optionList = getOptionList(NULL);
     int numberOfOptions=optionList->numberOfStrings;
@@ -1422,7 +1408,6 @@ char **breakUpString(const char * inputString, int *numberOfChunksPtr, const cha
         commandArray=(char **)realloc(commandArray,numberOfChunks*sizeof(char*));//array of strings
         commandArray[numberOfChunks-1]=(char *)malloc((size_t)(strlen(stringChunk)*sizeof(char)+1));
         strcpy(commandArray[numberOfChunks-1],stringChunk);
-        
         stringChunk = strtok(NULL, delimiter);
     }
     free(inputStringDuplicate);//frees the malloc made in strdup()
