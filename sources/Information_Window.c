@@ -441,7 +441,12 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
             break;
     }
 
-    sprintf(towerString, "TOWER %d\n\nType: %s\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, type, range, damage, speed, AOEpower, AOErange);
+    // sprintf(towerString, "TOWER %d\n\nType: %s\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, type, range, damage, speed, AOEpower, AOErange);
+    sprintf(towerString, "TOWER %d\n\nRange: %d Cost to Upgrade: %d \nDamage: %d Cost to Upgrade: %d\nSpeed: %d Cost to Upgrade: %d \nAOE Power: %d\nAOE Range: %d", targetTower,
+            range, calculateCosts(cmd_upgrade,upgrade_range,targetTower),
+            damage, calculateCosts(cmd_upgrade,upgrade_power,targetTower),
+            speed, calculateCosts(cmd_upgrade,upgrade_speed,targetTower),
+            AOEpower, AOErange);
     strcpy(tm->string, towerString);
     
     return towerString;

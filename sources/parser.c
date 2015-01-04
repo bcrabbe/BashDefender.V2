@@ -137,7 +137,7 @@ int parse(char *inputString)
         freeCommandArray(commandArray, numberOfTokens);
         return 0;//no valid commands with less than 2 strings or more than 3
     }
-  
+    
     int specificReturns = parseCommands(commandArray,numberOfTokens);
     
     freeCommandArray(commandArray, numberOfTokens);
@@ -282,24 +282,30 @@ int parseCommands(char ** commandArray, int numberOfTokens)
 
 int parseChmod(char ** commandArray,int numberOfTokens)
 {
+    cmdOption twrType = getCommandOption(commandArray[1]);
+    if( !(twrType==mktwr_int || twrType==mktwr_char) )
+    {
+        optionUsageError();
+        fprintf(stderr,"ERROR: chmod expected a type (int, or char) as its last argument\n");
+        errorToTerminalWindow("ERROR: chmod expected a type (int, or char) as its last argument");
+        return 0;
+    }
+    
     // get targets
-    int atToken = 1;
+    int atToken = 2;
     int * targetArray = NULL;
     int numberOfTargets = 0;
     while( atToken < numberOfTokens )
     {
-        if(commandArray[atToken][0]=='-')//eat leading minus
-        {
-            commandArray[atToken]=commandArray[atToken]+1;
-        }
+//        if(commandArray[atToken][0]=='-')//eat leading minus
+//        {
+//            commandArray[atToken]=commandArray[atToken]+1;
+//        }
         for(int i = 0; commandArray[atToken][i]; i++)
         {
             commandArray[atToken][i] = tolower(commandArray[atToken][i]);
         }
-        if( strcmp(commandArray[atToken],"int")==0 || strcmp(commandArray[atToken],"char")==0 )
-        {
-            break;
-        }
+
         int target = getTargetTower(commandArray[atToken], false);
         if(target==0)
         {
@@ -330,15 +336,7 @@ int parseChmod(char ** commandArray,int numberOfTokens)
         return 0;
     }
     
-    cmdOption twrType = getCommandOption(commandArray[numberOfTokens-1]);
-    if( !(twrType==mktwr_int || twrType==mktwr_char) )
-    {
-        optionUsageError();
-        fprintf(stderr,"ERROR: chmod expected a type (int, or char) as its last argument\n");
-        errorToTerminalWindow("ERROR: chmod expected a type (int, or char) as its last argument");
-        return 0;
-    }
-    
+
     for(int tarIter=0; tarIter<numberOfTargets; ++tarIter)
     {
         if(twrType==mktwr_int)
@@ -751,7 +749,6 @@ upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct *
         storedUpgradeStuct = upgradeStruct;
     }
     return storedUpgradeStuct;
- 
 }
  
 
@@ -826,7 +823,6 @@ int parseWhile(char *inputString)
                             printf("shouldBrakeInfiniteLoop\n");
                             return 1;
                         }
-                        
                     }
                     else
                     {
@@ -871,20 +867,15 @@ int parseWhile(char *inputString)
             }
             iprint(conditionTokenIs);
             int condition = stringToInt(conditionArray[conditionTokenIs]);
-            iprint(condition);
             if(op==greaterThan)//while (mem>
             {
                 while( conditionTokenIs ? variable->value>condition : condition>variable->value)
                 {
                     if( parseCommands(commandArray,numberOfTokensInCommandArray) )
                     {
-                        printf("WHILE commandPushed\n");
-                        printf(" variable = %d \n",variable->value);
-                        
                         // variable->value = variable->getValueFunc();
                         if(shouldBrakeInfiniteLoop(variable,condition,commandArray))
                         {
-                            printf("shouldBrakeInfiniteLoop\n");
                             return 1;
                         }
                     }
@@ -917,7 +908,6 @@ envVar * returnEnvVar(char * stringToMatch)
 
 int getCommandMemCost(cmdType command, envVar * mem)
 {
-    printf("start getCommandsCost\n");
     int costs = 0;
     if( command == cmd_mktwr )
     {
@@ -969,10 +959,8 @@ int shouldBrakeInfiniteLoop(envVar * variable, int condition, char ** commandArr
     if(strcmp(variable->name2,"mem")==0)
     {
         int costs = getCommandMemCost(command, variable);
-        printf("cost = %d\n",costs);
         if(costs>variable->value-condition)
         {
-            textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\nmktwr\n\ntype ""mktwr"" followed by the tower type and the letter of a field where you would like the tower to appear\nExamples:\nmktwr INT a\nmktwr CHAR f");
             return 1;
         }
         else
@@ -1076,12 +1064,15 @@ operator getOperatorFromString(char * conditionString)
                 return firstOp;
             }
         }
-        else {
+        else
+        {
             ++i;
         }
     }
     return 0;
 }
+
+
 operator combineOperators(operator firstOp, operator secondOp)
 {
     int combinedOpInt;
@@ -1094,6 +1085,9 @@ operator combineOperators(operator firstOp, operator secondOp)
     }
     else return firstOp;
 }
+
+
+
 operator matchesOperator(char isThisAnOperator)
 {
     switch (isThisAnOperator)
@@ -1297,10 +1291,10 @@ cmdOption getCommandOption(char * secondToken)
     {
         secondToken[i] = tolower(secondToken[i]);
     }
-    if(secondToken[0]=='-')//eat leading minus
-    {
-        secondToken=secondToken+1;
-    }
+//    if(secondToken[0]=='-')//eat leading minus
+//    {
+//        secondToken=secondToken+1;
+//    }
     /*first lets get the array of strings that hold all the possible action commands*/
     stringList * optionList = getOptionList(NULL);
     int numberOfOptions=optionList->numberOfStrings;
@@ -1550,18 +1544,25 @@ stringList *  getOptionList(stringList * optionList)
 void freeParseLists()
 {
     stringList * commandList = getCommandList(NULL);
-    for(int i=1; i<=commandList->numberOfStrings; ++i) {
-        free(commandList->stringArray[i]);
+    if(commandList)
+    {
+        for(int i=1; i<=commandList->numberOfStrings; ++i)
+        {
+            free(commandList->stringArray[i]);
+        }
+        free(commandList->stringArray+1);
+        free(commandList);
     }
-    free(commandList->stringArray+1);
-    free(commandList);
-    
     stringList * optsList = getOptionList(NULL);
-    for(int i=1; i<=optsList->numberOfStrings; ++i) {
-        free(optsList->stringArray[i]);
+    if(optsList)
+    {
+        for(int i=1; i<=optsList->numberOfStrings; ++i)
+        {
+            free(optsList->stringArray[i]);
+        }
+        free(optsList->stringArray+1);
+        free(optsList);
     }
-    free(optsList->stringArray+1);
-    free(optsList);
 }
 
 #pragma mark EnvironmentVariables
@@ -1604,7 +1605,8 @@ void destroyEnvVarList()
 envVarList * getEnvsList(envVarList * envsList)
 {
     static envVarList * storedEnvsList = NULL;
-    if(envsList != NULL && storedEnvsList == NULL ) {
+    if(envsList != NULL && storedEnvsList == NULL )
+    {
         storedEnvsList = envsList;
     }
     return storedEnvsList;
