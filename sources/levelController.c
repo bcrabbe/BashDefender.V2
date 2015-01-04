@@ -346,7 +346,7 @@ void initLevel(int level)    {
 	createTowerPos();
 	initialQueueReader();
 	createProjectileList();
-	initialiseParseLists();
+	initialiseParser();
 	init_abilities();
 }
 
@@ -539,7 +539,7 @@ void setUpTesting()	{
     createEnemyGroup();
     createTowerPos();
     createProjectileList();
-    initialiseParseLists();
+    initialiseParser();
     init_abilities();
 }
 

@@ -13,7 +13,7 @@
 #include <stdbool.h>
 
 /*---------- Incomplete Types -----------*/
-typedef struct towerMonitor TowerMonitor;
+//typedef struct towerMonitor TowerMonitor;
 
 /*---------- Data Types -----------*/
 typedef struct towerMonitor TowerMonitor;
