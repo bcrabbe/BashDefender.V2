@@ -39,22 +39,18 @@ int parseUpgrade(char ** commandArray, int numberOfChunks);
 
 void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray);
 
-
+//generic functions:
+cmdType getCommandType(char * firstToken);
+cmdOption getCommandOption(char * input);
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
 unsigned int getTargetEnemy(const char * inputStringTargeting);
 unsigned long int stringToInt(const char * string);
-
-cmdOption getCommandOption(char * input);
-cmdType getCommandType(char * firstToken );
-void optionUsageError();
-void actionUsageError();
-
-
 char ** breakUpString(const char * inputString, int *numberOfChunksPtr, const char * delimiter);
 char * strdup(const char * s);
 void freeCommandArray(char **commandArray,int numberOfChunks);
-
-
+//default error messaging functions:
+void optionUsageError();
+void actionUsageError();
 
 typedef struct targetArray {
     int * array;
@@ -84,7 +80,7 @@ typedef enum operator {
     notEqualTo = '!'+'='
 } operator;
 
-
+//While parsing funtions:
 int parseWhile(char *inputString);
 operator matchesOperator(char isThisAnOperator);
 operator combineOperators(operator firstOp, operator secondOp);
@@ -96,7 +92,15 @@ int getCommandMemCost(cmdType command, envVar * mem);
 int numberOfMktwrLastPushed (int mktwrsPushed);
 upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct);
 
+//initialiser functions:
+stringList * intialiseCommandList();
+stringList * intialiseOptionList();
+stringList * getCommandList(stringList * commandList);
+stringList * getOptionList(stringList * optionList);
+envVarList * intialiseEnvVarsList();
+envVarList * getEnvsList(envVarList * envsList);
 
+//developement testing functions:
 void testStringLists();
 void testCommandArray(char ** commandArray, int numberOfChunks);
 
@@ -554,7 +558,7 @@ int parseMan(char * inputStringCommandMan)
         default:
         {
             char str[100];
-            sprintf(str,"ERROR: command to cat not recognised. You entered: %s",inputStringCommandMan);
+            sprintf(str,"ERROR: command to man not recognised. You entered: %s",inputStringCommandMan);
             errorToTerminalWindow(str);
             return 0;
         }
@@ -723,10 +727,12 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
 
 void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray)
 {
-    if(statsToUpgradeArray) {
+    if(statsToUpgradeArray)
+    {
         free(statsToUpgradeArray);
     }
-    if(targetArray) {
+    if(targetArray)
+    {
         free(targetArray);
     }
 }
