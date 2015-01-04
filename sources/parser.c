@@ -583,10 +583,10 @@ int parseMan(char * inputStringCommandMan)
 int parseCat(char * inputStringTargeting)
 {
     //looks for tower type target:
-    if( inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T' )
+    if( (inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T') && strlen(inputStringTargeting)>=2)
     {
         unsigned int targetTower = getTargetTower(inputStringTargeting, true);
-        if(targetTower && strlen(inputStringTargeting)>=2)
+        if(targetTower)
         {
             displayTowerInfo(targetTower);//function in Information_Window.c
             return 1;
@@ -604,7 +604,7 @@ int parseCat(char * inputStringTargeting)
     else
     {
         char str[100];
-        sprintf(str,"ERROR: cat expected a target tower");
+        sprintf(str,"ERROR: cat expected a target tower as its second argument. Enter t1 tower target tower 1.");
         errorToTerminalWindow(str);
         return 0;
     }
