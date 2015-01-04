@@ -20,6 +20,8 @@
 #include "../includes/actionQueueDataStructure.h"
 #include "../includes/Display.h"
 #include "../includes/sput.h"
+#include "../includes/parser.h"
+#include "../includes/levelController.h"
 
 /*---------- Data Types -----------*/
 typedef enum towerMonitorString {TOWER_DEFAULT, TOWER_INFO, OTHER_INFO} TowerMonitorString;
@@ -37,14 +39,14 @@ typedef struct commandNode {
     struct commandNode *next;
 } CommandNode;
 
-typedef struct terminalWindow {
+struct terminalWindow {
     CommandNode *start;
     TerminalWindowString stringType;
     int commands;
     char *outputString;
     char *errorString;
     int timeSet;
-} TerminalWindow;
+};
 
 /*---------- Hash Defines -----------*/
 
@@ -69,6 +71,8 @@ void destroyCommandNode(CommandNode **start);
 /*----------Function Prototypes (Testing)-----------*/
 void testTowerMonitor(void);
 void testTerminalWindow(void);
+void testParserErrorMessages(void);
+void testParserInfoMessages(void);
 
 /**
  Updates everything in information window
@@ -331,6 +335,18 @@ void destroyCommandNode(CommandNode **start) {
 
 }
 
+void destroyCommandList(void) {
+    TerminalWindow *tw = getTerminalWindow();
+    
+    for(CommandNode *start = tw->start; start != NULL;) {
+        destroyCommandNode(&start);
+    }
+    
+    tw->start = createCommandNode();
+    tw->commands = 0;
+    tw->start->commandString = "";
+}
+
 /**
  Creates output string for stats bar and updates it
  @param void
@@ -425,33 +441,15 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
             break;
     }
 
-    sprintf(towerString, "TOWER %d\n\nType: %s\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, type, range, damage, speed, AOEpower, AOErange);
+    // sprintf(towerString, "TOWER %d\n\nType: %s\nRange: %d\nDamage: %d\nSpeed: %d\nAOE Power: %d\nAOE Range: %d", targetTower, type, range, damage, speed, AOEpower, AOErange);
+    sprintf(towerString, "TOWER %d\n\nRange: %d Cost to Upgrade: %d \nDamage: %d Cost to Upgrade: %d\nSpeed: %d Cost to Upgrade: %d \nAOE Power: %d\nAOE Range: %d", targetTower,
+            range, calculateCosts(cmd_upgrade,upgrade_range,targetTower),
+            damage, calculateCosts(cmd_upgrade,upgrade_power,targetTower),
+            speed, calculateCosts(cmd_upgrade,upgrade_speed,targetTower),
+            AOEpower, AOErange);
     strcpy(tm->string, towerString);
     
     return towerString;
-}
-
-/*Test functions*/
-
-/**
- test important function in information window
- @param void
- @returns void
- */
-void testingInformationWindowModule()	{
-    
-    sput_start_testing();
-    sput_set_output_stream(stderr);
-    
-    sput_enter_suite("testTowerMonitor");
-    sput_run_test(testTowerMonitor);
-    sput_leave_suite();
-    
-    sput_enter_suite("testTerminalWindow");
-    sput_run_test(testTerminalWindow);
-    sput_leave_suite();
-    
-    sput_finish_testing();
 }
 
 void tutorial_one()	{
@@ -542,7 +540,52 @@ void tutorial_sixteen()	{
 	textToTowerMonitor("No, you have to upgrade the tower's range!\n Please type\n upgrade r t1 \n");
 
 }
+
 /*Test functions*/
+
+/**
+ test important functions in information window (unit testing)
+ @param void
+ @returns void
+ */
+void testingInformationWindowModule()	{
+    
+    sput_start_testing();
+    sput_set_output_stream(NULL);
+    
+    sput_enter_suite("testTowerMonitor");
+    sput_run_test(testTowerMonitor);
+    sput_leave_suite();
+    
+    sput_enter_suite("testTerminalWindow");
+    sput_run_test(testTerminalWindow);
+    sput_leave_suite();
+    
+    sput_finish_testing();
+}
+
+/**
+ test information window functionality called from parser (integration testing)
+ @param void
+ @returns void
+ */
+void testParserToInfoWindow(void) {
+    
+    sput_start_testing();
+    sput_set_output_stream(NULL);
+    
+    sput_enter_suite("testParserErrorMessages");
+    sput_run_test(testParserErrorMessages);
+    sput_leave_suite();
+    
+    sput_enter_suite("testParserInfoMessages");
+    sput_run_test(testParserInfoMessages);
+    sput_leave_suite();
+    
+    sput_finish_testing();
+    
+}
+
 
 /**
  test if strings in tower monitor are being stored correctly
@@ -578,3 +621,124 @@ void testTerminalWindow(void) {
     sput_fail_if(strcmp(tw->start->next->commandString, "Another random command") != 0, "Testing sending another command");
 }
 
+void testParserErrorMessages(void) {
+    TerminalWindow *tw = getTerminalWindow();
+    
+    //Test parsing empty string and unknown commands
+    
+    parse("");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse empty string, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, ""); //Reset string
+    
+    parse("unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse unrecognized command, should send appropriate error message to terminal window");
+     strcpy(tw->errorString, "");
+    
+    parse("unrecognized unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse 2 unrecognized commands, should send appropriate error message to terminal window"); //CURRENTLY FAILS, NEEDS FIXING IN GAME
+     strcpy(tw->errorString, "");
+    
+    parse("unrecognized unrecognized unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse 3 unrecognized commands, should send appropriate error message to terminal window"); ////CURRENTLY FAILS, NEEDS FIXING IN GAME
+     strcpy(tw->errorString, "");
+    
+    //Test parsing upgrade command with all combinations
+    
+    parse("upgrade");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse upgrade with no stats or target, should send appropriate error message to terminal window");
+    
+     strcpy(tw->errorString, ""); //Reset string
+    
+    parse("upgrade r");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse upgrade with no target, should send appropriate error message to terminal window");
+    
+     strcpy(tw->errorString, ""); //Reset string
+    
+    parse("upgrade r t25");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse upgrade with non-existing target, should send appropriate error message to terminal window");
+    
+     strcpy(tw->errorString, ""); //Reset string
+    
+    /*createTowerFromPositions(1);
+    parse("upgrade r t1");
+    sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse upgrade with existing target, should not send any message to terminal window");
+    strcpy(tw->errorString, "");*/
+    //CAUSES MALLOC ERROR, POSSIBLY BECAUSE TOWER HASN'T BEEN CREATED PROPERLY
+    
+    //Test parsing mktwr command with all combinations
+    
+    parse("mktwr");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse mktwr without tower type or targer, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");
+    
+    parse("mktwr unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse mktwr with unrecognized type and no target, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");
+    
+    parse("mktwr INT");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse mktwr with recognized type and no target, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");
+    
+    parse("mktwr INT unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse mktwr with recognized type and unrecognized target, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");
+    
+    /*parse("mktwr INT A");
+    printf("\n\nMichael Testing: .%s.\n\n", tw->errorString);
+    sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse mktwr with recognized type and recognized target, should not send error message to terminal window");
+    strcpy(tw->errorString, "");*/
+    //DOES SEND ERROR MESSAGE, POSSIBLY BECAUSE TOWER POSITIONS NOT CREATED PROPERLY
+    
+    //Test parsing man command with all combinations
+    
+    parse("man");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse man without target, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");
+    
+    /*parse("man unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse man with unrecognized target, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");*/
+    //NOT WORKING CURRENTLY, NEEDS FIXING IN GAME
+    
+    parse("man cat");
+    sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse man with valid target, should not send error message to terminal window");
+    strcpy(tw->errorString, "");
+    
+    //Test parsing cat command with all combinations
+    
+    parse("cat");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse cat without target, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");
+    
+    parse("cat unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse cat with unrecognized target, should send appropriate error message to terminal window"); //CURRENTLY FAILS, NEEDS FIXING IN GAME
+    strcpy(tw->errorString, "");
+    
+    parse("cat t1");
+    sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse cat with recognized target, should not send error message to terminal window");
+    strcpy(tw->errorString, "");
+}
+
+void testParserInfoMessages(void) {
+    TowerMonitor *tm = getTowerMonitor();
+    
+    //Test parsing man command with valid and invalid combinations
+    
+    parse("man cat");
+    sput_fail_if(strcmp(tm->string, "GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target, e.g. t1, t2, t3..., to display the stats of that target\n") != 0, "Testing parse man with recognized target, should send appropriate info message to tower monitor");
+    strcpy(tm->string, ""); //Reset string
+    
+    /*parse("man unrecognized");
+    sput_fail_if(strcmp(tm->string, "") != 0, "Testing parse man with unrecognized target, should not send info message to tower monitor");//CURRENTLY CAUSES SEGFAULT, NEEDS FIXING IN GAME
+    strcpy(tm->string, ""); //Reset string*/
+    
+    //Test parsing cat command with valid and invalid combinations
+    
+    /*parse("cat t2");
+    char towerMonitorString[MAX_OUTPUT_STRING];
+    strcpy(towerMonitorString, tm->string);
+    sput_fail_if(strcmp(towerMonitorString, getTowerString(1, tm)) != 0, "Testing parse cat with recognized target, should send appropriate info message to tower monitor");
+    strcpy(tm->string, "");*/
+    //PROBLEMS CREATING TOWERS
+    
+}

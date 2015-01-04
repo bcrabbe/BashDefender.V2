@@ -19,6 +19,7 @@ int maxTowerPosition();
 char maxTowerPositionChar();
 TowerPos getTowerPos(TowerPos tPos);
 void addTowerPosNode(int x, int y);
+int getNumOfTowerPositions();
 
 // tower pointer functions
 void createTowerGroup();

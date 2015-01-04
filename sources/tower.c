@@ -68,6 +68,13 @@ struct towerPosNode	{
 };
 
 
+
+
+int getNumOfTowerPositions() {
+
+    return getTowerPos(NULL)->numberOfPositions;
+}
+
 /*
  * Creates structure holding array of allowed tower positions
  */
@@ -106,6 +113,14 @@ void addTowerPosNode(int x, int y)	{
 		newTower->y = (int) scaleTowerPos(y,SCREEN_HEIGHT_GLOBAL,MAX_TOWER_Y);
 		newTower->tIcon = tPos->numberOfPositions;
 		tPos->towerPositions[tPos->numberOfPositions] = newTower;
+}
+
+void makeAllTowPosAvailable()	{
+	TowerPos tPos = getTowerPos(NULL);
+	int i;
+	for(i = 1; i <= tPos->numberOfPositions; i++)	{
+		tPos->towerPositions[i]->empty = TRUE;
+	}
 }
 
 double scaleTowerPos(int coord, int scaleAxis, int scaleMax)	{
@@ -270,6 +285,7 @@ void createTowerGroup()	{
 int createTowerFromPositions(int position)	{
 	TowerPos tPos = getTowerPos(NULL);
 	if((position > 0) && (position <= tPos->numberOfPositions) && (tPos->towerPositions[position]->empty == TRUE))	{
+		printf("###can create tower###\n");
 		userCreateTower(tPos->towerPositions[position]->x,tPos->towerPositions[position]->y);
 		tPos->towerPositions[position]->empty = FALSE;
 		return 1;
@@ -277,11 +293,20 @@ int createTowerFromPositions(int position)	{
 	return 0;
 }
 
+
+int getTowerPositionX(int position)	{
+	return getTowerPos(NULL)->towerPositions[position]->x;
+}
+
+int getTowerPositionY(int position)	{
+	return getTowerPos(NULL)->towerPositions[position]->y;
+}
+
+
 /*
 * wrapper for createTowerFromPositions - adds tower type to creation process
 */
 void createTowerTypeFromPositions(int position, int tType)	{
-	iprint(tType);
 	TowerGroup TG = getTowerGrp(NULL);
 	createTowerFromPositions(position);
 	TG->listOfTowers[TG->numOfTowers]->towerType = tType;
@@ -430,8 +455,8 @@ int upgradeDmg(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->damage+=DAMAGE_UPGR_VAL;
-    makePostUpgradeChanges(target);
-    return upgradeT->damage;
+    	makePostUpgradeChanges(target);
+    	return upgradeT->damage;
 	}
 	return 0;
 }
@@ -441,8 +466,8 @@ int upgradeRange(int target)
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->range+=RANGE_UPGR_VAL;
-    makePostUpgradeChanges(target);
-    return upgradeT->range;
+    	makePostUpgradeChanges(target);
+    	return upgradeT->range;
 	}
 	return 0;
 }
@@ -500,6 +525,7 @@ int checkCharType()	{
 void freeAllTowers()	{
 
 	int i = 1;
+	makeAllTowPosAvailable();
 	while(i <= getTowerGrp(NULL)->numOfTowers)	{
 		free(getTowerGrp(NULL)->listOfTowers[i]);
 		i++;

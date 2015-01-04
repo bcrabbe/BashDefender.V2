@@ -23,16 +23,52 @@
 #include "../includes/sput.h"
 #include "../includes/gameProperties.h"
 
+#pragma mark ProtoTypes
+int parseCommands(char ** commandArray, int numberOfTokens);
+
+int parseCat(char * inputStringTargeting);
+int parseMan(char * inputStringCommandMan);
+int parseAptget(char * aptToGetString);
+int parsePs(char * optionString);
+int parseAptget(char * aptToGetString);
+int parseKill(char ** commandArray,int numberOfChunks);
+int parseMktwr(char ** commandArray, int numberOfTokens);
+int parseChmod(char ** commandArray,int numberOfTokens);
+int parseUpgrade(char ** commandArray, int numberOfChunks);
+
+void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray);
+
 
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier);
-int parseMktwr(char ** commandArray, int numberOfTokens);
-int numberOfMktwrLastPushed (int mktwrsPushed);
-int shouldBrakeInfiniteLoop(envVar * variable, int condition, char ** commandArray);
-int getCommandMemCost(cmdType command, envVar * mem);
-int numberOfMktwrLastPushed (int mktwrsPushed);
-upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct);
+unsigned int getTargetEnemy(const char * inputStringTargeting);
 unsigned long int stringToInt(const char * string);
 
+cmdOption getCommandOption(char * input);
+cmdType getCommandType(char * firstToken );
+void optionUsageError();
+void actionUsageError();
+
+
+char ** breakUpString(const char * inputString, int *numberOfChunksPtr, const char * delimiter);
+char * strdup(const char * s);
+void freeCommandArray(char **commandArray,int numberOfChunks);
+
+
+
+typedef struct targetArray {
+    int * array;
+    int numberOfElements;
+} targetArrayStruct;
+
+typedef struct statArray {
+    cmdOption * array;
+    int numberOfElements;
+} statArrayStruct;
+
+typedef struct upgradeArrays {
+    statArrayStruct * statArray;
+    targetArrayStruct * tarArray;
+} upgradeArraysStruct;
 
 typedef enum operator {
     error = -1,
@@ -47,15 +83,24 @@ typedef enum operator {
     notEqualTo = '!'+'='
 } operator;
 
+
 int parseWhile(char *inputString);
 operator matchesOperator(char isThisAnOperator);
 operator combineOperators(operator firstOp, operator secondOp);
 operator getOperatorFromString(char * conditionString);
 void makeStringForOperator(operator op, char * string);
-unsigned long int stringToInt(const char * string);
-int parseChmod(char ** commandArray,int numberOfTokens);
-void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray);
 envVar * returnEnvVar(char * stringToMatch);
+int shouldBrakeInfiniteLoop(envVar * variable, int condition, char ** commandArray);
+int getCommandMemCost(cmdType command, envVar * mem);
+int numberOfMktwrLastPushed (int mktwrsPushed);
+upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct);
+
+
+void testStringLists();
+void testCommandArray(char ** commandArray, int numberOfChunks);
+
+
+#pragma mark MainFuntion
 
 /*
  * Parse called with string of user input from terminal window.
@@ -68,7 +113,8 @@ int parse(char *inputString)
     size_t len = 1+strlen(inputString);//gets the size of inputString
     if( len < 3*sizeof(char) )
     {
-        optionUsageError();
+        fprintf(stderr,"ERROR: valid commands must be longer than that\n");
+        errorToTerminalWindow("ERROR: valid commands must be longer than that");
         return 0;
     }
     if(tolower(inputString[0])=='w' && tolower(inputString[1])=='h' &&
@@ -91,7 +137,7 @@ int parse(char *inputString)
         freeCommandArray(commandArray, numberOfTokens);
         return 0;//no valid commands with less than 2 strings or more than 3
     }
-  
+    
     int specificReturns = parseCommands(commandArray,numberOfTokens);
     
     freeCommandArray(commandArray, numberOfTokens);
@@ -126,7 +172,6 @@ int parseCommands(char ** commandArray, int numberOfTokens)
                 specificReturns = parseUpgrade(commandArray, numberOfTokens);
             }
             break;
-            
         }
         case cmd_cat:
         {
@@ -141,7 +186,6 @@ int parseCommands(char ** commandArray, int numberOfTokens)
                 specificReturns = parseCat(commandArray[1]);
             }
             break;
-            
         }
         case cmd_chmod:
         {
@@ -167,7 +211,6 @@ int parseCommands(char ** commandArray, int numberOfTokens)
                 specificReturns = parseMan(commandArray[1]);
             }
             break;
-            
         }
         case cmd_mktwr:
         {
@@ -196,7 +239,6 @@ int parseCommands(char ** commandArray, int numberOfTokens)
                 specificReturns = parseAptget(commandArray[1]);
             }
             break;
-            
         }
         case cmd_ps:
         {
@@ -234,32 +276,36 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             fprintf(stderr,"\n***parsing not implemented yet returning***\n");
     }
     return specificReturns;
-
 }
 
+#pragma mark IndividualCommandParsers
 
 int parseChmod(char ** commandArray,int numberOfTokens)
 {
+    cmdOption twrType = getCommandOption(commandArray[1]);
+    if( !(twrType==mktwr_int || twrType==mktwr_char) )
+    {
+        optionUsageError();
+        fprintf(stderr,"ERROR: chmod expected a type (int, or char) as its last argument\n");
+        errorToTerminalWindow("ERROR: chmod expected a type (int, or char) as its last argument");
+        return 0;
+    }
+    
     // get targets
-    int atToken = 1;
+    int atToken = 2;
     int * targetArray = NULL;
     int numberOfTargets = 0;
-    while( atToken < numberOfTokens)
+    while( atToken < numberOfTokens )
     {
-        if(commandArray[atToken][0]=='-')//eat leading minus
-        {
-            commandArray[atToken]=commandArray[atToken]+1;
-        }
+//        if(commandArray[atToken][0]=='-')//eat leading minus
+//        {
+//            commandArray[atToken]=commandArray[atToken]+1;
+//        }
         for(int i = 0; commandArray[atToken][i]; i++)
         {
             commandArray[atToken][i] = tolower(commandArray[atToken][i]);
         }
-        
-        if( strcmp(commandArray[atToken],"int")==0 || strcmp(commandArray[atToken],"char")==0 )
-        {
-            break;
-        }
-        
+
         int target = getTargetTower(commandArray[atToken], false);
         if(target==0)
         {
@@ -290,15 +336,7 @@ int parseChmod(char ** commandArray,int numberOfTokens)
         return 0;
     }
     
-    cmdOption twrType = getCommandOption(commandArray[numberOfTokens-1]);
-    if( !(twrType==mktwr_int || twrType==mktwr_char) )
-    {
-        optionUsageError();
-        fprintf(stderr,"ERROR: chmod expected a type (int, or char) as its last argument\n");
-        errorToTerminalWindow("ERROR: chmod expected a type (int, or char) as its last argument");
-        return 0;
-    }
-    
+
     for(int tarIter=0; tarIter<numberOfTargets; ++tarIter)
     {
         if(twrType==mktwr_int)
@@ -361,55 +399,9 @@ int parseKill(char ** commandArray,int numberOfTokens)
     else
     {
         errorToTerminalWindow("ERROR: invalid argument to kill command, expected all or -9");
-        
     }
  
     return 0;
-}
-
-/*
- *  Called on cat and upgrade commands with the target specifying token.
- looks at the 2nd char in the string to find an int 1-9 to be the target.
- Note, wont work for anything > 9, would just see 1.
- Will print its own error message.
- Returns TargetTowerID if sucessful
- Returns 0 if error
- */
-unsigned int getTargetEnemy(const char * inputStringTargeting)
-{
-    unsigned int numberOfEnemies = getNumberOfEnemies();// this is func in enemy.c
-    
-    size_t len = strlen(inputStringTargeting);//gets the size of string
-    if( len<(2*sizeof(char)) )
-    {
-        fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
-        char str[100];
-        sprintf(str,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
-        errorToTerminalWindow(str);
-        return 0;
-    }
-    if (inputStringTargeting[0]!='e' && inputStringTargeting[0]!='E')
-    {
-        fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
-        char str[100];
-        sprintf(str,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
-        errorToTerminalWindow(str);
-        return 0;
-    }
-    
-    unsigned int targetEnemyID = (unsigned int)(inputStringTargeting[1]-'0');
-    
-    if(targetEnemyID > numberOfEnemies || targetEnemyID<1)
-    {
-        
-        char str[100];
-        sprintf(str,"ERROR: target enemy does not exist there are only %d enemies you entered e%d\n",
-                        numberOfEnemies,targetEnemyID);
-
-        errorToTerminalWindow(str);
-        return 0;
-    }
-    return targetEnemyID;
 }
 /*
  *
@@ -448,7 +440,7 @@ int parseAptget(char * aptToGetString)
     }
     else return 0;
 }
-                               
+
 int numberOfMktwrLastPushed (int mktwrsPushed)
 {
     static int numberOfMktwrsPushedLastPushed = 0;
@@ -474,7 +466,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         return 0;
     }
     static int numberOfCommandsPushed = 0;
-
+    
     int token = 2;
     while(token < numberOfTokens)
     {
@@ -515,7 +507,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
 
 /*  calls man printing functions
  *  returns 1 if ok
-    returns 0 if error and prints message
+ returns 0 if error and prints message
  */
 int parseMan(char * inputStringCommandMan)
 {
@@ -610,8 +602,7 @@ int parseCat(char * inputStringTargeting)
     }
 }
 
-                               
-                               
+
                                
                                
                                
@@ -644,7 +635,6 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
             {
                 //unrecognised stat error
                 optionUsageError();
-                cleanUpParseUpgrade(statsToUpgradeArray,NULL);
                 return 0;
             }
         }
@@ -759,7 +749,6 @@ upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct *
         storedUpgradeStuct = upgradeStruct;
     }
     return storedUpgradeStuct;
- 
 }
  
 
@@ -834,7 +823,6 @@ int parseWhile(char *inputString)
                             printf("shouldBrakeInfiniteLoop\n");
                             return 1;
                         }
-                        
                     }
                     else
                     {
@@ -879,20 +867,15 @@ int parseWhile(char *inputString)
             }
             iprint(conditionTokenIs);
             int condition = stringToInt(conditionArray[conditionTokenIs]);
-            iprint(condition);
             if(op==greaterThan)//while (mem>
             {
                 while( conditionTokenIs ? variable->value>condition : condition>variable->value)
                 {
                     if( parseCommands(commandArray,numberOfTokensInCommandArray) )
                     {
-                        printf("WHILE commandPushed\n");
-                        printf(" variable = %d \n",variable->value);
-                        
                         // variable->value = variable->getValueFunc();
                         if(shouldBrakeInfiniteLoop(variable,condition,commandArray))
                         {
-                            printf("shouldBrakeInfiniteLoop\n");
                             return 1;
                         }
                     }
@@ -925,7 +908,6 @@ envVar * returnEnvVar(char * stringToMatch)
 
 int getCommandMemCost(cmdType command, envVar * mem)
 {
-    printf("start getCommandsCost\n");
     int costs = 0;
     if( command == cmd_mktwr )
     {
@@ -977,7 +959,6 @@ int shouldBrakeInfiniteLoop(envVar * variable, int condition, char ** commandArr
     if(strcmp(variable->name2,"mem")==0)
     {
         int costs = getCommandMemCost(command, variable);
-        printf("cost = %d\n",costs);
         if(costs>variable->value-condition)
         {
             return 1;
@@ -1083,12 +1064,15 @@ operator getOperatorFromString(char * conditionString)
                 return firstOp;
             }
         }
-        else {
+        else
+        {
             ++i;
         }
     }
     return 0;
 }
+
+
 operator combineOperators(operator firstOp, operator secondOp)
 {
     int combinedOpInt;
@@ -1101,6 +1085,9 @@ operator combineOperators(operator firstOp, operator secondOp)
     }
     else return firstOp;
 }
+
+
+
 operator matchesOperator(char isThisAnOperator)
 {
     switch (isThisAnOperator)
@@ -1117,7 +1104,8 @@ operator matchesOperator(char isThisAnOperator)
 
 
                                
-                               
+#pragma mark GenericFunctions
+
                                
 /* 
  *  Called on cat and upgrade commands with the target specifying token.
@@ -1175,28 +1163,138 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     return targetTower;
 }
 
+/*
+ *  Called on cat and upgrade commands with the target specifying token.
+ looks at the 2nd char in the string to find an int 1-9 to be the target.
+ Note, wont work for anything > 9, would just see 1.
+ Will print its own error message.
+ Returns TargetTowerID if sucessful
+ Returns 0 if error
+ */
+unsigned int getTargetEnemy(const char * inputStringTargeting)
+{
+    unsigned int numberOfEnemies = getNumberOfEnemies();// this is func in enemy.c
+    
+    size_t len = strlen(inputStringTargeting);//gets the size of string
+    if( len<(2*sizeof(char)) )
+    {
+        fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        char str[100];
+        sprintf(str,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        errorToTerminalWindow(str);
+        return 0;
+    }
+    if (inputStringTargeting[0]!='e' && inputStringTargeting[0]!='E')
+    {
+        fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        char str[100];
+        sprintf(str,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        errorToTerminalWindow(str);
+        return 0;
+    }
+    
+    unsigned int targetEnemyID = (unsigned int)(inputStringTargeting[1]-'0');
+    
+    if(targetEnemyID > numberOfEnemies || targetEnemyID<1)
+    {
+        
+        char str[100];
+        sprintf(str,"ERROR: target enemy does not exist there are only %d enemies you entered e%d\n",
+                numberOfEnemies,targetEnemyID);
+        
+        errorToTerminalWindow(str);
+        return 0;
+    }
+    return targetEnemyID;
+}
 
-unsigned long int stringToInt(const char * string) {
+
+
+
+unsigned long int stringToInt(const char * string)
+{
     unsigned long int converted=0;
     size_t length = strlen(string);
-    for(int i=0; i<length; ++i) {
+    for(int i=0; i<length; ++i)
+    {
         converted += (unsigned int)(string[i]-'0') * pow( 10, (length-i-1)) ;
     }
     return converted;
 }
+/*
+ *  Takes the first string of the input command and tests it against the correct
+ syntax to find which command they want to execute then returns that command
+ as a enum cmdType variable. Returns cmdType correspodning to the
+ validated command or a commandError cmdType
+ */
+cmdType getCommandType(char * firstToken )
+{
+    for(int i = 0; firstToken[i]; i++) {
+        firstToken[i] = tolower(firstToken[i]);
+    }
+    stringList * commandList = getCommandList(NULL);
+    //now test the input string against all valid actions
+    cmdType command = cmd_commandError;
+    for(int i=1; i<=commandList->numberOfStrings; ++i)
+    {
+        if(strcmp(firstToken,commandList->stringArray[i])==0)//if the string is identical to one of the commands
+        {                                        //then action is set to that command
+            switch (i)
+            {
+                case 1:
+                    command = cmd_upgrade;
+                    break;
+                case 2:
+                    //command = cmd_execute; NOT IMPLEMENTED
+                    break;
+                case 3:
+                    command = cmd_chmod;
+                    break;
+                case 4:
+                    command = cmd_man;
+                    break;
+                case 5:
+                    command = cmd_cat;
+                    break;
+                case 6:
+                    command = cmd_mktwr;
+                    break;
+                case 7:
+                    command = cmd_ps;
+                    break;
+                case 8:
+                    command = cmd_aptget;
+                    break;
+                    
+                case 9:
+                    command = cmd_kill;
+                    break;
+            }
+            break;
+        }
+    }
+    
+    if(command==cmd_commandError)//if it is still set to ERROR then the user made a mistake
+    {
+        actionUsageError(firstToken);
+    }
+    return command;
+}
+
 /*  Called when after we read a command, tests the next token against the
  *  possible options returns the corresponding cmdOption Or
     returns optionError  and calls the optUsageError function
  */
 cmdOption getCommandOption(char * secondToken)
 {
-    for(int i = 0; secondToken[i]; i++) {
+    for(int i = 0; secondToken[i]; i++)
+    {
         secondToken[i] = tolower(secondToken[i]);
     }
-    if(secondToken[0]=='-')//eat leading minus
-    {
-        secondToken=secondToken+1;
-    }
+//    if(secondToken[0]=='-')//eat leading minus
+//    {
+//        secondToken=secondToken+1;
+//    }
     /*first lets get the array of strings that hold all the possible action commands*/
     stringList * optionList = getOptionList(NULL);
     int numberOfOptions=optionList->numberOfStrings;
@@ -1266,8 +1364,7 @@ cmdOption getCommandOption(char * secondToken)
  */
 void optionUsageError()
 {
-    errorToTerminalWindow("ERROR: Could not execute command.");
-    errorToTerminalWindow("Type man [COMMAND] for help");
+    errorToTerminalWindow("ERROR: Could not execute command. Type man [COMMAND] for help");
     fprintf(stderr,"*** Syntax error: Could not execute command.***\n");
     fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
     //error messages will need to be passed back to the terminal to be printed. hopefully can do this by setting up a custom stream. For now will print to stderr.
@@ -1278,65 +1375,6 @@ void optionUsageError()
 
 
 
-/* 
- *  Takes the first string of the input command and tests it against the correct
-    syntax to find which command they want to execute then returns that command 
-    as a enum cmdType variable. Returns cmdType correspodning to the
-    validated command or a commandError cmdType
- */
-cmdType getCommandType(char * firstToken )
-{
-    for(int i = 0; firstToken[i]; i++) {
-        firstToken[i] = tolower(firstToken[i]);
-    }
-    stringList * commandList = getCommandList(NULL);
-    //now test the input string against all valid actions
-    cmdType command = cmd_commandError;
-    for(int i=1; i<=commandList->numberOfStrings; ++i)
-    {
-        if(strcmp(firstToken,commandList->stringArray[i])==0)//if the string is identical to one of the commands
-        {                                        //then action is set to that command
-            switch (i)
-            {
-                case 1:
-                    command = cmd_upgrade;
-                    break;
-                case 2:
-                    command = cmd_execute;
-                    break;
-                case 3:
-                    command = cmd_chmod;
-                    break;
-                case 4:
-                    command = cmd_man;
-                    break;
-                case 5:
-                    command = cmd_cat;
-                    break;
-                case 6:
-                    command = cmd_mktwr;
-                    break;
-                case 7:
-                    command = cmd_ps;
-                    break;
-                case 8:
-                    command = cmd_aptget;
-                    break;
-                
-                case 9:
-                    command = cmd_kill;
-                    break;
-            }
-            break;
-        }
-    }
-    
-    if(command==cmd_commandError)//if it is still set to ERROR then the user made a mistake
-    {
-        actionUsageError(firstToken);
-    }
-    return command;
-}
 
 /*
  *   If there was a syntax error in the users command call this function which
@@ -1415,42 +1453,11 @@ void freeCommandArray(char **commandArray,int numberOfChunks)
     }
     //free(commandArray);
 }
-void testStringLists()
-{
-    stringList * cmdList = getCommandList(NULL);
-    testCommandArray(cmdList->stringArray,cmdList->numberOfStrings);
-    stringList * optList = getOptionList(NULL);
-    testCommandArray(optList->stringArray,optList->numberOfStrings);
-}
-/*
- *  Test function. Prints contents of commandArray
- */
-void testCommandArray(char ** commandArray, int numberOfChunks)
-{
-    for(int i=0; i<numberOfChunks; ++i)
-    {
-        printf("%s",commandArray[i]);
-        printf("|\n");
-    }
-}
 
-void freeParseLists()
-{
-    stringList * commandList = getCommandList(NULL);
-    for(int i=1; i<=commandList->numberOfStrings; ++i) {
-        free(commandList->stringArray[i]);
-    }
-    free(commandList->stringArray+1);
-    free(commandList);
-    
-    stringList * optsList = getOptionList(NULL);
-    for(int i=1; i<=optsList->numberOfStrings; ++i) {
-        free(optsList->stringArray[i]);
-    }
-    free(optsList->stringArray+1);
-    free(optsList);
-}
-void initialiseParseLists()
+
+#pragma mark CommandLists
+
+void initialiseParser()
 {
     stringList * commandList = intialiseCommandList();
     getCommandList(commandList);
@@ -1460,36 +1467,13 @@ void initialiseParseLists()
     getEnvsList(envsListStruct);
 
 }
-envVarList * getEnvsList(envVarList * envsList)
-{
-    static envVarList * storedEnvsList = NULL;
-    if(envsList != NULL && storedEnvsList == NULL ) {
-        storedEnvsList = envsList;
-    }
-    return storedEnvsList;
-}
-stringList * getCommandList(stringList * commandList)
-{
-    static stringList * storedCommandList = NULL;
-    if(commandList != NULL && storedCommandList == NULL ) {
-        storedCommandList = commandList;
-    }
-    return storedCommandList;
-}
-stringList *  getOptionList(stringList * optionList)
-{
-    static stringList * storedOptionList = NULL;
-    if(optionList != NULL && storedOptionList == NULL ) {
-        storedOptionList = optionList;
-    }
-    return storedOptionList;
-}
+
 
 
 stringList * intialiseCommandList()
 {
     /* make an array of strings to hold all the possible action commands*/
-    static char **validActions;
+    char **validActions;
     int numberOfActions=9;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validActions=malloc((numberOfActions)*sizeof(char*));//array of $[numberOfActions] strings
     validActions-=1;
@@ -1510,7 +1494,14 @@ stringList * intialiseCommandList()
     
     return commandList;
 }
-
+stringList * getCommandList(stringList * commandList)
+{
+    static stringList * storedCommandList = NULL;
+    if(commandList != NULL && storedCommandList == NULL ) {
+        storedCommandList = commandList;
+    }
+    return storedCommandList;
+}
 stringList * intialiseOptionList()
 {
     /*first lets make an array of strings to hold all the possible action commands*/
@@ -1542,20 +1533,39 @@ stringList * intialiseOptionList()
     return optionsList;
 }
 
-void destroyEnvVarList()
+stringList *  getOptionList(stringList * optionList)
 {
-    envVarList * envsListStruct = getEnvsList(NULL);
-    while(envsListStruct->numberOfElements > 0)
-    {
-        free(envsListStruct->array[envsListStruct->numberOfElements-1]->name);
-        free(envsListStruct->array[envsListStruct->numberOfElements-1]->name2);
-        free(envsListStruct->array[envsListStruct->numberOfElements-1]);
-        envsListStruct->numberOfElements -= 1;
+    static stringList * storedOptionList = NULL;
+    if(optionList != NULL && storedOptionList == NULL ) {
+        storedOptionList = optionList;
     }
-    free(envsListStruct->array);
-    free(envsListStruct);
+    return storedOptionList;
+}
+void freeParseLists()
+{
+    stringList * commandList = getCommandList(NULL);
+    if(commandList)
+    {
+        for(int i=1; i<=commandList->numberOfStrings; ++i)
+        {
+            free(commandList->stringArray[i]);
+        }
+        free(commandList->stringArray+1);
+        free(commandList);
+    }
+    stringList * optsList = getOptionList(NULL);
+    if(optsList)
+    {
+        for(int i=1; i<=optsList->numberOfStrings; ++i)
+        {
+            free(optsList->stringArray[i]);
+        }
+        free(optsList->stringArray+1);
+        free(optsList);
+    }
 }
 
+#pragma mark EnvironmentVariables
 envVarList * intialiseEnvVarsList()
 {
     envVarList * envsListStruct = malloc(sizeof(envVarList));
@@ -1573,8 +1583,75 @@ envVarList * intialiseEnvVarsList()
     envsListStruct->array[1]->name2 = strdup("towers");
     envsListStruct->array[1]->getValueFunc = (int(*)())&getNumberOfTowers;
     envsListStruct->array[1]->value = envsListStruct->array[1]->getValueFunc();
-
+    
     return envsListStruct;
+}
+
+
+void destroyEnvVarList()
+{
+    envVarList * envsListStruct = getEnvsList(NULL);
+    while(envsListStruct->numberOfElements > 0)
+    {
+        free(envsListStruct->array[envsListStruct->numberOfElements-1]->name);
+        free(envsListStruct->array[envsListStruct->numberOfElements-1]->name2);
+        free(envsListStruct->array[envsListStruct->numberOfElements-1]);
+        envsListStruct->numberOfElements -= 1;
+    }
+    free(envsListStruct->array);
+    free(envsListStruct);
+}
+
+envVarList * getEnvsList(envVarList * envsList)
+{
+    static envVarList * storedEnvsList = NULL;
+    if(envsList != NULL && storedEnvsList == NULL )
+    {
+        storedEnvsList = envsList;
+    }
+    return storedEnvsList;
+}
+
+#pragma mark DevelopementTests
+
+void testStringLists()
+{
+    stringList * cmdList = getCommandList(NULL);
+    testCommandArray(cmdList->stringArray,cmdList->numberOfStrings);
+    stringList * optList = getOptionList(NULL);
+    testCommandArray(optList->stringArray,optList->numberOfStrings);
+}
+
+/*
+ *  Test function for developement. Prints contents of a commandArray
+ */
+void testCommandArray(char ** commandArray, int numberOfChunks)
+{
+    for(int i=0; i<numberOfChunks; ++i)
+    {
+        printf("%s",commandArray[i]);
+    }
+}
+
+
+#pragma mark UnitTests
+
+void testParser()
+{
+    sput_start_testing();
+    sput_set_output_stream(NULL);
+    
+    sput_enter_suite("testReadLevelSettingsFile(): Testing reading and processing level keywords");
+    //sput_run_test(test);
+    sput_leave_suite();
+    
+    
+    sput_finish_testing();
+}
+
+void testInitialiseParseLists()
+{
+    
 }
 
 

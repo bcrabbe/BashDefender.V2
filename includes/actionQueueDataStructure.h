@@ -34,12 +34,13 @@ void removeQueueItem();
 int calculateCosts(cmdType cmd, cmdOption stat, int target);
 int getCurrentStat(cmdOption stat,int target);
 int popToTower();
-void testCheckMem();
-void testingActionQueue();
-void testPopFromQueue();
-void testPushToQueue();
 char *getActionQueueString(void);
 int getCostOfAptget (cmdOption option);
 void freeActionQueue();
 int startOfQueueCalc();
+
+/*----------Testing Function Prototypes-----------*/
+void testCheckMem();
+void testingActionQueue();
+void testPushToQueue();
 #endif
