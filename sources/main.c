@@ -74,6 +74,61 @@ int main(int argc, char ** argv)
     return 0;
 }
 
+void startLevel(Display d, int *restart)	{
+
+    char text[128] = {'>', '>'};
+    char empty[128] = {'>', '>'};
+    char *pass, *clear, *inputCommand=NULL;
+    pass = text;
+    clear = empty;
+    int ended = 0;
+   	int pause = 0; 
+    int steps=0;
+
+    //init_sound();
+    //playBackgroundSound();
+    do{
+        startFrame(d);
+		while(pause)	{
+			pause_screen(d,&pause,restart);
+		}
+        ++steps;
+        drawBackground();
+
+    	startNextWave();
+        levelQueueReader();
+        terminal_window(d, pass, clear,&pause, *restart);
+    	popToTower();
+        if(inputCommand)
+        {
+            parse(inputCommand);
+        }
+        present_enemy(d);
+        present_tower();
+
+    	fire();
+        for(int i=1; i<=getNumberOfEnemies(); ++i)
+        {
+            moveEnemy(i);
+        }
+        presentAnimation();
+    	drawAllTowerPositions();
+        updateAllInfoWindow();
+        endFrame(d);
+        
+        //ended = checkIfPlayerDead();
+        while (ended) {
+            //final screen returns 1 if restart button was pressed...
+            if (final_screen()){
+                ended = 0;
+            }
+        }
+        
+    } while(!terminal_window(d, pass, clear,&pause, *restart));
+		printf("finished\n");    
+}
+
+
 void tutorialLevel(Display d,int *restart)	{
 
     tutPhase tPhase = phaseOne;
@@ -349,7 +404,7 @@ void tutorialLevel(Display d,int *restart)	{
 }
 
 
-void startLevel(Display d, int *restart)	{
+/*void startLevel(Display d, int *restart)	{
 
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
@@ -400,7 +455,7 @@ void startLevel(Display d, int *restart)	{
         }
     } while(!terminal_window(d, pass, clear,&pause, *restart));
 }
-
+*/
 
 void quitGame()
 {
@@ -417,7 +472,9 @@ void testing()	{
 	setUpTesting();
 	//!Unit Tests	
 	testLevelController(); //! Working
+
 	testingProjectiles();
+    //testingTowerPositions(); //!Workingr
     //testingGameStructure(); //!Memory Tests Failing
     testingActionQueue(); //! Working
     testEnemy(); // ! No longer works.
