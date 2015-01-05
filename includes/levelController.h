@@ -42,7 +42,7 @@ typedef struct parseLineArray *ParseLineArray;
 void createKeywordQueue();
 KeywordQueue getKWQueue(KeywordQueue kwQueue);
 void initLevel(int level);
-void endLevel();
+void endLevel(int *restart);
 void addKeyWordToken(char *token);
 void readLevelSettingsFile(char *file);
 int checkProperty(char *token);

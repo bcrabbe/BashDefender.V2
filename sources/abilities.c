@@ -60,6 +60,58 @@ void unlock_ability(AbilityID id)
 	textToTowerMonitor(unlockstring);		
 }
 
+int get_ability_cost(AbilityID id)
+{
+	Ability *a;
+	switch(id)
+	{
+		case PSX:
+		{
+			a = &(get_abilities()->psx);
+			break;
+		}
+		case KILL:
+		{
+			a = &(get_abilities()->kill);
+			break;
+		}
+		default:
+		{
+			fprintf(stderr, "Is valid unlock Switch Error\n");
+			exit(1);
+		}
+	}
+	return a->cost;
+}
+
+
+int is_valid_unlock(AbilityID id)
+{
+	Ability *a;
+	switch(id)
+	{
+		case PSX:
+		{
+			a = &(get_abilities()->psx);
+			break;
+		}
+		case KILL:
+		{
+			a = &(get_abilities()->kill);
+			break;
+		}
+		default:
+		{
+			fprintf(stderr, "Is valid unlock Switch Error\n");
+			exit(1);
+		}
+	}
+	if(a->unlocked == 0)
+	{
+		return 1;
+	}
+	return 0;
+}
 int is_available_ability(AbilityID id)
 {
 
@@ -82,7 +134,7 @@ int is_available_ability(AbilityID id)
 			exit(1);
 		}
 	}
-	if(a->unlocked == 1 && getTotalMemory() > a->cost)
+	if(a->unlocked == 1)
 	{
 		return 1;
 	}
@@ -123,7 +175,7 @@ void psx_ability()
 			{
 				ID = e_health[i].id;
 				health = e_health[i].health;
-				sprintf(line, "%d\t%d\n", ID, health);
+				sprintf(line, "%d                %d\n", ID, health);
 				strcat(psxlist, line);
 			}
 		}

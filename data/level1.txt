@@ -1,4 +1,4 @@
-path pathLevel 1 numberOfPaths 1
+path pathLevel 1 numberOfPaths 4
 towerPos x 10 y 500
 towerPos x 10 y 400
 towerPos x 10 y 300
@@ -21,6 +21,7 @@ towerPos x 730 y 130
 towerPos x 570 y 70
 towerPos x 500 y 250
 totalWaves total 3
+wave waveNum 1 enemyType 4 numberOfEnemies 3 entrance 2 delay 20 level 1
 wave waveNum 1 enemyType 3 numberOfEnemies 1 entrance 2 delay 60 level 1
 wave waveNum 1 enemyType 1 numberOfEnemies 1 entrance 2 delay 70 level 1
 wave waveNum 1 enemyType 3 numberOfEnemies 1 entrance 2 delay 100 level 1

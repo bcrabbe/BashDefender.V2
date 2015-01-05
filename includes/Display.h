@@ -84,6 +84,13 @@ typedef enum	{
 
 } tPosIcon;
 
+typedef enum gameState  {
+    menu,
+    tutorial,
+    level1,
+    //pause
+} gameState;
+
 int processEvents(Display d);
 
 
@@ -140,8 +147,7 @@ void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 
 void pause_screen(Display d, int *pause, int *restart);
 int terminal_window(Display d, char *pass, char *clear, int *pause,int restart);
-void menu_screen(Display d, int *started);
-
+void menu_screen(Display d, gameState *state);
 
 int final_screen();
 

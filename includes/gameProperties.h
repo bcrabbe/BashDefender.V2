@@ -65,6 +65,7 @@ typedef enum clockType	{
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 #define TUTORIALCOOLDOWN_SHORT	30 //!time between tutorial segments
 #define TUTORIALCOOLDOWN	100 //!time between tutorial segments
+#define TUTORIALCOOLDOWN_LONG 200 //!Time betwen tutorial segments
 #define INT_TYPE 1 //hasdefine to avoid enums when dealing with int and char enemies
 #define CHAR_TYPE 2
 
@@ -80,6 +81,7 @@ typedef struct clockNode *ClockNode;
 GameProperties createGame();
 int getAvailableMemory();
 int useMemory(GameProperties game,int mem);
+void setMemory(int newMem);
 int getWave(GameProperties game);
 int getHealth(GameProperties game);
 clock_t delayGame(int delayN);
@@ -115,6 +117,7 @@ void TestAddMemory();
 void TestUseMemory();
 void setEnemyCreated1();
 int getTotalMemory();
+ClockNode findClock(clockType cType);
 int getTotalWaves(GameProperties game);
 void freeClocks();
 /*----------Test Functions-----------*/

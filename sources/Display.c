@@ -13,7 +13,7 @@
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-#include <SDL2_image/SDL_image.h>
+#include <SDL2_image//SDL_image.h>
 #include <SDL2_ttf/SDL_ttf.h>
 
 struct display {
@@ -23,14 +23,16 @@ struct display {
     SDL_Renderer *renderer;
     SDL_Rect    srcRect;
     SDL_Rect    rect;
-	  SDL_Rect	rect_backup;
     SDL_Event event;
-    SDL_Color white;
-    SDL_Color red;
     TTF_Font *font;
 	    
     SDL_Texture *statsBarTexture;
     SDL_Texture *towerInfoTexture;
+    
+    //Colours
+    SDL_Color white;
+    SDL_Color red;
+    SDL_Color green;
     
     //background
     SDL_Texture *map;
@@ -46,6 +48,7 @@ struct display {
 	SDL_Texture *startButton;
     SDL_Texture *reStartButton;
    	SDL_Texture *returnButton; 
+	SDL_Texture *tutorialButton;
 
 	//terminal Window
     SDL_Texture *newtexture;
@@ -62,7 +65,7 @@ struct display {
     SDL_Texture *bulletTexture[3];
 
     //enemy
-    SDL_Texture *enemyTexture[4];
+    SDL_Texture *enemyTexture[5];
     
     //animation
     SDL_Texture *circ1_Texture[2];
@@ -103,6 +106,7 @@ Display init_SDL(){
     
     d->white = (SDL_Color) {255, 255, 255};
     d->red = (SDL_Color) {255, 0, 0};
+    d->green = (SDL_Color) {124, 252, 0};
     
     /*improves quality of font*/
     TTF_SetFontHinting(d->font, TTF_HINTING_LIGHT);
@@ -118,6 +122,7 @@ Display init_SDL(){
     init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
     init_pic(&d->startButton, "Images/start-button.png");
 	init_pic(&d->returnButton,"Images/returnButton.png");
+	init_pic(&d->tutorialButton,"Images/tutorialButton.png");
     init_pic(&d->terminalWindowTexture, "Images/terminalwindow.png");
     init_pic(&d->map, "Images/map1.png");
     init_pic(&d->towerPositionTexture[0], "Images/TowerLocationsA.png");
@@ -158,8 +163,8 @@ Display init_SDL(){
     init_pic(&d->circ1_Texture[1], "Images/circ1_light.png");
     init_pic(&d->circ2_Texture[0], "Images/circ3_dark.png");
     init_pic(&d->circ2_Texture[1], "Images/circ3_light.png");
-    init_pic(&d->bulletTexture[0], "Images/greenBullet.png");
-    init_pic(&d->bulletTexture[1], "Images/redBullet.png");
+    init_pic(&d->bulletTexture[0], "Images/greenBullet2.png");
+    init_pic(&d->bulletTexture[1], "Images/redBullet2.png");
 
     return d;
 }
@@ -184,13 +189,13 @@ void getBackgroundDimensions(int *w, int *h){
 }
 /* Draw kill all ability*/
 void drawKillAll(){
-    SDL_Delay(10);
+    SDL_Delay(3);
     Display d = getDisplayPointer(NULL);
     d->rect = (SDL_Rect) {0,0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL};
     SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
     int saturation = 0;
     while (saturation < 255) {
-        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 2.5);
+        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 4);
         SDL_RenderFillRect(d->renderer, &d->rect);
         SDL_RenderPresent(d->renderer);
     }
@@ -265,12 +270,24 @@ void getWindowSize(int *w, int *h){
 /*draw damage line from X & Y to target X & Y*/
 void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType){
       // choose laser colour depending on type
-    if(laserType == INT_TYPE) {
-        SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, 255);
-    } else {
-        SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, 255);
+      int sat = 5;
+      int adjust = -5;
+    for(int i = 0; i < 10; i++) {
+        
+        if(laserType == INT_TYPE) {
+            SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, sat);
+        } else {
+            SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, sat);
+        }
+        SDL_RenderDrawLine(d->renderer, X_from+adjust, Y_from-adjust, X_target, Y_target);
+        
+        adjust++;
+        if(i < 5) {
+            sat+=25;
+        } else {
+            sat-=25;
+        }
     }
-    SDL_RenderDrawLine(d->renderer, X_from, Y_from, X_target, Y_target);
 }
 
 /* draw an enemy at x and y coor with the health bar above it*/
@@ -437,7 +454,7 @@ void updateActionQueueMonitor(char *outputString) {
     
      displayMonitor(ACTION_QUEUE_X, ACTION_QUEUE_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
     if(strlen(outputString) > 0) {
-        display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X, ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped, d->white);
+        display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X, ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped, d->green);
     }
 }
 
@@ -542,7 +559,7 @@ void display_text(int x, int y, char *string, int text, SDL_Color colour)
             d->surface = TTF_RenderText_Blended(d->font, string, colour);
             break;
         case blended_wrapped:
-            d->surface = TTF_RenderText_Blended_Wrapped(d->font, string, colour, TOWER_MONITOR_WIDTH - TOWER_TEXT_BORDER_X);
+            d->surface = TTF_RenderText_Blended_Wrapped(d->font, string, colour, TOWER_MONITOR_WIDTH - 40);
             break;
     }
     d->newtexture = SDL_CreateTextureFromSurface(d->renderer, d->surface);
@@ -559,7 +576,7 @@ void display_text(int x, int y, char *string, int text, SDL_Color colour)
     
 }
 
-void menu_screen(Display d, int *started)
+void menu_screen(Display d, gameState *state)
 {
     //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
     animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
@@ -567,7 +584,17 @@ void menu_screen(Display d, int *started)
     d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
 
     SDL_RenderCopy(d->renderer, d->startButton, NULL, &d->rect);
+
+    d->rect = (SDL_Rect) {
+            (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),  //!x
+        ((SCREEN_HEIGHT_GLOBAL/3)*2)+(SCREEN_HEIGHT_GLOBAL/6),      //!y
+            SCREEN_HEIGHT_GLOBAL/6,         //!Width
+            SCREEN_HEIGHT_GLOBAL/6      //!height
+    };
+
+    SDL_RenderCopy(d->renderer, d->tutorialButton, NULL, &d->rect);
 	SDL_RenderPresent(d->renderer);
+
     int check = 0;
     check = (SDL_PollEvent(&d->event));
     if(check != 0)
@@ -576,10 +603,23 @@ void menu_screen(Display d, int *started)
 		{
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)
+				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
+						&& d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
+						&& d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 
+						&&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
-                            *started = 1;
+							//!Start Level
+                            *state = level1;
+							printf("level1\n");
                         }
+				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
+                             && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6
+                             && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 + ((SCREEN_HEIGHT_GLOBAL/6)+5)
+                             &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + (2*(SCREEN_HEIGHT_GLOBAL/6)))    {
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+							*state = tutorial; 
+                        }
+                } 
 			}
 			case SDL_KEYDOWN:
 			{
@@ -639,7 +679,6 @@ void pause_screen(Display d, int *pause, int *restart)
                         if(d->event.button.button == SDL_BUTTON_LEFT){
                             *restart = 1;
                             *pause = 0;
-							printf("restart\n");
 						}
 				}
 			}

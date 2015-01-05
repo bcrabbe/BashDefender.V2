@@ -405,6 +405,18 @@ void freeClocks()	{
 	free(gClock);
 }
 
+ClockNode findClock(clockType cType)	{
+    GameClock gClock = getClock(NULL);
+    ClockNode currNode;
+    currNode = gClock->first;	
+	while(currNode != NULL)	{
+		if (currNode->type == cType)	{
+			return currNode;
+		}
+	   currNode = currNode->next;	
+	}
+	return 0;
+}
 
 int checkClock(clockType cType,int coolDown)	{
 	GameClock gClock = getClock(NULL);
@@ -499,6 +511,16 @@ int addMemory(int mem)          {
 	} 
 
 	return 0;
+}
+/*
+ *Setting available memory to specified value
+ */
+void setMemory(int newMem)	{
+	GameProperties game = getGame(NULL);
+	if(newMem>= 0)	{
+		game->totalMemory = newMem;
+		game->memoryUsed = 0;
+	}
 }
 
 void TestAddMemory()	{
