@@ -18,7 +18,6 @@
 #define SPEED_UPGR_VAL 5
 #define RANGE_UPGR_VAL 10
 
-#define UPGRADES_PER_LEVEL 5 // the number of upgrades that can be done to a tower before its level increases
 
 struct tower {
     int towerType;
@@ -450,7 +449,10 @@ void makePostUpgradeChanges(int TowerID) {
   }
 }
       
-
+int getUpgradesCompleted(int target)
+{
+    return getTowerGrp(NULL)->listOfTowers[target]->upgradesCompleted;
+}
 /*
  * Must be called and created before towers are created.
  */
