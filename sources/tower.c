@@ -895,7 +895,8 @@ void freeAllTowers()	{
 		i++;
 	}
 	if(getTowerGrp(NULL)->numOfTowers != 0)	{
-		getTowerGrp(NULL)->numOfTowers -=i;
+        i--;
+        getTowerGrp(NULL)->numOfTowers -=i;
 	}
 }
 

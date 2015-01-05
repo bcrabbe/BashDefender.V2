@@ -16,12 +16,13 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
 
 int main(int argc, char ** argv)
 {
     
     if(TESTING) {
+        Display d = init_SDL();
         testing();
         exit(EXIT_SUCCESS);
     }
@@ -254,7 +255,7 @@ void testing()	{
 
 	setUpTesting();
 	//!Unit Tests	
-	//testLevelController(); //! Working
+	testLevelController(); //! Working
 	//testingTowerPositions(); //!Working
     //testingGameStructure(); //!Memory Tests Failing
     //testingActionQueue(); //! Working

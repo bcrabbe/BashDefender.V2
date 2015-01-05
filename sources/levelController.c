@@ -541,6 +541,7 @@ void setUpTesting()	{
     createProjectileList();
     initialiseParseLists();
     init_abilities();
+    initialQueueReader();
 }
 
 void testLevelController()	{
