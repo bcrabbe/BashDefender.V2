@@ -46,5 +46,6 @@ void updateLaser(ProjectileNode laser);
 int test_numOfProjectiles();
 int test_startingProjectileXcoord();
 int test_startingProjectileYcoord();
+int test_checkStartingProjectileTarget();
 
 #endif

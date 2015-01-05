@@ -454,6 +454,9 @@ void testCheckMem()	{
 	addMemory(100);
 	sput_fail_unless(checkMem(100,testGame) == 1,"Testing enough memory");
 	setMemory(0);
+	test_KillAnEnemy();
+	sput_fail_unless(getAvailableMemory() > 0, "Valid: More memory available after killing an enemy");
+	freeAllEnemies();
 }
 
 /*

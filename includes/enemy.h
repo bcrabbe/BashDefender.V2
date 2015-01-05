@@ -98,5 +98,11 @@ int distanceToEndOfPath(int enemyID);
 void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves);
 void layTestPath();
 
+Enemy createTestEnemy();
+void testInitialiseEnemy();
+void testEnemyMovement();
+void testSetEnemyPathNum(int enemyID, int pathNum);
+void test_KillAnEnemy();
+
 
 #endif

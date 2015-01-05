@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
 
 
 int main(int argc, char ** argv)
@@ -473,11 +473,11 @@ void testing()	{
 	//!Unit Tests	
 	testLevelController(); //! Working
 
-	testingProjectiles();
+	testingProjectiles(); //! Working
     //testingTowerPositions(); //!Workingr
     //testingGameStructure(); //!Memory Tests Failing
     testingActionQueue(); //! Working
-    testEnemy(); // ! No longer works.
+    testEnemy(); // ! Working.
     testParser();
     testingTowerModule(); //! working
     //testingInformationWindowModule();

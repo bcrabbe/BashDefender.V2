@@ -92,6 +92,7 @@ void testingTowerPositions();
 int checkCharType();
 void testingProjectiles();
 void testProjectileHandling();
+void testTowerFiring();
 
 
 

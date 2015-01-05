@@ -294,6 +294,7 @@ int getNumberOfEnemies()
 */
 void Test_createEnemy()
 {
+    freeAllEnemies();
 
     createEnemy();
     sput_fail_unless(getNumberOfEnemies() == 1, "Valid: Number of enemies held in group is one.");
@@ -610,14 +611,101 @@ void testEnemy()
     sput_start_testing();
     sput_set_output_stream(NULL);
     
-    sput_enter_suite("Test_createEnemy(): Creating valid enemies");
+    sput_enter_suite("Test_createEnemy(): Creating valid enemies in enemy group");
     sput_run_test(Test_createEnemy);
     sput_leave_suite();
+    
+    sput_enter_suite("testInitialiseEnemy(): Creating valid initialised enemies");
+    sput_run_test(testInitialiseEnemy);
+    sput_leave_suite();
+    
+    sput_enter_suite("testEnemyMovement(): Moving an enemy");
+    sput_run_test(testEnemyMovement);
+    sput_leave_suite();
+    
     sput_finish_testing();
 }
 
+Enemy createTestEnemy()
+{
+    Enemy e = createEnemy();
+    int testEnemyLevel = 1;
+    EnemyGroup eGroup = getEnemyGroup(NULL);
+    if(eGroup == NULL) {
+        fprintf(stderr,"Unable to find enemy group in testEnemyMovement()");
+        exit(1);
+    }
+    
+    initialiseEnemy(e, testEnemyLevel, INT_TYPE, intBasic, INT_BASIC_HEALTH, INT_BASIC_ARMOUR, INT_BASIC_SPEED, INT_BASIC_DAMAGE, INT_BASIC_HEIGHT, INT_BASIC_WIDTH);
+    
+    return e;
+}
 
+void testInitialiseEnemy()
+{
+    Enemy e = createTestEnemy();
+    
+    sput_fail_unless(e->health == INT_BASIC_HEALTH, "Valid: Enemy has correct starting health");
+    sput_fail_unless(e->armour == INT_BASIC_ARMOUR, "Valid: Enemy has correct starting armour");
+    sput_fail_unless(e->speed == INT_BASIC_SPEED, "Valid: Enemy has correct starting speed");
+    sput_fail_unless(e->damage == INT_BASIC_DAMAGE, "Valid: Enemy has correct starting damage");
+    sput_fail_unless(e->height == INT_BASIC_HEIGHT, "Valid: Enemy has correct starting height");
+    sput_fail_unless(e->width == INT_BASIC_WIDTH, "Valid: Enemy has correct starting width");
+    
+    freeAllEnemies();
+    
+}
 
+void testEnemyMovement()
+{
+    Enemy e = createTestEnemy();
+    
+    sput_fail_unless(distanceToEndOfPath(getNumberOfEnemies()) == e->enemyPath->pathLength, "Valid: Enemy has the correct number of steps to the end of its path");
+    
+    
+    int enemyOriginX = e->x;
+    int enemyOriginY = e->y;
+    for(int i = 0; i < 200; i++) {
+        moveEnemy(getNumberOfEnemies());
+    }
+    sput_fail_unless(e->x != enemyOriginX, "Valid: Enemy has changed X coordinate after 200 moves");
+    sput_fail_unless(e->y != enemyOriginY, "Valid: Enemy has changed Y coordinate after 200 moves");
+    sput_fail_unless(distanceToEndOfPath(getNumberOfEnemies()) == e->enemyPath->pathLength-(200*e->speed), "Valid: Enemy has the correct number of steps to the end of its path after 200 moves");
+    
+    int startingHealth = getHealth(getGame(NULL));
+    int howFarToGo = distanceToEndOfPath(getNumberOfEnemies());
+    int howManyMovesToEnd = (howFarToGo/e->speed)+1;
+    for(int i = 0; i < howManyMovesToEnd; i++) {
+        moveEnemy(getNumberOfEnemies());
+    }
+    
+    
+    sput_fail_unless(isDead(getNumberOfEnemies()), "Valid: Enemy has died after reaching end of path");
+    sput_fail_unless(getHealth(getGame(NULL)) == startingHealth-e->damage, "Valid: Enemy has damaged health by correct amount at end of path");
+    
+}
+
+/*
+* puts specified enemy at start of specified path. Used in testing
+*/
+void testSetEnemyPathNum(int enemyID, int pathNum)
+{
+    LevelPaths lP = getLevelPaths(NULL);
+    Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
+    
+    e->enemyPath = lP->paths[pathNum];
+    e->pathProgress = 0;
+    e->x = e->enemyPath->pathCoords[0][0];
+    e->y = e->enemyPath->pathCoords[0][1];
+}
+
+void test_KillAnEnemy()
+{
+    freeAllEnemies();
+    createTestEnemy();
+    damageEnemy(INT_BASIC_HEALTH, getNumberOfEnemies(), INT_TYPE);
+}
+    
 /*
 * main function for unit testing
 

@@ -514,7 +514,15 @@ int test_startingProjectileYcoord()
     return pL->start->y;
 }
 
-    
+int test_checkStartingProjectileTarget()
+{
+    ProjectileList pL = getProjectileList(NULL);
+    if(pL->start == NULL) {
+        fprintf(stderr,"tried to get test projectile target from empty projectile list");
+        exit(1);
+    }
+    return pL->start->targetID;
+}
 
     
       

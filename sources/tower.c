@@ -165,6 +165,7 @@ void testingProjectiles()
 void testProjectileHandling()
 {
     
+    freeAllEnemies();
     createSpecificEnemy(intBasic, 1, 1); //create 1 enemy
     int enemyOriginalHealth = getEnemyHealth(getNumberOfEnemies());
     
@@ -196,6 +197,7 @@ void testProjectileHandling()
     
     sput_fail_unless(test_numOfProjectiles() == 0, "After 10,000 moves all bullets have disappeared");
     sput_fail_unless(getEnemyHealth(getNumberOfEnemies()) < enemyOriginalHealth, "After 10,000 projectile moves, targeted enemy's heath has been depleted");
+    sput_fail_unless(isDead(getNumberOfEnemies()) == 1, "After being hit by 1000 bullets, enemy is good and dead");
     
     freeAllEnemies();
     freeAllTowers();
@@ -281,11 +283,85 @@ void testingTowerModule()	{
 	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
 	sput_run_test(testTowerCreation);
 	sput_leave_suite();
+	
+	sput_enter_suite("testTowerEnemyInteraction():  Checing firing on enemies is correct");
+	sput_run_test(testTowerFiring);
+	sput_leave_suite();
 
 	sput_finish_testing();
 
 }
 
+void testTowerFiring()
+{
+    freeAllTowers();
+    freeAllEnemies();
+    TowerGroup TG = getTowerGrp(NULL);
+    
+    // create an enemy and tower within range of each other to check range calcs
+    createTestEnemy();
+    setEnemyX(getNumberOfEnemies(), 40);
+    setEnemyY(getNumberOfEnemies(), 40);
+    
+    userCreateTower(50,50);
+    tower t = TG->listOfTowers[TG->numOfTowers];
+    t->range = 20;
+    
+    findTarget(t);
+    sput_fail_unless(t->firing == 1, "Valid: tower fires at enemy in range");
+    
+    // set enemy out of range
+    t->range = 5;
+    t->firing = 0;
+    findTarget(t);
+    sput_fail_unless(t->firing == 0, "Valid: tower not firing when no enemies in range");
+    
+    // set range to be massive, but kill the enemy
+    t->range = 200000;
+    t->firing = 0;
+    killEnemy(getNumberOfEnemies());
+    findTarget(t);
+    sput_fail_unless(t->firing == 0, "Valid: tower not firing when in range enemy is dead");
+    
+    // try when there are no enemies
+    freeAllEnemies();
+    t->firing = 0;
+    findTarget(t);
+    sput_fail_unless(t->firing == 0, "Valid: tower not firing when no enemies created");
+    
+    // priority checking - create two enemies in range and see which one the tower fires at
+    createTestEnemy();
+    testSetEnemyPathNum(1, 0);
+    createTestEnemy();
+    testSetEnemyPathNum(2, 0);
+    
+    moveEnemy(2);
+    findTarget(t);
+    sput_fail_unless(t->targetID == 2, "Valid: tower targets enemy closest to firewall");
+    
+    // move enemy 1 in front of enemy 2
+    moveEnemy(1);
+    moveEnemy(1);
+    
+    t->firingCoolDown = 0;
+    t->firingType = bullet;
+    fire();
+    fire();
+    sput_fail_unless(test_numOfProjectiles() == 1, "Valid: tower creates one projectile when fired twice within cooldown period");
+    
+    t->firingType = laser;
+    for(int i = 0; i < (MAX_COOLDOWN-t->speed); i++) {
+        fire();
+    }
+    t->firingType = missile;
+    for(int i = 0; i < (MAX_COOLDOWN-t->speed) + 1; i++) {
+        fire();
+    }
+    
+    sput_fail_unless(test_numOfProjectiles() == 3, "Valid: tower has created three projectiles after firing three times");
+    sput_fail_unless(test_checkStartingProjectileTarget() == 1, "Valid: created projrctiles are targetting correct enemy");
+}
+    
 
 void createTowerGroup()	{
 
