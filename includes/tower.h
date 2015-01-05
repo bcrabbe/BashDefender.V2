@@ -34,6 +34,7 @@ int createTowerFromPositions(int position);
 void createTowerTypeFromPositions(int position, int tType);
 
 // tower info returning functions
+int getTowerType(int towerID);
 int getTowerRange(int towerID);
 int getTowerSpeed(int towerID);
 int getTowerDamage(int towerID);
@@ -81,7 +82,14 @@ void testUpgradeTowerStat();
 int getLastTowerPositionY();
 int getLastTowerPositionX();
 void testTowerCreation();
-void testingTowerPositions();
+
+int createTowerFromPositions(int position);
+void drawAllTowerPositions();
+void createTowerTypeFromPositions(int position, int tType);
+int getTowerPositionX(int position);
+int getTowerPositionY(int position);
+void makeAllTowPosAvailable();
+
 int checkCharType();
 void testingProjectiles();
 void testProjectileHandling();

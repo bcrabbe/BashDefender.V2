@@ -181,8 +181,11 @@ cmdType getLastCommand(ActionQueueStructure queue)	{
  */
 cmdOption getFirstOption(ActionQueueStructure queue)	{
 
-	return queue->start->option;
+	if(queue->start != NULL)	{
+		return queue->start->option;	
+	}
 
+	return 0;
 }
 
 /*

@@ -201,19 +201,6 @@ void testProjectileHandling()
     freeAllTowers();
 }
 
-void testingTowerPositions()	{
-    
-    sput_start_testing();
-	sput_set_output_stream(stderr);
-
-	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
-	sput_run_test(testTowerCreation);
-	sput_leave_suite();
-
-	sput_finish_testing();	
-
-}
-
 void testTowerCreation()	{
 	
 	addTowerPosNode(100,200);
@@ -240,22 +227,47 @@ int getLastTowerPositionX()	{
 }
 
 int getTowerRange(int towerID)	{
-	return getTowerID(towerID)->range;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->range;     
+	}
+	return 0;
+}
+
+int getTowerType(int towerID)	{
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->towerType;
+	}
+	return 0;
 }
 int getTowerSpeed(int towerID)	{
-	return getTowerID(towerID)->speed;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->speed;   
+	}	
+	return 0;
 }
 int getTowerDamage(int towerID)	{
-	return getTowerID(towerID)->damage;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->damage;     
+	}
+	return 0;
 }
 int getTowerAOErange(int towerID)	{
-	return getTowerID(towerID)->level;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->level;     
+	}
+	return 0;
 }
 int getTowerAOEpower(int towerID)	{
-	return getTowerID(towerID)->AOEpower;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->AOEpower;     
+	}
+	return 0;
 }
 int getTowerLevel(int towerID)	{
-	return getTowerID(towerID)->level;     
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->level;     
+	}
+	return 0;
 }
 
 void testingTowerModule()	{
@@ -264,6 +276,10 @@ void testingTowerModule()	{
 
 	sput_enter_suite("testGetTower(): Tower creation at valid positions and being placed in tower array");
 	sput_run_test(testGetTower);
+	sput_leave_suite();
+
+	sput_enter_suite("testTowerCreation():  Checking they exist in group once created");
+	sput_run_test(testTowerCreation);
 	sput_leave_suite();
 
 	sput_finish_testing();

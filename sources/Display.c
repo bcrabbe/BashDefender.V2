@@ -23,7 +23,6 @@ struct display {
     SDL_Renderer *renderer;
     SDL_Rect    srcRect;
     SDL_Rect    rect;
-	  SDL_Rect	rect_backup;
     SDL_Event event;
     SDL_Color white;
     SDL_Color red;
@@ -46,6 +45,7 @@ struct display {
 	SDL_Texture *startButton;
     SDL_Texture *reStartButton;
    	SDL_Texture *returnButton; 
+	SDL_Texture *tutorialButton;
 
 	//terminal Window
     SDL_Texture *newtexture;
@@ -62,7 +62,7 @@ struct display {
     SDL_Texture *bulletTexture[3];
 
     //enemy
-    SDL_Texture *enemyTexture[4];
+    SDL_Texture *enemyTexture[5];
     
     //animation
     SDL_Texture *circ1_Texture[2];
@@ -118,6 +118,7 @@ Display init_SDL(){
     init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
     init_pic(&d->startButton, "Images/start-button.png");
 	init_pic(&d->returnButton,"Images/returnButton.png");
+	init_pic(&d->tutorialButton,"Images/tutorialButton.png");
     init_pic(&d->terminalWindowTexture, "Images/terminalwindow.png");
     init_pic(&d->map, "Images/map1.png");
     init_pic(&d->towerPositionTexture[0], "Images/TowerLocationsA.png");
@@ -571,7 +572,7 @@ void display_text(int x, int y, char *string, int text, SDL_Color colour)
     
 }
 
-void menu_screen(Display d, int *started)
+void menu_screen(Display d, gameState *state)
 {
     //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
     animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
@@ -579,7 +580,17 @@ void menu_screen(Display d, int *started)
     d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
 
     SDL_RenderCopy(d->renderer, d->startButton, NULL, &d->rect);
+
+    d->rect = (SDL_Rect) {
+            (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),  //!x
+        ((SCREEN_HEIGHT_GLOBAL/3)*2)+(SCREEN_HEIGHT_GLOBAL/6),      //!y
+            SCREEN_HEIGHT_GLOBAL/6,         //!Width
+            SCREEN_HEIGHT_GLOBAL/6      //!height
+    };
+
+    SDL_RenderCopy(d->renderer, d->tutorialButton, NULL, &d->rect);
 	SDL_RenderPresent(d->renderer);
+
     int check = 0;
     check = (SDL_PollEvent(&d->event));
     if(check != 0)
@@ -588,10 +599,23 @@ void menu_screen(Display d, int *started)
 		{
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)
+				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
+						&& d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
+						&& d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 
+						&&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
-                            *started = 1;
+							//!Start Level
+                            *state = level1;
+							printf("level1\n");
                         }
+				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
+                             && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6
+                             && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 + ((SCREEN_HEIGHT_GLOBAL/6)+5)
+                             &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + (2*(SCREEN_HEIGHT_GLOBAL/6)))    {
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+							*state = tutorial; 
+                        }
+                } 
 			}
 			case SDL_KEYDOWN:
 			{
@@ -651,7 +675,6 @@ void pause_screen(Display d, int *pause, int *restart)
                         if(d->event.button.button == SDL_BUTTON_LEFT){
                             *restart = 1;
                             *pause = 0;
-							printf("restart\n");
 						}
 				}
 			}

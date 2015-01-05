@@ -190,7 +190,6 @@ int createEnemyCommand(Keyword makeEnemy)	{
 	if(checkClock(singleEnemyCreated,ENEMYSPAWNCOOLDOWN) && checkClock(groupDelay,getEnemyGroupDelay()) && (getWave(getGame(NULL)) == returnPropertyValue(makeEnemy,waveID)))	{
 		setCreateEnemyGroupDelay(0); //!setting delay back to zero
 		createSpecificEnemy(returnPropertyValue(makeEnemy,enemyType),returnPropertyValue(makeEnemy,enemyLevel),returnPropertyValue(makeEnemy,entrance));
-		printf("enemy created\n");
 		return 1;
 	} 
 	return 0;
@@ -515,7 +514,7 @@ void readLevelSettingsFile(char *file)	{
 /*
  *Frees all Data structures
  */
-void endLevel() {
+void endLevel(int *restart) {
 
     freeAllTowers();
     free(getGame(NULL));
@@ -525,6 +524,7 @@ void endLevel() {
 	freeLevelPaths();
 	freeClocks();
 	freeActionQueue();
+	*restart = 0;
 }
 
 /*---------- Test Functions ----------*/
