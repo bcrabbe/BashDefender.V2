@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING	 1
 
 
 int main(int argc, char ** argv)
@@ -56,19 +56,6 @@ int main(int argc, char ** argv)
 		}
 	}	while(1);
 
-    /*while(started == 0){
-    	menu_screen(d, &state);
-    }*/
-/*
-	do	{
-		restart = 0;
-    	initLevel(1); //For tutorial level, change to 0, uncomment tutorial level, comment startlevel for tutorial
-		//tutorialLevel(d,&restart);
-		startLevel(d,&restart);
-		endLevel();
-	} while (restart);
-*/
-    
     shutSDL(d);
     quitGame();
     return 0;
@@ -125,7 +112,6 @@ void startLevel(Display d, int *restart)	{
         }
         
     } while(!terminal_window(d, pass, clear,&pause, *restart));
-		printf("finished\n");    
 }
 
 
@@ -473,16 +459,16 @@ void testing()	{
 	//!Unit Tests	
 	testLevelController(); //! Working
 
-	testingProjectiles(); //! Working
-    //testingTowerPositions(); //!Workingr
+	//testingProjectiles(); //! Working
+    //testingTowerPositions(); //!Working
     //testingGameStructure(); //!Memory Tests Failing
-    testingActionQueue(); //! Working
-    testEnemy(); // ! Working.
-    testParser();
-    testingTowerModule(); //! working
+    //testingActionQueue(); //! Working
+    //testEnemy(); // ! Working.
+    //testParser();
+    //testingTowerModule(); //! working
     //testingInformationWindowModule();
 
-   	//! System Tests 
+   	////! System Tests 
 	//queueToTowerTesting();
     //parseToQueueTesting(); //!Working
 	//parseToTowerTesting(); //!Working
