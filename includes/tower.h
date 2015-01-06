@@ -8,6 +8,7 @@ typedef struct towerGroup *TowerGroup;
 typedef struct towerPos *TowerPos;
 typedef struct towerPosNode *TowerPosNode;
 
+#define UPGRADES_PER_LEVEL 5 // the number of upgrades that can be done to a tower before its level increases
 
 // tower positon handling
 int isTowerPositionAvailable(int position);
@@ -45,6 +46,7 @@ int getTowerX(int towerID);
 int getTowerY(int towerID);
 unsigned int getNumberOfTowers();
 int getTowerWidth(int towerID);
+int getUpgradesCompleted(int target);
 
 // upgrading tower functions
 int upgradeDmg(int target);

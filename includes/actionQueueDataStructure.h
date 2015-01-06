@@ -32,6 +32,7 @@ int getFirstTarget();
 void clearQueue();
 void removeQueueItem();
 int calculateCosts(cmdType cmd, cmdOption stat, int target);
+int costOfUpgradeFactoringInTheUpgradesOnTheQueue( int target, cmdOption stat);
 int getCurrentStat(cmdOption stat,int target);
 int popToTower();
 char *getActionQueueString(void);

@@ -21,6 +21,7 @@ typedef struct  environmentVariable {
     char * name;
     char * name2;
     int value;
+    int (*updateValueFunc)(cmdType command);
     int (*getValueFunc)();
 } envVar;
 
