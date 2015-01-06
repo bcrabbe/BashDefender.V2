@@ -8,6 +8,13 @@
 
 #define MAX_COOLDOWN 100 //  the longest number of ticks that a tower can take between shots
 
+//#defines for starting tower stats
+#define TOWER_STARTING_DAMAGE 20
+#define TOWER_STARTING_RANGE 100
+#define TOWER_STARTING_SPEED 50
+#define TOWER_STARTING_AOE_POWER 0
+#define TOWER_STARTING_AOE_RANGE 0
+
 //#defines for tower type weighting
 #define DAMAGE_MOD 9
 #define SPEED_MOD 6
@@ -471,7 +478,6 @@ int userCreateTower(int inputTowerPositionX, int inputTowerPositionY)
 }
 
 
-
 void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
 {
     TowerGroup TG = getTowerGrp(NULL);
@@ -483,13 +489,13 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
 
     newTow->upgradesCompleted = 0;
 
-    newTow->damage = 20;
-    newTow->range = 100;
+    newTow->damage = TOWER_STARTING_DAMAGE;
+    newTow->range = TOWER_STARTING_RANGE;
     newTow->firing = 0;
 	  newTow->level = 1;
-    newTow->speed = 50;
-    newTow->AOEpower = 10;
-    newTow->AOErange = 10;
+    newTow->speed = TOWER_STARTING_SPEED;
+    newTow->AOEpower = TOWER_STARTING_AOE_POWER;
+    newTow->AOErange = TOWER_STARTING_AOE_RANGE;
     newTow->height = 50;
     newTow->width = 50;
     newTow->gunX = 23;
