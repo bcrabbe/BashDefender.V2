@@ -342,9 +342,8 @@ void destroyCommandList(void) {
         destroyCommandNode(&start);
     }
     
-    tw->start = createCommandNode();
+    tw->start = NULL;
     tw->commands = 0;
-    tw->start->commandString = "";
 }
 
 /**
