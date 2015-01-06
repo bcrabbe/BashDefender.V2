@@ -44,6 +44,7 @@ struct gameProperties {
 	int deathCount;
 	int createEnemyGroupDelay;
 	int TotalEnemiesCurrentWave;	//!Holds the total number of enemies this wave
+    int playerScore;
 };
 
 /*---------- Functions ----------*/
@@ -461,6 +462,7 @@ GameProperties createGame()	{
 	newGame->clock->start_t  = newGame->clock->lastAction = (double) clock()/CLOCKS_PER_SEC;
 	newGame->createEnemyGroupDelay=0;
 	newGame->TotalEnemiesCurrentWave = 0;
+    newGame->playerScore = 0;
 	getGame(newGame);
 	return newGame;
 
@@ -555,4 +557,17 @@ void TestUseMemory()	{
 	sput_fail_unless(getAvailableMemory() == 50,"Subtracting Memory");
 	sput_fail_unless(useMemory(testGame,100) == 0,"Subtracting too much Memory");
 	free(testGame);
+}
+
+void updatePlayerScore(int enemyLevel) {
+    
+    GameProperties game = getGame(NULL);
+    
+    game->playerScore += enemyLevel * MULTIPLIER;
+}
+
+int getPlayerScore(void) {
+    GameProperties game = getGame(NULL);
+    
+    return game->playerScore;
 }

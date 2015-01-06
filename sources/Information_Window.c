@@ -362,7 +362,7 @@ void statsBar() {
     
     char *outputString = malloc(MAX_OUTPUT_STRING);
     
-    sprintf(outputString, "Available Memory: %dbytes                                                 Wave: %d / %d                                                                     Health: %d", mem, waveNumber, totalWaves, health);
+    sprintf(outputString, "Available Memory: %dbytes                            Wave: %d / %d                                   Health: %d                             Score: %d", mem, waveNumber, totalWaves, health, getPlayerScore());
     
     updateStatsBar(outputString);
 }

@@ -471,9 +471,9 @@ void quitGame()
 void testing()	{
 
 	setUpTesting();
-	//!Unit Tests
+	
+    //!Unit Tests
 	testLevelController(); //! Working
-
 	testingProjectiles(); //! Working
     //testingTowerPositions(); //!Workingr
     //testingGameStructure(); //!Memory Tests Failing
@@ -481,7 +481,6 @@ void testing()	{
     testEnemy(); // ! Working.
     testParser();
     testingTowerModule(); //! working
-
     testingInformationWindowModule();
 
    	//! System Tests 

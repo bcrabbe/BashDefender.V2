@@ -536,6 +536,7 @@ void damageEnemy(int damage, int enemyID, int damageType)
 		      e->health=0;
           e->dead=1;
           addMemory(e->maxHealth);
+          updatePlayerScore(e->level);
           // drawDeath(e->x, e->y);
           //drawKillAll();
       }

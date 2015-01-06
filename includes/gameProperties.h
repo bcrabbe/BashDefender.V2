@@ -66,6 +66,7 @@ typedef enum clockType	{
 #define TUTORIALCOOLDOWN_LONG 200 //!Time betwen tutorial segments
 #define INT_TYPE 1 //hasdefine to avoid enums when dealing with int and char enemies
 #define CHAR_TYPE 2
+#define MULTIPLIER 100 //Multiplier used to calculate player score
 
 /*----------TypeDefs----------*/
 
@@ -118,6 +119,8 @@ int getTotalMemory();
 ClockNode findClock(clockType cType);
 int getTotalWaves(GameProperties game);
 void freeClocks();
+void updatePlayerScore(int enemyLevel);
+int getPlayerScore(void);
 /*----------Test Functions-----------*/
 void testStartNextWave();
 void testClocks();
