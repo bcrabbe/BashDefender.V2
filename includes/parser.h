@@ -33,25 +33,14 @@ typedef struct environmentVariableList {
 
 int parse(char *inputString);
 
-
+//initialiser:
 void initialiseParser();
-stringList * intialiseCommandList();
-stringList * intialiseOptionList();
-stringList * getCommandList(stringList * commandList);
-stringList * getOptionList(stringList * optionList);
+//destructors:
 void freeParseLists();
-
-
-envVarList * intialiseEnvVarsList();
-envVarList * getEnvsList(envVarList * envsList);
 void destroyEnvVarList();
 
-
+//unit test suite:
 void testParser();
-
-
-//void testGetAction(enum cmdType action);
-//void testGetUpgradeStat(cmdOption statToUpgrade);
 
 #endif
 
