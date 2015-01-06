@@ -88,7 +88,7 @@ typedef enum gameState  {
     menu,
     tutorial,
     level1,
-    pause
+    //pause
 } gameState;
 
 int processEvents(Display d);

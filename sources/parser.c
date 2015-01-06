@@ -143,8 +143,8 @@ int parse(char *inputString)
     int minNumberOfChunks = 2;//as of cat man and upgrade
     if( numberOfTokens < minNumberOfChunks )
     {
-        fprintf(stderr,"ERROR: commands must be space seperated, with atleast two words\n");
-        errorToTerminalWindow("ERROR: commands must be space seperated, with atleast two words");
+        fprintf(stderr,"ERROR: commands must be space seperated, with at least two words\n");
+        errorToTerminalWindow("ERROR: commands must be space seperated, with at least two words");
         freeCommandArray(commandArray, numberOfTokens);
         return 0;//no valid commands with less than 2 strings or more than 3
     }
@@ -597,7 +597,7 @@ int parseCat(char * inputStringTargeting)
         else
         {
             char str[100];
-            sprintf(str,"ERROR: cat expected a target tower as its 2nd argument");
+            sprintf(str,"ERROR: cat expected a target tower as\nits 2nd argument");
             errorToTerminalWindow(str);
             return 0;
         }
@@ -607,7 +607,7 @@ int parseCat(char * inputStringTargeting)
     else
     {
         char str[100];
-        sprintf(str,"ERROR: cat expected a target tower as its second argument. Enter t1 tower target tower 1.");
+        sprintf(str,"ERROR: cat expected a target tower as\nits second argument. Enter t1 tower target tower 1.");
         errorToTerminalWindow(str);
         return 0;
     }

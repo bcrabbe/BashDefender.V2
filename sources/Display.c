@@ -14,6 +14,7 @@ int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
 #include <SDL2_image/SDL_image.h>
+
 #include <SDL2_ttf/SDL_ttf.h>
 
 struct display {
@@ -24,12 +25,15 @@ struct display {
     SDL_Rect    srcRect;
     SDL_Rect    rect;
     SDL_Event event;
-    SDL_Color white;
-    SDL_Color red;
     TTF_Font *font;
 	    
     SDL_Texture *statsBarTexture;
     SDL_Texture *towerInfoTexture;
+    
+    //Colours
+    SDL_Color white;
+    SDL_Color red;
+    SDL_Color green;
     
     //background
     SDL_Texture *map;
@@ -103,6 +107,7 @@ Display init_SDL(){
     
     d->white = (SDL_Color) {255, 255, 255};
     d->red = (SDL_Color) {255, 0, 0};
+    d->green = (SDL_Color) {124, 252, 0};
     
     /*improves quality of font*/
     TTF_SetFontHinting(d->font, TTF_HINTING_LIGHT);
@@ -450,7 +455,7 @@ void updateActionQueueMonitor(char *outputString) {
     
      displayMonitor(ACTION_QUEUE_X, ACTION_QUEUE_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->actionQueueTexture);
     if(strlen(outputString) > 0) {
-        display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X, ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped, d->white);
+        display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X, ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped, d->green);
     }
 }
 
@@ -555,7 +560,7 @@ void display_text(int x, int y, char *string, int text, SDL_Color colour)
             d->surface = TTF_RenderText_Blended(d->font, string, colour);
             break;
         case blended_wrapped:
-            d->surface = TTF_RenderText_Blended_Wrapped(d->font, string, colour, TOWER_MONITOR_WIDTH - TOWER_TEXT_BORDER_X);
+            d->surface = TTF_RenderText_Blended_Wrapped(d->font, string, colour, TOWER_MONITOR_WIDTH - 40);
             break;
     }
     d->newtexture = SDL_CreateTextureFromSurface(d->renderer, d->surface);

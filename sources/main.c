@@ -24,6 +24,7 @@ int main(int argc, char ** argv)
     
 	Display d = init_SDL();
     if(TESTING) {
+        Display d = init_SDL();
         testing();
         exit(EXIT_SUCCESS);
     }
@@ -470,7 +471,7 @@ void quitGame()
 void testing()	{
 
 	setUpTesting();
-	//!Unit Tests	
+	//!Unit Tests
 	testLevelController(); //! Working
 
 	testingProjectiles(); //! Working
@@ -480,7 +481,8 @@ void testing()	{
     testEnemy(); // ! Working.
     testParser();
     testingTowerModule(); //! working
-    //testingInformationWindowModule();
+
+    testingInformationWindowModule();
 
    	//! System Tests 
 	//queueToTowerTesting();
@@ -488,7 +490,7 @@ void testing()	{
 	//parseToTowerTesting(); //!Working
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 	//enemyToGamePropertiesTesting();
-    //testParserToInfoWindow();
+    testParserToInfoWindow();
 
 }
 

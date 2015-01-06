@@ -624,8 +624,11 @@ void freeAllTowers()	{
 		free(getTowerGrp(NULL)->listOfTowers[i]);
 		i++;
 	}
-	
-	getTowerGrp(NULL)->numOfTowers = 0;
+
+	if(getTowerGrp(NULL)->numOfTowers != 0)	{
+        i--;
+        getTowerGrp(NULL)->numOfTowers -=i;
+	}
 }
 
 void testGetTower()	{
