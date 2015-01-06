@@ -455,104 +455,104 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
 
 void tutorial_one()	{
 
-	textToTowerMonitor("Hi!  Welcome to your first day as a Bash Defender.  We expect you to defend our precious systems against all kinds of computing nasties.\n Lets get started!\n");
+	textToTowerMonitor("Hi!  Welcome to your first day as a Bash Defender.  We expect you to defend our precious systems against all kinds of computing nasties.\n\nLet's get started!\n");
 
 }
 
 void tutorial_two()	{
 
-	textToTowerMonitor("lets try making a tower!\n please type:\n mktwr int a\n to make an integer tower in position a.  You can try another position if you like!\n\n This command looks like a lot like linux command 'mkdir' for making directories - but thats not too important right now.\n");
+	textToTowerMonitor("Let's try making a tower!\nPlease type:\nmktwr int a\nto make an integer tower in position a.  You can try another position if you like!\n\nThis command looks like a lot like linux command 'mkdir' for making directories - but thats not too important right now.\n");
 
 }
 
 void tutorial_three()	{
 
-		textToTowerMonitor("Well done!  You have made a tower of type integer.\n You should use this tower type against integer enemies - those are the ones with numbers.\n\n  In Computer Science, an integer is data type for storing whole numbers.\n");
+		textToTowerMonitor("Well done!  You have made a tower of type integer.\nYou should use this tower type against integer enemies - those are the ones with numbers.\n\n In Computer Science, an integer is a data type for storing whole numbers.\n");
 
 }
 void tutorial_four()	{
-		textToTowerMonitor("I know what you are thinking, why would you need to build towers when its so calm and peaceful round here?\n Well, its not always like this.  In your job as a linux administrator, you will be under constant attack from virus's.\n  In fact, it looks like there is one on its way right now!\n");
+		textToTowerMonitor("I know what you are thinking, why would you need to build towers when it's so calm and peaceful around here?\nWell, it's not always like this. In your job as a linux administrator you will be under constant attack from viruses.\nIn fact, it looks like there is one on its way right now!\n");
 
 }
 
 void tutorial_five()	{
 
-	textToTowerMonitor("Oh no!  It looks like that enemy got away.  We need to prepare before the next enemy comes.\n  Upgrade your tower's damage by typing\n upgrade p t1");
+	textToTowerMonitor("Oh no!  It looks like that enemy got away. We need to prepare before the next enemy comes.\n Upgrade your tower's damage by typing:\nupgrade p t1");
 
 }
 
 void tutorial_six()	{
 
-	textToTowerMonitor("Well Done!  Now your tower will do more damage against those pesky virus'\n.  Check it out, here comes another one!\n");
+	textToTowerMonitor("Well Done!  Now your tower will do more damage against those pesky viruses.\nCheck it out, here comes another one!\n");
 
 }
 
 void tutorial_five_error()	{
 
-	textToTowerMonitor("Thats not the correct stat to upgrade.\n  Please upgrade power by typing \n upgrade p t1\n");
+	textToTowerMonitor("That's not the correct stat to upgrade.\nPlease upgrade power by typing:\nupgrade p t1\n");
 }
 
 void tutorial_seven()	{
 
-	textToTowerMonitor("Well That was weird.\n Why didn't your upgraded tower kill that enemy?  Its because your tower was the wrong type!  That enemy was a char enemy - You can tell because it was red.  \n\nYou should also note that your health is going down with each enemy to break through your defenses (top right corner!).  Let this get to zero and your lose!");
+	textToTowerMonitor("Well That was weird.\n Why didn't your upgraded tower kill that enemy? It's because your tower was of the wrong type! That enemy was a char enemy - You can tell because it was red.\n\nYou should also note that your health is going down with each enemy to break through your defenses (top right corner!).  Let this get to zero and you lose!");
 
 }
 
 void tutorial_eight()	{
 
-		textToTowerMonitor("Right!  No more losing.  Lets create a char tower with mktwr char c\n  Char is data type in computer science for storing characters");
+		textToTowerMonitor("Right!  No more losing.  Let's create a char tower with mktwr char c\nChar is a data type in computer science for storing characters");
 
 }
 
 void tutorial_nine()	{
 
-		textToTowerMonitor("Bam!  that char virus didn't stand a chance.  Lets look at some other upgrade commands before we finish up.  \n");
+		textToTowerMonitor("Bam!  that char virus didn't stand a chance. Let's look at some other upgrade commands before we finish up.\n");
 
 }
 
 void tutorial_ten()	{
-	textToTowerMonitor("Try upgrading your tower's speed.  This will increase the speed that you tower fires at enemies!\n  Type upgrade s t1");
+	textToTowerMonitor("Try upgrading your tower's speed. This will increase the speed that your tower fires at enemies!\nType upgrade s t1");
 }
 
 void tutorial_eleven()	{
-	textToTowerMonitor("Now lets upgrade your tower's range.  This allows you towers to hit farther aware enemies.\n type \n upgrade r t1\n You'll be becoming very familiar with this style of command - they are closely modeled on real linux command line utilities.  You have command, an option and a target!  \n");
+	textToTowerMonitor("Now lets upgrade your tower's range. This allows your towers to hit enemies that are further away.\nType: \n upgrade r t1\n You should be getting very familiar with this style of command by now - they are closely modeled on real linux command line utilities. You have command, an option and a target!\n");
 }
 
 void tutorial_twelve()	{
-	textToTowerMonitor("Hey, you are getting pretty good at this!  \n Lets hope you perform this well when faced with a REAL threat...\n  So, we have upgraded your tower quite a bit now, do you want to see what its stats are in some more detail?");
+	textToTowerMonitor("Hey, you are getting pretty good at this!\n Let's hope you perform this well when faced with a REAL threat...\n So, we have upgraded your tower quite a bit now, do you want to see what its stats are in some more detail?");
 }
 
 void tutorial_thirteen()	{
 
-	textToTowerMonitor("Lets try using the cat command: type cat t1\n This command tells you the current stats of your tower, and how much it will cost you to upgrade each.\n You can use the cat command on a linux machine to check the contents of files too!");
+	textToTowerMonitor("Let's try using the cat command: type cat t1\n This command tells you the current stats of your tower, and how much it will cost you to upgrade each.\nYou can use the cat command on a linux machine to check the contents of files too!");
 }
 
 void tutorial_fourteen()	{
 
-		textToTowerMonitor("That command doesn't seem to have worked...  Its because you have been using all your memory on upgrades and towers!\n  Check your memory (top left) and check the amount needed to do the upgrade you are attempting by typing\n cat t1\n  In the field, you'd need to kill more enemies to get more memory.  Since this is training, we will give you some for free.\n");
+		textToTowerMonitor("That command doesn't seem to have worked...  It's because you have been using all your memory on upgrades and towers!\n Check your memory (top left) and check the amount needed to do the upgrade you are attempting by typing:\ncat t1\n In the field, you'd need to kill more enemies to get more memory. Since this is training, we will give you some for free.\n");
 
 }
 
 void tutorial_fifteen()	{
-		textToTowerMonitor("You should think carefully about what commands you try to use.  If you place a very expensive command in your action queue, you will not be able to do anything else until this command gets actioned!\n  There is also a limit on how quickly you can execute command: commands that aren't ready yet will also be placed in the queue.\n");
+		textToTowerMonitor("You should think carefully about what commands you try to use. If you place a very expensive command in your action queue, you will not be able to do anything else until this command gets actioned!\n  There is also a limit to how quickly you can execute a command: commands that aren't ready yet will also be placed in the queue.\n");
 
 }
 
 void tutorial_sixteen()	{
-	textToTowerMonitor("No, you have to upgrade the tower's range!\n Please type\n upgrade r t1 \n");
+	textToTowerMonitor("No, you have to upgrade the tower's range!\nPlease type:\nupgrade r t1\n");
 
 }
 
 void tutorial_seventeen()	{
-	textToTowerMonitor("Right - listen up because this next bit advice will be key to you keeping your job! \n What are you going to do if you have only int towers and lots of char virus' attack?  You could build another char tower, but that gets expensive...  Why dont you just change the type of your current towers? \n");
+	textToTowerMonitor("Right - listen up because this next bit of advice will be key to you keeping your job!\nWhat are you going to do if you have only int towers and lots of char viruses attack?  You could build another char tower, but that gets expensive...  Why don't you just change the type of your current towers?\n");
 }
 
 void tutorial_eighteen()	{
-	textToTowerMonitor("Type:\n chmod int t2 to change tower 2 to an int type.  \nType: \n chmod char t1\n to change tower 2 to a char type.\n  On a proper linux system, you can use the chmod command to change properties of files, not towers!: it will change the file permisions.\n");
+	textToTowerMonitor("Type:\nchmod int t2 to change tower 2 to an int type.\nType:\nchmod char t1\nto change tower 2 to a char type.\nOn a proper linux system, you can use the chmod command to change properties of files, not towers! It will change the file permisions.\n");
 }
 
 void tutorial_nineteen()	{
-	textToTowerMonitor("There is one more thing you need to know about.  You can install new abilities with the apt-get command.  This command installs a new specified ability from a package repository do give you some more fire-power to fight off virus' - Just like in a Linux Environment when you need a new utility!.\n type apt-get install");
+	textToTowerMonitor("There is one more thing you need to know about. You can install new abilities with the apt-get command.  This command installs a new specified ability from a package repository to give you some more fire-power to fight off viruses - Just like in a Linux Environment when you need a new utility!.\ntype apt-get install");
 }
 
 /*Test functions*/
@@ -609,14 +609,16 @@ void testParserToInfoWindow(void) {
 void testTowerMonitor(void) {
     TowerMonitor *tm= getTowerMonitor(); //initialize tower monitor
     
-    createTowerGroup(); //Create tower group to test retrieving default tower string
-    sput_fail_if(strcmp(getDefaultTowerString(tm), tm->string) != 0, "Testing default string");
+    sput_fail_if(strcmp(getDefaultTowerString(tm), tm->string) != 0, "Testing if default string is being fetched and stored correctly");
     
     textToTowerMonitor("This is a test string");
-    sput_fail_if(strcmp(tm->string, "This is a test string") != 0, "Testing random string");
+    sput_fail_if(strcmp(tm->string, "This is a test string") != 0, "Testing if random string is being stored correctly");
     
-    userCreateTower(200, 200); //Create random tower to test retrieving specific tower string.
-    sput_fail_if(strcmp(getTowerString(1, tm), tm->string) != 0, "Testing specific tower string");
+    
+    /*createTowerFromPositions(1);
+    sput_fail_if(strcmp(getTowerString(1, tm), tm->string) != 0, "Testing if specific tower string is being fetched and stored correctly");
+    freeAllTowers();*/
+    //clearQueue();*/
 }
 
 /**
@@ -637,82 +639,80 @@ void testTerminalWindow(void) {
 
 void testParserErrorMessages(void) {
     TerminalWindow *tw = getTerminalWindow();
+    //ActionQueueStructure actionQueue = getQueue(NULL);
     
     //Test parsing empty string and unknown commands
     
     parse("");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse empty string, should send appropriate error message to terminal window");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: valid commands must be longer than that\n******************************") != 0, "Testing parse empty string, should send appropriate error message to terminal window");
     strcpy(tw->errorString, ""); //Reset string
     
     parse("unrecognized");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse unrecognized command, should send appropriate error message to terminal window");
-     strcpy(tw->errorString, "");
-    
-    parse("unrecognized unrecognized");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse 2 unrecognized commands, should send appropriate error message to terminal window"); //CURRENTLY FAILS, NEEDS FIXING IN GAME
-     strcpy(tw->errorString, "");
-    
-    parse("unrecognized unrecognized unrecognized");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse 3 unrecognized commands, should send appropriate error message to terminal window"); ////CURRENTLY FAILS, NEEDS FIXING IN GAME
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: commands must be space seperated, with at least two words\n******************************") != 0, "Testing parse unrecognized command, should send appropriate error message to terminal window");
      strcpy(tw->errorString, "");
     
     //Test parsing upgrade command with all combinations
     
     parse("upgrade");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse upgrade with no stats or target, should send appropriate error message to terminal window");
-    
-     strcpy(tw->errorString, ""); //Reset string
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: commands must be space seperated, with at least two words\n******************************") != 0, "Testing parse upgrade with no stats or target, should send appropriate error message to terminal window");
+     strcpy(tw->errorString, "");
     
     parse("upgrade r");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse upgrade with no target, should send appropriate error message to terminal window");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Upgrade command expected 2 or more arguments\n******************************") != 0, "Testing parse upgrade with no target, should send appropriate error message to terminal window");
     
-     strcpy(tw->errorString, ""); //Reset string
+     strcpy(tw->errorString, "");
     
     parse("upgrade r t25");
     sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse upgrade with non-existing target, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");
     
-     strcpy(tw->errorString, ""); //Reset string
-    
-    /*createTowerFromPositions(1);
-    parse("upgrade r t1");
+    /*printf("\n\n\nNumber of towers: %d\n\n\n", getNumberOfTowers());
+    parse("mktwr INT a");
+    popToTower();
+    delayGame(20);
+    addMemory(1000);
+    printf("\n\n\nNumber of towers: %d\n\n\n", getNumberOfTowers());
+    parse("upgrade r t25");
     sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse upgrade with existing target, should not send any message to terminal window");
-    strcpy(tw->errorString, "");*/
+    strcpy(tw->errorString, "");
+    freeAllTowers();
+    printf("\n\n\nNumber of towers: %d\n\n\n", getNumberOfTowers());*/
     //CAUSES MALLOC ERROR, POSSIBLY BECAUSE TOWER HASN'T BEEN CREATED PROPERLY
     
     //Test parsing mktwr command with all combinations
     
     parse("mktwr");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse mktwr without tower type or targer, should send appropriate error message to terminal window");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: commands must be space seperated, with at least two words\n******************************") != 0, "Testing parse mktwr without tower type or targer, should send appropriate error message to terminal window");
     strcpy(tw->errorString, "");
     
     parse("mktwr unrecognized");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse mktwr with unrecognized type and no target, should send appropriate error message to terminal window");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: mktwr command expected 2 or more arguments\n******************************") != 0, "Testing parse mktwr with unrecognized type and no target, should send appropriate error message to terminal window");
     strcpy(tw->errorString, "");
     
     parse("mktwr INT");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse mktwr with recognized type and no target, should send appropriate error message to terminal window");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: mktwr command expected 2 or more arguments\n******************************") != 0, "Testing parse mktwr with recognized type and no target, should send appropriate error message to terminal window");
     strcpy(tw->errorString, "");
     
     parse("mktwr INT unrecognized");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse mktwr with recognized type and unrecognized target, should send appropriate error message to terminal window");
+    char errorString[MAX_OUTPUT_STRING];
+    sprintf(errorString, "******************************\nERROR: mktwr expected a target positon A - %c it read unrecognized\n******************************", maxTowerPositionChar());
+    sput_fail_if(strcmp(tw->errorString, errorString) != 0, "Testing parse mktwr with recognized type and unrecognized target, should send appropriate error message to terminal window");
     strcpy(tw->errorString, "");
     
-    /*parse("mktwr INT A");
-    printf("\n\nMichael Testing: .%s.\n\n", tw->errorString);
+    parse("mktwr INT A");
     sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse mktwr with recognized type and recognized target, should not send error message to terminal window");
-    strcpy(tw->errorString, "");*/
-    //DOES SEND ERROR MESSAGE, POSSIBLY BECAUSE TOWER POSITIONS NOT CREATED PROPERLY
+    strcpy(tw->errorString, "");
+    freeAllTowers();
     
     //Test parsing man command with all combinations
     
     parse("man");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse man without target, should send appropriate error message to terminal window");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: commands must be space seperated, with at least two words\n******************************") != 0, "Testing parse man without target, should send appropriate error message to terminal window");
     strcpy(tw->errorString, "");
     
-    /*parse("man unrecognized");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse man with unrecognized target, should send appropriate error message to terminal window");
-    strcpy(tw->errorString, "");*/
-    //NOT WORKING CURRENTLY, NEEDS FIXING IN GAME
+    parse("man unrecognized");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: command to cat not recognised. You entered: unrecognized\n******************************") != 0, "Testing parse man with unrecognized target, should send appropriate error message to terminal window");
+    strcpy(tw->errorString, "");
     
     parse("man cat");
     sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse man with valid target, should not send error message to terminal window");
@@ -721,16 +721,26 @@ void testParserErrorMessages(void) {
     //Test parsing cat command with all combinations
     
     parse("cat");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse cat without target, should send appropriate error message to terminal window");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: commands must be space seperated, with at least two words\n******************************") != 0, "Testing parse cat without target, should send appropriate error message to terminal window");
     strcpy(tw->errorString, "");
     
     parse("cat unrecognized");
-    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: Could not execute command. Type man [COMMAND] for help\n******************************") != 0, "Testing parse cat with unrecognized target, should send appropriate error message to terminal window"); //CURRENTLY FAILS, NEEDS FIXING IN GAME
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: cat expected a target tower as\nits second argument. Enter t1 tower target tower 1.\n******************************") != 0, "Testing parse cat with unrecognized target, should send appropriate error message to terminal window");
     strcpy(tw->errorString, "");
     
     parse("cat t1");
-    sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse cat with recognized target, should not send error message to terminal window");
+    sput_fail_if(strcmp(tw->errorString, "******************************\nERROR: cat expected a target tower as\nits 2nd argument\n******************************") != 0, "Testing parse cat with recognized but non-existing target, should send appropriate error message to terminal window");
     strcpy(tw->errorString, "");
+    
+    parse("mktwr INT a");
+    popToTower();
+    delayGame(20);
+    addMemory(1000);
+    parse("cat t1");
+    sput_fail_if(strcmp(tw->errorString, "") != 0, "Testing parse cat with recognized and existing target, should not send an error message to terminal window");
+    freeAllTowers();
+    strcpy(tw->errorString, "");
+    
 }
 
 void testParserInfoMessages(void) {
@@ -739,20 +749,25 @@ void testParserInfoMessages(void) {
     //Test parsing man command with valid and invalid combinations
     
     parse("man cat");
-    sput_fail_if(strcmp(tm->string, "GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target, e.g. t1, t2, t3..., to display the stats of that target\n") != 0, "Testing parse man with recognized target, should send appropriate info message to tower monitor");
+    sput_fail_if(strcmp(tm->string, "GENERAL COMMANDS MANUAL: \n\ncat \n\ntype ""cat"" followed by a target, e.g. t1, t2, t3..., to display the stats of that target\n") != 0, "Testing parse man with recognized command, should send appropriate info message to tower monitor");
     strcpy(tm->string, ""); //Reset string
     
-    /*parse("man unrecognized");
-    sput_fail_if(strcmp(tm->string, "") != 0, "Testing parse man with unrecognized target, should not send info message to tower monitor");//CURRENTLY CAUSES SEGFAULT, NEEDS FIXING IN GAME
-    strcpy(tm->string, ""); //Reset string*/
+    parse("man unrecognized");
+    sput_fail_if(strcmp(tm->string, "") != 0, "Testing parse man with unrecognized command, should not send info message to tower monitor");
+    strcpy(tm->string, "");
     
     //Test parsing cat command with valid and invalid combinations
     
-    /*parse("cat t2");
+    createTowerFromPositions(1);
+    parse("cat t1");
+    towerMonitor();
     char towerMonitorString[MAX_OUTPUT_STRING];
     strcpy(towerMonitorString, tm->string);
     sput_fail_if(strcmp(towerMonitorString, getTowerString(1, tm)) != 0, "Testing parse cat with recognized target, should send appropriate info message to tower monitor");
-    strcpy(tm->string, "");*/
-    //PROBLEMS CREATING TOWERS
+    freeAllTowers();
+    strcpy(tm->string, "");
+
+    parse("cat t2");
+    sput_fail_if(strcmp(tm->string, "") != 0, "Testing parse cat with non-existing target, should not send an info message to tower monitor");
     
 }

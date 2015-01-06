@@ -18,6 +18,7 @@ typedef enum AbilityID
 //void kill_ability(int enemyID, Ability *kill);
 
 int kill_all_ability();
+void kill_ability(int enemyID);
 
 void psx_ability();
 

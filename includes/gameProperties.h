@@ -41,8 +41,6 @@ enum cmdOption
     kill_all=11,//kills all enemies
     //aptget (commands to install):
     aptget_kill=12,
-    
-    
 };
 
 typedef enum clockType	{

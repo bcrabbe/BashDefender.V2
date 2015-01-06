@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING	 1
+#define TESTING 0
 
 
 int main(int argc, char ** argv)
@@ -24,6 +24,7 @@ int main(int argc, char ** argv)
     
 	Display d = init_SDL();
     if(TESTING) {
+        Display d = init_SDL();
         testing();
         exit(EXIT_SUCCESS);
     }
@@ -456,7 +457,7 @@ void quitGame()
 void testing()	{
 
 	setUpTesting();
-	//!Unit Tests	
+	//!Unit Tests
 	testLevelController(); //! Working
 
 	//testingProjectiles(); //! Working
