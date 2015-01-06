@@ -22,6 +22,7 @@
 #include "../includes/enemy.h"
 #include "../includes/sput.h"
 #include "../includes/gameProperties.h"
+#include "../includes/abilities.h"
 
 #pragma mark ProtoTypes
 //top level command parser:
@@ -82,10 +83,12 @@ typedef enum operator {
 
 //While parsing funtions:
 int parseWhile(char *inputString);
+
 operator matchesOperator(char isThisAnOperator);
 operator combineOperators(operator firstOp, operator secondOp);
 operator getOperatorFromString(char * conditionString);
 void makeStringForOperator(operator op, char * string);
+
 envVar * returnEnvVar(char * stringToMatch);
 int getCommandMemCost(cmdType command, envVar * mem);
 int numberOfMktwrLastPushed (int mktwrsPushed);
@@ -391,8 +394,8 @@ int parseKill(char ** commandArray,int numberOfTokens)
 
         else
         {
-            //int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
-            //kill_ability(targetEnemyID);
+            int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
+            kill_ability(targetEnemyID);
             return 1;
         }
     }
@@ -437,6 +440,10 @@ int parseAptget(char * aptToGetString)
         fprintf(stderr,"\n***app not recognised***\n");
         fprintf(stderr,"type man aptget to see availible apps\n");
         return 0;
+    }
+    // if(is_valid_unlock(aptToGet))
+    {
+        
     }
     if(pushToQueue(getQueue(NULL),cmd_aptget,aptToGet,0)>=1)
     {
@@ -829,22 +836,23 @@ int parseWhile(char *inputString)
             //now execute
             if(op==none)
             {
-                while(variable->value>0)
-                {
-                    if( parseCommands(commandArray,numberOfTokensInCommandArray) )
-                    {
-                        variable->updateValueFunc(command);
-                        if(command==cmd_mktwr)
-                        {
-                            ++commandArray[2][0];//increments the tower position
-                        }
-
-                    }
-                    else
-                    {
-                        return 0;
-                    }
-                }
+//                while(variable->value>0)
+//                {
+//                    if( parseCommands(commandArray,numberOfTokensInCommandArray) )
+//                    {
+//                        variable->updateValueFunc(command);
+//                        if(command==cmd_mktwr)
+//                        {
+//                            ++commandArray[2][0];//increments the tower position
+//                        }
+//
+//                    }
+//                    else
+//                    {
+//                        return 0;
+//                    }
+//                }
+                return 0;
             }
             if(op==not)
             {
@@ -858,7 +866,7 @@ int parseWhile(char *inputString)
             makeStringForOperator(op, stringForOperator);
             char ** conditionArray = breakUpString(bracketTokenArray[1], &numberOfOperands,
                                                    stringForOperator);
-            testCommandArray(conditionArray,numberOfOperands);
+            //testCommandArray(conditionArray,numberOfOperands);
             if( numberOfOperands!=2 )
             {
                 char termErrString[100];
@@ -1607,7 +1615,7 @@ stringList * intialiseOptionList()
     //ps opts:
     validOptions[9]=strdup("x");
     //kill opts:
-    validOptions[10]=strdup("9");
+    validOptions[10]=strdup("-9");
     validOptions[11]=strdup("all");
     //aptget opts:
     validOptions[12]=strdup("kill");
