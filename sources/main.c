@@ -431,7 +431,6 @@ void testing()	{
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 	//enemyToGamePropertiesTesting();
     //testParserToInfoWindow();
-
 }
 
 void queueToTowerTesting(){
