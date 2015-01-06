@@ -117,7 +117,7 @@ void startLevel(Display d, int *restart)	{
         updateAllInfoWindow();
         endFrame(d);
         
-        //ended = checkIfPlayerDead();
+        ended = checkIfPlayerDead();
         while (ended) {
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
