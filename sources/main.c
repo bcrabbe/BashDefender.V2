@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
 
 
 int main(int argc, char ** argv)
@@ -484,12 +484,12 @@ void testing()	{
     testingInformationWindowModule();
 
    	//! System Tests 
-	//queueToTowerTesting();
-    //parseToQueueTesting(); //!Working
-	//parseToTowerTesting(); //!Working
-    //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
-	//enemyToGamePropertiesTesting();
+	enemyToGamePropertiesTesting();
     testParserToInfoWindow();
+    queueToTowerTesting();
+    parseToQueueTesting(); //!Working
+	parseToTowerTesting(); //!Working
+    //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 
 }
 
