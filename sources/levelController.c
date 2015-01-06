@@ -532,6 +532,7 @@ void setUpTesting()	{
     createKeywordQueue();
 	readLevelSettingsFile(TESTLEVEL);	
     createLevelPaths();
+    layTestPath();
     createTowerGroup();
     createActionQueue();
     createGame();

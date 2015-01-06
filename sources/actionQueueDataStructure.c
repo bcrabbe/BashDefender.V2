@@ -241,6 +241,41 @@ int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
     return 0;
 }
 
+
+
+int costOfUpgradeFactoringInTheUpgradesOnTheQueue( int target, cmdOption stat)
+{
+    ActionQueueStructure q = getQueue(NULL);
+    QueueNode currentNode = q->start;
+    
+    int upgradesToThisStatAndTowerInTheQueue=0;
+    int towerUpgradesToBeCompleted = getUpgradesCompleted(target);
+    int towerLevel = getTowerLevel(target);
+
+   
+    while(currentNode != NULL)
+    {
+        if(currentNode->command == cmd_upgrade &&
+           currentNode->target == target )
+        {
+            ++towerUpgradesToBeCompleted;
+            if(towerUpgradesToBeCompleted % UPGRADES_PER_LEVEL == 0)
+            {
+                ++towerLevel;
+            }
+            if(currentNode->option == stat)
+            {
+                ++upgradesToThisStatAndTowerInTheQueue;
+            }
+        }
+        currentNode=currentNode->nextNode;
+    }
+    int costOfUpgradeWillBe = towerLevel*2*( getCurrentStat(stat,target) +
+                                            upgradesToThisStatAndTowerInTheQueue );
+    return costOfUpgradeWillBe;
+}
+
+
 int getCostOfAptget (cmdOption option)
 {
     if(option==aptget_kill)
@@ -454,6 +489,9 @@ void testCheckMem()	{
 	addMemory(100);
 	sput_fail_unless(checkMem(100,testGame) == 1,"Testing enough memory");
 	setMemory(0);
+	test_KillAnEnemy();
+	sput_fail_unless(getAvailableMemory() > 0, "Valid: More memory available after killing an enemy");
+	freeAllEnemies();
 }
 
 /*

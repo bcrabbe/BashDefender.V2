@@ -65,7 +65,8 @@ void Test_createEnemy();
 EnemyGroup getEnemyGroup(EnemyGroup enemyList);
 int getEnemyHealth();
 void freeEnemy(int enemyID);
-int moveEnemy(int enemyID);
+void freeAllEnemies();
+void moveEnemy(int enemyID);
 int isDead(int enemyID);
 void killEnemy(int enemyID);
 int inRange(int tX, int tY, int tRange, int enemyID);
@@ -95,6 +96,13 @@ void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int he
 int distanceToEndOfPath(int enemyID);
 
 void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves);
+void layTestPath();
+
+Enemy createTestEnemy();
+void testInitialiseEnemy();
+void testEnemyMovement();
+void testSetEnemyPathNum(int enemyID, int pathNum);
+void test_KillAnEnemy();
 
 
 #endif

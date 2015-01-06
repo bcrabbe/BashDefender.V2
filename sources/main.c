@@ -16,7 +16,8 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING	0 
+#define TESTING 1
+
 
 int main(int argc, char ** argv)
 {
@@ -73,6 +74,61 @@ int main(int argc, char ** argv)
     return 0;
 }
 
+void startLevel(Display d, int *restart)	{
+
+    char text[128] = {'>', '>'};
+    char empty[128] = {'>', '>'};
+    char *pass, *clear, *inputCommand=NULL;
+    pass = text;
+    clear = empty;
+    int ended = 0;
+   	int pause = 0; 
+    int steps=0;
+
+    //init_sound();
+    //playBackgroundSound();
+    do{
+        startFrame(d);
+		while(pause)	{
+			pause_screen(d,&pause,restart);
+		}
+        ++steps;
+        drawBackground();
+
+    	startNextWave();
+        levelQueueReader();
+        terminal_window(d, pass, clear,&pause, *restart);
+    	popToTower();
+        if(inputCommand)
+        {
+            parse(inputCommand);
+        }
+        present_enemy(d);
+        present_tower();
+
+    	fire();
+        for(int i=1; i<=getNumberOfEnemies(); ++i)
+        {
+            moveEnemy(i);
+        }
+        presentAnimation();
+    	drawAllTowerPositions();
+        updateAllInfoWindow();
+        endFrame(d);
+        
+        //ended = checkIfPlayerDead();
+        while (ended) {
+            //final screen returns 1 if restart button was pressed...
+            if (final_screen()){
+                ended = 0;
+            }
+        }
+        
+    } while(!terminal_window(d, pass, clear,&pause, *restart));
+		printf("finished\n");    
+}
+
+
 void tutorialLevel(Display d,int *restart)	{
 
     tutPhase tPhase = phaseOne;
@@ -112,7 +168,7 @@ void tutorialLevel(Display d,int *restart)	{
                 break;
             case phaseTwo:
                 tutorial_two();
-                if(getNumOfTowers() > 0)	{
+                if(getNumberOfTowers() > 0)	{
                     damage = getTowerDamage(1);
                     tPhase++;
                 }
@@ -324,12 +380,12 @@ void tutorialLevel(Display d,int *restart)	{
             parse(inputCommand);
         }
         present_enemy(d);
-        present_tower(d);
-        
-        fire();
+        present_tower();
+
+    	fire();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
-            int move = moveEnemy(i);
+            moveEnemy(i);
         }
         presentAnimation();
         drawAllTowerPositions();
@@ -348,7 +404,7 @@ void tutorialLevel(Display d,int *restart)	{
 }
 
 
-void startLevel(Display d, int *restart)	{
+/*void startLevel(Display d, int *restart)	{
 
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
@@ -383,7 +439,7 @@ void startLevel(Display d, int *restart)	{
     	fire();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
-            int move = moveEnemy(i);
+            moveEnemy(i);
         }
         presentAnimation();
     	drawAllTowerPositions();
@@ -399,7 +455,7 @@ void startLevel(Display d, int *restart)	{
         }
     } while(!terminal_window(d, pass, clear,&pause, *restart));
 }
-
+*/
 
 void quitGame()
 {
@@ -415,15 +471,17 @@ void testing()	{
 
 	setUpTesting();
 	//!Unit Tests	
-
 	testLevelController(); //! Working
+
+	testingProjectiles(); //! Working
+    //testingTowerPositions(); //!Workingr
     //testingGameStructure(); //!Memory Tests Failing
     testingActionQueue(); //! Working
-    //testEnemy(); // ! No longer works.
+    testEnemy(); // ! Working.
     testParser();
-    
     testingTowerModule(); //! working
     //testingInformationWindowModule();
+
    	//! System Tests 
 	//queueToTowerTesting();
     //parseToQueueTesting(); //!Working
@@ -600,7 +658,7 @@ void testParseToTower()
 void testValidParses()
 {
 	
-	createTower();
+	userCreateTower(0, 0); // create tower at x: 0, y: 0. Position is irrelevant for this test
     sput_fail_unless(parse("upgrade r t1")== 1, "upgrade r t1 is valid command");
 	sput_fail_unless(getLastCommand(getQueue(NULL)) == cmd_upgrade, "First command in queue: upgrade");
 	sput_fail_unless(getLastOption(getQueue(NULL)) == upgrade_range, "First option in queue: range");

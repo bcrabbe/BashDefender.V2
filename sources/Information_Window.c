@@ -387,7 +387,7 @@ void actionQueueMonitor() {
  */
 void towerInformation() {
     
-    int numOfTowers = getNumOfTowers();
+    int numOfTowers = getNumberOfTowers();
     
     if(numOfTowers > 0) {
         for(int towerID = 1; towerID <= numOfTowers; ++towerID) {
@@ -440,6 +440,7 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
             strcpy(type, "CHAR");
             break;
     }
+
 
     sprintf(towerString, "TOWER %d\n\nRange: %d Cost to Upgrade: %d \nDamage: %d Cost to Upgrade: %d\nSpeed: %d Cost to Upgrade: %d \nAOE Power: %d\nAOE Range: %d", targetTower, 
 					range, calculateCosts(cmd_upgrade,upgrade_range,targetTower), 
