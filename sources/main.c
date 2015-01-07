@@ -104,7 +104,7 @@ void startLevel(Display d, int *restart)	{
         updateAllInfoWindow();
         endFrame(d);
         
-        //ended = checkIfPlayerDead();
+        ended = checkIfPlayerDead();
         while (ended) {
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
@@ -457,25 +457,27 @@ void quitGame()
 void testing()	{
 
 	setUpTesting();
-	//!Unit Tests
+	
+    //!Unit Tests
 	testLevelController(); //! Working
 
-	//testingProjectiles(); //! Working
-    //testingTowerPositions(); //!Working
+	testingProjectiles(); //! Working
+    //testingTowerPositions(); //!Workingr
     //testingGameStructure(); //!Memory Tests Failing
-    //testingActionQueue(); //! Working
-    //testEnemy(); // ! Working.
-    //testParser();
-    //testingTowerModule(); //! working
-    //testingInformationWindowModule();
+    testingActionQueue(); //! Working
+    testEnemy(); // ! Working.
+    testParser();
+    testingTowerModule(); //! working
+    testingInformationWindowModule();
 
-   	////! System Tests 
-	//queueToTowerTesting();
-    //parseToQueueTesting(); //!Working
-	//parseToTowerTesting(); //!Working
+   	//! System Tests 
+	enemyToGamePropertiesTesting();
+    testParserToInfoWindow();
+    queueToTowerTesting();
+    parseToQueueTesting(); //!Working
+	parseToTowerTesting(); //!Working
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
-	//enemyToGamePropertiesTesting();
-    //testParserToInfoWindow();
+
 }
 
 void queueToTowerTesting(){

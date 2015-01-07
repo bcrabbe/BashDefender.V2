@@ -12,6 +12,7 @@
 #define TEST_Display_h
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 extern int SCREEN_WIDTH_GLOBAL;
 extern int SCREEN_HEIGHT_GLOBAL;
@@ -142,7 +143,7 @@ void updateActionQueueMonitor(char *outputString);
 char *strdup2(char * s);
 void updateTerminalWindow(char *outputString);
 void updateTowerInformation(int towerX, int towerY, char *string, int towerID);
-void display_text(int x, int y, char *string, int text, SDL_Color colour);
+void display_text(int x, int y, char *string, int text, TTF_Font *font, SDL_Color colour);
 void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 
 void pause_screen(Display d, int *pause, int *restart);
