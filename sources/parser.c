@@ -1245,12 +1245,11 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
     
     size_t len = strlen(inputStringTargeting);//gets the size of string
-    iprint((int)len);
     if( len<1  || ( needsIdentifier &&  len<2 ) )
     {
-        char str[100];
+        char str[200];
         sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-        //errorToTerminalWindow(str);
+        errorToTerminalWindow(str);
         fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
         fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
         return 0;
