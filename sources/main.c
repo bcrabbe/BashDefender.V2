@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
 
 
 int main(int argc, char ** argv)
@@ -459,23 +459,23 @@ void testing()	{
 	setUpTesting();
 	
     //!Unit Tests
-	testLevelController(); //! Working
+    //testLevelController(); //! Working
 
-	testingProjectiles(); //! Working
+    //testingProjectiles(); //! Working
     //testingTowerPositions(); //!Workingr
     //testingGameStructure(); //!Memory Tests Failing
-    testingActionQueue(); //! Working
-    testEnemy(); // ! Working.
+    //testingActionQueue(); //! Working
+    //testEnemy(); // ! Working.
     testParser();
-    testingTowerModule(); //! working
-    testingInformationWindowModule();
+    //testingTowerModule(); //! working
+    //testingInformationWindowModule();
 
    	//! System Tests 
-	enemyToGamePropertiesTesting();
-    testParserToInfoWindow();
-    queueToTowerTesting();
-    parseToQueueTesting(); //!Working
-	parseToTowerTesting(); //!Working
+    //enemyToGamePropertiesTesting();
+    // testParserToInfoWindow();
+    // queueToTowerTesting();
+    //  parseToQueueTesting(); //!Working
+    //	parseToTowerTesting(); //!Working
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
 
 }

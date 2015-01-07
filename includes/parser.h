@@ -21,8 +21,8 @@ typedef struct  environmentVariable {
     char * name;
     char * name2;
     int value;
-    int (*updateValueFunc)(cmdType command);
-    int (*getValueFunc)();
+    int (*updateValueFunc)(cmdType command);//updates the value with things on the queue
+    int (*getValueFunc)();//sets the value from the global value
 } envVar;
 
 typedef struct environmentVariableList {

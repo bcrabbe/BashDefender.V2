@@ -110,7 +110,10 @@ envVarList * getEnvsList(envVarList * envsList);
 void testStringLists();
 void testCommandArray(char ** commandArray, int numberOfChunks);
 
-
+//automated unit tests
+void testStringToInt();
+void testGetTargetTower();
+void testInitialiseParseLists();
 #pragma mark MainFuntion
 
 /*
@@ -1242,11 +1245,12 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
     
     size_t len = strlen(inputStringTargeting);//gets the size of string
+    iprint((int)len);
     if( len<1  || ( needsIdentifier &&  len<2 ) )
     {
         char str[100];
         sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-        errorToTerminalWindow(str);
+        //errorToTerminalWindow(str);
         fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
         fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
         return 0;
@@ -1330,6 +1334,16 @@ unsigned long int stringToInt(const char * string)
 {
     unsigned long int converted=0;
     size_t length = strlen(string);
+    if(length<1)
+    {
+        fprintf(stderr,"stringToInt was called with a empty string, this will segfault, so it has just returned 0 \n");
+        return 0;
+    }
+    if(string[0]=='-')
+    {
+        fprintf(stderr,"stringToInt was called a negative number, this not handled, returning 0\n");
+        return 0;
+    }
     for(int i=0; i<length; ++i)
     {
         converted += (unsigned int)(string[i]-'0') * pow( 10, (length-i-1));
@@ -1614,7 +1628,7 @@ stringList * intialiseOptionList()
     validOptions[7]=strdup("int");
     validOptions[8]=strdup("char");
     //ps opts:
-    validOptions[9]=strdup("x");
+    validOptions[9]=strdup("-x");
     //kill opts:
     validOptions[10]=strdup("-9");
     validOptions[11]=strdup("all");
@@ -1711,13 +1725,6 @@ envVarList * getEnvsList(envVarList * envsList)
 
 #pragma mark DevelopementTests
 
-void testStringLists()
-{
-    stringList * cmdList = getCommandList(NULL);
-    testCommandArray(cmdList->stringArray,cmdList->numberOfStrings);
-    stringList * optList = getOptionList(NULL);
-    testCommandArray(optList->stringArray,optList->numberOfStrings);
-}
 
 /*
  *  Test function for developement. Prints contents of a commandArray
@@ -1726,7 +1733,22 @@ void testCommandArray(char ** commandArray, int numberOfChunks)
 {
     for(int i=0; i<numberOfChunks; ++i)
     {
-        printf("%s",commandArray[i]);
+        printf("[%s]   ",commandArray[i]);
+    }
+    printf("\n");
+}
+
+void testStringLists(stringList * list)
+{
+    for(int i=1; i<list->numberOfStrings; ++i)
+    {
+        printf("string %d = [",i);
+        
+        for(int c=0; c<strlen(list->stringArray[i]); ++c)
+        {
+            printf("%c",list->stringArray[i][c]);
+        }
+        printf("]\n");
     }
 }
 
@@ -1738,8 +1760,18 @@ void testParser()
     sput_start_testing();
     sput_set_output_stream(NULL);
     
-    sput_enter_suite("testReadLevelSettingsFile(): Testing reading and processing level keywords");
-    //sput_run_test(test);
+    
+    sput_enter_suite("testInitialiseParseLists");
+    sput_run_test(testInitialiseParseLists);
+    sput_leave_suite();
+    
+    sput_enter_suite("testStringToInt");
+    sput_run_test(testStringToInt);
+    sput_leave_suite();
+    
+    
+    sput_enter_suite("testGetTargetTower");
+    sput_run_test(testGetTargetTower);
     sput_leave_suite();
     
     
@@ -1748,7 +1780,139 @@ void testParser()
 
 void testInitialiseParseLists()
 {
+    //initialiseParser(); this is called in setUpTesting()
     
+    stringList * cmdList = getCommandList(NULL);
+    sput_fail_unless(cmdList, "getCommandList() should return stringlist pointer");
+    testStringLists(cmdList);
+    
+    stringList * optList = getOptionList(NULL);
+    sput_fail_unless(optList, "getOptionList() should return a string list pointer");
+    testStringLists(optList);
+    
+    sput_fail_unless(returnEnvVar("mem"),"returnEnvVar(""mem"") should return the envVar mem");
+    sput_fail_unless(returnEnvVar("tows"),"returnEnvVar(""tows"") should return the envVar tows");
 }
 
+void testGetTargetTower()
+{
+    /*
+     *  Called on cat and upgrade commands with the target specifying token.
+     looks at the 2nd char in the string to find an int 1-9 to be the target.
+     Note, wont work for anything > 9, would just see 1.
+     Will print its own error message.
+     Returns TargetTowerID if sucessful
+     Returns 0 if error
+     */
+    // unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier)
+    /*{
+        unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
+        
+        size_t len = strlen(inputStringTargeting);//gets the size of string
+        if( len<1  || ( needsIdentifier &&  len<2 ) )
+        {
+            char str[100];
+            sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
+            errorToTerminalWindow(str);
+            fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
+            fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
+            return 0;
+        }
+        if ( needsIdentifier && !(inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T') )
+        {
+            errorToTerminalWindow("ERROR: You must target a towers with this command");
+            char str[100];
+            sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
+            errorToTerminalWindow(str);
+            fprintf(stderr,"*** ERROR: You must target a towers with this command ***\n");
+            fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
+            return 0;
+        }
+        unsigned int targetTower = 0;
+        if( inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T' )
+        {
+            targetTower = stringToInt(inputStringTargeting+1);
+        }
+        else
+        {
+            targetTower = stringToInt(inputStringTargeting);
+        }
+        if(targetTower > numberOfTowers || targetTower < 1 )
+        {
+            char str[100];
+            sprintf(str,"ERROR: target tower does not existYou have only %d towers you entered t%d",numberOfTowers,
+                    targetTower);
+            errorToTerminalWindow(str);
+            
+            fprintf(stderr,"*** ERROR: target tower does not exist ***\n");
+            fprintf(stderr,"You have only %d towers you entered t%d\n",
+                    numberOfTowers,targetTower);
+            return 0;
+        }
+        return targetTower;
+    }
+    */
+    createTowerFromPositions(1);
+    printf("%d tower built\n",getNumberOfTowers());
+    sput_fail_unless(getTargetTower("",true)==0,"calling with empty string should return 0 and error message");
+    sput_fail_unless(getTargetTower("",false)==0,"calling with empty string should return 0 and error message");
+
+    //  sput_fail_unless(getTargetTower("t",true)==0,"calling with just t should return 0 and error message");
+    //sput_fail_unless(getTargetTower("t",false)==0,"calling with just t should return 0 and error message");
+    //sput_fail_unless(getTargetTower("T",true)==0,"calling with just T should return 0 and error message");
+    //sput_fail_unless(getTargetTower("T",false)==0,"calling with just T should return 0 and error message");
+    
+
+    //sput_fail_unless(getTargetTower("1",true)==0,"calling with just 1 and string should return 0 and error message when needIdentifer is true");
+    sput_fail_unless(getTargetTower("1",false)==1,"calling with just 1 and string should return 1  when needIdentifer is false");
+    
+    sput_fail_unless(getTargetTower("t0",true)==0,"calling with t0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t-1",true)==0,"calling with t-1  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t99",true)==0,"calling with t0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t0",false)==0,"calling with t0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t-1",false)==0,"calling with t-1  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t99",false)==0,"calling with t0  should return 0 and error message");
+    
+    sput_fail_unless(getTargetTower("-1",false)==0,"calling with -1  should return 0 and error message");
+    sput_fail_unless(getTargetTower("0",false)==0,"calling with 0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("99",false)==0,"calling with t0  should return 0 and error message");
+    
+    for(int i=2;i<=maxTowerPosition();++i)
+    {
+        createTowerFromPositions(i);
+        char str[5];
+        sprintf(str,"%c",i);
+        sput_fail_unless(getTargetTower(str,false)==i,"should get target tower correctly");
+        sput_fail_unless(getTargetTower(str,true)==i,"should not get target tower since it is requiring identifier");
+        
+        char Tstr[10]="t";
+        strcat(Tstr,str);
+        sput_fail_unless(getTargetTower(Tstr,true)==i,"should get target tower since it is requiring identifier and it has identifier");
+        sput_fail_unless(getTargetTower(Tstr,false)==i,"should get target tower since it is not requiring identifier and it has identifier");
+
+
+    }
+
+
+
+}
+
+void testStringToInt()
+{
+
+    sput_fail_unless(stringToInt("1")==1,"stringToInt(""1"")==1");
+    sput_fail_unless(stringToInt("10")==10,"stringToInt(""10"")==10");
+    sput_fail_unless(stringToInt("19")==19,"stringToInt(""19"")==19");
+    for(int i=0;i<=10000;i+=999)
+    {
+        char str[15];
+        sprintf(str,"%d",i);
+        sput_fail_unless(stringToInt(str)==i,str);
+    }
+    //bad calls
+    sput_fail_unless(stringToInt("")==0,"calling with empty string should return 0 and an error message");
+    sput_fail_unless(stringToInt("-10")==0,"calling with negative should return 0 and error message");
+}
+                    
+                     
 
