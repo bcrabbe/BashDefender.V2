@@ -16,7 +16,6 @@ int SCREEN_HEIGHT_GLOBAL;
 #include <SDL2_image/SDL_image.h>
 #include <SDL2_ttf/SDL_ttf.h>
 
-
 struct display {
     //main objects
     SDL_Window  *window;
