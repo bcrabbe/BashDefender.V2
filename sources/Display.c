@@ -154,10 +154,10 @@ Display init_SDL(){
     init_pic(&d->towerPositionTexture[24], "Images/TowerLocationsY.png");
     init_pic(&d->towerPositionTexture[25], "Images/TowerLocationsZ.png");
     init_pic(&d->enemyTexture[0], "Images/sdl2-spritesheet-actual.png");
-    init_pic(&d->enemyTexture[1], "Images/ENEMY_INT_clipped_155Height.png");
-    init_pic(&d->enemyTexture[2], "Images/ENEMY_INT_clipped_155Height.png");
-    init_pic(&d->enemyTexture[3], "Images/ENEMY_CHAR_clipped.png");
-    init_pic(&d->enemyTexture[4], "Images/ENEMY_CHAR_clipped.png");
+    init_pic(&d->enemyTexture[1], "Images/ENEMY_INT_noClip.png");
+    init_pic(&d->enemyTexture[2], "Images/ENEMY_INT_noClip.png");
+    init_pic(&d->enemyTexture[3], "Images/ENEMY_CHAR.png");
+    init_pic(&d->enemyTexture[4], "Images/ENEMY_CHAR.png");
     init_pic(&d->towerTexture[0], "Images/tower.png");
     init_pic(&d->towerTexture[1], "Images/intTower.png");
     init_pic(&d->towerTexture[2], "Images/charTower.png");
