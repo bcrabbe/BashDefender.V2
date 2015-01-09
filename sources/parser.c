@@ -111,9 +111,14 @@ void testStringLists();
 void testCommandArray(char ** commandArray, int numberOfChunks);
 
 //automated unit tests
+void testInitialiseParseLists();
 void testStringToInt();
 void testGetTargetTower();
-void testInitialiseParseLists();
+void testGetTargetEnemy();
+void testGetCommandType();
+void testGetCommandOption();
+
+
 #pragma mark MainFuntion
 
 /*
@@ -1254,15 +1259,17 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
         fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
         return 0;
     }
-    if ( needsIdentifier && !(inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T') )
+    if ( needsIdentifier )
     {
-        errorToTerminalWindow("ERROR: You must target a towers with this command");
-        char str[100];
-        sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-        errorToTerminalWindow(str);
-        fprintf(stderr,"*** ERROR: You must target a towers with this command ***\n");
-        fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
-        return 0;
+        if( inputStringTargeting[0]!='t' && inputStringTargeting[0]!='T' )
+        {
+            char str[200];
+            sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
+            errorToTerminalWindow(str);
+            fprintf(stderr,"*** ERROR: You must target a towers with this command ***\n");
+            fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
+            return 0;
+        }
     }
     unsigned int targetTower = 0;
     if( inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T' )
@@ -1299,7 +1306,7 @@ unsigned int getTargetEnemy(const char * inputStringTargeting)
     if( len<(2*sizeof(char)) )
     {
         fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
-        char str[100];
+        char str[200];
         sprintf(str,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
         errorToTerminalWindow(str);
         return 0;
@@ -1307,7 +1314,7 @@ unsigned int getTargetEnemy(const char * inputStringTargeting)
     if (inputStringTargeting[0]!='e' && inputStringTargeting[0]!='E')
     {
         fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
-        char str[100];
+        char str[200];
         sprintf(str,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
         errorToTerminalWindow(str);
         return 0;
@@ -1357,7 +1364,8 @@ unsigned long int stringToInt(const char * string)
  */
 cmdType getCommandType(char * firstToken)
 {
-    for(int i = 0; firstToken[i]; i++) {
+    for(int i = 0; firstToken[i]; i++)
+    {
         firstToken[i] = tolower(firstToken[i]);
     }
     stringList * commandList = getCommandList(NULL);
@@ -1471,8 +1479,6 @@ cmdOption getCommandOption(char * secondToken)
             break;
         }
     }
-    
-
     return option;
 }
 
@@ -1773,6 +1779,18 @@ void testParser()
     sput_run_test(testGetTargetTower);
     sput_leave_suite();
     
+    sput_enter_suite("testGetTargetEnemy");
+    sput_run_test(testGetTargetEnemy);
+    sput_leave_suite();
+    
+    sput_enter_suite("testGetCommandType");
+    sput_run_test(testGetCommandType);
+    sput_leave_suite();
+    
+    sput_enter_suite("testGetCommandOption");
+    sput_run_test(testGetCommandOption);
+    sput_leave_suite();
+    
     
     sput_finish_testing();
 }
@@ -1793,112 +1811,10 @@ void testInitialiseParseLists()
     sput_fail_unless(returnEnvVar("tows"),"returnEnvVar(""tows"") should return the envVar tows");
 }
 
-void testGetTargetTower()
-{
-    /*
-     *  Called on cat and upgrade commands with the target specifying token.
-     looks at the 2nd char in the string to find an int 1-9 to be the target.
-     Note, wont work for anything > 9, would just see 1.
-     Will print its own error message.
-     Returns TargetTowerID if sucessful
-     Returns 0 if error
-     */
-    // unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier)
-    /*{
-        unsigned int numberOfTowers = getNumberOfTowers();//getNumberOfTowers(); this is func in tower.c
-        
-        size_t len = strlen(inputStringTargeting);//gets the size of string
-        if( len<1  || ( needsIdentifier &&  len<2 ) )
-        {
-            char str[100];
-            sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-            errorToTerminalWindow(str);
-            fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
-            fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
-            return 0;
-        }
-        if ( needsIdentifier && !(inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T') )
-        {
-            errorToTerminalWindow("ERROR: You must target a towers with this command");
-            char str[100];
-            sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
-            errorToTerminalWindow(str);
-            fprintf(stderr,"*** ERROR: You must target a towers with this command ***\n");
-            fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
-            return 0;
-        }
-        unsigned int targetTower = 0;
-        if( inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T' )
-        {
-            targetTower = stringToInt(inputStringTargeting+1);
-        }
-        else
-        {
-            targetTower = stringToInt(inputStringTargeting);
-        }
-        if(targetTower > numberOfTowers || targetTower < 1 )
-        {
-            char str[100];
-            sprintf(str,"ERROR: target tower does not existYou have only %d towers you entered t%d",numberOfTowers,
-                    targetTower);
-            errorToTerminalWindow(str);
-            
-            fprintf(stderr,"*** ERROR: target tower does not exist ***\n");
-            fprintf(stderr,"You have only %d towers you entered t%d\n",
-                    numberOfTowers,targetTower);
-            return 0;
-        }
-        return targetTower;
-    }
-    */
-    createTowerFromPositions(1);
-    printf("%d tower built\n",getNumberOfTowers());
-    sput_fail_unless(getTargetTower("",true)==0,"calling with empty string should return 0 and error message");
-    sput_fail_unless(getTargetTower("",false)==0,"calling with empty string should return 0 and error message");
-
-    //  sput_fail_unless(getTargetTower("t",true)==0,"calling with just t should return 0 and error message");
-    //sput_fail_unless(getTargetTower("t",false)==0,"calling with just t should return 0 and error message");
-    //sput_fail_unless(getTargetTower("T",true)==0,"calling with just T should return 0 and error message");
-    //sput_fail_unless(getTargetTower("T",false)==0,"calling with just T should return 0 and error message");
-    
-
-    //sput_fail_unless(getTargetTower("1",true)==0,"calling with just 1 and string should return 0 and error message when needIdentifer is true");
-    sput_fail_unless(getTargetTower("1",false)==1,"calling with just 1 and string should return 1  when needIdentifer is false");
-    
-    sput_fail_unless(getTargetTower("t0",true)==0,"calling with t0  should return 0 and error message");
-    sput_fail_unless(getTargetTower("t-1",true)==0,"calling with t-1  should return 0 and error message");
-    sput_fail_unless(getTargetTower("t99",true)==0,"calling with t0  should return 0 and error message");
-    sput_fail_unless(getTargetTower("t0",false)==0,"calling with t0  should return 0 and error message");
-    sput_fail_unless(getTargetTower("t-1",false)==0,"calling with t-1  should return 0 and error message");
-    sput_fail_unless(getTargetTower("t99",false)==0,"calling with t0  should return 0 and error message");
-    
-    sput_fail_unless(getTargetTower("-1",false)==0,"calling with -1  should return 0 and error message");
-    sput_fail_unless(getTargetTower("0",false)==0,"calling with 0  should return 0 and error message");
-    sput_fail_unless(getTargetTower("99",false)==0,"calling with t0  should return 0 and error message");
-    
-    for(int i=2;i<=maxTowerPosition();++i)
-    {
-        createTowerFromPositions(i);
-        char str[5];
-        sprintf(str,"%c",i);
-        sput_fail_unless(getTargetTower(str,false)==i,"should get target tower correctly");
-        sput_fail_unless(getTargetTower(str,true)==i,"should not get target tower since it is requiring identifier");
-        
-        char Tstr[10]="t";
-        strcat(Tstr,str);
-        sput_fail_unless(getTargetTower(Tstr,true)==i,"should get target tower since it is requiring identifier and it has identifier");
-        sput_fail_unless(getTargetTower(Tstr,false)==i,"should get target tower since it is not requiring identifier and it has identifier");
-
-
-    }
-
-
-
-}
 
 void testStringToInt()
 {
-
+    
     sput_fail_unless(stringToInt("1")==1,"stringToInt(""1"")==1");
     sput_fail_unless(stringToInt("10")==10,"stringToInt(""10"")==10");
     sput_fail_unless(stringToInt("19")==19,"stringToInt(""19"")==19");
@@ -1912,6 +1828,130 @@ void testStringToInt()
     sput_fail_unless(stringToInt("")==0,"calling with empty string should return 0 and an error message");
     sput_fail_unless(stringToInt("-10")==0,"calling with negative should return 0 and error message");
 }
-                    
-                     
 
+
+
+void testGetTargetTower()
+{
+    createTowerFromPositions(1);
+    printf("%d tower built\n",getNumberOfTowers());
+    sput_fail_unless(getTargetTower("",true)==0,"calling with empty string should return 0 and error message");
+    sput_fail_unless(getTargetTower("",false)==0,"calling with empty string should return 0 and error message");
+
+    sput_fail_unless(getTargetTower("t",true)==0,"calling with just t should return 0 and error message");
+    sput_fail_unless(getTargetTower("t",false)==0,"calling with just t should return 0 and error message");
+    sput_fail_unless(getTargetTower("T",true)==0,"calling with just T should return 0 and error message");
+    sput_fail_unless(getTargetTower("T",false)==0,"calling with just T should return 0 and error message");
+    
+
+    sput_fail_unless(getTargetTower("1",true)==0,"calling with just 1 and string should return 0 and error message when needIdentifer is true");
+    sput_fail_unless(getTargetTower("1",false)==1,"calling with just 1 and string should return 1  when needIdentifer is false");
+    
+    sput_fail_unless(getTargetTower("t0",true)==0,"calling with t0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t-1",true)==0,"calling with t-1  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t99",true)==0,"calling with t0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t0",false)==0,"calling with t0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t-1",false)==0,"calling with t-1  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t99",false)==0,"calling with t0  should return 0 and error message");
+    
+    sput_fail_unless(getTargetTower("-1",false)==0,"calling with -1  should return 0 and error message");
+    sput_fail_unless(getTargetTower("0",false)==0,"calling with 0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("99",false)==0,"calling with 99  should return 0 and error message");
+    
+    for(int i=2;i<=maxTowerPosition();++i)
+    {
+        createTowerFromPositions(i);
+        char str[5];
+        sprintf(str,"%d",i);
+        sput_fail_unless(getTargetTower(str,false)==i,"should get target tower correctly");
+        sput_fail_unless(getTargetTower(str,true)==0,"should not get target tower since it is requiring identifier");
+        
+        char Tstr[10]="t";
+        strcat(Tstr,str);
+        sput_fail_unless(getTargetTower(Tstr,true)==i,"should get target tower since it is requiring identifier and it has identifier");
+        sput_fail_unless(getTargetTower(Tstr,false)==i,"should get target tower since it is not requiring identifier and it has identifier");
+        printf("tested with : str = %s\nTstr = %s\n\n",str,Tstr);
+    }
+    
+}
+
+void testGetTargetEnemy()
+{
+    createTestEnemy();
+    printf("%d enemies \n",getNumberOfEnemies());
+    sput_fail_unless(getTargetEnemy("")==0,"calling with empty string should return 0 and error message");
+    
+    sput_fail_unless(getTargetEnemy("e")==0,"calling with just e should return 0 and error message");
+    sput_fail_unless(getTargetEnemy("E")==0,"calling with just E should return 0 and error message");
+    
+    sput_fail_unless(getTargetEnemy("1")==0,"calling with just 1 should return 0 and error message");
+ 
+    sput_fail_unless(getTargetEnemy("e1")==1,"calling with e1 should return 1");
+    sput_fail_unless(getTargetEnemy("e2")==0,"calling with e2 should fail because there is only one enemy");
+    
+    for(int i=2; i<=100;++i)
+    {
+        createTestEnemy();
+        char str[5];
+        sprintf(str,"%d",i);
+        char eStr[10]="e";
+        strcat(eStr,str);
+        sput_fail_unless(getTargetEnemy(eStr)==i,"should get target enemy");
+       
+        printf("tested with : str = %s\n",eStr);
+        printf("ther are %d enemies \n\n",getNumberOfEnemies());
+    }
+}
+
+void testGetCommandType()
+{
+    //should work for all the actual commands:
+    sput_fail_unless(getCommandType(strdup("upgrade"))==cmd_upgrade, "calling ""upgrade"" should return cmd_upgrade");
+    sput_fail_unless(getCommandType(strdup("chmod"))==cmd_chmod, "calling ""chmod"" should return cmd_chmod");
+    sput_fail_unless(getCommandType(strdup("man"))==cmd_man, "calling ""man"" should return cmd_man");
+    sput_fail_unless(getCommandType(strdup("cat"))==cmd_cat, "calling ""cat"" should return cmd_cat");
+    sput_fail_unless(getCommandType(strdup("mktwr"))==cmd_mktwr, "calling ""mktwr"" should return cmd_mktwr");
+    sput_fail_unless(getCommandType(strdup("ps"))==cmd_ps, "calling ""ps"" should return cmd_ps");
+    sput_fail_unless(getCommandType(strdup("apt-get"))==cmd_aptget, "calling ""apt-get"" should return cmd_aptget");
+    sput_fail_unless(getCommandType(strdup("kill"))==cmd_kill, "calling ""kill"" should return cmd_kill");
+    //and should fail for non valid commands:
+    sput_fail_unless(getCommandType(strdup("upgradez"))==cmd_commandError, "calling ""upgradez"" should return error");
+    sput_fail_unless(getCommandType(strdup("!upgrade"))==cmd_commandError, "calling ""!upgrade"" should return error");
+    sput_fail_unless(getCommandType(strdup("-upgrade"))==cmd_commandError, "calling ""-upgrade"" should return error");
+    sput_fail_unless(getCommandType(strdup("upgade"))==cmd_commandError, "calling ""upgade"" should return error");
+    sput_fail_unless(getCommandType(strdup("upgrad"))==cmd_commandError, "calling ""upgrad"" should return error");
+
+    sput_fail_unless(getCommandType(strdup(""))==cmd_commandError, "calling with empty string should return error");
+    sput_fail_unless(getCommandType(strdup("random"))==cmd_commandError, "calling with random string should return error");
+    sput_fail_unless(getCommandType(strdup("!@£)!)IR!@*£"))==cmd_commandError, "calling with random string should return error");
+    //and that tolower() is working:
+    sput_fail_unless(getCommandType(strdup("UPGRADE"))==cmd_upgrade, "calling ""UPGRADE"" should return cmd_upgrade");
+}
+
+
+void testGetCommandOption()
+{
+    //should work for all the actual options:
+    sput_fail_unless(getCommandOption(strdup("p"))==upgrade_power, "calling ""p"" should return upgrade_power");
+    sput_fail_unless(getCommandOption(strdup("r"))==upgrade_range, "calling ""r"" should return upgrade_range");
+    sput_fail_unless(getCommandOption(strdup("s"))==upgrade_speed, "calling ""s"" should return upgrade_speed");
+    sput_fail_unless(getCommandOption(strdup("aoer"))==upgrade_AOErange, "calling ""aoer"" should return upgrade_AOErange");
+    sput_fail_unless(getCommandOption(strdup("aoep"))==upgrade_AOEpower, "calling ""aoep"" should return upgrade_AOEpower");
+    sput_fail_unless(getCommandOption(strdup("lvl"))==upgrade_level, "calling ""lvl"" should return upgrade_level");
+    sput_fail_unless(getCommandOption(strdup("int"))==mktwr_int, "calling ""int"" should return mktwr_int");
+    sput_fail_unless(getCommandOption(strdup("char"))==mktwr_char, "calling ""char"" should return mktwr_char");
+    sput_fail_unless(getCommandOption(strdup("-x"))==ps_x, "calling ""-x"" should return ps_x");
+    sput_fail_unless(getCommandOption(strdup("-9"))==kill_minus9, "calling ""-9"" should return kill_minus9");
+    sput_fail_unless(getCommandOption(strdup("all"))==kill_all, "calling ""all"" should return kill_all");
+    sput_fail_unless(getCommandOption(strdup("kill"))==aptget_kill, "calling ""kill"" should return aptget_kill");
+
+    //and should fail for non valid commands:
+    sput_fail_unless(getCommandOption(strdup("pp"))==optionError, "calling ""pp"" should return error");
+    sput_fail_unless(getCommandOption(strdup("z"))==optionError, "calling ""z"" should return error");
+    sput_fail_unless(getCommandOption(strdup(""))==optionError, "calling empty string should return error");
+    sput_fail_unless(getCommandOption(strdup("-239"))==optionError, "calling ""-239"" should return error");
+    sput_fail_unless(getCommandOption(strdup("random"))==optionError, "calling with random string should return error");
+    sput_fail_unless(getCommandOption(strdup("!@£)!)IR!@*£"))==optionError, "calling with random string should return error");
+    //and that tolower() is working:
+    sput_fail_unless(getCommandOption(strdup("P"))==upgrade_power, "calling ""P"" should return upgrade_power");
+}
