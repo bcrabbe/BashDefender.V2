@@ -345,6 +345,7 @@ void initLevel(int level)    {
 	createTowerPos();
 	initialQueueReader();
 	createProjectileList();
+  createExplosionList();
 	initialiseParser();
 	init_abilities();
     destroyCommandList();
@@ -541,6 +542,7 @@ void setUpTesting()	{
     createEnemyGroup();
     createTowerPos();
     createProjectileList();
+    createExplosionList();
     initialiseParser();
     init_abilities();
     initialQueueReader();
