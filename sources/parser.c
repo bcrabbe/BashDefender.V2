@@ -111,15 +111,19 @@ void testStringLists();
 void testCommandArray(char ** commandArray, int numberOfChunks);
 
 //automated unit tests
+//
+//genericFuntion tests
 void testInitialiseParseLists();
 void testStringToInt();
 void testGetTargetTower();
 void testGetTargetEnemy();
 void testGetCommandType();
 void testGetCommandOption();
+void testBreakUpStringAndFreeCommandArray();
+//individual command tests
+void testChmod();
 
-
-#pragma mark MainFuntion
+#pragma mark mainFuntion
 
 /*
  * Parse called with string of user input from terminal window.
@@ -297,7 +301,7 @@ int parseCommands(char ** commandArray, int numberOfTokens)
     return specificReturns;
 }
 
-#pragma mark IndividualCommandParsers
+#pragma mark individualCommandParsers
 
 int parseChmod(char ** commandArray,int numberOfTokens)
 {
@@ -393,11 +397,9 @@ int parseKill(char ** commandArray,int numberOfTokens)
     {
         if(numberOfTokens!=3)
         {
-            
             errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
             return 0;
         }
-
         else
         {
             int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
@@ -1234,7 +1236,7 @@ operator matchesOperator(char isThisAnOperator)
 
 
                                
-#pragma mark GenericFunctions
+#pragma mark genericFunctions
 
                                
 /* 
@@ -1569,7 +1571,7 @@ void freeCommandArray(char **commandArray,int numberOfChunks)
 }
 
 
-#pragma mark CommandLists
+#pragma mark commandLists
 
 void initialiseParser()
 {
@@ -1679,7 +1681,7 @@ void freeParseLists()
     }
 }
 
-#pragma mark EnvironmentVariables
+#pragma mark environmentVariables
 envVarList * intialiseEnvVarsList()
 {
     envVarList * envsListStruct = malloc(sizeof(envVarList));
@@ -1728,7 +1730,7 @@ envVarList * getEnvsList(envVarList * envsList)
     return storedEnvsList;
 }
 
-#pragma mark DevelopementTests
+#pragma mark developementTests
 
 
 /*
@@ -1758,7 +1760,7 @@ void testStringLists(stringList * list)
 }
 
 
-#pragma mark UnitTests
+#pragma mark unitTests
 
 void testParser()
 {
@@ -1773,7 +1775,6 @@ void testParser()
     sput_enter_suite("testStringToInt");
     sput_run_test(testStringToInt);
     sput_leave_suite();
-    
     
     sput_enter_suite("testGetTargetTower");
     sput_run_test(testGetTargetTower);
@@ -1791,9 +1792,19 @@ void testParser()
     sput_run_test(testGetCommandOption);
     sput_leave_suite();
     
+    sput_enter_suite("testBreakUpStringAndFreeCommandArray");
+    sput_run_test(testBreakUpStringAndFreeCommandArray);
+    sput_leave_suite();
+    
+    sput_enter_suite("testChmod");
+    sput_run_test(testChmod);
+    sput_leave_suite();
+    
+    
     
     sput_finish_testing();
 }
+#pragma mark unitTests_genericFunctions
 
 void testInitialiseParseLists()
 {
@@ -1955,3 +1966,86 @@ void testGetCommandOption()
     //and that tolower() is working:
     sput_fail_unless(getCommandOption(strdup("P"))==upgrade_power, "calling ""P"" should return upgrade_power");
 }
+
+
+void testBreakUpStringAndFreeCommandArray()
+{
+    int numberOfTokesTest1=0;
+    char ** test1 = breakUpString("break this string up",&numberOfTokesTest1," ");
+    testCommandArray(test1,numberOfTokesTest1);
+
+    sput_fail_unless(!strcmp(test1[0],"break"), "tested with ""break this string up"" and space delim, should return each seperate word");
+    sput_fail_unless(!strcmp(test1[1],"this"), "tested with ""break this string up"" and space delim, should return each seperate word");
+    sput_fail_unless(!strcmp(test1[2],"string"), "tested with ""break this string up"" and space delim, should return each seperate word");
+    sput_fail_unless(!strcmp(test1[3],"up"), "tested with ""break this string up"" and space delim, should return each seperate word");
+    sput_fail_unless(numberOfTokesTest1==4, "tested with ""break this string up"" and space delim, should return each seperate word");
+    
+    freeCommandArray(test1,numberOfTokesTest1);
+    
+    int numberOfTokesTest2=0;
+    char ** test2 = breakUpString("{break}(this){string}(up)",&numberOfTokesTest2,"{}()");
+    testCommandArray(test2,numberOfTokesTest2);
+    sput_fail_unless(!strcmp(test2[0],"break"), "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
+    sput_fail_unless(!strcmp(test2[1],"this"), "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
+    sput_fail_unless(!strcmp(test2[2],"string"), "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
+    sput_fail_unless(!strcmp(test2[3],"up"), "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
+    sput_fail_unless(numberOfTokesTest2==4, "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
+    freeCommandArray(test2,numberOfTokesTest2);
+
+}
+
+#pragma mark test_individualCommandParses
+
+
+
+void testChmod()
+{
+    sput_fail_unless( parse("chmod")==0, "parse(""chmod"")==0, not enough tokens -> error message and return 0");
+    sput_fail_unless( parse("chmod char")==0, "parse(""chmod char"")==0, not enough tokens -> error message and return 0");
+    for(int i=1;i<=maxTowerPosition();++i)
+    {
+        createTowerFromPositions(i);
+    }
+    sput_fail_unless( parse("chmod p t1")==0, "parse(""chmod p t1"")==0, p is not a twr type -> error message and return 0");
+    sput_fail_unless( parse("chmod kill t1")==0, "parse(""chmod kill t1"")==0, kill is not a twr type -> error message and return 0");
+    
+    sput_fail_unless( parse("chmod int t")==0, "parse(""chmod int t"")==0, t does not specify a tower -> error message and return 0");
+    sput_fail_unless( parse("chmod char t")==0, "parse(""chmod char t"")==0, t does not specify a tower -> error message and return 0");
+    
+    sput_fail_unless( parse("chmod int t")==0, "parse(""chmod int t"")==0, t does not specify a tower -> error message and return 0");
+    
+    sput_fail_unless( parse("chmod int t1")==1, "parse(""chmod int t1"")==1, correct syntax -> execution message and return 1");
+    
+    sput_fail_unless( parse("chmod char t1")==1, "parse(""chmod char t1"")==1, correct syntax -> execution message and return 1");
+    
+    sput_fail_unless( parse("chmod char 1")==1, "parse(""chmod char 1"")==1, correct syntax -> execution message and return 1");
+     sput_fail_unless( parse("chmod int 1")==1, "parse(""chmod int 1"")==1, correct syntax -> execution message and return 1");
+    
+    sput_fail_unless( parse("chmod int 1 2 s 4")==0, "parse(""chmod int 1 2 s 4"")==0, s does not specify a tower -> error message and return 0");
+    
+     sput_fail_unless( parse("chmod int 1 2 4 s")==0, "parse(""chmod int 1 2 4 s"")==0, s does not specify a tower -> error message and return 0");
+    
+     sput_fail_unless( parse("chmod int 1 2' 4")==0, "parse(""chmod int 1 2' 4"")==0, 2' does not specify a tower -> error message and return 0");
+    
+     sput_fail_unless( parse("chmod int 1 2 ' 4")==0, "parse(""chmod int 1 2 ' 4"")==0, ' does not specify a tower -> error message and return 0");
+    
+     sput_fail_unless( parse("chmod int t1,2,4")==1, "parse(""chmod int t1,2,4"")==1, correct syntax  ->  execution message and return 1");
+    
+     sput_fail_unless( parse("chmod int 144 2 4")==0, "parse(""chmod int 144 2 4"")==0, 144 is larger than the number of towers -> error message and return 0");
+    
+    sput_fail_unless( parse("chmod int t1,t2,t4")==1, "parse(""chmod int t1,t2,t4"")==1, correct syntax  ->  execution message and return 1");
+     sput_fail_unless( parse("chmod int t1 t2 t4")==1, "parse(""chmod int t1 t2 t4"")==1, correct syntax  ->  execution message and return 1");
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
