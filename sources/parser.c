@@ -485,7 +485,7 @@ int parseAptget(char * aptToGetString)
 
         return 0;
     }
-    if(0)//(!is_valid_unlock(aptToGet))
+    if(!is_valid_unlock(KILL))
     {
         fprintf(stderr,"ERROR: that program is already installed\n");
         errorToTerminalWindow("ERROR: that program is already installed");
@@ -495,7 +495,7 @@ int parseAptget(char * aptToGetString)
     {
         if(pushToQueue(getQueue(NULL),cmd_aptget,aptToGet,0)>=1)
         {
-            printf("pushing tower to queue\n");
+            printf("pushing apt-get to queue\n");
             return 1;
         }
         else
@@ -1569,10 +1569,15 @@ char **breakUpString(const char * inputString, int *numberOfChunksPtr, const cha
     // walk through rest of string
     while( stringChunk != NULL )
     {
+        if(strcmp(stringChunk," ")==0 || strcmp(stringChunk,",")==0)
+        {
+            goto skipToken;
+        }
         ++numberOfChunks;
         commandArray=(char **)realloc(commandArray,numberOfChunks*sizeof(char*));//array of strings
         commandArray[numberOfChunks-1]=(char *)malloc((size_t)(strlen(stringChunk)*sizeof(char)+1));
         strcpy(commandArray[numberOfChunks-1],stringChunk);
+    skipToken:
         stringChunk = strtok(NULL, delimiter);
     }
     free(inputStringDuplicate);//frees the malloc made in strdup()
@@ -2015,26 +2020,33 @@ void testGetCommandOption()
 void testBreakUpStringAndFreeCommandArray()
 {
     int numberOfTokesTest1=0;
-    char ** test1 = breakUpString("break this string up",&numberOfTokesTest1," ");
+    char ** test1 = breakUpString("break this,string up",&numberOfTokesTest1,", ");
     testCommandArray(test1,numberOfTokesTest1);
 
-    sput_fail_unless(!strcmp(test1[0],"break"), "tested with ""break this string up"" and space delim, should return each seperate word");
-    sput_fail_unless(!strcmp(test1[1],"this"), "tested with ""break this string up"" and space delim, should return each seperate word");
-    sput_fail_unless(!strcmp(test1[2],"string"), "tested with ""break this string up"" and space delim, should return each seperate word");
-    sput_fail_unless(!strcmp(test1[3],"up"), "tested with ""break this string up"" and space delim, should return each seperate word");
-    sput_fail_unless(numberOfTokesTest1==4, "tested with ""break this string up"" and space delim, should return each seperate word");
-    
+    sput_fail_unless(!strcmp(test1[0],"break")  &&
+                     !strcmp(test1[1],"this")   &&
+                     !strcmp(test1[2],"string") &&
+                     !strcmp(test1[3],"up")     &&
+                     numberOfTokesTest1==4 ,
+    "tested with ""break this,string up"" and space & comma delimeters, should return each seperate word");
     freeCommandArray(test1,numberOfTokesTest1);
     
-    int numberOfTokesTest2=0;
-    char ** test2 = breakUpString("{break}(this){string}(up)",&numberOfTokesTest2,"{}()");
-    testCommandArray(test2,numberOfTokesTest2);
-    sput_fail_unless(!strcmp(test2[0],"break"), "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
-    sput_fail_unless(!strcmp(test2[1],"this"), "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
-    sput_fail_unless(!strcmp(test2[2],"string"), "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
-    sput_fail_unless(!strcmp(test2[3],"up"), "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
-    sput_fail_unless(numberOfTokesTest2==4, "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
-    freeCommandArray(test2,numberOfTokesTest2);
+    test1 = breakUpString("{break}(this){string}(up)",&numberOfTokesTest1,"{}()");
+    sput_fail_unless(!strcmp(test1[0],"break")  &&
+                     !strcmp(test1[1],"this")   &&
+                     !strcmp(test1[2],"string") &&
+                     !strcmp(test1[3],"up")     &&
+                     numberOfTokesTest1==4,
+    "tested with ""{break}(this){string}(up)"" and ""{}()"" delim, should return each seperate word");
+    freeCommandArray(test1,numberOfTokesTest1);
+
+    test1 = breakUpString("{break} (this),{string} (up)",&numberOfTokesTest1,"{}()");
+    sput_fail_unless(!strcmp(test1[0],"break")  &&
+                     !strcmp(test1[1],"this")   &&
+                     !strcmp(test1[2],"string") &&
+                     !strcmp(test1[3],"up")     &&
+                     numberOfTokesTest1==4,
+                     "tested with ""{break} (this),{string} (up)"" and ""{}()"" delim, should return each seperate word");
 
 }
 
