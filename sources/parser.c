@@ -608,6 +608,11 @@ int parseMan(char * inputStringCommandMan)
             textToTowerMonitor("GENERAL COMMANDS MANUAL: \n\n mktwr\n\n Builds a new tower. Accepts a tower type either int or char as the second argument and one or more position to build on. e.g. mktwr int a b c d    or    mktwr char a,b,d,e,g etc..");
             return 1;
         }
+        case cmd_aptget:
+        {
+            apt_get_query();
+            return 1;
+        }
         default:
         {
             char str[100];

@@ -23,7 +23,8 @@ int main(int argc, char ** argv)
 {
     
 	Display d = init_SDL();
-    if(TESTING) {
+    if(TESTING)
+	{
         Display d = init_SDL();
         testing();
         exit(EXIT_SUCCESS);
@@ -466,9 +467,11 @@ void testing()	{
     //testingGameStructure(); //!Memory Tests Failing
     //testingActionQueue(); //! Working
     //testEnemy(); // ! Working.
-    testParser();
+    //testParser();
     //testingTowerModule(); //! working
     //testingInformationWindowModule();
+	testTerminalWindowInput();
+	testAbilities();
 
    	//! System Tests 
     //enemyToGamePropertiesTesting();
@@ -667,3 +670,5 @@ void testValidParses()
 	freeAllTowers();
 	clearQueue();
 }
+
+
