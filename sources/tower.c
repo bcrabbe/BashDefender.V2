@@ -12,8 +12,8 @@
 #define TOWER_STARTING_DAMAGE 20
 #define TOWER_STARTING_RANGE 100
 #define TOWER_STARTING_SPEED 50
-#define TOWER_STARTING_AOE_POWER 0
-#define TOWER_STARTING_AOE_RANGE 0
+#define TOWER_STARTING_AOE_POWER 10
+#define TOWER_STARTING_AOE_RANGE 40
 
 //#defines for tower type weighting
 #define DAMAGE_MOD 9
@@ -782,13 +782,13 @@ void launchProjectile(tower currentTower)
     
     switch (currentTower->firingType) {
         case laser :
-            fireLaser(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
+            fireLaser(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange);
             break;
         case missile :
-            launchMissile(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
+            launchMissile(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange);
             break;
         case bullet :
-            launchBullet(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
+            launchBullet(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange);
             break;
     }
 
@@ -808,6 +808,6 @@ void present_tower()
         }
     }
     // bullets added here temporarily
-    moveProjectiles();
-    drawProjectiles();
+    updateProjectiles();
+    updateExplosions();
 }
