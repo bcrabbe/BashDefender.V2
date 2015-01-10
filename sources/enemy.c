@@ -409,8 +409,8 @@ void present_enemy(Display d)
             drawEnemy(e->x-(e->width/2), e->y-(e->height/2), e->width, e->height, 2331, 254, e->eType, 9, 200);
             drawRect(e->x-(e->width/4), e->y-(e->height/4), 0, 0, e->width/2, 5, (double)e->health, (double)e->maxHealth);
 			} else if(e->eType == intBasic || e->eType == intHeavy)	{
-			drawEnemy(e->x-X_CORECT, e->y-Y_CORECT, e->width, e->height, 2304, 253, e->eType, 9, 200);
-            drawRect(e->x-X_CORECT, e->y -Y_CORECT, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
+			drawEnemy(e->x-(e->width/2), e->y-(e->height/2), e->width, e->height, 2304, 253, e->eType, 9, 200);
+            drawRect(e->x-(e->width/4), e->y-(e->height/4), 0, 0, e->width/2, 5, (double)e->health, (double)e->maxHealth);
 			}
         }
     }
