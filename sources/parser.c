@@ -27,6 +27,7 @@
 #pragma mark ProtoTypes
 //top level command parser:
 int parseCommands(char ** commandArray, int numberOfTokens);
+
 //specific command parsers:
 int parseCat(char * inputStringTargeting);
 int parseMan(char * inputStringCommandMan);
@@ -49,9 +50,40 @@ unsigned long int stringToInt(const char * string);
 char ** breakUpString(const char * inputString, int *numberOfChunksPtr, const char * delimiter);
 char * strdup(const char * s);
 void freeCommandArray(char **commandArray,int numberOfChunks);
+
 //default error messaging functions:
 void actionUsageError();
 
+//initialiser structs:
+typedef struct stringList {
+    char ** stringArray;
+    int numberOfStrings;
+} stringList;
+
+typedef struct  environmentVariable {
+    char * name;
+    char * name2;
+    int value;
+    int (*updateValueFunc)(cmdType command);//updates the value with things on the queue
+    int (*getValueFunc)();//sets the value from the global value
+} envVar;
+
+typedef struct environmentVariableList {
+    envVar ** array;
+    int numberOfElements;
+} envVarList;
+
+//initialiser functions:
+stringList * intialiseCommandList();
+stringList * intialiseOptionList();
+stringList * getCommandList(stringList * commandList);
+stringList * getOptionList(stringList * optionList);
+envVarList * intialiseEnvVarsList();
+envVarList * getEnvsList(envVarList * envsList);
+
+
+
+//parseWhile structs:
 typedef struct targetArray {
     int * array;
     int numberOfElements;
@@ -98,21 +130,17 @@ int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray);
 int updateTowsValue(cmdType command);
 int updateMemValue(cmdType command);
 
-//initialiser functions:
-stringList * intialiseCommandList();
-stringList * intialiseOptionList();
-stringList * getCommandList(stringList * commandList);
-stringList * getOptionList(stringList * optionList);
-envVarList * intialiseEnvVarsList();
-envVarList * getEnvsList(envVarList * envsList);
+
+
+
 
 //developement testing functions:
 void testStringLists();
 void testCommandArray(char ** commandArray, int numberOfChunks);
 
-//automated unit tests
-//
-//genericFuntion tests
+//automated unit tests:
+
+//genericFuntion unit tests:
 void testInitialiseParseLists();
 void testStringToInt();
 void testGetTargetTower();
@@ -120,8 +148,13 @@ void testGetTargetEnemy();
 void testGetCommandType();
 void testGetCommandOption();
 void testBreakUpStringAndFreeCommandArray();
-//individual command tests
+
+//individual command unit tests
 void testChmod();
+void testParsePs();
+void testAptget();
+void testParseMktwr();
+
 
 #pragma mark mainFuntion
 
@@ -432,6 +465,7 @@ int parsePs(char * optionString)
     }
     else
     {
+        printf("here\n");
         psx_ability();
         return 1;
     }
@@ -445,7 +479,7 @@ int parseAptget(char * aptToGetString)
     cmdOption aptToGet = getCommandOption(aptToGetString);
     if(aptToGet!=aptget_kill)
     {
-        fprintf(stderr,"\n***app not recognised***\n");
+        fprintf(stderr,"\nERROR: app not recognised\n");
         fprintf(stderr,"type man aptget to see availible apps\n");
         errorToTerminalWindow("ERROR: app not recognised. Type man aptget to see availible apps");
 
@@ -1800,8 +1834,18 @@ void testParser()
     sput_run_test(testChmod);
     sput_leave_suite();
     
+    sput_enter_suite("testParsePs");
+    sput_run_test(testParsePs);
+    sput_leave_suite();
     
+    sput_enter_suite("testAptget");
+    sput_run_test(testAptget);
+    sput_leave_suite();
     
+    sput_enter_suite("testParseMktwr");
+    sput_run_test(testParseMktwr);
+    sput_leave_suite();
+
     sput_finish_testing();
 }
 #pragma mark unitTests_genericFunctions
@@ -2042,10 +2086,73 @@ void testChmod()
 
 
 
+void testParsePs()
+{
+    sput_fail_unless(parse("ps")==0, "parse(""ps"")==0, no argument -> error message and return 0");
+    sput_fail_unless(parse("ps b s")==0, "parse(""ps b s"")==0, too many arguments -> error message and return 0");
+    sput_fail_unless(parse("ps b")==0, "parse(""ps b"")==0, b is not valid argument -> error message and return 0");
+    sput_fail_unless(parse("ps p")==0, "parse(""ps p"")==0, p is valid argument but not valid argument of ps command -> error message and return 0");
+    //command cannot run in test mode
+    //sput_fail_unless(parse("ps -x")==1, "parse(""ps -x"")==1, correct syntax -> call psx_ability() return 1");
+    
+    sput_fail_unless(parse("ps -x s")==0, "parse(""ps -x s"")==0, too many arguments -> error message and return 0");
+
+}
 
 
+void testAptget()
+{
+    sput_fail_unless(parse("apt-get")==0, "parse(""apt-get"")==0, no argument -> error message and return 0");
+    sput_fail_unless(parse("apt-get kill n")==0, "parse(""apt-get kill n"")==0, too many arguments -> error message and return 0");
+    sput_fail_unless(parse("apt-get b")==0, "parse(""apt-get b"")==0, b is not valid argument -> error message and return 0");
+    sput_fail_unless(parse("apt-get p")==0, "parse(""apt-get p"")==0, p is valid argument but not valid argument of apt-get command -> error message and return 0");
+    sput_fail_unless(parse("apt-get kill")==1, "parse(""apt-get kill"")==1, correct syntax -> pushes request to queue and return 1");
+    
+    //sput_fail_unless(parse("ps kill")==0, "parse(""ps kill"")==0, kill is already installed -> error message and return 0");
+}
 
 
+void testParseMktwr()
+{
+    //clear any towers so that we can make more
+    freeAllTowers();
+    sput_fail_unless(parse("mktwr char")==0,
+                     "parse(""mktwr char"")==0, too few arguments -> error message and return 0");
+    sput_fail_unless(parse("mktwr p U")==0,
+                     "parse(""mktwr p t1"")==0, p is valid command option but not for mktwr -> error message and return 0");
+    sput_fail_unless(parse("mktwr int Us")==0,
+                     "parse(""mktwr int Us"")==0,Us is invalid twr position -> error message and return 0");
+    sput_fail_unless(parse("mktwr int {")==0,
+                     "parse(""mktwr int {"")==0,{ is invalid twr position -> error message and return 0");
+    sput_fail_unless(parse("mktwr int 1")==0,
+                     "parse(""mktwr int 1"")==0,1 is invalid twr position -> error message and return 0");
+    
+    for(char twrPosition = 'a'; twrPosition<=tolower(maxTowerPositionChar()); ++twrPosition)
+    {
+        char str[100];
+        sprintf(str,"mktwr int %c",twrPosition);
+        printf("testing:: %s\n",str);
+        sput_fail_unless(parse(str)==1,
+                         "parse(""mktwr int %c"")==1, is valid command -> push 1 tower and return 1");
+        sput_fail_unless(parse(str)==0,
+                         "parse(""mktwr int %c"")==0, building on same location again is invalid -> print error and return 0");
+    }
+    
+    freeAllTowers();
+    char cmd[200]="mktwr char";
 
+    for(char twrPosition = 'a'; twrPosition<=tolower(maxTowerPositionChar()); ++twrPosition)
+    {
+        char positions[10];
+        sprintf(positions,"%c ",twrPosition);
+        strcat(cmd,positions);
+    }
+    printf("testing %s\n",cmd);
 
+    sput_fail_unless(parse(cmd)==maxTowerPosition(),
+                     "parse(""mktwr int a b c d e f g...maxTowerPositionChar()"")==maxTowerPosition(), is valid command -> psuh maxTowerPosition() towers and return maxTowerPosition()");
+    
+    
+
+}
 
