@@ -19,6 +19,7 @@
 
 //aoe #defines
 #define AOE_DISPLAY_COUNT 10 // the number of steps that AOE explosions stay on the screen
+void drawExplosions();
 
 struct projectileNode {
     int x, y;

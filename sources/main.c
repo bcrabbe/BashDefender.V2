@@ -19,6 +19,7 @@
 #define TESTING 1
 
 
+
 int main(int argc, char ** argv)
 {
     
@@ -451,18 +452,18 @@ void testing()	{
 	setUpTesting();
 	
     //!Unit Tests
-    //testLevelController(); //! Working
+    testLevelController(); //! Working
 
     //testingProjectiles(); //! Working
     //testingTowerPositions(); //!Workingr
     //testingGameStructure(); //!Memory Tests Failing
     //testingActionQueue(); //! Working
     //testEnemy(); // ! Working.
-    //testParser();
+    testParser();
     //testingTowerModule(); //! working
     //testingInformationWindowModule();
-	testTerminalWindowInput();
-	testAbilities();
+    //testTerminalWindowInput();
+    //testAbilities();
 
    	//! System Tests 
     //enemyToGamePropertiesTesting();
