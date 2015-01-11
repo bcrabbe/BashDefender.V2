@@ -392,8 +392,7 @@ EnemyGroup getEnemyGroup(EnemyGroup enemyList)
     
     return e;
 }
-#define X_CORECT 16
-#define Y_CORECT 25
+
 /*
 * for each enemy, if not dead, calls the draw enemy function using their relevant information
 */
