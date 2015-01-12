@@ -12,7 +12,7 @@
 #define TEST_Display_h
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 extern int SCREEN_WIDTH_GLOBAL;
 extern int SCREEN_HEIGHT_GLOBAL;
@@ -65,6 +65,9 @@ extern int SCREEN_HEIGHT_GLOBAL;
 //Tower Position Dimensions
 #define MAX_TOWER_X	1000
 #define MAX_TOWER_Y	1000
+
+//Saturation maximum for AOE explosions
+#define MAX_AOE_SATURATION 200
 
 #include <stdlib.h>
 #include <string.h>
@@ -119,6 +122,8 @@ void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon);
 void drawBullet(int x, int y, int w, int h, int bulletType);
 void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType);
 
+//AOE
+void drawAOE(int damageType, int x, int y, int range, int currentCount, int maxCount);
 
 //enemy
 void getBackgroundDimensions(int *w, int *h);
@@ -151,6 +156,11 @@ void displayMonitor(int x, int y, int w, int h, SDL_Texture *texture);
 void pause_screen(Display d, int *pause, int *restart);
 int terminal_window(Display d, char *pass, char *clear, int *pause,int restart);
 void menu_screen(Display d, gameState *state);
+void testTerminalWindowInput();
+void testtermwin();
+char *test_string_1(char *pass2);
+char *test_string_2(char *clear);
+
 
 int final_screen();
 

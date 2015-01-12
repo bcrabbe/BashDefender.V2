@@ -16,13 +16,15 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
+
 
 
 int main(int argc, char ** argv)
 {
     
 	Display d = init_SDL();
+
     if(TESTING) {
         testing();
         exit(EXIT_SUCCESS);
@@ -450,7 +452,7 @@ void testing()	{
 	setUpTesting();
 	
     //!Unit Tests
-    //testLevelController(); //! Working
+    testLevelController(); //! Working
 
     //testingProjectiles(); //! Working
     //testingTowerPositions(); //!Workingr
@@ -460,6 +462,8 @@ void testing()	{
     testParser();
     //testingTowerModule(); //! working
     //testingInformationWindowModule();
+    //testTerminalWindowInput();
+    //testAbilities();
 
    	//! System Tests 
     //enemyToGamePropertiesTesting();
@@ -658,3 +662,5 @@ void testValidParses()
 	freeAllTowers();
 	clearQueue();
 }
+
+

@@ -8,13 +8,14 @@
 #include "../includes/Display.h"
 #include "../includes/parser.h"
 #include <stdbool.h>
+#include "../includes/sput.h"
 
 
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 struct display {
     //main objects
@@ -274,6 +275,7 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int
       // choose laser colour depending on type
       int sat = 5;
       int adjust = -5;
+      SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
     for(int i = 0; i < 10; i++) {
         
         if(laserType == INT_TYPE) {
@@ -369,7 +371,26 @@ void drawBullet(int x, int y, int w, int h, int bulletType) {
         SDL_RenderCopy(d->renderer, d->bulletTexture[1], NULL, &d->rect);
     }
 }
-  
+
+/* draws AOE range */
+void drawAOE(int damageType, int x, int y, int range, int currentCount, int maxCount) {
+    Display d = getDisplayPointer(NULL);
+    
+    float saturation = MAX_AOE_SATURATION - ( ((float)currentCount/(float)maxCount) * MAX_AOE_SATURATION);
+    SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
+    
+    if(damageType == INT_TYPE) {
+        SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, saturation);
+    } else {
+        SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, saturation);
+    }
+    
+    for (double dy = 1; dy <= range; dy += 1.0) {
+        double dx = floor(sqrt((2.0 * range * dy) - (dy * dy)));
+        SDL_RenderDrawLine(d->renderer, x-dx, y+range-dy, x+dx, y+range-dy);
+        SDL_RenderDrawLine(d->renderer, x-dx, y-range+dy, x+dx, y-range+dy);
+    }
+}
 
 /*clear the screen before making any drawings */
 void startFrame(Display d) {
@@ -520,6 +541,8 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
                     
                     pass2 = pass + 2;
                     parse(pass2);
+					test_string_1(pass2);
+					test_string_2(clear);
                     strcpy(pass, clear);
                 }
 				//If backspace key is pressed, removes end char of string
@@ -549,6 +572,46 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
 	} else {
     	return 0;
 	}
+}
+	
+void testTerminalWindowInput()
+{
+	sput_start_testing();
+	sput_set_output_stream(NULL);
+
+	sput_enter_suite("terminal_window(): Testing, terminal window");
+	sput_run_test(testtermwin);
+	sput_leave_suite();
+
+	sput_finish_testing();
+}
+
+void testtermwin()
+{
+	int *pause;
+	int restart;
+	terminal_window(getDisplayPointer(NULL), ">>", ">>", pause, restart);
+	sput_fail_if(*test_string_1(NULL) == '>', "Incorrect string parsing");
+	sput_fail_if(strlen(test_string_2(NULL)) > 2, "Clear string failure");
+}
+
+char *test_string_1(char *pass2)
+{
+	static char string[128];
+	if(pass2 != NULL)
+	{
+		strcpy(string, pass2);
+	}
+	return string;
+}
+char *test_string_2(char *clear)
+{
+	static char string[128];
+	if(clear != NULL)
+	{
+		strcpy(string, clear);
+	}
+	return string;
 }
 
 /*display_text builds textures from surfaces and calls renderer to output them to screen.*/
