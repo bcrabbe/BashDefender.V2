@@ -507,7 +507,6 @@ void updateTerminalWindow(char *outputString) {
 /*terminal_window detects input from SDL and calls display_text*/
 int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
 {
-	int done = 0;
     char *pass2;
     //Keeps text on screen
     displayMonitor(TERMINAL_WINDOW_X, TERMINAL_WINDOW_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->terminalWindowTexture);
@@ -586,8 +585,8 @@ void testTerminalWindowInput()
 
 void testtermwin()
 {
-	int *pause;
-	int restart;
+	int restart = 0, pause1 = 0;
+	int *pause = &pause1;
 	terminal_window(getDisplayPointer(NULL), ">>", ">>", pause, restart);
 	sput_fail_if(*test_string_1(NULL) == '>', "Incorrect string parsing");
 	sput_fail_if(strlen(test_string_2(NULL)) > 2, "Clear string failure");
