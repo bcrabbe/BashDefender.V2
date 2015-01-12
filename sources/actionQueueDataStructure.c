@@ -431,6 +431,10 @@ void removeQueueItem()	{
 	--(queue->nItems);
 }
 
+int getNumOfQueueItems()	{
+	return getQueue(NULL)->nItems;
+}
+
 
 /*
  *Pops from front of Queue. : replaced with popToTower()

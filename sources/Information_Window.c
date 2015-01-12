@@ -375,7 +375,6 @@ void statsBar() {
 void actionQueueMonitor() {
     
     char *outputString = getActionQueueString();
-    
     updateActionQueueMonitor(outputString);
 }
 
@@ -410,8 +409,8 @@ void towerInformation() {
 char *getDefaultTowerString(TowerMonitor *tm) {
     
     static char defaultTowerString[MAX_OUTPUT_STRING];
-    
-    sprintf(defaultTowerString, "TOWER MONITOR\n\nActive Towers: %d", getNumberOfTowers());
+
+    sprintf(defaultTowerString, "TOWER MONITOR\n\nActive Towers: %d\nItems in Action Queue: %d\n\nCOMMAND CHEAT SHEET:\n\nmktwr int/char pos\nupgrade p/r/s t1/t2\nchmod int/char t1/t2/t3", getNumberOfTowers(),getNumOfQueueItems());
     strcpy(tm->string, defaultTowerString);
     
     return defaultTowerString;
