@@ -546,6 +546,10 @@ char *getActionQueueString(void) {
                     case upgrade_AOEpower:
                         strcat(outputString, "AOEp ");
                         break;
+                    case upgrade_slowPower:
+                        strcat(outputString, "slow power ");
+                    case upgrade_slowDuration:
+                        strcat(outputString, "slow duration ");
                     case upgrade_level:
                         strcat(outputString, "level ");
 					default:
