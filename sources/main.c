@@ -19,17 +19,17 @@
 #define TESTING 0
 
 
+
 int main(int argc, char ** argv)
 {
     
 	Display d = init_SDL();
+
     if(TESTING) {
-        Display d = init_SDL();
         testing();
         exit(EXIT_SUCCESS);
     }
 	int restart = 0;
-    int started = 0;
     
     srand(time(NULL));
 	gameState state = menu;
@@ -324,24 +324,17 @@ void tutorialLevel(Display d,int *restart)	{
                 }
 				break;
 			case phaseTwenty:
-				if(flag)	{
-                	setCurrTime(findClock(tutorialClock));
-                    flag = 1;
-				}	
-				tutorial_seventeen();
-                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
-                	tPhase++;
-                }
+				tutorial_eighteen();
+				if(getTowerType(1) == CHAR_TYPE && getTowerType(2) == INT_TYPE)	{
+					tPhase++;
+				}
 				break;
 			case phaseTwentyOne:
 				if(flag)	{
                 	setCurrTime(findClock(tutorialClock));
                     flag = 0;
 				}
-				tutorial_eighteen();
-				if(getTowerType(1) == CHAR_TYPE && getTowerType(2) == INT_TYPE)	{
-					tPhase++;
-				}
+				tutorial_nineteen();
 				break;
 			case phaseTwentyTwo:
 				if(!flag)	{
@@ -459,7 +452,7 @@ void testing()	{
 	setUpTesting();
 	
     //!Unit Tests
-    //testLevelController(); //! Working
+    testLevelController(); //! Working
 
     //testingProjectiles(); //! Working
     //testingTowerPositions(); //!Workingr
@@ -469,6 +462,8 @@ void testing()	{
     //testParser();
     //testingTowerModule(); //! working
     //testingInformationWindowModule();
+    //testTerminalWindowInput();
+    //testAbilities();
 
    	//! System Tests 
     enemyToGamePropertiesTesting();
@@ -691,3 +686,5 @@ void testValidParses()
 	freeAllTowers();
 	clearQueue();
 }
+
+

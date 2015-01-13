@@ -8,6 +8,7 @@
 #include "../includes/Display.h"
 #include "../includes/parser.h"
 #include <stdbool.h>
+#include "../includes/sput.h"
 
 
 int SCREEN_WIDTH_GLOBAL;
@@ -506,7 +507,6 @@ void updateTerminalWindow(char *outputString) {
 /*terminal_window detects input from SDL and calls display_text*/
 int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
 {
-	int done = 0;
     char *pass2;
     //Keeps text on screen
     displayMonitor(TERMINAL_WINDOW_X, TERMINAL_WINDOW_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->terminalWindowTexture);
@@ -538,6 +538,8 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
                     
                     pass2 = pass + 2;
                     parse(pass2);
+					test_string_1(pass2);
+					test_string_2(clear);
                     strcpy(pass, clear);
                 }
 				//If backspace key is pressed, removes end char of string
@@ -567,6 +569,46 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
 	} else {
     	return 0;
 	}
+}
+	
+void testTerminalWindowInput()
+{
+	sput_start_testing();
+	sput_set_output_stream(NULL);
+
+	sput_enter_suite("terminal_window(): Testing, terminal window");
+	sput_run_test(testtermwin);
+	sput_leave_suite();
+
+	sput_finish_testing();
+}
+
+void testtermwin()
+{
+	int restart = 0, pause1 = 0;
+	int *pause = &pause1;
+	terminal_window(getDisplayPointer(NULL), ">>", ">>", pause, restart);
+	sput_fail_if(*test_string_1(NULL) == '>', "Incorrect string parsing");
+	sput_fail_if(strlen(test_string_2(NULL)) > 2, "Clear string failure");
+}
+
+char *test_string_1(char *pass2)
+{
+	static char string[128];
+	if(pass2 != NULL)
+	{
+		strcpy(string, pass2);
+	}
+	return string;
+}
+char *test_string_2(char *clear)
+{
+	static char string[128];
+	if(clear != NULL)
+	{
+		strcpy(string, clear);
+	}
+	return string;
 }
 
 /*display_text builds textures from surfaces and calls renderer to output them to screen.*/
