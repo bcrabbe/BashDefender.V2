@@ -71,6 +71,7 @@ int isDead(int enemyID);
 void killEnemy(int enemyID);
 int inRange(int tX, int tY, int tRange, int enemyID);
 void damageEnemy(int damage, int enemyID, int damageType);
+void slowEnemy(int targetID, int slowPower, int slowDuration);
 void towerGetTargetPos(int * towerTargetPosition, int enemyID);
 void printEnemy(int enemyID);
 void createPath();

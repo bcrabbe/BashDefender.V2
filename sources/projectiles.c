@@ -38,6 +38,9 @@ struct projectileNode {
     int aoeDamage;
     int aoeRange;
     
+    int slowPower;
+    int slowDuration;
+    
     int movesMade;
     int movesToTarget;
     int movesForBuildUp;
@@ -487,7 +490,7 @@ void freeProjectileList()
 /*
 * creates a new bullet projectile and launches it at where the target will be
 */
-void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange)
+void launchBullet(int firedX, int firedY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange, int slowPower, int slowDuration)
 {
     // make the bullet
     ProjectileNode newNode = newProjectileNode();
@@ -509,6 +512,9 @@ void launchBullet(int firedX, int firedY, int damage, int targetID, int firingTy
     newNode->aoeDamage = aoeDamage;
     newNode->aoeRange = aoeRange;
     
+    newNode->slowPower = slowPower;
+    newNode->slowDuration = slowDuration;
+    
     newNode->targetID = targetID;
     getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
     newNode->targetCoords[0] = newNode->targetCoords[0] - (newNode->w/2);
@@ -527,6 +533,7 @@ void moveBullet(ProjectileNode bullet) {
   
     if(bullet->movesMade == bullet->movesToTarget) {
         damageEnemy(bullet->damage, bullet->targetID, bullet->damageType);
+        slowEnemy(bullet->targetID, bullet->slowPower, bullet->slowDuration);
         doAOEDamage(bullet->damageType, bullet->aoeDamage, bullet->targetID, bullet->aoeRange, bullet->targetCoords[0], bullet->targetCoords[1]);
         makeExplosion(bullet->damageType, bullet->targetCoords[0], bullet->targetCoords[1], bullet->aoeRange);
         
@@ -546,7 +553,7 @@ void moveBullet(ProjectileNode bullet) {
 /*
 * creates a new missile projectile and sets its target/target coords
 */
-void launchMissile(int firedX, int firedY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange)
+void launchMissile(int firedX, int firedY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange, int slowPower, int slowDuration)
 {
     // make the missile
     ProjectileNode newNode = newProjectileNode();
@@ -570,6 +577,9 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
     newNode->damage = damage;
     newNode->aoeDamage = aoeDamage;
     newNode->aoeRange = aoeRange;
+    
+    newNode->slowPower = slowPower;
+    newNode->slowDuration = slowDuration;
     
     newNode->targetID = targetID;
     getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget+newNode->movesForBuildUp);
@@ -646,6 +656,7 @@ void moveMissile(ProjectileNode missile) {
     
     if(missile->movesMade == missile->movesToTarget+missile->movesForBuildUp) {
         damageEnemy(missile->damage, missile->targetID, missile->damageType);
+        slowEnemy(missile->targetID, missile->slowPower, missile->slowDuration);
         doAOEDamage(missile->damageType, missile->aoeDamage, missile->targetID, missile->aoeRange, missile->targetCoords[0], missile->targetCoords[1]);
         makeExplosion(missile->damageType, missile->targetCoords[0], missile->targetCoords[1], missile->aoeRange);
         
@@ -674,7 +685,7 @@ void moveMissile(ProjectileNode missile) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 /* LASER FUNCTIONS */
 
-void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange)
+void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange, int slowPower, int slowDuration)
 {
     ProjectileNode newNode = newProjectileNode();
     newNode->whatProjectile = laser;
@@ -695,6 +706,9 @@ void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType, int
     newNode->aoeDamage = aoeDamage;
     newNode->aoeRange = aoeRange;
     
+    newNode->slowPower = slowPower;
+    newNode->slowDuration = slowDuration;
+    
       // add it to the list
     addToProjectileList(newNode);
 }
@@ -704,6 +718,7 @@ void updateLaser(ProjectileNode laser)
 {
     if(laser->drawLaserCount == 0) {
         damageEnemy(laser->damage, laser->targetID, laser->damageType);
+        slowEnemy(laser->targetID, laser->slowPower, laser->slowDuration);
         doAOEDamage(laser->damageType, laser->aoeDamage, laser->targetID, laser->aoeRange, laser->targetCoords[0], laser->targetCoords[1]);
         makeExplosion(laser->damageType, laser->targetCoords[0], laser->targetCoords[1], laser->aoeRange);
     }

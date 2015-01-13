@@ -2496,7 +2496,7 @@ void testMemValueFunctions()
     envVar * mem = returnEnvVar("mem");
     setMemory(1000);
     mem->getValueFunc();
-    sput_fail_unless(mem->value==1000,");
+    sput_fail_unless(mem->value==1000,"");
 
     updateMemValue(cmd_mktwr);
 }
