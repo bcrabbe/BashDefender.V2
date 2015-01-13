@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 
 
@@ -24,9 +24,9 @@ int main(int argc, char ** argv)
 {
     
 	Display d = init_SDL();
-    //init_sound();
+    init_sound();
 
-    //playBackgroundSound();
+    playBackgroundSound();
     if(TESTING) {
         testing();
         exit(EXIT_SUCCESS);
