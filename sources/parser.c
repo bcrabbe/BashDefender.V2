@@ -33,7 +33,6 @@ int parseCat(char * inputStringTargeting);
 int parseMan(char * inputStringCommandMan);
 int parseAptget(char * aptToGetString);
 int parsePs(char * optionString);
-int parseAptget(char * aptToGetString);
 int parseKill(char ** commandArray,int numberOfChunks);
 int parseMktwr(char ** commandArray, int numberOfTokens);
 int parseChmod(char ** commandArray,int numberOfTokens);
@@ -81,8 +80,6 @@ stringList * getOptionList(stringList * optionList);
 envVarList * intialiseEnvVarsList();
 envVarList * getEnvsList(envVarList * envsList);
 
-
-
 //parseWhile structs:
 typedef struct targetArray {
     int * array;
@@ -126,13 +123,10 @@ int numberOfMktwrLastPushed (int mktwrsPushed);
 upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct);
 int getCostOfMktwr();
 int getCostOfUpgrade(upgradeArraysStruct * upgradeStuct);
-int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray);
 int updateTowsValue(cmdType command);
 int updateMemValue(cmdType command);
 
-
-
-
+int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray);
 
 //developement testing functions:
 void testStringLists();
@@ -153,11 +147,15 @@ void testBreakUpStringAndFreeCommandArray();
 void testChmod();
 void testParsePs();
 void testAptget();
+void testKill();
 void testParseMktwr();
 void testMan();
 void testCat();
 void testUpgrade();
 
+//parseWhile and associate functions unit tests:
+void testGetOperatorFromString();
+void testReturnEnvVar();
 void testParseWhile();
 
 
@@ -184,8 +182,6 @@ int parse(char *inputString)
     {
         return parseWhile(inputString);
     }
-
-
     int numberOfTokens;
     char **commandArray = breakUpString(inputString, &numberOfTokens, " ,");
     //testCommandArray(commandArray, numberOfTokens);
@@ -198,7 +194,6 @@ int parse(char *inputString)
         freeCommandArray(commandArray, numberOfTokens);
         return 0;//no valid commands with less than 2 strings or more than 3
     }
-    
     int specificReturns = parseCommands(commandArray,numberOfTokens);
     
     freeCommandArray(commandArray, numberOfTokens);
@@ -211,7 +206,6 @@ int parseCommands(char ** commandArray, int numberOfTokens)
 {
     //enumerated type cmdType can describe each of the possible commands(see actionQueue.h)
     cmdType command = getCommandType(commandArray[0]);//the first string in the command should contain the action
-    
     if(command==cmd_commandError)//if getAction returns commandError then the input is invalid
     {                //Error messaging handled in getCommandType function
         return 0;
@@ -333,8 +327,15 @@ int parseCommands(char ** commandArray, int numberOfTokens)
             break;
         }
         case cmd_execute:
+        {
+            printf("command not implemented\n");
+            specificReturns = 0;
+            break;
+        }
         default:
-            fprintf(stderr,"\n***parsing not implemented yet returning***\n");
+        {
+            fprintf(stderr,"\n***command not implemented in parseCommands yet returning***\n");
+        }
     }
     return specificReturns;
 }
@@ -421,6 +422,12 @@ int parseChmod(char ** commandArray,int numberOfTokens)
  */
 int parseKill(char ** commandArray,int numberOfTokens)
 {
+    if(!is_ability_unlocked(KILL))
+    {
+        errorToTerminalWindow("ERROR: kill ability must be installed first");
+        fprintf(stderr,"ERROR: kill ability must be installed first\n");
+        return 0;
+    }
     cmdOption option = getCommandOption(commandArray[1]);
     
     if(option!=kill_minus9 && option!=kill_all)
@@ -428,6 +435,7 @@ int parseKill(char ** commandArray,int numberOfTokens)
         char str[100];
         sprintf(str,"ERROR: Could not read first kill argument ""%s"" expected all or -9 ",
                 commandArray[1]);
+        fprintf(stderr,"%s\n",str);
         errorToTerminalWindow(str);
         return 0;
     }
@@ -436,25 +444,45 @@ int parseKill(char ** commandArray,int numberOfTokens)
         if(numberOfTokens!=3)
         {
             errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
+            fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
             return 0;
         }
         else
         {
             int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
-            kill_ability(targetEnemyID);
-            return 1;
+            if(targetEnemyID<=0)
+            {
+                errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
+                fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
+                return 0;
+            }
+            else
+            {
+                kill_ability(targetEnemyID);
+                return 1;
+            }
         }
     }
     else if(option==kill_all)
     {
-        kill_all_ability();
-        return 2;
+        if(!numberOfTokens==2)
+        {
+            errorToTerminalWindow("ERROR: too many arguments to kill all, only 2 expected ");
+            fprintf(stderr,"ERROR: too many arguments to kill all, only 2 expected \n");
+            return 0;
+        }
+        else
+        {
+            kill_all_ability();
+            return 2;
+        }
     }
     else
     {
         errorToTerminalWindow("ERROR: invalid argument to kill command, expected all or -9");
+        fprintf(stderr,"ERROR: invalid argument to kill command, expected all or -9\n");
+        return 0;
     }
- 
     return 0;
 }
 /*
@@ -470,7 +498,6 @@ int parsePs(char * optionString)
     }
     else
     {
-        printf("here\n");
         psx_ability();
         return 1;
     }
@@ -691,7 +718,7 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     {
         cmdOption statToUpgrade = getCommandOption(commandArray[atToken]);
         if(statToUpgrade==-1) break;
-        if(statToUpgrade<=0 || statToUpgrade>6)
+        if(statToUpgrade<=0 || statToUpgrade>8)
         {
             if(tolower(commandArray[atToken][0])=='t' || tolower(commandArray[atToken][0])=='-')
             {
@@ -1083,120 +1110,67 @@ envVar * returnEnvVar(char * stringToMatch)
     envVarList * envsListStruct = getEnvsList(NULL);
     for(int i=0; i<envsListStruct->numberOfElements; ++i)
     {
-        if(strcmp(stringToMatch,envsListStruct->array[i]->name) ||
-           strcmp(stringToMatch,envsListStruct->array[i]->name2))
+        if(strcmp(stringToMatch,envsListStruct->array[i]->name)==0 ||
+           strcmp(stringToMatch,envsListStruct->array[i]->name2)==0 )
         {
             return envsListStruct->array[i];
         }
     }
     return 0;
-    
-}
-int updateTowsValue(cmdType command)
-{
-    envVar * tows = returnEnvVar("tows");
-    if(command == cmd_mktwr)
-    {
-        tows->value += 1;
-        return tows->value;
-    }
-    if(command == cmd_upgrade)
-    {
-        return tows->value;
-    }
-    return tows->value;//stops warnings
 }
 
-int updateMemValue(cmdType command)
+operator getOperatorFromString(char * conditionString)
 {
-    envVar * mem = returnEnvVar("mem");
-    if(command == cmd_mktwr)
+    int i=0;
+    operator firstOp, secondOp, totalOp;
+    while(conditionString[i]!='\0')
     {
-        mem->value -= getCostOfMktwr();
-        return mem->value;
-    }
-    if(command == cmd_upgrade)
-    {
-        mem->value -= getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
-        return mem->value;
-    }
-    return mem->value;//stops warnings
-}
-int getCostOfMktwr()
-{
-    return calculateCosts(cmd_mktwr,0,0);
-}
-
-int getCostOfUpgrade(upgradeArraysStruct * upgradeStuct)
-{
-    int costs=0;
-    if( upgradeStuct )
-    {
-        for(int statIter=0; statIter < upgradeStuct->statArray->numberOfElements; ++statIter)
+        firstOp =  matchesOperator(conditionString[i]);
+        if(firstOp)
         {
-            for(int tarIter=0; tarIter < upgradeStuct->tarArray->numberOfElements; ++tarIter)
+            secondOp = matchesOperator(conditionString[i+1]);
+            if(secondOp=='=')
             {
-                costs += costOfUpgradeFactoringInTheUpgradesOnTheQueue(upgradeStuct->tarArray->array[tarIter],
-                                                                       upgradeStuct->statArray->array[statIter]);
+                totalOp = combineOperators(firstOp,secondOp);
+                return totalOp;
+            }
+            else
+            {
+                return firstOp;
             }
         }
-    }
-    else
-    {
-        fprintf(stderr," parse while getCommandsCost error exiting\n");
-        exit(0);
-    }
-    return costs;
-}
-
-
-
-int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
-{
-    cmdType command = getCommandType(commandArray[0]);
-    if(command != cmd_upgrade && command != cmd_mktwr)
-    {
-        return 1;
-    }
-    else if( strcmp(variable->name,"mem")==0 )
-    {
-        if( op!=greaterThanOrEqualTo && op!=greaterThan )
+        else
         {
-            char termErrString[100];
-            sprintf(termErrString,"ERROR: testing against mem value with a operator other than > or >= would lead to an infinite loop\n");
-            fprintf(stderr,"%s \n",termErrString);
-            errorToTerminalWindow(termErrString);
-            return 1;
+            ++i;
         }
     }
-    else if( strcmp(variable->name,"tows")==0)
-    {
-        if( command==cmd_upgrade)
-        {
-            char termErrString[100];
-            sprintf(termErrString,"ERROR: upgrade command doesn't change the number of towers so this would be an infinite loop. You should test against your memory instead.\n");
-            fprintf(stderr,"%s \n",termErrString);
-            errorToTerminalWindow(termErrString);
-            return 1;
-        }
-        if(command==cmd_mktwr)
-        {
-            if( op!=lessThan && op!=lessThanOrEqualTo )
-            {
-                char termErrString[100];
-                sprintf(termErrString,"ERROR: number of towers can only increase so this would be an infinite loop. You should use < or <= in your test.\n");
-                fprintf(stderr,"%s \n",termErrString);
-                errorToTerminalWindow(termErrString);
-                return 1;
-            }
-        }
-       
-    }
-    
     return 0;
-    
 }
 
+operator combineOperators(operator firstOp, operator secondOp)
+{
+    int combinedOpInt;
+    operator combinedOp;
+    if(!(firstOp==-1) && secondOp == '=')
+    {
+        combinedOpInt = (int)firstOp + (int)secondOp;
+        combinedOp = (operator)combinedOpInt;
+        return combinedOp;
+    }
+    else return firstOp;
+}
+
+operator matchesOperator(char isThisAnOperator)
+{
+    switch (isThisAnOperator)
+    {
+        case not:                           return not;
+        case greaterThan:                   return greaterThan;
+        case lessThan:                      return lessThan;
+        case equalTo:                       return equalTo;
+        default:                            return 0;
+    }
+}
 
 void makeStringForOperator(operator op, char * string)
 {
@@ -1254,60 +1228,105 @@ void makeStringForOperator(operator op, char * string)
     }
 }
 
-operator getOperatorFromString(char * conditionString)
+
+int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
 {
-    int i=0;
-    operator firstOp, secondOp, totalOp;
-    while(conditionString[i]!='\0')
+    cmdType command = getCommandType(commandArray[0]);
+    if(command != cmd_upgrade && command != cmd_mktwr)
     {
-        firstOp =  matchesOperator(conditionString[i]);
-        if(firstOp)
+        return 1;
+    }
+    else if( strcmp(variable->name,"mem")==0 )
+    {
+        if( op!=greaterThanOrEqualTo && op!=greaterThan )
         {
-            secondOp = matchesOperator(conditionString[i+1]);
-            if(secondOp=='=')
-            {
-                totalOp = combineOperators(firstOp,secondOp);
-                return totalOp;
-            }
-            else
-            {
-                return firstOp;
-            }
+            char termErrString[100];
+            sprintf(termErrString,"ERROR: testing against mem value with a operator other than > or >= would lead to an infinite loop\n");
+            fprintf(stderr,"%s \n",termErrString);
+            errorToTerminalWindow(termErrString);
+            return 1;
         }
-        else
+    }
+    else if( strcmp(variable->name,"tows")==0)
+    {
+        if( command==cmd_upgrade)
         {
-            ++i;
+            char termErrString[100];
+            sprintf(termErrString,"ERROR: upgrade command doesn't change the number of towers so this would be an infinite loop. You should test against your memory instead.\n");
+            fprintf(stderr,"%s \n",termErrString);
+            errorToTerminalWindow(termErrString);
+            return 1;
+        }
+        if(command==cmd_mktwr)
+        {
+            if( op!=lessThan && op!=lessThanOrEqualTo )
+            {
+                char termErrString[100];
+                sprintf(termErrString,"ERROR: number of towers can only increase so this would be an infinite loop. You should use < or <= in your test.\n");
+                fprintf(stderr,"%s \n",termErrString);
+                errorToTerminalWindow(termErrString);
+                return 1;
+            }
         }
     }
     return 0;
 }
 
-
-operator combineOperators(operator firstOp, operator secondOp)
+int updateTowsValue(cmdType command)
 {
-    int combinedOpInt;
-    operator combinedOp;
-    if(firstOp && secondOp == '=')
+    envVar * tows = returnEnvVar("tows");
+    if(command == cmd_mktwr)
     {
-        combinedOpInt = (int)firstOp + (int)secondOp;
-        combinedOp = (operator)combinedOpInt;
-        return combinedOp;
+        tows->value += 1;
+        return tows->value;
     }
-    else return firstOp;
+    else
+    {
+        return tows->value;
+    }
 }
 
-
-
-operator matchesOperator(char isThisAnOperator)
+int updateMemValue(cmdType command)
 {
-    switch (isThisAnOperator)
+    envVar * mem = returnEnvVar("mem");
+    if(command == cmd_mktwr)
     {
-        case not:                           return not;
-        case greaterThan:                   return greaterThan;
-        case lessThan:                      return lessThan;
-        case equalTo:                       return equalTo;
-        default:                            return 0;
+        mem->value -= getCostOfMktwr();
+        return mem->value;
     }
+    if(command == cmd_upgrade)
+    {
+        mem->value -= getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
+        return mem->value;
+    }
+    return mem->value;//stops warnings
+}
+
+int getCostOfMktwr()
+{
+    return calculateCosts(cmd_mktwr,0,0);
+}
+
+int getCostOfUpgrade(upgradeArraysStruct * upgradeStuct)
+{
+    int costs=0;
+    if( upgradeStuct )
+    {
+        for(int statIter=0; statIter < upgradeStuct->statArray->numberOfElements; ++statIter)
+        {
+            for(int tarIter=0; tarIter < upgradeStuct->tarArray->numberOfElements; ++tarIter)
+            {
+                costs += costOfUpgradeFactoringInTheUpgradesOnTheQueue(upgradeStuct->tarArray->array[tarIter],
+                                                                       upgradeStuct->statArray->array[statIter]);
+            }
+        }
+    }
+    else
+    {
+        fprintf(stderr," parse while getCommandsCost error exiting\n");
+        exit(0);
+    }
+    return costs;
 }
 
 
@@ -1708,7 +1727,7 @@ stringList * intialiseOptionList()
 {
     /*first lets make an array of strings to hold all the possible action commands*/
     char **validOptions;
-    int numberOfOptions=12;//have 5 action commands at this time: upgrade, execute, set, man, cat
+    int numberOfOptions=14;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validOptions=malloc((numberOfOptions)*sizeof(char*));    //upgrade opts
     validOptions-=1;
     validOptions[1]=strdup("p");
@@ -1716,17 +1735,19 @@ stringList * intialiseOptionList()
     validOptions[3]=strdup("s");
     validOptions[4]=strdup("aoer");
     validOptions[5]=strdup("aoep");
-    validOptions[6]=strdup("lvl");
+    validOptions[6]=strdup("slowp");
+    validOptions[7]=strdup("slowd");
+    validOptions[8]=strdup("lvl");
     //mktwr opts:
-    validOptions[7]=strdup("int");
-    validOptions[8]=strdup("char");
+    validOptions[9]=strdup("int");
+    validOptions[10]=strdup("char");
     //ps opts:
-    validOptions[9]=strdup("-x");
+    validOptions[11]=strdup("-x");
     //kill opts:
-    validOptions[10]=strdup("-9");
-    validOptions[11]=strdup("all");
+    validOptions[12]=strdup("-9");
+    validOptions[13]=strdup("all");
     //aptget opts:
-    validOptions[12]=strdup("kill");
+    validOptions[14]=strdup("kill");
     
     stringList * optionsList = malloc(sizeof(stringList));
     optionsList->stringArray=validOptions;
@@ -1894,6 +1915,10 @@ void testParser()
     sput_run_test(testAptget);
     sput_leave_suite();
     
+    sput_enter_suite("testKill");
+    sput_run_test(testKill);
+    sput_leave_suite();
+
     sput_enter_suite("testParseMktwr");
     sput_run_test(testParseMktwr);
     sput_leave_suite();
@@ -1910,9 +1935,21 @@ void testParser()
     sput_run_test(testUpgrade);
     sput_leave_suite();
     
+    sput_enter_suite("testReturnEnvVar");
+    sput_run_test(testReturnEnvVar);
+    sput_leave_suite();
+    
+    sput_enter_suite("testGetOperatorFromString");
+    sput_run_test(testGetOperatorFromString);
+    sput_leave_suite();
+    
+ 
+    
+
+    /*
     sput_enter_suite("testParseWhile");
     sput_run_test(testParseWhile);
-    sput_leave_suite();
+    sput_leave_suite();*/
 
 
     
@@ -1967,7 +2004,6 @@ void testGetTargetTower()
     sput_fail_unless(getTargetTower("T",true)==0,"calling with just T should return 0 and error message");
     sput_fail_unless(getTargetTower("T",false)==0,"calling with just T should return 0 and error message");
     
-
     sput_fail_unless(getTargetTower("1",true)==0,"calling with just 1 and string should return 0 and error message when needIdentifer is true");
     sput_fail_unless(getTargetTower("1",false)==1,"calling with just 1 and string should return 1  when needIdentifer is false");
     
@@ -2160,7 +2196,6 @@ void testChmod()
     sput_fail_unless( parse("chmod int t1,t2,t4")==1, "parse(""chmod int t1,t2,t4"")==1, correct syntax  ->  execution message and return 1");
     
      sput_fail_unless( parse("chmod int t1 t2 t4")==1, "parse(""chmod int t1 t2 t4"")==1, correct syntax  ->  execution message and return 1");
-    
 }
 
 
@@ -2175,21 +2210,95 @@ void testParsePs()
     sput_fail_unless(parse("ps p")==0, "parse(""ps p"")==0, p is valid argument but not valid argument of ps command -> error message and return 0");
     //command cannot run in test mode
     //sput_fail_unless(parse("ps -x")==1, "parse(""ps -x"")==1, correct syntax -> call psx_ability() return 1");
-    
     sput_fail_unless(parse("ps -x s")==0, "parse(""ps -x s"")==0, too many arguments -> error message and return 0");
-
 }
 
 
 void testAptget()
 {
+    init_abilities();
     sput_fail_unless(parse("apt-get")==0, "parse(""apt-get"")==0, no argument -> error message and return 0");
     sput_fail_unless(parse("apt-get kill n")==0, "parse(""apt-get kill n"")==0, too many arguments -> error message and return 0");
     sput_fail_unless(parse("apt-get b")==0, "parse(""apt-get b"")==0, b is not valid argument -> error message and return 0");
     sput_fail_unless(parse("apt-get p")==0, "parse(""apt-get p"")==0, p is valid argument but not valid argument of apt-get command -> error message and return 0");
     sput_fail_unless(parse("apt-get kill")==1, "parse(""apt-get kill"")==1, correct syntax -> pushes request to queue and return 1");
+    unlock_ability(KILL);
+    sput_fail_unless(parse("apt-get kill")==0, "parse(""apt-get kill"")==0, kill is already installed -> error message and return 0");
+}
+/*
+ *
+ *
+int parseKill(char ** commandArray,int numberOfTokens)
+{
+    cmdOption option = getCommandOption(commandArray[1]);
     
-    sput_fail_unless(parse("ps kill")==0, "parse(""ps kill"")==0, kill is already installed -> error message and return 0");
+    if(option!=kill_minus9 && option!=kill_all)
+    {
+        char str[100];
+        sprintf(str,"ERROR: Could not read first kill argument ""%s"" expected all or -9 ",
+                commandArray[1]);
+        fprintf(stderr,"%s\n",str);
+        errorToTerminalWindow(str);
+        return 0;
+    }
+    if(option==kill_minus9)
+    {
+        if(numberOfTokens!=3)
+        {
+            errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
+            fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
+            return 0;
+        }
+        else
+        {
+            int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
+            if(targetEnemyID<=0)
+            {
+                errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
+                fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
+                return 0;
+            }
+            else
+            {
+                kill_ability(targetEnemyID);
+                return 1;
+            }
+        }
+    }
+    else if(option==kill_all)
+    {
+        if(numberOfTokens!=2)
+        {
+            errorToTerminalWindow("ERROR: too many arguments to kill all ");
+            fprintf(stderr,"ERROR: too many arguments to kill all \n");
+            return 0;
+        }
+        kill_all_ability();
+        
+        return 2;
+    }
+    else
+    {
+        errorToTerminalWindow("ERROR: invalid argument to kill command, expected all or -9");
+    }
+    return 0;
+}*/
+
+void testKill()
+{
+    init_abilities();
+    freeAllEnemies();
+    createTestEnemy();
+    sput_fail_unless(parse("kill -9 e1")==0,"kill is not yet installed -> error message and return 0");
+    unlock_ability(KILL);
+    sput_fail_unless(parse("kill 9 e1")==0,"""kill 9 e1"" option is not valid , needs preceeding minus -> error message and return 0");
+    sput_fail_unless(parse("kill -9 e1")==1,"""kill -9 e1"" is valid and unlcoked -> return 1");
+    sput_fail_unless(parse("kill -9 e")==0,"""kill -9 e"" is invalid target -> error message & return 0");
+    sput_fail_unless(parse("kill -9 e")==0,"""kill -9 e"" is invalid target -> error message & return 0");
+    
+    sput_fail_unless(parse("kill aoer")==0,"""kill aoer"" is invalid option -> error message & return 0");
+    sput_fail_unless(parse("kill all")==2,"""kill all"" is valid  -> return 2");
+    sput_fail_unless(parse("kill all aoep")==2,"""kill all aoep"" is invalid, too many tokens -> error message return 0");
 }
 
 
@@ -2226,7 +2335,6 @@ void testParseMktwr()
     
     freeAllTowers();
     char cmd[200]="mktwr char ";
-
     for(char twrPosition = 'a'; twrPosition<=tolower(maxTowerPositionChar()); ++twrPosition)
     {
         char positions[10];
@@ -2234,7 +2342,6 @@ void testParseMktwr()
         strcat(cmd,positions);
     }
     printf("testing %s\n",cmd);
-
     sput_fail_unless(parse(cmd)==maxTowerPosition(),
                      "parse(""mktwr int a b c d e f g...maxTowerPositionChar()"")==maxTowerPosition(), is valid command -> psuh maxTowerPosition() towers and return maxTowerPosition()");
 }
@@ -2260,7 +2367,6 @@ void testCat()
     sput_fail_unless(parse("cat foo bar")==0,"too many arguments -> error message and return 0");
     sput_fail_unless(parse("cat e1")==0,"command must target a tower -> error message and return 0");
     sput_fail_unless(parse("cat t0")==0,"t0 is not a valid tower -> error message and return 0");
-    
     sput_fail_unless(parse("cat t0")==0,"t0 is not a valid tower -> error message and return 0");
     createTowerFromPositions(1);
     sput_fail_unless(parse("cat t1")==1,"cat t1 is valid -> return 1");
@@ -2291,8 +2397,6 @@ void testUpgrade()
         sput_fail_unless(upgradeStruct->tarArray->array[pos-1]==pos,
                          "upgradeStruct->tarArray should contain each of the targets");
     }
-  
-    
     sput_fail_unless(parse("upgrade p")==0,"not enough arguments -> error message and return 0");
     sput_fail_unless(parse("upgrade p p")==0,"no target tower -> error message and return 0");
     sput_fail_unless(parse("upgrade int t1")==0,"int is not a valid argument to upgrade -> error message and return 0");
@@ -2303,6 +2407,99 @@ void testUpgrade()
 }
 
 
+#pragma mark test parseWhile functions
+
+void testReturnEnvVar()
+{
+    envVar * returned = returnEnvVar("tows");
+    printf("returned = %s\n",returned->name);
+    sput_fail_unless(strcmp(returned->name,"tows")==0,"check that it returns tows correctly when  returnEnvVar(""tows"") is called");
+    returned = returnEnvVar("towers");
+    printf("returned = %s\n",returned->name);
+    sput_fail_unless(strcmp(returned->name,"tows")==0,"check that it returns tows correctly when  returnEnvVar(""towers"") is called");
+    returned = returnEnvVar("mem");
+    printf("returned = %s\n",returned->name);
+    sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""mem"") is called");
+    returned = returnEnvVar("memory");
+    printf("returned = %s\n",returned->name);
+    sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""memory"") is called");
+}
+
+void testGetOperatorFromString()
+{
+    char str[20];
+
+    operator op = getOperatorFromString("mem>0");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==greaterThan,"check that correct operator is extracted from mem>0");
+    
+    op = getOperatorFromString("mem>=0");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==greaterThanOrEqualTo,"check that correct operator is extracted from mem>=0");
+    
+    op = getOperatorFromString("tows<5");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==lessThan,"check that correct operator is extracted from tows<5");
+    
+    op = getOperatorFromString("tows<=5");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==lessThanOrEqualTo,"check that correct operator is extracted from tows<=5");
+    
+    op = getOperatorFromString("tows");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==none,"check that correct operator is extracted from tows");
+    
+    op = getOperatorFromString("!tows");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==not,"check that correct operator is extracted from !tows");
+    
+    op = getOperatorFromString("tows!=0");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==notEqualTo,"check that correct operator is extracted from tows!=0");
+    
+    op = getOperatorFromString("tows==20");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==sameAs,"check that correct operator is extracted from tows==20");
+    
+    op = getOperatorFromString("m esd'0   213sd;;w w[p >  2] [ 2'e1] p4  '@$@  $%1%^&");
+    makeStringForOperator(op,str);
+    printf("op = %s\n",str);
+    sput_fail_unless(op==greaterThan,"check that bad input wont cause an issue");
+}
+/*
+ int updateMemValue(cmdType command)
+ {
+    envVar * mem = returnEnvVar("mem");
+    if(command == cmd_mktwr)
+    {
+        mem->value -= getCostOfMktwr();
+        return mem->value;
+    }
+    if(command == cmd_upgrade)
+    {
+        mem->value -= getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
+        return mem->value;
+    }
+    return mem->value;//stops warnings
+ }
+ */
+void testMemValueFunctions()
+{
+    envVar * mem = returnEnvVar("mem");
+    setMemory(1000);
+    mem->getValueFunc();
+    sput_fail_unless(mem->value==1000,");
+
+    updateMemValue(cmd_mktwr);
+}
 void testParseWhile()
 {
     freeAllTowers();

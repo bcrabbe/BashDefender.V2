@@ -305,7 +305,13 @@ int getCurrentStat(cmdOption stat,int target)	{
 				break;	
 		case upgrade_AOEpower:
 				return getTowerAOEpower(target);
-				break;	
+				break;
+        case upgrade_slowPower:
+            return getTowerSlowPower(target);
+            break;
+        case upgrade_slowDuration:
+            return getTowerSlowDuration(target);
+            break;
 		case upgrade_level:
 				return getTowerLevel(target);
 				break;	
@@ -355,6 +361,20 @@ cmdOption upgradeTowerStat(cmdOption stat, int target)  {
                 return upgrade_AOEpower;
             }
 			break;
+        }
+        case upgrade_slowPower:
+        {
+            if(upgradeSlowPower(target)) {
+                return upgrade_slowPower;
+            }
+            break;
+        }
+        case upgrade_slowDuration:
+        {
+            if(upgradeSlowDuration(target)) {
+                return upgrade_slowDuration;
+            }
+            break;
         }
         default:
             fprintf(stderr,"upgradeTowerStat tower.c: unrecognised stat\n");
