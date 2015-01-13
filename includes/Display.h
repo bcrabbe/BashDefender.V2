@@ -115,6 +115,7 @@ void shutSDL();
 
 void draw_filled_range(int cx, int cy, int r);
 void drawRect(int x, int y, int red, int blue, int max_width, int max_height, int current, int total);
+void drawRectVertical(int x, int y, int red, int blue, int max_width, int max_height, int current, int total);
 
 
 /*

@@ -449,7 +449,6 @@ int checkProperty(char *token)	{
 	} else if(!strcmp(token,"numberOfPaths"))	{
 		addProperty(numberOfPaths);		
 	}else {
-		fprintf(stderr,"Unrecognised Property has been read\n");
 		return 0;
 	}
 
@@ -530,6 +529,8 @@ void endLevel(int *restart) {
 	freeLevelPaths();
 	freeClocks();
 	freeActionQueue();
+	freeProjectileList();
+	//freeExplosionList();
 	*restart = 0;
 }
 

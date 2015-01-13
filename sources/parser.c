@@ -1165,7 +1165,7 @@ int parseWhile(char *inputString)
                 conditionTokenIs=0;
             }
             variable->value = variable->getValueFunc();
-            int condition = stringToInt(conditionArray[conditionTokenIs]);
+            int condition = (int)stringToInt(conditionArray[conditionTokenIs]);
             if(conditionTokenIs==0)//for now must have var on LHS
             {
                 char termErrString[100];
@@ -1341,7 +1341,8 @@ char *trimWhiteSpace(char *str)
 {
     int trimmedFromStart=0;
     // Trim leading space
-    while(isspace(*str))
+	sprint(str);
+    while(isspace(str[trimmedFromStart]))
     {
         ++trimmedFromStart;
     }
@@ -1691,11 +1692,11 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     unsigned int targetTower = 0;
     if( inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T' )
     {
-        targetTower = stringToInt(inputStringTargeting+1);
+        targetTower = (int)stringToInt(inputStringTargeting+1);
     }
     else
     {
-        targetTower = stringToInt(inputStringTargeting);
+        targetTower = (int)stringToInt(inputStringTargeting);
     }
     if(targetTower > numberOfTowers || targetTower < 1 )
     {
@@ -2951,7 +2952,6 @@ void testReturnEnvVar()
         printf("returned = %s\n",returned->name);
     }
     sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""memory"") is called");
-    
     returned = returnEnvVar("   memory    ");
     if(TERMINAL_OUTPUT_ON)
     {

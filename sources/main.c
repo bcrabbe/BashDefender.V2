@@ -24,9 +24,9 @@ int main(int argc, char ** argv)
 {
     
 	Display d = init_SDL();
-    init_sound();
 
-    playBackgroundSound();
+    init_sound();
+ //   playBackgroundSound();
     if(TESTING) {
         testing();
         exit(EXIT_SUCCESS);
@@ -50,7 +50,6 @@ int main(int argc, char ** argv)
 				break;
 			case hardLevel:
 				initLevel(1);
-				printf("hard level \n");
 				startLevel(d,&restart);
 				endLevel(&restart);
 				state = menu;
@@ -75,13 +74,14 @@ int main(int argc, char ** argv)
 		}
 	}	while(1);
 
-    shutSDL();
-    quitGame();
+//    shutSDL();
+//    quitGame();
     return 0;
 }
 
 void startLevel(Display d, int *restart)	{
-
+    
+    generalSounds(start_gameSound);
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -111,8 +111,8 @@ void startLevel(Display d, int *restart)	{
         present_tower();
         
     	fire();
-      updateProjectiles();
-      updateExplosions();
+        updateProjectiles();
+        updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);

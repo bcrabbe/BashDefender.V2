@@ -255,7 +255,7 @@ int compare_health(const void*a, const void*b)
 void psx_ability()
 {
 	char *psxlist = (char*) calloc(500,sizeof(char));	
-	char line[32];
+	char line[400];
 	int enemy_number = getNumberOfEnemies();
 	int health = 0, ID = 0, i, j, count = 0;
 	printf("%d\n", enemy_number);
@@ -382,8 +382,9 @@ void testkillall()
 	createEnemy();
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
-	printf("%d\n", enemy_number);
+
 	addMemory(1000);
+
 	delayGame(600);
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
 	unlock_ability(KILL);

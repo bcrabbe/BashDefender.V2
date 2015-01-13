@@ -299,6 +299,7 @@ void killEnemy(int enemyID)
 		    addMemory(e->maxHealth/2);
 		    increaseDeathCnt();
 		    updatePlayerScore(e->level);
+            enemyDeathSound();
 	  }
 }
 
