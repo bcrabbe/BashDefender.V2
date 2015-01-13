@@ -684,7 +684,7 @@ int terminal_window(char *pass, char *clear, int *pause,int restart)
                  */
 				if(event->key.keysym.sym == SDLK_BACKSPACE)
 				{
-					if(pass[strlen(pass) - 1] != '>')
+					if(pass[strlen(pass) - 1] != '~')
 					{
 						pass[strlen(pass) - 1] = '\0';
 					}
