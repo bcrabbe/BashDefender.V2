@@ -1557,24 +1557,30 @@ cmdOption getCommandOption(char * secondToken)
                     option = upgrade_AOEpower;
                     break;
                 case 6:
-                    option = upgrade_level;
+                    option = upgrade_slowPower;
                     break;
                 case 7:
-                    option = mktwr_int;
+                    option = upgrade_slowDuration;
                     break;
                 case 8:
-                    option = mktwr_char;
+                    option = upgrade_level;
                     break;
                 case 9:
-                    option = ps_x;
+                    option = mktwr_int;
                     break;
                 case 10:
-                    option = kill_minus9;
+                    option = mktwr_char;
                     break;
                 case 11:
-                    option = kill_all;
+                    option = ps_x;
                     break;
                 case 12:
+                    option = kill_minus9;
+                    break;
+                case 13:
+                    option = kill_all;
+                    break;
+                case 14:
                     option = aptget_kill;
                     break;
             }
@@ -2225,64 +2231,6 @@ void testAptget()
     unlock_ability(KILL);
     sput_fail_unless(parse("apt-get kill")==0, "parse(""apt-get kill"")==0, kill is already installed -> error message and return 0");
 }
-/*
- *
- *
-int parseKill(char ** commandArray,int numberOfTokens)
-{
-    cmdOption option = getCommandOption(commandArray[1]);
-    
-    if(option!=kill_minus9 && option!=kill_all)
-    {
-        char str[100];
-        sprintf(str,"ERROR: Could not read first kill argument ""%s"" expected all or -9 ",
-                commandArray[1]);
-        fprintf(stderr,"%s\n",str);
-        errorToTerminalWindow(str);
-        return 0;
-    }
-    if(option==kill_minus9)
-    {
-        if(numberOfTokens!=3)
-        {
-            errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
-            fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
-            return 0;
-        }
-        else
-        {
-            int targetEnemyID = getTargetEnemy(commandArray[2]);//pass 3rd token
-            if(targetEnemyID<=0)
-            {
-                errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
-                fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
-                return 0;
-            }
-            else
-            {
-                kill_ability(targetEnemyID);
-                return 1;
-            }
-        }
-    }
-    else if(option==kill_all)
-    {
-        if(numberOfTokens!=2)
-        {
-            errorToTerminalWindow("ERROR: too many arguments to kill all ");
-            fprintf(stderr,"ERROR: too many arguments to kill all \n");
-            return 0;
-        }
-        kill_all_ability();
-        
-        return 2;
-    }
-    else
-    {
-        errorToTerminalWindow("ERROR: invalid argument to kill command, expected all or -9");
-    }
-    return 0;
-}*/
 
 void testKill()
 {
@@ -2375,7 +2323,7 @@ void testCat()
 void testUpgrade()
 {
     freeAllTowers();
-    char validUpgradeString[300]="upgrade p s r aoer aoep t";
+    char validUpgradeString[300]="upgrade p s r aoer aoep slowp slowd t";
     for(int pos = 1; pos<=maxTowerPosition();++pos)
     {
         createTowerFromPositions(pos);
@@ -2390,9 +2338,11 @@ void testUpgrade()
                      upgradeStruct->statArray->array[1]==upgrade_speed &&
                      upgradeStruct->statArray->array[2]==upgrade_range &&
                      upgradeStruct->statArray->array[3]==upgrade_AOErange &&
-                     upgradeStruct->statArray->array[4]==upgrade_AOEpower,
+                     upgradeStruct->statArray->array[4]==upgrade_AOEpower &&
+                     upgradeStruct->statArray->array[5]==upgrade_slowPower &&
+                     upgradeStruct->statArray->array[6]==upgrade_slowDuration,
                      "upgradeStruct->statArray should contain each of the stats pushed ");
-    for(int pos = 1; pos<=maxTowerPosition();++pos)
+    for(int pos = 1; pos<=maxTowerPosition(); ++pos)
     {
         sput_fail_unless(upgradeStruct->tarArray->array[pos-1]==pos,
                          "upgradeStruct->tarArray should contain each of the targets");
@@ -2496,9 +2446,19 @@ void testMemValueFunctions()
     envVar * mem = returnEnvVar("mem");
     setMemory(1000);
     mem->getValueFunc();
-    sput_fail_unless(mem->value==1000,");
+    sput_fail_unless(mem->value==1000,"mem->getValueFunc() should set value to global value");
+    
+    mem->updateValueFunc(cmd_mktwr);
+    sput_fail_unless(mem->value==(1000-getCostOfMktwr()),"mem->updateValueFunc(cmd_mktwr) should subtract the cost of making a tower from the value");
+    
+    setMemory(1000);
+    freeAllTowers();
+    
+    parse("upgrade p t1")
+    mem->updateValueFunc(cmd_upgrade);
+    sput_fail_unless(mem->value==(1000-getCostOfMktwr()),"mem->updateValueFunc(cmd_mktwr) should subtract the cost of making a tower from the value");
+    
 
-    updateMemValue(cmd_mktwr);
 }
 void testParseWhile()
 {
