@@ -140,8 +140,8 @@ void startLevel(Display d, int *restart)	{
 void tutorialLevel(Display d,int *restart, tutPhase sPhase)	{
 
     tutPhase tPhase = sPhase;
-    char text[128] = {'>', '>'};
-    char empty[128] = {'>', '>'};
+    char text[128] = {'$', '~'};
+    char empty[128] = {'$', '~'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;

@@ -316,9 +316,9 @@ int kill_all_ability()
 	{
 		if(checkClock(killAll, KILL_ALL_COOLDOWN))
 		{
+			drawKillAll();
 			for(i = 1; i <= enemy_number; i++)
 			{
-				drawKillAll();
 				killEnemy(i);
 			}
 			useMemory(getGame(NULL), KILL_ALL_COST);
