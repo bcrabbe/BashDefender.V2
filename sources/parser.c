@@ -156,8 +156,8 @@ void testUpgrade();
 //parseWhile and associate functions unit tests:
 void testReturnEnvVar();
 void testGetOperatorFromString();
-void testGetCostOfUpgrade()
-void testMemValueFunctions()
+void testGetCostOfUpgrade();
+void testMemValueFunctions();
 void testParseWhile();
 
 
@@ -2484,7 +2484,7 @@ void testMemValueFunctions()
     setMemory(1000);
     freeAllTowers();
     createTowerFromPositions(1);
-    parse("upgrade p t1")
+    parse("upgrade p t1");
     mem->updateValueFunc(cmd_upgrade);
     sput_fail_unless(mem->value==(1000-getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) )),"    mem->updateValueFunc(cmd_upgrade) should subtract the cost of the last upgrade from the value");
 }
@@ -2538,9 +2538,10 @@ void testIsThisInfiniteLoop()
     envVar * var = returnEnvVar("mem");
     operator op = notEqualTo;
     sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"mem, notEqualTo and upgrade, is infinite -> error message & return 1");
-    operator op = none;
+    op = none;
     sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"mem, notEqualTo and upgrade, is infinite -> error message & return 1");
     
+
 }
 void testParseWhile()
 {

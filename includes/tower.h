@@ -42,6 +42,8 @@ int getTowerDamage(int towerID);
 int getTowerAOErange(int towerID);
 int getTowerAOEpower(int towerID);
 int getTowerLevel(int towerID);
+int getTowerSlowPower(int towerID);
+int getTowerSlowDuration(int towerID);
 int getTowerX(int towerID);
 int getTowerY(int towerID);
 unsigned int getNumberOfTowers();
@@ -54,6 +56,8 @@ int upgradeRange(int target);
 int upgradeSpeed(int target);
 int upgradeAOEpower(int target);
 int upgradeAOErange(int target);
+int upgradeSlowDuration(int target);
+int upgradeSlowPower(int target);
 int setTowerType(int towerID, int newType);
 void makePostUpgradeChanges(int TowerID);
 void assignCalculatedFiringType(int towerID);
@@ -95,6 +99,7 @@ int checkCharType();
 void testingProjectiles();
 void testProjectileHandling();
 void testTowerFiring();
+void resetTowerCooldown(int towerID);
 
 
 
