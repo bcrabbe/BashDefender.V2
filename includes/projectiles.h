@@ -57,6 +57,7 @@ void removeExplosions();
 int explosionFinished(ExplosionNode eNode);
 void makeExplosion(int dmgType, int targetX, int targetY, int range);
 void advanceExplosions();
+void drawExplosions();
 void doAOEDamage(int damageType, int damage, int targetID, int range, int x, int y);
 
 // testing functions

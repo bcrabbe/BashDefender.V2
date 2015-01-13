@@ -681,7 +681,7 @@ void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType, int
     newNode->damage = damage;
     newNode->damageType = firingType;
     
-    newNode->movesToTarget = 5; // added some moves to target to draw line slightly in front of enemy. Visual effect, unused elsewhere
+    newNode->movesToTarget = 0;
     newNode->drawLaserCount = 0;
     newNode->drawLaserMaxCount = LASER_DRAW_COUNT;
     
