@@ -383,6 +383,7 @@ void testkillall()
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
 	printf("%d\n", enemy_number);
+	addMemory(1000);
 	delayGame(600);
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
 	unlock_ability(KILL);
