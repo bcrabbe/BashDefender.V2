@@ -335,7 +335,7 @@ int kill_all_ability()
 
 char *test_psx_string(char *psxlist)
 {
-	static char list[100];
+	static char list[2000];
 	if(psxlist != NULL)
 	{
 		strcpy(list, psxlist);
