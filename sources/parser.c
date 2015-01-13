@@ -143,7 +143,7 @@ void testGetCommandType();
 void testGetCommandOption();
 void testBreakUpStringAndFreeCommandArray();
 
-//individual command unit tests
+//individual command parsing unit tests
 void testChmod();
 void testParsePs();
 void testAptget();
@@ -154,8 +154,10 @@ void testCat();
 void testUpgrade();
 
 //parseWhile and associate functions unit tests:
-void testGetOperatorFromString();
 void testReturnEnvVar();
+void testGetOperatorFromString();
+void testGetCostOfUpgrade()
+void testMemValueFunctions()
 void testParseWhile();
 
 
@@ -1949,8 +1951,15 @@ void testParser()
     sput_run_test(testGetOperatorFromString);
     sput_leave_suite();
     
- 
+    sput_enter_suite("testGetCostOfUpgrade");
+    sput_run_test(testGetCostOfUpgrade);
+    sput_leave_suite();
     
+    sput_enter_suite("testMemValueFunctions");
+    sput_run_test(testMemValueFunctions);
+    sput_leave_suite();
+    
+ 
 
     /*
     sput_enter_suite("testParseWhile");
@@ -2155,7 +2164,7 @@ void testBreakUpStringAndFreeCommandArray()
 
 }
 
-#pragma mark test_individualCommandParses
+#pragma mark unitTests_individualCommandParses
 
 
 
@@ -2357,7 +2366,7 @@ void testUpgrade()
 }
 
 
-#pragma mark test parseWhile functions
+#pragma mark unitTests_parseWhileAndAssociatedfunctions
 
 void testReturnEnvVar()
 {
@@ -2424,23 +2433,44 @@ void testGetOperatorFromString()
     printf("op = %s\n",str);
     sput_fail_unless(op==greaterThan,"check that bad input wont cause an issue");
 }
-/*
- int updateMemValue(cmdType command)
- {
-    envVar * mem = returnEnvVar("mem");
-    if(command == cmd_mktwr)
-    {
-        mem->value -= getCostOfMktwr();
-        return mem->value;
-    }
-    if(command == cmd_upgrade)
-    {
-        mem->value -= getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
-        return mem->value;
-    }
-    return mem->value;//stops warnings
- }
- */
+
+void testGetCostOfUpgrade()
+{
+    setMemory(1000);
+    freeAllTowers();
+    createTowerFromPositions(1);
+    int baseCost = calculateCosts(cmd_upgrade, upgrade_power, 1);
+    parse("upgrade p t1");
+    int costOfNextUpgrade = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
+    int difference = costOfNextUpgrade-baseCost;
+    iprint(difference);
+    sput_fail_unless(difference>0,"getCostOfUpgrade() should return a value larger than the base cost if it factors queued upgrades correctly");
+    int costOfLastUpgrade = costOfNextUpgrade;
+    
+    parse("upgrade p t1");
+    costOfNextUpgrade = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
+    difference = costOfNextUpgrade-costOfLastUpgrade;
+    iprint(difference);
+    sput_fail_unless(difference>0,"getCostOfUpgrade() should return a value larger than the last cost if it factors queued upgrades correctly");
+    
+    costOfLastUpgrade = costOfNextUpgrade;
+    
+    parse("upgrade p t1");
+    costOfNextUpgrade = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
+    difference = costOfNextUpgrade-costOfLastUpgrade;
+    iprint(difference);
+    sput_fail_unless(difference>0,"getCostOfUpgrade() should return a value larger than the last cost if it factors queued upgrades correctly");
+    
+    costOfLastUpgrade = costOfNextUpgrade;
+    
+    parse("upgrade p t1");
+    costOfNextUpgrade = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
+    difference = costOfNextUpgrade-costOfLastUpgrade;
+    iprint(difference);
+    sput_fail_unless(difference>0,"getCostOfUpgrade() should return a value larger than the last cost if it factors queued upgrades correctly");
+    
+}
+
 void testMemValueFunctions()
 {
     envVar * mem = returnEnvVar("mem");
@@ -2453,12 +2483,64 @@ void testMemValueFunctions()
     
     setMemory(1000);
     freeAllTowers();
-    
+    createTowerFromPositions(1);
     parse("upgrade p t1")
     mem->updateValueFunc(cmd_upgrade);
-    sput_fail_unless(mem->value==(1000-getCostOfMktwr()),"mem->updateValueFunc(cmd_mktwr) should subtract the cost of making a tower from the value");
+    sput_fail_unless(mem->value==(1000-getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) )),"    mem->updateValueFunc(cmd_upgrade) should subtract the cost of the last upgrade from the value");
+}
+/*
+int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
+{
+    cmdType command = getCommandType(commandArray[0]);
+    if(command != cmd_upgrade && command != cmd_mktwr)
+    {
+        return 1;
+    }
+    else if( strcmp(variable->name,"mem")==0 )
+    {
+        if( op!=greaterThanOrEqualTo && op!=greaterThan )
+        {
+            char termErrString[100];
+            sprintf(termErrString,"ERROR: testing against mem value with a operator other than > or >= would lead to an infinite loop\n");
+            fprintf(stderr,"%s \n",termErrString);
+            errorToTerminalWindow(termErrString);
+            return 1;
+        }
+    }
+    else if( strcmp(variable->name,"tows")==0)
+    {
+        if( command==cmd_upgrade)
+        {
+            char termErrString[100];
+            sprintf(termErrString,"ERROR: upgrade command doesn't change the number of towers so this would be an infinite loop. You should test against your memory instead.\n");
+            fprintf(stderr,"%s \n",termErrString);
+            errorToTerminalWindow(termErrString);
+            return 1;
+        }
+        if(command==cmd_mktwr)
+        {
+            if( op!=lessThan && op!=lessThanOrEqualTo )
+            {
+                char termErrString[100];
+                sprintf(termErrString,"ERROR: number of towers can only increase so this would be an infinite loop. You should use < or <= in your test.\n");
+                fprintf(stderr,"%s \n",termErrString);
+                errorToTerminalWindow(termErrString);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}*/
+void testIsThisInfiniteLoop()
+{
+    int numberOfTokens;
+    char ** commandArray = breakUpString("upgrade p t1",&numberOfTokens," ");
+    envVar * var = returnEnvVar("mem");
+    operator op = notEqualTo;
+    sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"mem, notEqualTo and upgrade, is infinite -> error message & return 1");
+    operator op = none;
+    sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"mem, notEqualTo and upgrade, is infinite -> error message & return 1");
     
-
 }
 void testParseWhile()
 {
