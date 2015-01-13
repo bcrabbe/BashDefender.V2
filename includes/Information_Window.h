@@ -28,6 +28,7 @@ char *commandToTerminalWindow(char *string);
 TowerMonitor *getTowerMonitor(void);
 TerminalWindow *getTerminalWindow(void);
 void destroyCommandList(void);
+void actionQueueMonitor();
 /*----------Function Prototypes (Testing)------------*/
 void testingInformationWindowModule(void);
 void testParserToInfoWindow(void);
@@ -52,7 +53,12 @@ void tutorial_sixteen();
 void tutorial_seventeen();
 void tutorial_eighteen();
 void tutorial_nineteen();
-
+void tutorial_twenty();
+void tutorial_twentyOne();
+void tutorial_twentyTwo();
+void tutorial_twentyThree();
+void tutorial_twentyFour();
+void tutorial_twentyFive();
 void tutorialUpdateAllInfoWindow(void);
 void tutorialTowerMonitor();
 #endif

@@ -211,6 +211,15 @@ void damageHealth(int damage)	{
 	getGame(NULL)->health -= damage;
 }
 
+/**
+ *Sets Player's Health to specified amount
+ */
+void setHealth(int h)	{
+	if(h>= 0 && h < 1000)	{
+		getGame(NULL)->health = h;
+	}
+}
+
 
 
 void testlastAction()	{
@@ -236,9 +245,11 @@ void testingGameStructure()	{
 	sput_run_test(testClocks);
 	sput_leave_suite();
 
+
 	sput_enter_suite("CreateGameTest(): Creation & Initialization");
 	sput_run_test(CreateGameTest);
 	sput_leave_suite();
+
 
 	sput_enter_suite("TestGetAvailableMemory(): Current Memory Available");
 	sput_run_test(TestGetAvailableMemory);
@@ -260,7 +271,7 @@ void CreateGameTest()	{
 	GameProperties testGame;
 	testGame = getGame(NULL);
 	sput_fail_unless(getAvailableMemory() == 1000,"Initializing Memory");
-	//sput_fail_unless(getWave(testGame) == 3,"Initializing WaveNo");
+	sput_fail_unless(getWave(testGame) == 3,"Initializing WaveNo");
 	sput_fail_unless(getTotalWaveNo() == 3,"Total Wave Number set to 3 from level file");
 	sput_fail_unless(getHealth(testGame) == 100,"Initializing Health");
 }
@@ -301,6 +312,12 @@ int getHealth(GameProperties game)	{
 	return game->health;
 }
 
+void presentHealth (){
+    int w, h;
+    getWindowSize(&w, &h);
+    drawRect((double)w/1.57, (double)h/4.4, 0, 0, (double)w/10.9, (double)h/68, getHealth(getGame(NULL)), TOTAL_P_HEALTH);
+}
+
 
 /*
  * Checks if health is 0
@@ -313,6 +330,14 @@ int checkIfPlayerDead()   {
     
     return 0;
 
+}
+
+int checkIfOver()	{
+
+	if((getWave(getGame(NULL))  ==  getTotalWaveNo()) && (getTotalCurrentWaveEnemies() == getDeathCnt()))	{
+		return 1;
+	}
+	return 0;
 }
 
 /*
@@ -452,11 +477,11 @@ GameProperties createGame()	{
 	GameProperties newGame = (GameProperties) malloc(sizeof(*newGame));
 	newGame->clock = createClock();
 
-	newGame->totalMemory=1000;
+	newGame->totalMemory=3000;
 	newGame->memoryUsed=0;
 	newGame->currWaveNo=0;
 	newGame->totalWaveNo = 0;
-    newGame->health=100;
+    newGame->health=TOTAL_P_HEALTH;
     newGame->costOfNewTower = 400;
 	newGame->deathCount = 0;
 	newGame->clock->start_t  = newGame->clock->lastAction = (double) clock()/CLOCKS_PER_SEC;
@@ -496,10 +521,9 @@ int getTotalMemory()
 void TestGetAvailableMemory()
 {
 	GameProperties testGame;
-    testGame = createGame();
+    testGame = getGame(NULL);
 	testGame->totalMemory = 10;
 	sput_fail_unless(getAvailableMemory() == 10,"Getting Memory");	
-	free(testGame);
 }
 
 /*
@@ -528,11 +552,12 @@ void setMemory(int newMem)	{
 void TestAddMemory()	{
 
 	GameProperties testGame;
-    testGame = createGame();
+  	testGame = getGame(NULL);
+  	int firstMemory = getAvailableMemory();
 	addMemory(100);
-	sput_fail_unless(getAvailableMemory() == 100,"Adding MEmory");
+  	int secondMemory = getAvailableMemory();
+	sput_fail_unless(secondMemory-firstMemory == 100,"Adding Memory");
 	sput_fail_unless(addMemory(-100) == 0,"Adding Negative Memory");
-	free(testGame);
 }
 
 /*
@@ -551,12 +576,11 @@ int useMemory(GameProperties game,int mem)	{
 void TestUseMemory()	{
 
 	GameProperties testGame;
-    testGame = createGame();
+    testGame = getGame(NULL);
 	testGame->totalMemory = 100;
 	useMemory(testGame,50);
 	sput_fail_unless(getAvailableMemory() == 50,"Subtracting Memory");
 	sput_fail_unless(useMemory(testGame,100) == 0,"Subtracting too much Memory");
-	free(testGame);
 }
 
 void updatePlayerScore(int enemyLevel) {

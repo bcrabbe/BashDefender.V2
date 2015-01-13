@@ -321,17 +321,20 @@ KeywordQueue getKWQueue(KeywordQueue kwQueue)	{
 	return currKWQueue;
 }
 
-/*
+/*teLevel
  *Initializes all data structures required for level
  */
 void initLevel(int level)    {
     createKeywordQueue();
 	switch(level)	{
 		case 0:
-			readLevelSettingsFile("../data/tutorial.txt");
+			readLevelSettingsFile(TUTORIAL_LEVEL);
 			break;
 		case 1:
-			createLevel();
+			readLevelSettingsFile(HARD_LEVEL);
+			break;
+		case 2:
+			readLevelSettingsFile(EASY_LEVEL);
 			break;
 		default:
 			break;
@@ -345,7 +348,7 @@ void initLevel(int level)    {
 	createTowerPos();
 	initialQueueReader();
 	createProjectileList();
-  createExplosionList();
+  	createExplosionList();
 	initialiseParser();
 	init_abilities();
     destroyCommandList();
@@ -353,9 +356,10 @@ void initLevel(int level)    {
 
 void createLevelClocks()	{
 		addClock(singleEnemyCreated);
-		printf("first clock\n");
 		addClock(lastCmdAction);
 		addClock(groupDelay);
+		addClock(killAll);
+		addClock(killSingle);
 }
 
 void createLevel()	{
@@ -496,7 +500,7 @@ void readLevelSettingsFile(char *file)	{
 			if(letter == ' ')	{
 				wordCount++;
 			}
-				currentLine = expandCBuffer(currentLine, currSize);
+			currentLine = expandCBuffer(currentLine, currSize);
 			if(letter == '\n')	{
 				currentLine[currSize] = ENDOFSTRING;
 				validateLine(currentLine,wordCount);
@@ -545,7 +549,6 @@ void setUpTesting()	{
     createExplosionList();
     initialiseParser();
     init_abilities();
-    initialQueueReader();
 }
 
 void testLevelController()	{
@@ -562,6 +565,7 @@ void testLevelController()	{
 }
 
 void testReadLevelSettingsFile()	{
+	iprint(countKeywords());
 	sput_fail_unless(countKeywords() == 9,"9 Keywords Should Exist in the level settings queue");
 	initialQueueReader();	//! Removing set up commands
 	sput_fail_unless(countKeywords() == 3,"Valid: 3 Keywords Should Exist in the level settings queue");

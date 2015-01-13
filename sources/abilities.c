@@ -12,7 +12,7 @@ typedef struct Ability
 {
 	int unlocked;
 	int cost;
-	
+	clockType cType;	
 }Ability;
 
 typedef struct Abilities
@@ -122,6 +122,35 @@ int is_valid_unlock(AbilityID id)
 	}
 	return 0;
 }
+int is_ability_unlocked(AbilityID id)
+{
+    
+    Ability *a;
+    switch(id)
+    {
+        case PSX:
+        {
+            a = &(get_abilities()->psx);
+            break;
+        }
+        case KILL:
+        {
+            a = &(get_abilities()->kill);
+            break;
+        }
+        default:
+        {
+            fprintf(stderr, "Is avail Ability Switch Error\n");
+            exit(1);
+        }
+    }
+    if(a->unlocked == 1 )
+    {
+        return 1;
+    }
+ 
+    return 0;
+}
 int is_available_ability(AbilityID id)
 {
 
@@ -228,7 +257,7 @@ void psx_ability()
 	char *psxlist = (char*) calloc(500,sizeof(char));	
 	char line[32];
 	int enemy_number = getNumberOfEnemies();
-	int health = 0, ID = 0, i, j;
+	int health = 0, ID = 0, i, j, count = 0;
 	printf("%d\n", enemy_number);
 
 
@@ -244,30 +273,36 @@ void psx_ability()
 		strcpy(psxlist, "EnemyID Health\n");
 		for(i = 1; i <= enemy_number; i++)
 		{
-			if(!isDead(i))
+			if(count < 10)
 			{
-				ID = e_health[i].id;
-				health = e_health[i].health;
-				sprintf(line, "%d                %d\n", ID, health);
-				strcat(psxlist, line);
+				if(isDead(e_health[i].id) == 0)
+				{
+					ID = e_health[i].id;
+					health = e_health[i].health;
+					sprintf(line, "%d                %d\n", ID, health);
+					strcat(psxlist, line);
+					count++;
+				}
 			}
 		}
         textToTowerMonitor(psxlist);
 		test_psx_string(psxlist);
-		printf("%s\n", psxlist);
-		psxlist[0] = '\0';
 	}
+	free(e_health);
+	free(psxlist);
 }
 
 int kill_ability(int enemyID)
 {
-	if(is_available_ability(KILL) == 1)
+	if(is_available_ability(KILL))
 	{
-		{
+		if(checkClock(killSingle,KILL_SINGLE_COOLDOWN))	{
 			killEnemy(enemyID);
+			useMemory(getGame(NULL), KILL_COST);
+			return 1;
+		} else	{
+			errorToTerminalWindow("Cooldown not yet ready");			
 		}
-		useMemory(getGame(NULL), KILL_COST);
-		return 1;
 	}
 	return 0;
 }
@@ -277,15 +312,23 @@ int kill_all_ability()
 	int i;
 	int enemy_number = getNumberOfEnemies();
 
-	if(is_available_ability(KILL) == 1)
+	if(is_available_ability(KILL))
 	{
-		for(i = 1; i <= enemy_number; i++)
+		if(checkClock(killAll, KILL_ALL_COOLDOWN))
 		{
-			drawKillAll();
-			killEnemy(i);
-		}
-		useMemory(getGame(NULL), KILL_ALL_COST);
-		return 1;
+			for(i = 1; i <= enemy_number; i++)
+			{
+				drawKillAll();
+				killEnemy(i);
+			}
+			useMemory(getGame(NULL), KILL_ALL_COST);
+			return 1;
+		} 
+		else 
+		{
+			errorToTerminalWindow("Cooldown not yet ready");			
+			return 0;	
+		}	
 	}
 	return 0;
 }
@@ -323,10 +366,11 @@ void testAbilities()
 
 void testpsx()
 {
+	getGame(NULL);
 	createEnemy();
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
-	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
+	sput_fail_if(enemy_number == 0, "Enemies found should = 1");
 	psx_ability();
 	sput_fail_if(strlen(test_psx_string(NULL)) == 0, "String not created");
 	freeAllEnemies();
@@ -334,14 +378,15 @@ void testpsx()
 
 void testkillall()
 {
+	getGame(NULL);
 	createEnemy();
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
-
+	printf("%d\n", enemy_number);
+	delayGame(600);
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
 	unlock_ability(KILL);
-	kill_all_ability();
-	sput_fail_unless(getEnemyHealth(1) == 0, "Enemy should be killed");
+	sput_fail_unless(kill_all_ability() == 1, "Enemy should be killed");
 	freeAllEnemies();
 }
 

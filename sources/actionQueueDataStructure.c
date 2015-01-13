@@ -223,7 +223,11 @@ int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
     {
         case cmd_upgrade:
         {
-            return ((getTowerLevel(target))*(2*getCurrentStat(opt,target)));
+            if(opt == upgrade_slowPower) {
+                return 300 * (getCurrentStat(opt,target)+1);
+            } else {
+                return ((getTowerLevel(target))*(2*getCurrentStat(opt,target)));
+            }
         }
         case cmd_mktwr:
         {
@@ -250,9 +254,8 @@ int costOfUpgradeFactoringInTheUpgradesOnTheQueue( int target, cmdOption stat)
     
     int upgradesToThisStatAndTowerInTheQueue=0;
     int towerUpgradesToBeCompleted = getUpgradesCompleted(target);
+    
     int towerLevel = getTowerLevel(target);
-
-   
     while(currentNode != NULL)
     {
         if(currentNode->command == cmd_upgrade &&
@@ -262,14 +265,59 @@ int costOfUpgradeFactoringInTheUpgradesOnTheQueue( int target, cmdOption stat)
             if(towerUpgradesToBeCompleted % UPGRADES_PER_LEVEL == 0)
             {
                 ++towerLevel;
+
             }
             if(currentNode->option == stat)
             {
-                ++upgradesToThisStatAndTowerInTheQueue;
+                
+                switch(stat)
+                {
+                    case upgrade_power:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += DAMAGE_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_speed:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += SPEED_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_range:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += RANGE_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_AOEpower:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += AOE_POWER_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_AOErange:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += AOE_RANGE_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_slowPower:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += SLOW_POWER_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_slowDuration:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += SLOW_DUR_UPGR_VAL;
+                        break;
+
+                    }
+                    default:
+                    {
+                        break;
+                    }
+                }
             }
         }
         currentNode=currentNode->nextNode;
     }
+
     int costOfUpgradeWillBe = towerLevel*2*( getCurrentStat(stat,target) +
                                             upgradesToThisStatAndTowerInTheQueue );
     return costOfUpgradeWillBe;
@@ -293,9 +341,9 @@ int getCurrentStat(cmdOption stat,int target)	{
 	switch(stat)	{
 		case upgrade_power:
 				return getTowerDamage(target);
-				break;	
+				break;
 		case upgrade_range:
-				return getTowerRange(target);
+				return getTowerRange(target)/2;
 				break;	
 		case upgrade_speed:
 				return getTowerSpeed(target);	
@@ -305,7 +353,13 @@ int getCurrentStat(cmdOption stat,int target)	{
 				break;	
 		case upgrade_AOEpower:
 				return getTowerAOEpower(target);
-				break;	
+				break;
+        case upgrade_slowPower:
+            return getTowerSlowPower(target);
+            break;
+        case upgrade_slowDuration:
+            return getTowerSlowDuration(target);
+            break;
 		case upgrade_level:
 				return getTowerLevel(target);
 				break;	
@@ -356,6 +410,20 @@ cmdOption upgradeTowerStat(cmdOption stat, int target)  {
             }
 			break;
         }
+        case upgrade_slowPower:
+        {
+            if(upgradeSlowPower(target)) {
+                return upgrade_slowPower;
+            }
+            break;
+        }
+        case upgrade_slowDuration:
+        {
+            if(upgradeSlowDuration(target)) {
+                return upgrade_slowDuration;
+            }
+            break;
+        }
         default:
             fprintf(stderr,"upgradeTowerStat tower.c: unrecognised stat\n");
             return optionError;
@@ -400,7 +468,6 @@ int popToTower()	{
 							fprintf(stderr,"Unrecognised tower type\n");
 					        break;
 					}
-					//createTowerFromPositions(queue->start->target);
 					useMemory(Game, needed);
 					removeQueueItem();
 				}
@@ -431,34 +498,13 @@ void removeQueueItem()	{
 	--(queue->nItems);
 }
 
-
-/*
- *Pops from front of Queue. : replaced with popToTower()
- */
-int popFromQueue(ActionQueueStructure queue, cmdType *cmd, cmdOption *stat, int *target)	{
-    GameProperties Game = getGame(NULL);
-    int needed = calculateCosts(*cmd,*stat,*target);
-
-	if((queue->start != NULL) && (checkQueue(queue,Game, needed)))	{ //!	testing target, available Memory, cooldown time 
-		*cmd = queue->start->command;
-		*stat = queue->start->option;
-		*target = queue->start->target;
-		QueueNode tempStart = queue->start;
-		queue->start = queue->start->nextNode;	
-		free(tempStart);	
-		--(queue->nItems);
-		useMemory(Game, needed);	//use memory
-		setlastAction(Game);	//activate cooldown timer.
-
-		return 1;
-	}
-		return 0;
+int getNumOfQueueItems()	{
+	return getQueue(NULL)->nItems;
 }
 
 /*
  * Checks Top of queue to ensure target and time is correct
  */
-
 int checkQueue(ActionQueueStructure queue, GameProperties Game, int needed)	{
 	if((checkMem(needed, Game)) && (checkClock(lastCmdAction,ACTIONCOOLDOWN)))	{
 			return 1;		
@@ -526,6 +572,10 @@ char *getActionQueueString(void) {
                     case upgrade_AOEpower:
                         strcat(outputString, "AOEp ");
                         break;
+                    case upgrade_slowPower:
+                        strcat(outputString, "slow power ");
+                    case upgrade_slowDuration:
+                        strcat(outputString, "slow duration ");
                     case upgrade_level:
                         strcat(outputString, "level ");
 					default:
