@@ -312,7 +312,7 @@ int kill_all_ability()
 	int i;
 	int enemy_number = getNumberOfEnemies();
 
-	if(is_available_ability(KILL))
+	if(is_available_ability(KILL) && getAvailableMemory() >= KILL_ALL_COST)
 	{
 		if(checkClock(killAll, KILL_ALL_COOLDOWN))
 		{
