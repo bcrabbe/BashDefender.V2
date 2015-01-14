@@ -250,9 +250,8 @@ int costOfUpgradeFactoringInTheUpgradesOnTheQueue( int target, cmdOption stat)
     
     int upgradesToThisStatAndTowerInTheQueue=0;
     int towerUpgradesToBeCompleted = getUpgradesCompleted(target);
+    
     int towerLevel = getTowerLevel(target);
-
-   
     while(currentNode != NULL)
     {
         if(currentNode->command == cmd_upgrade &&
@@ -262,14 +261,59 @@ int costOfUpgradeFactoringInTheUpgradesOnTheQueue( int target, cmdOption stat)
             if(towerUpgradesToBeCompleted % UPGRADES_PER_LEVEL == 0)
             {
                 ++towerLevel;
+
             }
             if(currentNode->option == stat)
             {
-                ++upgradesToThisStatAndTowerInTheQueue;
+                
+                switch(stat)
+                {
+                    case upgrade_power:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += DAMAGE_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_speed:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += SPEED_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_range:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += RANGE_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_AOEpower:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += AOE_POWER_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_AOErange:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += AOE_RANGE_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_slowPower:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += SLOW_POWER_UPGR_VAL;
+                        break;
+                    }
+                    case upgrade_slowDuration:
+                    {
+                        upgradesToThisStatAndTowerInTheQueue += SLOW_DUR_UPGR_VAL;
+                        break;
+
+                    }
+                    default:
+                    {
+                        break;
+                    }
+                }
             }
         }
         currentNode=currentNode->nextNode;
     }
+
     int costOfUpgradeWillBe = towerLevel*2*( getCurrentStat(stat,target) +
                                             upgradesToThisStatAndTowerInTheQueue );
     return costOfUpgradeWillBe;
@@ -293,7 +337,7 @@ int getCurrentStat(cmdOption stat,int target)	{
 	switch(stat)	{
 		case upgrade_power:
 				return getTowerDamage(target);
-				break;	
+				break;
 		case upgrade_range:
 				return getTowerRange(target);
 				break;	
