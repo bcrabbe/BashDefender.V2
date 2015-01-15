@@ -479,6 +479,8 @@ void updateActionQueueMonitor(char *outputString) {
     if(strlen(outputString) > 0) {
         display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X, ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped, d->font, d->green);
     }
+
+
 }
 
 void updateTowerInformation(int towerX, int towerY, char *string, int towerID) {
@@ -556,7 +558,6 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
                 {
                 	case SDLK_ESCAPE:
 					*pause = 1;
-                	//done = 1;
                 	break;
                 }
                 break;

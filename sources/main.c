@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 
 
@@ -72,7 +72,6 @@ void startLevel(Display d, int *restart)	{
     int ended = 0;
    	int pause = 0; 
     int steps=0;
-
     //init_sound();
     //playBackgroundSound();
     do{
@@ -108,7 +107,8 @@ void startLevel(Display d, int *restart)	{
         while (ended) {
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
-                ended = 0;
+                *restart = 1;
+				ended = 0;
             }
         }
         
@@ -384,59 +384,6 @@ void tutorialLevel(Display d,int *restart)	{
 }
 
 
-/*void startLevel(Display d, int *restart)	{
-
-    char text[128] = {'>', '>'};
-    char empty[128] = {'>', '>'};
-    char *pass, *clear, *inputCommand=NULL;
-    pass = text;
-    clear = empty;
-    int ended = 0;
-   	int pause = 0; 
-    int steps=0;
-
-    //init_sound();
-    //playBackgroundSound();
-    do{
-        startFrame(d);
-		while(pause)	{
-			pause_screen(d,&pause,restart);
-		}
-        ++steps;
-        drawBackground();
-        
-    	startNextWave();
-        levelQueueReader();
-        terminal_window(d, pass, clear,&pause, *restart);
-    	popToTower();
-        if(inputCommand)
-        {
-            parse(inputCommand);
-        }
-        present_enemy(d);
-        present_tower(d);
-
-    	fire();
-        for(int i=1; i<=getNumberOfEnemies(); ++i)
-        {
-            moveEnemy(i);
-        }
-        presentAnimation();
-    	drawAllTowerPositions();
-        updateAllInfoWindow();
-        endFrame(d);
-        
-        //ended = checkIfPlayerDead();
-        while (ended) {
-            //final screen returns 1 if restart button was pressed...
-            if (final_screen())	{
-                ended = 0;
-            }
-        }
-    } while(!terminal_window(d, pass, clear,&pause, *restart));
-}
-*/
-
 void quitGame()
 {
     freeParseLists();
@@ -450,29 +397,26 @@ void quitGame()
 void testing()	{
 
 	setUpTesting();
-	
     //!Unit Tests
     testLevelController(); //! Working
 
-    //testingProjectiles(); //! Working
-    //testingTowerPositions(); //!Workingr
-    //testingGameStructure(); //! Working
-    //testingActionQueue(); //! Working
-    //testEnemy(); // ! Working.
+    testingProjectiles(); //! Working
+    testingGameStructure(); //!Memory Tests Failing
+    testingActionQueue(); //! Working
+    testEnemy(); // ! Working.
     testParser();
-    //testingTowerModule(); //! working
-    //testingInformationWindowModule();
-    //testTerminalWindowInput();
-    //testAbilities();
+    testingTowerModule(); //! working
+    testingInformationWindowModule();
+    testTerminalWindowInput();
+    testAbilities();
 
    	//! System Tests 
-    // enemyToGamePropertiesTesting();
-    // testParserToInfoWindow();
-    // queueToTowerTesting();
-    //  parseToQueueTesting(); //!Working
-    //	parseToTowerTesting(); //!Working
-    //towerToEnemyTesting(); //! Working
-
+    enemyToGamePropertiesTesting();
+    testParserToInfoWindow();
+    queueToTowerTesting();
+    parseToQueueTesting(); //!Working
+    parseToTowerTesting(); //!Working
+    towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working*/
 }
 
 void queueToTowerTesting(){
@@ -541,7 +485,7 @@ void testEnemyDeath()	{
 	int enemyID = createSpecificEnemy(1,1,1), 
 	currDeathCnt = getDeathCnt(),
 	currMemory = getAvailableMemory();
-	damageEnemy(50,enemyID,1);
+	damageEnemy(INT_BASIC_HEALTH,enemyID,1);
 	sput_fail_unless(getDeathCnt() > currDeathCnt, "Valid: One Enemy has died");
 	sput_fail_unless(getAvailableMemory() > currMemory,"Valid: Enemy has died and added to available memory");
 	resetEnemyCounts();
