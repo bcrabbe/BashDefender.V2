@@ -2449,6 +2449,10 @@ void testReturnEnvVar()
     returned = returnEnvVar("memory");
     printf("returned = %s\n",returned->name);
     sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""memory"") is called");
+    
+    returned = returnEnvVar("   memory    ");
+    printf("returned = %s\n",returned->name);
+    sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""   memory    "") is called. the white space should be trimmed in the function.");
 }
 
 void testGetOperatorFromString()
@@ -2508,7 +2512,7 @@ void testGetCostOfUpgrade()
     freeAllTowers();
     createTowerFromPositions(1);
     createTowerFromPositions(2);
-    printf("first upgrade to power costs %d",calculateCosts(cmd_upgrade, upgrade_power, 2));
+    printf("first upgrade to power costs %d\n",calculateCosts(cmd_upgrade, upgrade_power, 2));
 
     parse("upgrade p t1");//push upgrade to queue for t1
     upgradeTowerStat(upgrade_power,2);//make real upgrade for t2
