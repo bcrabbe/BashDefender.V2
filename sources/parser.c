@@ -535,7 +535,6 @@ int parseAptget(char * aptToGetString)
     {
         if(pushToQueue(getQueue(NULL),cmd_aptget,aptToGet,0)>=1)
         {
-            printf("pushing apt-get to queue\n");
             return 1;
         }
         else
@@ -2330,8 +2329,6 @@ void testParseMktwr()
 {
     //clear any towers so that we can make more
     freeAllTowers();
-    iprint(getNumberOfTowers());
-    cprint(maxTowerPositionChar());
 
     sput_fail_unless(parse("mktwr char")==0,
                      "parse(""mktwr char"")==0, too few arguments -> error message and return 0");
@@ -2352,7 +2349,6 @@ void testParseMktwr()
         sput_fail_unless(parse(str)==1,
                          "parse(""mktwr int %c"")==1, is valid command -> push 1 tower and return 1");
         createTowerFromPositions((int)tolower(twrPosition)-'a'+1);
-        iprint(isTowerPositionAvailable((int)tolower(twrPosition)-'a'+1));
         sput_fail_unless(parse(str)==0,
                          "parse(""mktwr int %c"")==0, building on same location again is invalid -> print error and return 0");
     }
@@ -2616,10 +2612,10 @@ void testParseWhile()
     sput_fail_unless(parse("while(tows<10)(cat t1)")==0,"invalid, breakInfinite loop called -> error message and return 0");
     sput_fail_unless(parse("while(tows<10)(try with invalid command)")==0,"invalid, no valid command -> error message and return 0");
     
-    sput_fail_unless(parse("while ( mem > 10 ) ( try with invalid command )")==0,"invalid, no valid command. and make sure spaces in between the brackets causes no issue -> error message and return 0");
-    freeAllTowers();
-    setMemory(100000);
-    sput_fail_unless(parse("while(tows<3)(mktwr int  b)")==1,"Valid -> return 1");
+   /* sput_fail_unless(parse("while ( mem > 10 ) ( try with invalid command )")==0,"invalid, no valid command. and make sure spaces in between the brackets causes no issue -> error message and return 0");*/
+   // freeAllTowers();
+   setMemory(100000);
+   /* sput_fail_unless(parse("while(tows<3)(mktwr int  b)")==1,"Valid -> return 1");
     setMemory(1000);
     sput_fail_unless(parse("while(mem>10)(mktwr int  b)")==1,"Valid -> return 1");
     freeAllTowers();
@@ -2630,7 +2626,7 @@ void testParseWhile()
     sput_fail_unless(parse("while(mem>=10)(mktwr int a)")==1,"Valid -> return 1");
     setMemory(1);
     createTowerFromPositions(1);
-    sput_fail_unless(parse("while(mem>=10)(upgrade p t1)")==1,"Valid -> return 1");
+    sput_fail_unless(parse("while(mem>=10)(upgrade p t1)")==1,"Valid -> return 1");*/
 }
 
 

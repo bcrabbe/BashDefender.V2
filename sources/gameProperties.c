@@ -236,9 +236,11 @@ void testingGameStructure()	{
 	sput_run_test(testClocks);
 	sput_leave_suite();
 
+
 	sput_enter_suite("CreateGameTest(): Creation & Initialization");
 	sput_run_test(CreateGameTest);
 	sput_leave_suite();
+
 
 	sput_enter_suite("TestGetAvailableMemory(): Current Memory Available");
 	sput_run_test(TestGetAvailableMemory);
@@ -260,7 +262,7 @@ void CreateGameTest()	{
 	GameProperties testGame;
 	testGame = getGame(NULL);
 	sput_fail_unless(getAvailableMemory() == 1000,"Initializing Memory");
-	//sput_fail_unless(getWave(testGame) == 3,"Initializing WaveNo");
+	sput_fail_unless(getWave(testGame) == 3,"Initializing WaveNo");
 	sput_fail_unless(getTotalWaveNo() == 3,"Total Wave Number set to 3 from level file");
 	sput_fail_unless(getHealth(testGame) == 100,"Initializing Health");
 }
@@ -496,10 +498,9 @@ int getTotalMemory()
 void TestGetAvailableMemory()
 {
 	GameProperties testGame;
-    testGame = createGame();
+    testGame = getGame(NULL);
 	testGame->totalMemory = 10;
 	sput_fail_unless(getAvailableMemory() == 10,"Getting Memory");	
-	free(testGame);
 }
 
 /*
@@ -528,13 +529,12 @@ void setMemory(int newMem)	{
 void TestAddMemory()	{
 
 	GameProperties testGame;
-    testGame = createGame();
-  int firstMemory = getAvailableMemory();
+  	testGame = getGame(NULL);
+  	int firstMemory = getAvailableMemory();
 	addMemory(100);
-  int secondMemory = getAvailableMemory();
+  	int secondMemory = getAvailableMemory();
 	sput_fail_unless(secondMemory-firstMemory == 100,"Adding Memory");
 	sput_fail_unless(addMemory(-100) == 0,"Adding Negative Memory");
-	free(testGame);
 }
 
 /*
@@ -553,12 +553,11 @@ int useMemory(GameProperties game,int mem)	{
 void TestUseMemory()	{
 
 	GameProperties testGame;
-    testGame = createGame();
+    testGame = getGame(NULL);
 	testGame->totalMemory = 100;
 	useMemory(testGame,50);
 	sput_fail_unless(getAvailableMemory() == 50,"Subtracting Memory");
 	sput_fail_unless(useMemory(testGame,100) == 0,"Subtracting too much Memory");
-	free(testGame);
 }
 
 void updatePlayerScore(int enemyLevel) {

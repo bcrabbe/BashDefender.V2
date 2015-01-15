@@ -41,7 +41,9 @@ char *getActionQueueString(void);
 int getCostOfAptget (cmdOption option);
 void freeActionQueue();
 int startOfQueueCalc();
+int getNumOfQueueItems();
 cmdOption upgradeTowerStat(cmdOption stat, int target);
+
 /*----------Testing Function Prototypes-----------*/
 void testCheckMem();
 void testingActionQueue();
