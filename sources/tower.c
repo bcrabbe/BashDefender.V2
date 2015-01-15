@@ -193,12 +193,14 @@ void testProjectileHandling()
     firstMoveX = test_startingProjectileXcoord();
     firstMoveY = test_startingProjectileYcoord();
     
-    moveProjectiles();
+    updateProjectiles();
+    updateExplosions();
     sput_fail_unless(test_startingProjectileXcoord() != firstMoveX, "Bullets have changed X position on move");
     sput_fail_unless(test_startingProjectileYcoord() != firstMoveY, "Bullets have changed Y position on move");
     
     for(int i = 0; i < 10000; i++) {//move projectiles 10000 times
-        moveProjectiles();
+        updateProjectiles();
+        updateExplosions();
     }
     
     sput_fail_unless(test_numOfProjectiles() == 0, "After 10,000 moves all bullets have disappeared");

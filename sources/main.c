@@ -401,19 +401,19 @@ void testing()	{
     testLevelController(); //! Working
     testingProjectiles(); //! Working
     testingGameStructure(); //!Memory Tests Failing
-    testingActionQueue(); //! Working
+   /* testingActionQueue(); //! Working
     testEnemy(); // ! Working.
     testParser();
     testingTowerModule(); //! working
     testingInformationWindowModule();
     testTerminalWindowInput();
-    testAbilities();
+    testAbilities();*/
 
    	//! System Tests
-    enemyToGamePropertiesTesting();
+   /* enemyToGamePropertiesTesting();
     queueToTowerTesting();
     parseToQueueTesting(); //!Working
-    parseToTowerTesting(); //!Working
+    parseToTowerTesting(); //!Working*/
     towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working*/
     testParserToInfoWindow();
 }
