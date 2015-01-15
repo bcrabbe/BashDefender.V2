@@ -59,7 +59,12 @@ typedef struct stringList {
     int numberOfStrings;
 } stringList;
 
+typedef enum varIdentifier {
+    var_mem,
+    var_tows
+} varIdentifier;
 typedef struct  environmentVariable {
+    varIdentifier varIs;
     char * name;
     char * name2;
     int value;
@@ -158,6 +163,7 @@ void testReturnEnvVar();
 void testGetOperatorFromString();
 void testGetCostOfUpgrade();
 void testMemValueFunctions();
+void testIsThisInfiniteLoop();
 void testParseWhile();
 
 
@@ -579,7 +585,7 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
             if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
             {
                 
-                printf(">>> pushed mktwr to queue <<<\n");
+                //   printf(">>> pushed mktwr to queue <<<\n");
                 ++numberOfCommandsPushed;
             }
         }
@@ -801,8 +807,8 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
             if(pushToQueue(getQueue(NULL),cmd_upgrade, statsToUpgradeArray[statIter],
                            targetArray[tarIter])>=1)
             {
-                 printf(">>> pushed stat %d to tar %d <<< \n",statsToUpgradeArray[statIter],
-                        targetArray[tarIter]);
+                //printf(">>> pushed stat %d to tar %d <<< \n",statsToUpgradeArray[statIter],
+                //      targetArray[tarIter]);
             }
         }
     }
@@ -924,7 +930,7 @@ int parseWhile(char *inputString)
                 errorToTerminalWindow(termErrString);
                 freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
                 freeCommandArray(commandArray,numberOfTokensInCommandArray);
-                return 1;
+                return 0;
             }
             //error testing done
             //now execute
@@ -1008,8 +1014,19 @@ int parseWhile(char *inputString)
                     if( parseCommands(commandArray,numberOfTokensInCommandArray) )
                     {
                         variable->updateValueFunc(command);
+                        if(command==cmd_upgrade)
+                        {
+                            if( getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) ) > variable->value )
+                            {
+                                break;
+                            }
+                        }
                         if(command==cmd_mktwr)
                         {
+                            if( getCostOfMktwr() > variable->value )
+                            {
+                                break;
+                            }
                             ++commandArray[2][0];//increments the tower position
                         }
                     }
@@ -1033,8 +1050,19 @@ int parseWhile(char *inputString)
                     if( parseCommands(commandArray,numberOfTokensInCommandArray) )
                     {
                         variable->updateValueFunc(command);
+                        if(command==cmd_upgrade)
+                        {
+                            if( getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) ) > variable->value )
+                            {
+                                break;
+                            }
+                        }
                         if(command==cmd_mktwr)
                         {
+                            if( getCostOfMktwr() >= variable->value )
+                            {
+                                break;
+                            }
                             ++commandArray[2][0];//increments the tower position
                         }
                     }
@@ -1060,8 +1088,13 @@ int parseWhile(char *inputString)
                         variable->updateValueFunc(command);
                         if(command==cmd_mktwr)
                         {
+                            if( variable->value == condition-1 )
+                            {
+                                break;
+                            }
                             ++commandArray[2][0];//increments the tower position
                         }
+                        
                     }
                     else
                     {
@@ -1085,6 +1118,10 @@ int parseWhile(char *inputString)
                         variable->updateValueFunc(command);
                         if(command==cmd_mktwr)
                         {
+                            if( variable->value == condition)
+                            {
+                                break;
+                            }
                             ++commandArray[2][0];//increments the tower position
                         }
                     }
@@ -1106,9 +1143,30 @@ int parseWhile(char *inputString)
     freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
     return 1;
 }
-
+char *trimwhitespace(char *str)
+{
+    char *end;
+    
+    // Trim leading space
+    while(isspace(*str)) str++;
+    
+    if(*str == 0)  // All spaces?
+        return str;
+    
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while(end > str && isspace(*end)) end--;
+    
+    // Write new null terminator
+    *(end+1) = 0;
+    
+    return str;
+}
 envVar * returnEnvVar(char * stringToMatch)
 {
+    char * editableString = strdup(stringToMatch);
+    editableString = trimwhitespace(editableString);
+    stringToMatch = editableString;
     envVarList * envsListStruct = getEnvsList(NULL);
     for(int i=0; i<envsListStruct->numberOfElements; ++i)
     {
@@ -1233,37 +1291,40 @@ void makeStringForOperator(operator op, char * string)
 
 int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
 {
+    printf("%s\n",variable->name);
+    
     cmdType command = getCommandType(commandArray[0]);
     if(command != cmd_upgrade && command != cmd_mktwr)
     {
         return 1;
     }
-    else if( strcmp(variable->name,"mem")==0 )
+    
+    else if( variable->varIs == var_mem )
     {
-        if( op!=greaterThanOrEqualTo && op!=greaterThan )
+        if( !(op==greaterThanOrEqualTo || op==greaterThan) )
         {
-            char termErrString[100];
-            sprintf(termErrString,"ERROR: testing against mem value with a operator other than > or >= would lead to an infinite loop\n");
+            char termErrString[200];
+            sprintf(termErrString,"ERROR: memory can only decrease so the condition would cause an infinite loop. You should use > or >= instead. \n");
             fprintf(stderr,"%s \n",termErrString);
             errorToTerminalWindow(termErrString);
             return 1;
         }
     }
-    else if( strcmp(variable->name,"tows")==0)
+    else if(  variable->varIs == var_tows )
     {
-        if( command==cmd_upgrade)
+        if( command==cmd_upgrade )
         {
-            char termErrString[100];
+            char termErrString[200];
             sprintf(termErrString,"ERROR: upgrade command doesn't change the number of towers so this would be an infinite loop. You should test against your memory instead.\n");
             fprintf(stderr,"%s \n",termErrString);
             errorToTerminalWindow(termErrString);
             return 1;
         }
-        if(command==cmd_mktwr)
+        else if(command==cmd_mktwr)
         {
-            if( op!=lessThan && op!=lessThanOrEqualTo )
+            if( !(op==lessThan || op==lessThanOrEqualTo) )
             {
-                char termErrString[100];
+                char termErrString[200];
                 sprintf(termErrString,"ERROR: number of towers can only increase so this would be an infinite loop. You should use < or <= in your test.\n");
                 fprintf(stderr,"%s \n",termErrString);
                 errorToTerminalWindow(termErrString);
@@ -1296,8 +1357,9 @@ int updateMemValue(cmdType command)
         mem->value -= getCostOfMktwr();
         return mem->value;
     }
-    if(command == cmd_upgrade)
+    else if(command == cmd_upgrade)
     {
+        iprint(getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) ));
         mem->value -= getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
         return mem->value;
     }
@@ -1309,17 +1371,17 @@ int getCostOfMktwr()
     return calculateCosts(cmd_mktwr,0,0);
 }
 
-int getCostOfUpgrade(upgradeArraysStruct * upgradeStuct)
+int getCostOfUpgrade(upgradeArraysStruct * upgradeStruct)
 {
     int costs=0;
-    if( upgradeStuct )
+    if( upgradeStruct )
     {
-        for(int statIter=0; statIter < upgradeStuct->statArray->numberOfElements; ++statIter)
+        for(int tarIter=0; tarIter < upgradeStruct->tarArray->numberOfElements; ++tarIter)
         {
-            for(int tarIter=0; tarIter < upgradeStuct->tarArray->numberOfElements; ++tarIter)
+            for(int statIter=0; statIter < upgradeStruct->statArray->numberOfElements; ++statIter)
             {
-                costs += costOfUpgradeFactoringInTheUpgradesOnTheQueue(upgradeStuct->tarArray->array[tarIter],
-                                                                       upgradeStuct->statArray->array[statIter]);
+                costs += costOfUpgradeFactoringInTheUpgradesOnTheQueue(upgradeStruct->tarArray->array[tarIter],
+                                                                       upgradeStruct->statArray->array[statIter]);
             }
         }
     }
@@ -1804,6 +1866,7 @@ envVarList * intialiseEnvVarsList()
     envsListStruct->array = malloc(envsListStruct->numberOfElements*sizeof(envVar *));
     
     envsListStruct->array[0] = malloc(sizeof(envVar));
+    envsListStruct->array[0]->varIs = var_mem;
     envsListStruct->array[0]->name = strdup("memory");
     envsListStruct->array[0]->name2 = strdup("mem");
     envsListStruct->array[0]->getValueFunc = &getAvailableMemory;
@@ -1811,9 +1874,10 @@ envVarList * intialiseEnvVarsList()
     envsListStruct->array[0]->value = getAvailableMemory();
     
     envsListStruct->array[1] =  malloc(sizeof(envVar));
+    envsListStruct->array[1]->varIs = var_tows;
     envsListStruct->array[1]->name = strdup("tows");
     envsListStruct->array[1]->name2 = strdup("towers");
-    envsListStruct->array[1]->getValueFunc = (int (*)())&getNumberOfTowers;
+    envsListStruct->array[1]->getValueFunc = (int (*)())&getNumberOfTowers;//function pointer (with cast)
     envsListStruct->array[1]->updateValueFunc = &updateTowsValue;
     envsListStruct->array[1]->value = getNumberOfTowers();
     
@@ -1959,12 +2023,15 @@ void testParser()
     sput_run_test(testMemValueFunctions);
     sput_leave_suite();
     
+    sput_enter_suite("testIsThisInfiniteLoop");
+    sput_run_test(testIsThisInfiniteLoop);
+    sput_leave_suite();
  
 
-    /*
+    
     sput_enter_suite("testParseWhile");
     sput_run_test(testParseWhile);
-    sput_leave_suite();*/
+    sput_leave_suite();
 
 
     
@@ -2436,111 +2503,97 @@ void testGetOperatorFromString()
 
 void testGetCostOfUpgrade()
 {
+    clearQueue();
     setMemory(1000);
     freeAllTowers();
     createTowerFromPositions(1);
-    int baseCost = calculateCosts(cmd_upgrade, upgrade_power, 1);
-    parse("upgrade p t1");
-    int costOfNextUpgrade = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
-    int difference = costOfNextUpgrade-baseCost;
-    iprint(difference);
-    sput_fail_unless(difference>0,"getCostOfUpgrade() should return a value larger than the base cost if it factors queued upgrades correctly");
-    int costOfLastUpgrade = costOfNextUpgrade;
+    createTowerFromPositions(2);
+    printf("first upgrade to power costs %d",calculateCosts(cmd_upgrade, upgrade_power, 2));
+
+    parse("upgrade p t1");//push upgrade to queue for t1
+    upgradeTowerStat(upgrade_power,2);//make real upgrade for t2
+    int test=1;
+
+    int trueCost = calculateCosts(cmd_upgrade, upgrade_power, 2);//get cost for next upgrade
     
-    parse("upgrade p t1");
-    costOfNextUpgrade = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
-    difference = costOfNextUpgrade-costOfLastUpgrade;
-    iprint(difference);
-    sput_fail_unless(difference>0,"getCostOfUpgrade() should return a value larger than the last cost if it factors queued upgrades correctly");
-    
-    costOfLastUpgrade = costOfNextUpgrade;
-    
-    parse("upgrade p t1");
-    costOfNextUpgrade = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
-    difference = costOfNextUpgrade-costOfLastUpgrade;
-    iprint(difference);
-    sput_fail_unless(difference>0,"getCostOfUpgrade() should return a value larger than the last cost if it factors queued upgrades correctly");
-    
-    costOfLastUpgrade = costOfNextUpgrade;
-    
-    parse("upgrade p t1");
-    costOfNextUpgrade = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
-    difference = costOfNextUpgrade-costOfLastUpgrade;
-    iprint(difference);
-    sput_fail_unless(difference>0,"getCostOfUpgrade() should return a value larger than the last cost if it factors queued upgrades correctly");
-    
+    upgradeArraysStruct * upStruct = getStatsToUpgradeArrayAndTargetArray(NULL);
+    int predictedCost = getCostOfUpgrade( upStruct );
+
+    for( test=2 ; test<=7; ++test)
+    {
+        upgradeTowerStat(upgrade_power,2);//make real upgrade for t2
+        trueCost = calculateCosts(cmd_upgrade, upgrade_power, 2);//get cost for next upgrade
+        
+        parse("upgrade p t1");//push upgrade to queue for t1
+        predictedCost = getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
+
+        sput_fail_unless(trueCost==predictedCost,"costing should be same wether the upgrade is on the queue or pushed manually");
+    }
+ 
 }
 
 void testMemValueFunctions()
 {
     envVar * mem = returnEnvVar("mem");
-    setMemory(1000);
-    mem->getValueFunc();
-    sput_fail_unless(mem->value==1000,"mem->getValueFunc() should set value to global value");
+    setMemory(0);
     
-    mem->updateValueFunc(cmd_mktwr);
+    iprint(getAvailableMemory());
+    mem->value = mem->getValueFunc();
+    sput_fail_unless(mem->value==0,"mem->getValueFunc() should set value to global value");
+    setMemory(1000);
+    mem->value = mem->getValueFunc();
+    sput_fail_unless(mem->value==1000,"mem->getValueFunc() should set value to global value");
+    parse("mktwr int a");
+    mem->value = mem->updateValueFunc(cmd_mktwr);
     sput_fail_unless(mem->value==(1000-getCostOfMktwr()),"mem->updateValueFunc(cmd_mktwr) should subtract the cost of making a tower from the value");
     
     setMemory(1000);
+    mem->value = mem->getValueFunc();
     freeAllTowers();
     createTowerFromPositions(1);
+    clearQueue();
     parse("upgrade p t1");
-    mem->updateValueFunc(cmd_upgrade);
-    sput_fail_unless(mem->value==(1000-getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) )),"    mem->updateValueFunc(cmd_upgrade) should subtract the cost of the last upgrade from the value");
+    mem->value = mem->updateValueFunc(cmd_upgrade);
+
+    sput_fail_unless(mem->value==1000-getCostOfUpgrade(getStatsToUpgradeArrayAndTargetArray(NULL)),"    mem->updateValueFunc(cmd_upgrade) should subtract the cost of the last upgrade from the value");
 }
-/*
-int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
-{
-    cmdType command = getCommandType(commandArray[0]);
-    if(command != cmd_upgrade && command != cmd_mktwr)
-    {
-        return 1;
-    }
-    else if( strcmp(variable->name,"mem")==0 )
-    {
-        if( op!=greaterThanOrEqualTo && op!=greaterThan )
-        {
-            char termErrString[100];
-            sprintf(termErrString,"ERROR: testing against mem value with a operator other than > or >= would lead to an infinite loop\n");
-            fprintf(stderr,"%s \n",termErrString);
-            errorToTerminalWindow(termErrString);
-            return 1;
-        }
-    }
-    else if( strcmp(variable->name,"tows")==0)
-    {
-        if( command==cmd_upgrade)
-        {
-            char termErrString[100];
-            sprintf(termErrString,"ERROR: upgrade command doesn't change the number of towers so this would be an infinite loop. You should test against your memory instead.\n");
-            fprintf(stderr,"%s \n",termErrString);
-            errorToTerminalWindow(termErrString);
-            return 1;
-        }
-        if(command==cmd_mktwr)
-        {
-            if( op!=lessThan && op!=lessThanOrEqualTo )
-            {
-                char termErrString[100];
-                sprintf(termErrString,"ERROR: number of towers can only increase so this would be an infinite loop. You should use < or <= in your test.\n");
-                fprintf(stderr,"%s \n",termErrString);
-                errorToTerminalWindow(termErrString);
-                return 1;
-            }
-        }
-    }
-    return 0;
-}*/
+
 void testIsThisInfiniteLoop()
 {
-    int numberOfTokens;
+    int numberOfTokens=0;
     char ** commandArray = breakUpString("upgrade p t1",&numberOfTokens," ");
-    envVar * var = returnEnvVar("mem");
-    operator op = notEqualTo;
-    sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"mem, notEqualTo and upgrade, is infinite -> error message & return 1");
-    op = none;
-    sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"mem, notEqualTo and upgrade, is infinite -> error message & return 1");
     
+    envVar * var = returnEnvVar("mem");
+    printf("%s\n",var->name);
+
+    operator op = lessThanOrEqualTo;
+    sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"while(mem<=x)(upgrade) is infinite -> error message & return 1");
+    op = greaterThan;
+    sput_fail_unless(!isThisInfiniteLoop(var,op,commandArray),"while(mem>x)(upgrade) -> not infinite return 0");
+    
+    
+    var = returnEnvVar("tows");
+    sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"while(tows>x)(upgrade) tows can not be condition for upgrade command -> error message & return 1");
+    freeCommandArray(commandArray,numberOfTokens);
+    
+    
+    
+    commandArray = breakUpString("mktwr int a",&numberOfTokens," ");
+    
+    var = returnEnvVar("mem");
+    op = lessThanOrEqualTo;
+    sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"while(mem<=x)(mktwr) is infinite -> error message & return 1");
+    op = greaterThan;
+    sput_fail_unless(!isThisInfiniteLoop(var,op,commandArray),"while(mem>x)(mktwr) -> not infinite return 0");
+    
+    var = returnEnvVar("tows");
+    sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"while(tows>x)(mktwr) > not ok as tows only increases -> error message & return 1");
+    op = lessThan;
+    sput_fail_unless(!isThisInfiniteLoop(var,op,commandArray),"while(tows<x)(mktwr) -> not infinite return 0");
+
+    freeCommandArray(commandArray,numberOfTokens);
+    
+
 
 }
 void testParseWhile()

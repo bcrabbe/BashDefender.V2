@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
 
 
 
@@ -459,19 +459,19 @@ void testing()	{
     //testingGameStructure(); //! Working
     //testingActionQueue(); //! Working
     //testEnemy(); // ! Working.
-    //testParser();
+    testParser();
     //testingTowerModule(); //! working
     //testingInformationWindowModule();
     //testTerminalWindowInput();
     //testAbilities();
 
    	//! System Tests 
-    enemyToGamePropertiesTesting();
+    // enemyToGamePropertiesTesting();
     // testParserToInfoWindow();
     // queueToTowerTesting();
     //  parseToQueueTesting(); //!Working
     //	parseToTowerTesting(); //!Working
-    towerToEnemyTesting(); //! Working
+    //towerToEnemyTesting(); //! Working
 
 }
 

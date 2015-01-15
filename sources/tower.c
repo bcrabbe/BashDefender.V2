@@ -22,15 +22,6 @@
 #define SPEED_MOD 6
 #define RANGE_MOD 3
 
-//#defines for upgrade amounts
-#define DAMAGE_UPGR_VAL 5
-#define SPEED_UPGR_VAL 5
-#define RANGE_UPGR_VAL 10
-#define AOE_RANGE_UPGR_VAL 10
-#define AOE_POWER_UPGR_VAL 10
-#define SLOW_POWER_UPGR_VAL 1
-#define SLOW_DUR_UPGR_VAL 20
-
 struct tower {
     int towerType;
     int towerID;
@@ -286,6 +277,7 @@ int getTowerLevel(int towerID)	{
 	}
 	return 0;
 }
+
 int getTowerSlowPower(int towerID) {
 	if(getNumberOfTowers() >=towerID)	{
 		return getTowerID(towerID)->slowPower;     
