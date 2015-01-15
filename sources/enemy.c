@@ -377,7 +377,16 @@ int setEnemyHealth(int enemyID, int newHealth)	{
 int setEnemyArmour(int enemyID, int newArmour)	{
 	  getEnemyGroup(NULL)->enemyArray[enemyID]->armour = newArmour;
 	  return getEnemyGroup(NULL)->enemyArray[enemyID]->armour;	
-}   
+}
+
+/*
+* returns the value of the indicated enemy's armour. Used in testing
+*/
+int getEnemyArmour(int enemyID)
+{
+	  return getEnemyGroup(NULL)->enemyArray[enemyID]->armour;
+}
+  
 /*
 * returns pointer to the enemy group structure if input is NULL. If input is not NULL, reassigns pointer to the pointer passed to the function
 */
@@ -406,11 +415,11 @@ void present_enemy(Display d)
         if(!isDead(i))
         {
 			if(e->eType == charBasic || e->eType == charHeavy)	{
-            drawEnemy(e->x, e->y, e->width, e->height, 2331, 200, e->eType, 9, 200);
-            drawRect(e->x, e->y -20, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
+            drawEnemy(e->x-(e->width/2), e->y-(e->height/2), e->width, e->height, 2331, 254, e->eType, 9, 200);
+            drawRect(e->x-(e->width/4), e->y-(e->height/4), 0, 0, e->width/2, 5, (double)e->health, (double)e->maxHealth);
 			} else if(e->eType == intBasic || e->eType == intHeavy)	{
-			drawEnemy(e->x, e->y, e->width, e->height, 2010, 121, e->eType, 15, 200);
-            drawRect(e->x, e->y -20, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
+			drawEnemy(e->x-(e->width/2), e->y-(e->height/2), e->width, e->height, 2304, 253, e->eType, 9, 200);
+            drawRect(e->x-(e->width/4), e->y-(e->height/4), 0, 0, e->width/2, 5, (double)e->health, (double)e->maxHealth);
 			}
         }
     }
@@ -439,9 +448,18 @@ void freeEnemy(int enemyID)
 void moveEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
+    
+   
+    
     if(!isDead(enemyID) ) {
-        if(e->pathProgress < e->enemyPath->pathLength - e->speed) {
-            e->pathProgress += e->speed;
+    
+        int adjustedSpeed = e->speed - e->slowEffect;
+        if(adjustedSpeed <= 0) {
+            adjustedSpeed = 1;
+        }
+        
+        if(e->pathProgress < e->enemyPath->pathLength - adjustedSpeed) {
+            e->pathProgress += adjustedSpeed;
             e->x = e->enemyPath->pathCoords[e->pathProgress][0];
             e->y = e->enemyPath->pathCoords[e->pathProgress][1];
         }
@@ -449,6 +467,13 @@ void moveEnemy(int enemyID)
             damageHealth(e->damage); 
             e->dead = 1;
 			      increaseDeathCnt();
+        }
+        
+        if(e->slowEffectStepsRemaining > 0) {
+            e->slowEffectStepsRemaining--;
+        }
+        if(e->slowEffectStepsRemaining == 0) {
+            e->slowEffect = 0;
         }
     }
 }
@@ -472,6 +497,15 @@ int setEnemyY(int enemyID, int newY)
 	  Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
 	  e->y = newY;
 	  return e->y;
+}
+
+/*
+* manually set the enemy's type - used in testing
+*/
+void setEnemyType(int enemyID, int newType)
+{
+    Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
+    e->eFamily = newType;
 }
 
 /*
@@ -502,8 +536,8 @@ int inRange(int tX, int tY, int tRange, int enemyID)
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
     
 
-    int distanceBetweenTowerAndEnemy = (int)sqrt( pow((double)(e->x+(e->width/2)-tX),2) +
-                                              pow((double)(e->y+(e->height/2)-tY),2)    );
+    int distanceBetweenTowerAndEnemy = (int)sqrt( pow((double)(e->x-tX),2) +
+                                              pow((double)(e->y-tY),2)    );
     if(distanceBetweenTowerAndEnemy<tRange){
         return 1;
     }
@@ -545,6 +579,15 @@ void damageEnemy(int damage, int enemyID, int damageType)
           // drawDeath(e->x, e->y);
           //drawKillAll();
       }
+    }
+}
+
+void slowEnemy(int targetID, int slowPower, int slowDuration)
+{
+    Enemy e = getEnemyGroup(NULL)->enemyArray[targetID];
+    if(!isDead(targetID)) {
+        e->slowEffect = slowPower;
+        e->slowEffectStepsRemaining = slowDuration;
     }
 }
 
@@ -590,12 +633,12 @@ void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves)
   
     //if it's not gonna hit it, target the end of the enemy's path
   if(distanceToEndOfPath(enemyID) <= bulletMoves*e->speed) {
-    targetCoords[0] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][0] + (e->width/2);
-    targetCoords[1] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][1] + (e->height/2);
+    targetCoords[0] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][0];
+    targetCoords[1] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][1];
   } else {
     int impactProgress = e->pathProgress + (e->speed * bulletMoves);
-    targetCoords[0] = e->enemyPath->pathCoords[impactProgress][0] + (e->width/2);
-    targetCoords[1] = e->enemyPath->pathCoords[impactProgress][1] + (e->height/2);
+    targetCoords[0] = e->enemyPath->pathCoords[impactProgress][0];
+    targetCoords[1] = e->enemyPath->pathCoords[impactProgress][1];
   }
 }
     

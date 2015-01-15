@@ -8,6 +8,7 @@
 #include "../includes/Display.h"
 #include "../includes/parser.h"
 #include <stdbool.h>
+#include "../includes/sput.h"
 
 
 int SCREEN_WIDTH_GLOBAL;
@@ -154,10 +155,10 @@ Display init_SDL(){
     init_pic(&d->towerPositionTexture[24], "Images/TowerLocationsY.png");
     init_pic(&d->towerPositionTexture[25], "Images/TowerLocationsZ.png");
     init_pic(&d->enemyTexture[0], "Images/sdl2-spritesheet-actual.png");
-    init_pic(&d->enemyTexture[1], "Images/int_enemy_basic.png");
-    init_pic(&d->enemyTexture[2], "Images/int_enemy_basic.png");
-    init_pic(&d->enemyTexture[3], "Images/ENEMY_CHAR_clipped.png");
-    init_pic(&d->enemyTexture[4], "Images/ENEMY_CHAR_clipped.png");
+    init_pic(&d->enemyTexture[1], "Images/ENEMY_INT_noClip.png");
+    init_pic(&d->enemyTexture[2], "Images/ENEMY_INT_noClip.png");
+    init_pic(&d->enemyTexture[3], "Images/ENEMY_CHAR.png");
+    init_pic(&d->enemyTexture[4], "Images/ENEMY_CHAR.png");
     init_pic(&d->towerTexture[0], "Images/tower.png");
     init_pic(&d->towerTexture[1], "Images/intTower.png");
     init_pic(&d->towerTexture[2], "Images/charTower.png");
@@ -274,6 +275,7 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int
       // choose laser colour depending on type
       int sat = 5;
       int adjust = -5;
+      SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
     for(int i = 0; i < 10; i++) {
         
         if(laserType == INT_TYPE) {
@@ -369,7 +371,26 @@ void drawBullet(int x, int y, int w, int h, int bulletType) {
         SDL_RenderCopy(d->renderer, d->bulletTexture[1], NULL, &d->rect);
     }
 }
-  
+
+/* draws AOE range */
+void drawAOE(int damageType, int x, int y, int range, int currentCount, int maxCount) {
+    Display d = getDisplayPointer(NULL);
+    
+    float saturation = MAX_AOE_SATURATION - ( ((float)currentCount/(float)maxCount) * MAX_AOE_SATURATION);
+    SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
+    
+    if(damageType == INT_TYPE) {
+        SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, saturation);
+    } else {
+        SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, saturation);
+    }
+    
+    for (double dy = 1; dy <= range; dy += 1.0) {
+        double dx = floor(sqrt((2.0 * range * dy) - (dy * dy)));
+        SDL_RenderDrawLine(d->renderer, x-dx, y+range-dy, x+dx, y+range-dy);
+        SDL_RenderDrawLine(d->renderer, x-dx, y-range+dy, x+dx, y-range+dy);
+    }
+}
 
 /*clear the screen before making any drawings */
 void startFrame(Display d) {
@@ -458,6 +479,8 @@ void updateActionQueueMonitor(char *outputString) {
     if(strlen(outputString) > 0) {
         display_text(ACTION_QUEUE_X + ACTION_QUEUE_BORDER_X, ACTION_QUEUE_Y + ACTION_QUEUE_BORDER_Y, outputString, blended_wrapped, d->font, d->green);
     }
+
+
 }
 
 void updateTowerInformation(int towerX, int towerY, char *string, int towerID) {
@@ -486,7 +509,6 @@ void updateTerminalWindow(char *outputString) {
 /*terminal_window detects input from SDL and calls display_text*/
 int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
 {
-	int done = 0;
     char *pass2;
     //Keeps text on screen
     displayMonitor(TERMINAL_WINDOW_X, TERMINAL_WINDOW_Y, TERMINAL_WINDOW_WIDTH, TERMINAL_WINDOW_HEIGHT, d->terminalWindowTexture);
@@ -518,6 +540,8 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
                     
                     pass2 = pass + 2;
                     parse(pass2);
+					test_string_1(pass2);
+					test_string_2(clear);
                     strcpy(pass, clear);
                 }
 				//If backspace key is pressed, removes end char of string
@@ -534,7 +558,6 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
                 {
                 	case SDLK_ESCAPE:
 					*pause = 1;
-                	//done = 1;
                 	break;
                 }
                 break;
@@ -547,6 +570,46 @@ int terminal_window(Display d, char *pass, char *clear, int *pause,int restart)
 	} else {
     	return 0;
 	}
+}
+	
+void testTerminalWindowInput()
+{
+	sput_start_testing();
+	sput_set_output_stream(NULL);
+
+	sput_enter_suite("terminal_window(): Testing, terminal window");
+	sput_run_test(testtermwin);
+	sput_leave_suite();
+
+	sput_finish_testing();
+}
+
+void testtermwin()
+{
+	int restart = 0, pause1 = 0;
+	int *pause = &pause1;
+	terminal_window(getDisplayPointer(NULL), ">>", ">>", pause, restart);
+	sput_fail_if(*test_string_1(NULL) == '>', "Incorrect string parsing");
+	sput_fail_if(strlen(test_string_2(NULL)) > 2, "Clear string failure");
+}
+
+char *test_string_1(char *pass2)
+{
+	static char string[128];
+	if(pass2 != NULL)
+	{
+		strcpy(string, pass2);
+	}
+	return string;
+}
+char *test_string_2(char *clear)
+{
+	static char string[128];
+	if(clear != NULL)
+	{
+		strcpy(string, clear);
+	}
+	return string;
 }
 
 /*display_text builds textures from surfaces and calls renderer to output them to screen.*/

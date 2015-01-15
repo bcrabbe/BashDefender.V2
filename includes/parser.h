@@ -12,25 +12,6 @@
 #include "../includes/actionQueueDataStructure.h"
 
 
-typedef struct stringList {
-    char ** stringArray;
-    int numberOfStrings;
-} stringList;
-
-typedef struct  environmentVariable {
-    char * name;
-    char * name2;
-    int value;
-    int (*updateValueFunc)(cmdType command);
-    int (*getValueFunc)();
-} envVar;
-
-typedef struct environmentVariableList {
-    envVar ** array;
-    int numberOfElements;
-} envVarList;
-
-
 int parse(char *inputString);
 
 //initialiser:
