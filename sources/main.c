@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 
 
@@ -72,12 +72,13 @@ void startLevel(Display d, int *restart)	{
     int ended = 0;
    	int pause = 0; 
     int steps=0;
-	damageHealth(90);
-    //init_sound();
+	//damageHealth(90);
+    init_sound();
     //playBackgroundSound();
     do{
         startFrame(d);
 		while(pause)	{
+			enemySound(1);
 			pause_screen(d,&pause,restart);
 		}
         ++steps;

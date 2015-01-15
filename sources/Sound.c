@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-#include <SDL2_mixer/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL.h>
 
 struct sound{
@@ -41,7 +41,7 @@ void init_sound(){
         SDL_Quit();
     }
     
-    s->background_music = Mix_LoadMUS("sound.mp3");
+    //s->background_music = Mix_LoadWAV("menu.mp3");
     s->enemy_sound = Mix_LoadWAV("enemy_sound.wav");
     s->tower_sound = Mix_LoadWAV("laser_sound.wav");
     

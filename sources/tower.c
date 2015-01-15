@@ -714,7 +714,7 @@ tower getTowerID(int target)	{
 /*
 * populates passed int pointers with specified tower stats. used in cat command (Information_Window.c)
 */
-void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID)
+void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, int *sp, int *sd, unsigned int towerID)
 {
     TowerGroup towers = getTowerGrp(NULL);
      *range = towers->listOfTowers[towerID]->range;
@@ -723,6 +723,8 @@ void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower
      *AOEpower = towers->listOfTowers[towerID]->AOEpower;
      *AOErange = towers->listOfTowers[towerID]->AOErange;
      *towerType = towers->listOfTowers[towerID]->towerType;
+	 *sp = towers->listOfTowers[towerID]->slowPower;
+	 *sd = towers->listOfTowers[towerID]->slowDuration;
 }
 
 int getTowerX(int towerID)
