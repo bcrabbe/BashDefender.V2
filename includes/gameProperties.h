@@ -30,17 +30,19 @@ enum cmdOption
     upgrade_speed=3,
     upgrade_AOErange=4,
     upgrade_AOEpower=5,
-    upgrade_level=6,
+    upgrade_slowPower=6,
+    upgrade_slowDuration=7,
+    upgrade_level=8,
     //mktwr (tower types):
-	mktwr_int=7,
-	mktwr_char=8,
+	mktwr_int=9,
+	mktwr_char=10,
     //ps (option)
-    ps_x=9,
+    ps_x=11,
     //kill (options)
-    kill_minus9=10,//kills a single targeted enemy
-    kill_all=11,//kills all enemies
+    kill_minus9=12,//kills a single targeted enemy
+    kill_all=13,//kills all enemies
     //aptget (commands to install):
-    aptget_kill=12,
+    aptget_kill=14
 };
 
 typedef enum clockType	{

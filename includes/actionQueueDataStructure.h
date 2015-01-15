@@ -11,6 +11,8 @@
 
 /*----------TypeDefs-----------*/
 
+
+
 typedef struct queueNode *QueueNode;
 typedef struct actionQueueStructure *ActionQueueStructure;
 
@@ -40,6 +42,7 @@ int getCostOfAptget (cmdOption option);
 void freeActionQueue();
 int startOfQueueCalc();
 int getNumOfQueueItems();
+cmdOption upgradeTowerStat(cmdOption stat, int target);
 
 /*----------Testing Function Prototypes-----------*/
 void testCheckMem();

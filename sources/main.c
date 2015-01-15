@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 
 
@@ -72,7 +72,6 @@ void startLevel(Display d, int *restart)	{
     int ended = 0;
    	int pause = 0; 
     int steps=0;
-	damageHealth(90);
     //init_sound();
     //playBackgroundSound();
     do{
@@ -506,29 +505,53 @@ void towerToEnemyTesting()	{
 
 void testEnemyInRange()	{
 
-	createEnemy();
+	freeAllEnemies();
+	createTestEnemy();
 	setEnemyHealth(1,100);
 	setEnemyArmour(1,0);
 	setEnemyX(1,50);
 	setEnemyY(1,50);
-	setTowerY(1,400);
-	setTowerX(1,400);
-	setTowerRange(1,15);
+	
+	userCreateTower(400,400);
+	setTowerType(1, INT_TYPE);
+	setTowerRange(1,100);
 	setTowerDamage(1,10);
-	sput_fail_unless(inRange(400,400,10,1)== 0, "Enemy 1 is out of range of tower 1");
+	sput_fail_unless(inRange(400,400,15,1)== 0, "Enemy 1 is out of range of tower 1");
 	fire();
 	sput_fail_unless(getEnemyHealth(1) == 100, "Out of range enemy 1 has full health after tower has fired");
-	setEnemyX(1,400);
-	setEnemyY(1,400);
-	sput_fail_unless(inRange(400,400,39,1)== 1, "Enemy 1 is in range of tower 1");
+	setEnemyX(1,395);
+	setEnemyY(1,395);
+	sput_fail_unless(inRange(400,400,15,1)== 1, "Enemy 1 is in range of tower 1");
 	sput_fail_unless(getEnemyHealth(1) == 100, "Enemy 1 has full health");
 	fire();
-	//sput_fail_unless(getEnemyHealth(1) == 100 - getTowerDamage(1),"In range enemy has reduced health from tower damage");
-	int i;
-	for(i = 0; i < 9; i++)	{
-	fire();
+	for(int i = 0; i < 100; i++) {
+	    moveProjectiles();
 	}
-	sput_fail_unless(isDead(1) == 1, "Enemy dead after being fired on 10 times");	
+	sput_fail_unless(getEnemyHealth(1) == 100 + getEnemyArmour(1) - (getTowerDamage(1)*TYPE_MATCH_MODIFIER),"In range type matched enemy has correct reduced health from tower damage");
+	for(int i = 0; i < 9; i++)	{
+      resetTowerCooldown(1);
+	    fire();
+	}
+	for(int i = 0; i < 100; i++) {
+	    moveProjectiles();
+	}
+	sput_fail_unless(isDead(1) == 1, "Enemy dead after being fired on 10 times");
+	
+	freeAllEnemies();
+	createTestEnemy();
+	setEnemyHealth(1,100);
+	setEnemyArmour(1,0);
+	setEnemyX(1,395);
+	setEnemyY(1,395);
+	setEnemyType(1, CHAR_TYPE);
+	
+	resetTowerCooldown(1);
+	fire();
+	for(int i = 0; i < 100; i++) {
+	    moveProjectiles();
+	}
+	sput_fail_unless(getEnemyHealth(1) == 100 + getEnemyArmour(1) - (getTowerDamage(1)/TYPE_MISMATCH_MODIFIER),"In range type mismatched enemy has correct reduced health from tower damage");
+	
 	
 }
 
