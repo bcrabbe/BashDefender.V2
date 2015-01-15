@@ -24,7 +24,7 @@
 #include "../includes/gameProperties.h"
 #include "../includes/abilities.h"
 
-#define TERMINAL_OUTPUT_ON 1
+#define TERMINAL_OUTPUT_ON 0
 #pragma mark ProtoTypes
 //top level command parser:
 int parseCommands(char ** commandArray, int numberOfTokens);
@@ -298,7 +298,10 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         {
             if(numberOfTokens<3)
             {
-                fprintf(stderr,"ERROR: mktwr command expected 2 or more arguments\n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: mktwr command expected 2 or more arguments\n");
+                }
                 errorToTerminalWindow("ERROR: mktwr command expected 2 or more arguments");
                 specificReturns = 0;
             }
@@ -312,7 +315,10 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         {
             if(numberOfTokens!=2)
             {
-                fprintf(stderr,"ERROR: apt-get command expected 1 argument only \n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: apt-get command expected 1 argument only \n");
+                }
                 errorToTerminalWindow("ERROR: apt-get command expected 1 argument only");
                 specificReturns = 0;
             }
@@ -326,7 +332,10 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         {
             if(numberOfTokens!=2)
             {
-                fprintf(stderr,"ERROR: ps command expected 1 argument only \n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: ps command expected 1 argument only \n");
+                }
                 errorToTerminalWindow("ERROR: ps command expected 1 argument only");
                 specificReturns = 0;
             }
@@ -340,7 +349,10 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         {
             if(numberOfTokens<2)
             {
-                fprintf(stderr,"ERROR: kill command expected atleast 1 argument \n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: kill command expected atleast 1 argument \n");
+                }
                 errorToTerminalWindow("ERROR: kill command expected atleast 1 argument ");
                 specificReturns = 0;
             }
@@ -349,19 +361,28 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         }
         case cmd_commandError:
         {
-            printf("command was not read\n");
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("command was not read\n");
+            }
             specificReturns = 0;
             break;
         }
         case cmd_execute:
         {
-            printf("command not implemented\n");
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("command not implemented\n");
+            }
             specificReturns = 0;
             break;
         }
         default:
         {
-            fprintf(stderr,"\n***command not implemented in parseCommands yet returning***\n");
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"\n***command not implemented in parseCommands yet returning***\n");
+            }
         }
     }
     return specificReturns;
@@ -374,7 +395,10 @@ int parseChmod(char ** commandArray,int numberOfTokens)
     cmdOption twrType = getCommandOption(commandArray[1]);
     if( !(twrType==mktwr_int || twrType==mktwr_char) )
     {
-        fprintf(stderr,"ERROR: chmod expected a type (int, or char) as its first argument\n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: chmod expected a type (int, or char) as its first argument\n");
+        }
         errorToTerminalWindow("ERROR: chmod expected a type (int, or char) as its first argument");
         return 0;
     }
@@ -393,7 +417,10 @@ int parseChmod(char ** commandArray,int numberOfTokens)
         int target = getTargetTower(commandArray[atToken], false);
         if(target==0)
         {
-            fprintf(stderr,"ERROR: chmod expected target tower or list of towers as second argument onwards\n");
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"ERROR: chmod expected target tower or list of towers as second argument onwards\n");
+            }
             errorToTerminalWindow("ERROR: chmod expected target tower or list of towers as second argument onwards");
             cleanUpParseUpgrade(NULL, targetArray);
             return 0;
@@ -414,7 +441,10 @@ int parseChmod(char ** commandArray,int numberOfTokens)
     }
     if(!numberOfTargets)
     {
-        fprintf(stderr,"ERROR: chmod needs atleast 1 target tower \n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: chmod needs atleast 1 target tower \n");
+        }
         errorToTerminalWindow("ERROR: chmod needs atleast 1 target tower ");
         cleanUpParseUpgrade(NULL, targetArray);
         return 0;
@@ -428,7 +458,10 @@ int parseChmod(char ** commandArray,int numberOfTokens)
             setTowerType(targetArray[tarIter], INT_TYPE);
             char str[100];
             sprintf(str,">>> changed t%d to int <<<",targetArray[tarIter]);
-            printf("\n>>> changed t%d to int <<< \n",targetArray[tarIter]);
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("\n>>> changed t%d to int <<< \n",targetArray[tarIter]);
+            }
             textToTowerMonitor(str);
         }
         if(twrType==mktwr_char)
@@ -436,7 +469,10 @@ int parseChmod(char ** commandArray,int numberOfTokens)
             setTowerType(targetArray[tarIter], CHAR_TYPE);
             char str[100];
             sprintf(str,">>> changed t%d to char <<<",targetArray[tarIter]);
-            printf("\n>>> changed t%d to char <<< \n",targetArray[tarIter]);
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("\n>>> changed t%d to char <<< \n",targetArray[tarIter]);
+            }
             textToTowerMonitor(str);
         }
     }
@@ -452,7 +488,10 @@ int parseKill(char ** commandArray,int numberOfTokens)
     if(!is_ability_unlocked(KILL))
     {
         errorToTerminalWindow("ERROR: kill ability must be installed first");
-        fprintf(stderr,"ERROR: kill ability must be installed first\n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: kill ability must be installed first\n");
+        }
         return 0;
     }
     cmdOption option = getCommandOption(commandArray[1]);
@@ -462,7 +501,10 @@ int parseKill(char ** commandArray,int numberOfTokens)
         char str[100];
         sprintf(str,"ERROR: Could not read first kill argument ""%s"" expected all or -9 ",
                 commandArray[1]);
-        fprintf(stderr,"%s\n",str);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"%s\n",str);
+        }
         errorToTerminalWindow(str);
         return 0;
     }
@@ -471,7 +513,10 @@ int parseKill(char ** commandArray,int numberOfTokens)
         if(numberOfTokens!=3)
         {
             errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
-            fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
+            }
             return 0;
         }
         else
@@ -480,7 +525,10 @@ int parseKill(char ** commandArray,int numberOfTokens)
             if(targetEnemyID<=0)
             {
                 errorToTerminalWindow("ERROR: Expected 3rd argument to kill -9 containing a target enemy ");
-                fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: Expected 3rd argument to kill -9 containing a target enemy\n");
+                }
                 return 0;
             }
             else
@@ -495,7 +543,10 @@ int parseKill(char ** commandArray,int numberOfTokens)
         if(!numberOfTokens==2)
         {
             errorToTerminalWindow("ERROR: too many arguments to kill all, only 2 expected ");
-            fprintf(stderr,"ERROR: too many arguments to kill all, only 2 expected \n");
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"ERROR: too many arguments to kill all, only 2 expected \n");
+            }
             return 0;
         }
         else
@@ -507,7 +558,10 @@ int parseKill(char ** commandArray,int numberOfTokens)
     else
     {
         errorToTerminalWindow("ERROR: invalid argument to kill command, expected all or -9");
-        fprintf(stderr,"ERROR: invalid argument to kill command, expected all or -9\n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: invalid argument to kill command, expected all or -9\n");
+        }
         return 0;
     }
     return 0;
@@ -520,6 +574,10 @@ int parsePs(char * optionString)
     cmdOption option = getCommandOption(optionString);
     if(option != ps_x)
     {
+        if(TERMINAL_OUTPUT_ON)
+        {
+            printf("ERROR: ps command expected x as its second argument\n");
+        }
         errorToTerminalWindow("ERROR: ps command expected x as its second argument");
         return 0;
     }
@@ -538,15 +596,21 @@ int parseAptget(char * aptToGetString)
     cmdOption aptToGet = getCommandOption(aptToGetString);
     if(aptToGet!=aptget_kill)
     {
-        fprintf(stderr,"\nERROR: app not recognised\n");
-        fprintf(stderr,"type man aptget to see availible apps\n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"\nERROR: app not recognised\n");
+            fprintf(stderr,"type man aptget to see availible apps\n");
+        }
         errorToTerminalWindow("ERROR: app not recognised. Type man aptget to see availible apps");
 
         return 0;
     }
     if(!is_valid_unlock(KILL))
     {
-        fprintf(stderr,"ERROR: that program is already installed\n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: that program is already installed\n");
+        }
         errorToTerminalWindow("ERROR: that program is already installed");
         return 0;
     }
@@ -575,6 +639,11 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     cmdOption twrType = getCommandOption(commandArray[1]);
     if( !(twrType==mktwr_int || twrType==mktwr_char) )
     {
+        if(TERMINAL_OUTPUT_ON)
+        {
+            printf("ERROR: mktwr expected a type (int, or char) as its first argument\n");
+
+        }
         errorToTerminalWindow("ERROR: mktwr expected a type (int, or char) as its first argument");
         return 0;
     }
@@ -587,6 +656,10 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         {
             char str[100];
             sprintf(str,"ERROR: mktwr expected a target positon A - %c it read %s",maxTowerPositionChar(),commandArray[token]);
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("%s\n",str);
+            }
             errorToTerminalWindow(str);
             return 0;
         }
@@ -595,6 +668,10 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
         {
             char str[100];
             sprintf(str,"ERROR: mktwr expected a target positon A - %c it read %c",maxTowerPositionChar(),commandArray[token][0]);
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("%s\n",str);
+            }
             errorToTerminalWindow(str);
             return 0;
         }
@@ -612,6 +689,10 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
             char str[100];
             sprintf(str,"ERROR: postion %c already has a tower built there",commandArray[token][0]);
             errorToTerminalWindow(str);
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("%s\n",str);
+            }
             return 0;
         }
         ++token;
@@ -677,6 +758,11 @@ int parseMan(char * inputStringCommandMan)
         {
             char str[100];
             sprintf(str,"ERROR: command to man not recognised. You entered: %s",inputStringCommandMan);
+            
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("%s\n",str);
+            }
             errorToTerminalWindow(str);
             return 0;
         }
@@ -707,6 +793,10 @@ int parseCat(char * inputStringTargeting)
             char str[100];
             sprintf(str,"ERROR: cat expected a target tower as\nits 2nd argument");
             errorToTerminalWindow(str);
+            if(TERMINAL_OUTPUT_ON)
+            {
+                printf("%s\n",str);
+            }
             return 0;
         }
     }
@@ -717,6 +807,10 @@ int parseCat(char * inputStringTargeting)
         char str[100];
         sprintf(str,"ERROR: cat expected a target tower as\nits second argument. Enter t1 tower target tower 1.");
         errorToTerminalWindow(str);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            printf("%s\n",str);
+        }
         return 0;
     }
 }
@@ -756,7 +850,10 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
 
                 char str[200];
                 sprintf(str,"ERROR: %s is not a valid tower stat.",commandArray[atToken]);
-                fprintf(stderr,"%s\n",str);
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"%s\n",str);
+                }
                 errorToTerminalWindow(str);
                 return 0;
             }
@@ -779,7 +876,10 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         char str[100];
         sprintf(str,"ERROR: upgrade expected a tower stat as its 1st argument");
         errorToTerminalWindow(str);
-        fprintf(stderr,"%s\n",str);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"%s\n",str);
+        }
         cleanUpParseUpgrade(statsToUpgradeArray,NULL);
         return 0;
     }
@@ -813,7 +913,10 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
         char str[100];
         sprintf(str,"ERROR: you must specify a tower to upgrade");
         errorToTerminalWindow(str);
-        fprintf(stderr,"%s\n",str);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"%s\n",str);
+        }
         cleanUpParseUpgrade(statsToUpgradeArray,targetArray);
         return 0;
     }
@@ -825,8 +928,11 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
             if(pushToQueue(getQueue(NULL),cmd_upgrade, statsToUpgradeArray[statIter],
                            targetArray[tarIter])>=1)
             {
-                //printf(">>> pushed stat %d to tar %d <<< \n",statsToUpgradeArray[statIter],
-                //      targetArray[tarIter]);
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    printf(">>> pushed stat %d to tar %d <<< \n",statsToUpgradeArray[statIter],
+                      targetArray[tarIter]);
+                }
             }
         }
     }
@@ -890,7 +996,10 @@ int parseWhile(char *inputString)
     char ** bracketTokenArray = breakUpString(inputString, &numberOfBracketsTokens, "(){}");
     if(numberOfBracketsTokens<3)
     {
-        fprintf(stderr,"ERROR: was expecting condition and command e.g. ""while ( condition ) { command }"" \n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: was expecting condition and command e.g. ""while ( condition ) { command }"" \n");
+        }
         errorToTerminalWindow("ERROR: was expecting condition and command e.g. ""while ( condition ) { command }"" ");
         freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
         return 0;
@@ -903,7 +1012,10 @@ int parseWhile(char *inputString)
         cmdType command = getCommandType(commandArray[0]);
         if(command != cmd_upgrade && command != cmd_mktwr)
         {
-            fprintf(stderr,"ERROR: You can only use while loops with an upgrade or mktwr command \n");
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"ERROR: You can only use while loops with an upgrade or mktwr command \n");
+            }
             errorToTerminalWindow("ERROR: You can only use while loops with an upgrade or mktwr command ");
             freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
             freeCommandArray(commandArray,numberOfTokensInCommandArray);
@@ -919,7 +1031,10 @@ int parseWhile(char *inputString)
                                                    " ,");
             if(numberOfOperands>1)
             {
-                fprintf(stderr,"ERROR: was expecting a single argument for condition with no operator or ! operator \n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: was expecting a single argument for condition with no operator or ! operator \n");
+                }
                 errorToTerminalWindow("ERROR: was expecting a single argument for condition with no operator or ! operator");
                 freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
                 freeCommandArray(commandArray,numberOfTokensInCommandArray);
@@ -933,7 +1048,10 @@ int parseWhile(char *inputString)
                 char termErrString[100];
                 sprintf(termErrString,"ERROR: use of undeclared variable %s in condition statement",
                         bracketTokenArray[1]);
-                fprintf(stderr,"%s \n",termErrString);
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"%s \n",termErrString);
+                }
                 errorToTerminalWindow(termErrString);
                 freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
                 freeCommandArray(commandArray,numberOfTokensInCommandArray);
@@ -944,7 +1062,10 @@ int parseWhile(char *inputString)
             {
                 char termErrString[100];
                 sprintf(termErrString,"ERROR: there is no way to break this loop");
-                fprintf(stderr,"%s \n",termErrString);
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"%s \n",termErrString);
+                }
                 errorToTerminalWindow(termErrString);
                 freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
                 freeCommandArray(commandArray,numberOfTokensInCommandArray);
@@ -973,7 +1094,10 @@ int parseWhile(char *inputString)
                 char termErrString[100];
                 sprintf(termErrString,"ERROR: was expecting two operands to %s in conditional \n",
                         stringForOperator);
-                fprintf(stderr,"%s \n",termErrString);
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"%s \n",termErrString);
+                }
                 errorToTerminalWindow(termErrString);
                 
                 freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
@@ -990,7 +1114,10 @@ int parseWhile(char *inputString)
                 {
                     char termErrString[100];
                     sprintf(termErrString,"ERROR: use of undeclared variable in condition statement\n");
-                    fprintf(stderr,"%s \n",termErrString);
+                    if(TERMINAL_OUTPUT_ON)
+                    {
+                        fprintf(stderr,"%s \n",termErrString);
+                    }
                     errorToTerminalWindow(termErrString);
                     
                     freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
@@ -1005,7 +1132,10 @@ int parseWhile(char *inputString)
             {
                 char termErrString[100];
                 sprintf(termErrString,"ERROR: please place the variable on the left hand side of the operator.\n");
-                fprintf(stderr,"%s \n",termErrString);
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"%s \n",termErrString);
+                }
                 errorToTerminalWindow(termErrString);
                 
                 freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
@@ -1017,7 +1147,10 @@ int parseWhile(char *inputString)
             {
                 char termErrString[100];
                 sprintf(termErrString,"ERROR: there is no way to break this loop");
-                fprintf(stderr,"%s \n",termErrString);
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"%s \n",termErrString);
+                }
                 errorToTerminalWindow(termErrString);
                 
                 freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
@@ -1309,8 +1442,6 @@ void makeStringForOperator(operator op, char * string)
 
 int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
 {
-    printf("%s\n",variable->name);
-    
     cmdType command = getCommandType(commandArray[0]);
     if(command != cmd_upgrade && command != cmd_mktwr)
     {
@@ -1323,7 +1454,10 @@ int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
         {
             char termErrString[200];
             sprintf(termErrString,"ERROR: memory can only decrease so the condition would cause an infinite loop. You should use > or >= instead. \n");
-            fprintf(stderr,"%s \n",termErrString);
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"%s \n",termErrString);
+            }
             errorToTerminalWindow(termErrString);
             return 1;
         }
@@ -1334,7 +1468,10 @@ int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
         {
             char termErrString[200];
             sprintf(termErrString,"ERROR: upgrade command doesn't change the number of towers so this would be an infinite loop. You should test against your memory instead.\n");
-            fprintf(stderr,"%s \n",termErrString);
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"%s \n",termErrString);
+            }
             errorToTerminalWindow(termErrString);
             return 1;
         }
@@ -1344,7 +1481,10 @@ int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
             {
                 char termErrString[200];
                 sprintf(termErrString,"ERROR: number of towers can only increase so this would be an infinite loop. You should use < or <= in your test.\n");
-                fprintf(stderr,"%s \n",termErrString);
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"%s \n",termErrString);
+                }
                 errorToTerminalWindow(termErrString);
                 return 1;
             }
@@ -1377,7 +1517,6 @@ int updateMemValue(cmdType command)
     }
     else if(command == cmd_upgrade)
     {
-        iprint(getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) ));
         mem->value -= getCostOfUpgrade( getStatsToUpgradeArrayAndTargetArray(NULL) );
         return mem->value;
     }
@@ -1436,8 +1575,11 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
         char str[200];
         sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
         errorToTerminalWindow(str);
-        fprintf(stderr,"ERROR: You must target a tower with this command \n");
-        fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: You must target a tower with this command \n");
+            fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
+        }
         return 0;
     }
     if ( needsIdentifier )
@@ -1447,8 +1589,12 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
             char str[200];
             sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
             errorToTerminalWindow(str);
-            fprintf(stderr,"ERROR: You must target a towers with this command\n");
-            fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
+            
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"ERROR: You must target a towers with this command\n");
+                fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
+            }
             return 0;
         }
     }
@@ -1468,9 +1614,12 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
                 targetTower);
         errorToTerminalWindow(str);
         
-        fprintf(stderr,"ERROR: target tower does not exist \n");
-        fprintf(stderr,"You have only %d towers you entered t%d\n",
-                numberOfTowers,targetTower);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: target tower does not exist \n");
+            fprintf(stderr,"You have only %d towers you entered t%d\n",
+                    numberOfTowers,targetTower);
+        }
         return 0;
     }
     return targetTower;
@@ -1486,7 +1635,10 @@ unsigned int getTargetEnemy(const char * inputStringTargeting)
     size_t len = strlen(inputStringTargeting);//gets the size of string
     if( len<(2*sizeof(char)) )
     {
-        fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        }
         char str[200];
         sprintf(str,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
         errorToTerminalWindow(str);
@@ -1494,7 +1646,10 @@ unsigned int getTargetEnemy(const char * inputStringTargeting)
     }
     if (inputStringTargeting[0]!='e' && inputStringTargeting[0]!='E')
     {
-        fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
+        }
         char str[200];
         sprintf(str,"ERROR: You must target a enemy with this command to target a tower enter t followed by a number 1 - %d \n",numberOfEnemies);
         errorToTerminalWindow(str);
@@ -1506,11 +1661,13 @@ unsigned int getTargetEnemy(const char * inputStringTargeting)
     if(targetEnemyID > numberOfEnemies || targetEnemyID<1)
     {
         char str[100];
-        fprintf(stderr,"ERROR: target enemy does not exist there are only %d enemies you entered e%d\n",
-                numberOfEnemies,targetEnemyID);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: target enemy does not exist there are only %d enemies you entered e%d\n",
+                    numberOfEnemies,targetEnemyID);
+        }
         sprintf(str,"ERROR: target enemy does not exist there are only %d enemies you entered e%d\n",
                 numberOfEnemies,targetEnemyID);
-        
         errorToTerminalWindow(str);
         return 0;
     }
@@ -1526,12 +1683,18 @@ unsigned long int stringToInt(const char * string)
     size_t length = strlen(string);
     if(length<1)
     {
-        fprintf(stderr,"stringToInt was called with a empty string, this will segfault, so it has just returned 0 \n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"stringToInt was called with a empty string, this will segfault, so it has just returned 0 \n");
+        }
         return 0;
     }
     if(string[0]=='-')
     {
-        fprintf(stderr,"stringToInt was called a negative number, this not handled, returning 0\n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"stringToInt was called a negative number, this not handled, returning 0\n");
+        }
         return 0;
     }
     for(int i=0; i<length; ++i)
@@ -1687,22 +1850,25 @@ cmdOption getCommandOption(char * secondToken)
  */
 void actionUsageError(const char * firstToken)
 {
-    stringList * commandList = getCommandList(NULL);
-    fprintf(stderr,"*** ""%s"" command not recognised ***\n",firstToken);
-    fprintf(stderr,"installed commands: \n");
-    char str[200];
-    sprintf(str," ""%s"" command not recognised",firstToken);
-    
-    int numberOfCommands=commandList->numberOfStrings;
-
-    for(int i=1; i<=numberOfCommands; ++i)
+    if(TERMINAL_OUTPUT_ON)
     {
-        fprintf(stderr,"%s\n",commandList->stringArray[i]);
-    }
-    fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
-    //error messages will need to be passed back to the terminal to be printed.
-    //hopefully can do this by setting up a custom stream. For now will print to stderr.
+        
+        stringList * commandList = getCommandList(NULL);
+        fprintf(stderr,"*** ""%s"" command not recognised ***\n",firstToken);
+        fprintf(stderr,"installed commands: \n");
+        char str[200];
+        sprintf(str," ""%s"" command not recognised",firstToken);
+        
+        int numberOfCommands=commandList->numberOfStrings;
 
+        for(int i=1; i<=numberOfCommands; ++i)
+        {
+            fprintf(stderr,"%s\n",commandList->stringArray[i]);
+        }
+        fprintf(stderr,"\nType man [COMMAND] for usage\n");//we advise them on usage
+        //error messages will need to be passed back to the terminal to be printed.
+        //hopefully can do this by setting up a custom stream. For now will print to stderr.
+    }
 }
 
 /*
@@ -1935,24 +2101,30 @@ envVarList * getEnvsList(envVarList * envsList)
  */
 void testCommandArray(char ** commandArray, int numberOfChunks)
 {
-    for(int i=0; i<numberOfChunks; ++i)
+    if(TERMINAL_OUTPUT_ON)
     {
-        printf("[%s]   ",commandArray[i]);
+        for(int i=0; i<numberOfChunks; ++i)
+        {
+            printf("[%s]   ",commandArray[i]);
+        }
+        printf("\n");
     }
-    printf("\n");
 }
 
 void testStringLists(stringList * list)
 {
-    for(int i=1; i<list->numberOfStrings; ++i)
+    if(TERMINAL_OUTPUT_ON)
     {
-        printf("string %d = [",i);
-        
-        for(int c=0; c<strlen(list->stringArray[i]); ++c)
+        for(int i=1; i<list->numberOfStrings; ++i)
         {
-            printf("%c",list->stringArray[i][c]);
+            printf("string %d = [",i);
+            
+            for(int c=0; c<strlen(list->stringArray[i]); ++c)
+            {
+                printf("%c",list->stringArray[i][c]);
+            }
+            printf("]\n");
         }
-        printf("]\n");
     }
 }
 
@@ -2095,7 +2267,10 @@ void testStringToInt()
 void testGetTargetTower()
 {
     createTowerFromPositions(1);
-    printf("%d tower built\n",getNumberOfTowers());
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("%d tower built\n",getNumberOfTowers());
+    }
     sput_fail_unless(getTargetTower("",true)==0,"calling with empty string should return 0 and error message");
     sput_fail_unless(getTargetTower("",false)==0,"calling with empty string should return 0 and error message");
 
@@ -2129,7 +2304,10 @@ void testGetTargetTower()
         strcat(Tstr,str);
         sput_fail_unless(getTargetTower(Tstr,true)==i,"should get target tower since it is requiring identifier and it has identifier");
         sput_fail_unless(getTargetTower(Tstr,false)==i,"should get target tower since it is not requiring identifier and it has identifier");
-        printf("tested with : str = %s\nTstr = %s\n\n",str,Tstr);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            printf("tested with : str = %s\nTstr = %s\n\n",str,Tstr);
+        }
     }
     
 }
@@ -2138,7 +2316,10 @@ void testGetTargetEnemy()
 {
     freeAllEnemies();
     createTestEnemy();
-    printf("%d enemies \n",getNumberOfEnemies());
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("%d enemies \n",getNumberOfEnemies());
+    }
     sput_fail_unless(getTargetEnemy("")==0,"calling with empty string should return 0 and error message");
     
     sput_fail_unless(getTargetEnemy("e")==0,"calling with just e should return 0 and error message");
@@ -2157,8 +2338,11 @@ void testGetTargetEnemy()
         strcat(eStr,str);
         sput_fail_unless(getTargetEnemy(eStr)==i,"should get target enemy");
        
-        printf("tested with : str = %s\n",eStr);
-        printf("ther are %d enemies \n\n",getNumberOfEnemies());
+        if(TERMINAL_OUTPUT_ON)
+        {
+            printf("tested with : str = %s\n",eStr);
+            printf("ther are %d enemies \n\n",getNumberOfEnemies());
+        }
     }
 }
 
@@ -2364,7 +2548,10 @@ void testParseMktwr()
     {
         char str[100];
         sprintf(str,"mktwr int %c",twrPosition);
-        printf("\ntesting:: %s\n",str);
+        if(TERMINAL_OUTPUT_ON)
+        {
+            printf("\ntesting:: %s\n",str);
+        }
         sput_fail_unless(parse(str)==1,
                          "parse(""mktwr int %c"")==1, is valid command -> push 1 tower and return 1");
         createTowerFromPositions((int)tolower(twrPosition)-'a'+1);
@@ -2380,7 +2567,10 @@ void testParseMktwr()
         sprintf(positions,"%c ",twrPosition);
         strcat(cmd,positions);
     }
-    printf("testing %s\n",cmd);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("testing %s\n",cmd);
+    }
     sput_fail_unless(parse(cmd)==maxTowerPosition(),
                      "parse(""mktwr int a b c d e f g...maxTowerPositionChar()"")==maxTowerPosition(), is valid command -> psuh maxTowerPosition() towers and return maxTowerPosition()");
 }
@@ -2422,7 +2612,10 @@ void testUpgrade()
         sprintf(posChar,"%d ",pos);
         strcat(validUpgradeString,posChar);
     }
-    printf("\ntesting: %s\n",validUpgradeString);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("\ntesting: %s\n",validUpgradeString);
+    }
     sput_fail_unless(parse(validUpgradeString),"Valid test of all stats on all towers -> return 1");
     upgradeArraysStruct * upgradeStruct = getStatsToUpgradeArrayAndTargetArray(NULL);
     sput_fail_unless(upgradeStruct->statArray->array[0]==upgrade_power &&
@@ -2453,20 +2646,35 @@ void testUpgrade()
 void testReturnEnvVar()
 {
     envVar * returned = returnEnvVar("tows");
-    printf("returned = %s\n",returned->name);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("returned = %s\n",returned->name);
+    }
     sput_fail_unless(strcmp(returned->name,"tows")==0,"check that it returns tows correctly when  returnEnvVar(""tows"") is called");
     returned = returnEnvVar("towers");
-    printf("returned = %s\n",returned->name);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("returned = %s\n",returned->name);
+    }
     sput_fail_unless(strcmp(returned->name,"tows")==0,"check that it returns tows correctly when  returnEnvVar(""towers"") is called");
     returned = returnEnvVar("mem");
-    printf("returned = %s\n",returned->name);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("returned = %s\n",returned->name);
+    }
     sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""mem"") is called");
     returned = returnEnvVar("memory");
-    printf("returned = %s\n",returned->name);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("returned = %s\n",returned->name);
+    }
     sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""memory"") is called");
     
     returned = returnEnvVar("   memory    ");
-    printf("returned = %s\n",returned->name);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("returned = %s\n",returned->name);
+    }
     sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""   memory    "") is called. the white space should be trimmed in the function.");
 }
 
@@ -2476,47 +2684,74 @@ void testGetOperatorFromString()
 
     operator op = getOperatorFromString("mem>0");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==greaterThan,"check that correct operator is extracted from mem>0");
     
     op = getOperatorFromString("mem>=0");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==greaterThanOrEqualTo,"check that correct operator is extracted from mem>=0");
     
     op = getOperatorFromString("tows<5");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==lessThan,"check that correct operator is extracted from tows<5");
     
     op = getOperatorFromString("tows<=5");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==lessThanOrEqualTo,"check that correct operator is extracted from tows<=5");
     
     op = getOperatorFromString("tows");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==none,"check that correct operator is extracted from tows");
     
     op = getOperatorFromString("!tows");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==not,"check that correct operator is extracted from !tows");
     
     op = getOperatorFromString("tows!=0");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==notEqualTo,"check that correct operator is extracted from tows!=0");
     
     op = getOperatorFromString("tows==20");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==sameAs,"check that correct operator is extracted from tows==20");
     
     op = getOperatorFromString("m esd'0   213sd;;w w[p >  2] [ 2'e1] p4  '@$@  $%1%^&");
     makeStringForOperator(op,str);
-    printf("op = %s\n",str);
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("op = %s\n",str);
+    }
     sput_fail_unless(op==greaterThan,"check that bad input wont cause an issue");
 }
 
@@ -2527,8 +2762,10 @@ void testGetCostOfUpgrade()
     freeAllTowers();
     createTowerFromPositions(1);
     createTowerFromPositions(2);
-    printf("first upgrade to power costs %d\n",calculateCosts(cmd_upgrade, upgrade_power, 2));
-
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("first upgrade to power costs %d\n",calculateCosts(cmd_upgrade, upgrade_power, 2));
+    }
     parse("upgrade p t1");//push upgrade to queue for t1
     upgradeTowerStat(upgrade_power,2);//make real upgrade for t2
     int test=1;
@@ -2583,8 +2820,10 @@ void testIsThisInfiniteLoop()
     char ** commandArray = breakUpString("upgrade p t1",&numberOfTokens," ");
     
     envVar * var = returnEnvVar("mem");
-    printf("%s\n",var->name);
-
+    if(TERMINAL_OUTPUT_ON)
+    {
+        printf("%s\n",var->name);
+    }
     operator op = lessThanOrEqualTo;
     sput_fail_unless(isThisInfiniteLoop(var,op,commandArray),"while(mem<=x)(upgrade) is infinite -> error message & return 1");
     op = greaterThan;
@@ -2631,10 +2870,10 @@ void testParseWhile()
     sput_fail_unless(parse("while(tows<10)(cat t1)")==0,"invalid, breakInfinite loop called -> error message and return 0");
     sput_fail_unless(parse("while(tows<10)(try with invalid command)")==0,"invalid, no valid command -> error message and return 0");
     
-   /* sput_fail_unless(parse("while ( mem > 10 ) ( try with invalid command )")==0,"invalid, no valid command. and make sure spaces in between the brackets causes no issue -> error message and return 0");*/
-   // freeAllTowers();
+    sput_fail_unless(parse("while ( mem > 10 ) ( try with invalid command )")==0,"invalid, no valid command. and make sure spaces in between the brackets causes no issue -> error message and return 0");
+    freeAllTowers();
    setMemory(100000);
-   /* sput_fail_unless(parse("while(tows<3)(mktwr int  b)")==1,"Valid -> return 1");
+    sput_fail_unless(parse("while(tows<3)(mktwr int  b)")==1,"Valid -> return 1");
     setMemory(1000);
     sput_fail_unless(parse("while(mem>10)(mktwr int  b)")==1,"Valid -> return 1");
     freeAllTowers();
@@ -2645,7 +2884,7 @@ void testParseWhile()
     sput_fail_unless(parse("while(mem>=10)(mktwr int a)")==1,"Valid -> return 1");
     setMemory(1);
     createTowerFromPositions(1);
-    sput_fail_unless(parse("while(mem>=10)(upgrade p t1)")==1,"Valid -> return 1");*/
+    sput_fail_unless(parse("while(mem>=10)(upgrade p t1)")==1,"Valid -> return 1");
 }
 
 

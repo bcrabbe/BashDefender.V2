@@ -401,7 +401,6 @@ void testing()	{
 	setUpTesting();
     //!Unit Tests
     testLevelController(); //! Working
-
     testingProjectiles(); //! Working
     testingGameStructure(); //!Memory Tests Failing
     testingActionQueue(); //! Working
@@ -412,13 +411,13 @@ void testing()	{
     testTerminalWindowInput();
     testAbilities();
 
-   	//! System Tests 
+   	//! System Tests
     enemyToGamePropertiesTesting();
-    testParserToInfoWindow();
     queueToTowerTesting();
     parseToQueueTesting(); //!Working
     parseToTowerTesting(); //!Working
     towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working*/
+    testParserToInfoWindow();
 }
 
 void queueToTowerTesting(){
