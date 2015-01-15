@@ -629,6 +629,7 @@ void testTerminalWindow(void) {
     
     sput_fail_if(strcmp(errorToTerminalWindow("This is a test string"), tw->errorString) != 0, "Testing error string");
     
+    destroyCommandList();
     commandToTerminalWindow("A random command");
     sput_fail_if(strcmp(tw->start->commandString, "A random command") != 0, "Testing sending a command");
     commandToTerminalWindow("Another random command");
@@ -734,6 +735,7 @@ void testParserErrorMessages(void) {
     addMemory(1000);
     printf("Michael Testing: Towers: %d\n", getNumberOfTowers());
     parse("cat t1");
+    printf("...%s...\n", tw->errorString);
     sput_fail_if(strlen(tw->errorString) != 0, "Testing parse cat with recognized and existing target, should NOT send an error message to terminal window");
     freeAllTowers();
     strcpy(tw->errorString, "");
@@ -764,7 +766,7 @@ void testParserInfoMessages(void) {
     freeAllTowers();
     strcpy(tm->string, "");
 
-    parse("cat t2");
+    parse("cat t1");
     sput_fail_if(strlen(tm->string) != 0, "Testing parse cat with non-existing target, should NOT send an info message to tower monitor");
     
 }

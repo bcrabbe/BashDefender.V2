@@ -409,7 +409,7 @@ void testing()	{
     testTerminalWindowInput();
     testAbilities();
 
-   	//! System Tests 
+   	//! System Tests
     enemyToGamePropertiesTesting();
     queueToTowerTesting();
     parseToQueueTesting(); //!Working
