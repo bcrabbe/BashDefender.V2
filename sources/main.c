@@ -72,6 +72,7 @@ void startLevel(Display d, int *restart)	{
     int ended = 0;
    	int pause = 0; 
     int steps=0;
+	damageHealth(90);
     //init_sound();
     //playBackgroundSound();
     do{
