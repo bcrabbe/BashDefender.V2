@@ -24,6 +24,7 @@
 #include "../includes/gameProperties.h"
 #include "../includes/abilities.h"
 
+#define TERMINAL_OUTPUT_ON 1
 #pragma mark ProtoTypes
 //top level command parser:
 int parseCommands(char ** commandArray, int numberOfTokens);
@@ -180,7 +181,10 @@ int parse(char *inputString)
     size_t len = 1+strlen(inputString);//gets the size of inputString
     if( len < 3*sizeof(char) )
     {
-        fprintf(stderr,"ERROR: valid commands must be longer than that\n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: valid commands must be longer than that\n");
+        }
         errorToTerminalWindow("ERROR: valid commands must be longer than that");
         return 0;
     }
@@ -197,7 +201,10 @@ int parse(char *inputString)
     int minNumberOfChunks = 2;//as of cat man and upgrade
     if( numberOfTokens < minNumberOfChunks )
     {
-        fprintf(stderr,"ERROR: commands must be space seperated, with at least two words\n");
+        if(TERMINAL_OUTPUT_ON)
+        {
+            fprintf(stderr,"ERROR: commands must be space seperated, with at least two words\n");
+        }
         errorToTerminalWindow("ERROR: commands must be space seperated, with at least two words");
         freeCommandArray(commandArray, numberOfTokens);
         return 0;//no valid commands with less than 2 strings or more than 3
@@ -226,7 +233,10 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         {
             if(numberOfTokens<3)
             {
-                fprintf(stderr,"ERROR: Upgrade command expected 2 or more arguments\n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: Upgrade command expected 2 or more arguments\n");
+                }
                 errorToTerminalWindow("ERROR: Upgrade command expected 2 or more arguments");
                 specificReturns = 0;
             }
@@ -240,7 +250,10 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         {
             if(numberOfTokens!=2)
             {
-                fprintf(stderr,"ERROR: cat command expected 1 argument only \n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: cat command expected 1 argument only \n");
+                }
                 errorToTerminalWindow("ERROR: cat command expected 1 argument only");
                 specificReturns = 0;
             }
@@ -254,7 +267,10 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         {
             if(numberOfTokens<3)
             {
-                fprintf(stderr,"ERROR: chmod command expected 2 or more arguments\n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: chmod command expected 2 or more arguments\n");
+                }
                 errorToTerminalWindow("ERROR: chmod command expected 2 or more arguments");
                 specificReturns = 0;
             }
@@ -265,7 +281,10 @@ int parseCommands(char ** commandArray, int numberOfTokens)
         {
             if(numberOfTokens!=2)
             {
-                fprintf(stderr,"ERROR: man command expected 1 argument only \n");
+                if(TERMINAL_OUTPUT_ON)
+                {
+                    fprintf(stderr,"ERROR: man command expected 1 argument only \n");
+                }
                 errorToTerminalWindow("ERROR: man command expected 1 argument only");
                 specificReturns = 0;
             }
