@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING	0 
+#define TESTING 0
 
 
 
@@ -72,7 +72,7 @@ void startLevel(Display d, int *restart)	{
     int ended = 0;
    	int pause = 0; 
     int steps=0;
-
+	damageHealth(90);
     //init_sound();
     //playBackgroundSound();
     do{
@@ -108,7 +108,8 @@ void startLevel(Display d, int *restart)	{
         while (ended) {
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
-                ended = 0;
+                *restart = 1;
+				ended = 0;
             }
         }
         

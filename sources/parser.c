@@ -500,7 +500,6 @@ int parseAptget(char * aptToGetString)
     {
         if(pushToQueue(getQueue(NULL),cmd_aptget,aptToGet,0)>=1)
         {
-            printf("pushing apt-get to queue\n");
             return 1;
         }
         else
@@ -1173,16 +1172,28 @@ int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
     {
         if( command==cmd_upgrade)
         {
+            char termErrString[100];
+            sprintf(termErrString,"ERROR: upgrade command doesn't change the number of towers so this would be an infinite loop. You should test against your memory instead.\n");
+            fprintf(stderr,"%s \n",termErrString);
+            errorToTerminalWindow(termErrString);
+            return 1;
+        }
+        if(command==cmd_mktwr)
+        {
             if( op!=lessThan && op!=lessThanOrEqualTo )
             {
+                char termErrString[100];
+                sprintf(termErrString,"ERROR: number of towers can only increase so this would be an infinite loop. You should use < or <= in your test.\n");
+                fprintf(stderr,"%s \n",termErrString);
+                errorToTerminalWindow(termErrString);
                 return 1;
             }
         }
+       
     }
-    else
-    {
-        return 0;
-    }
+    
+    return 0;
+    
 }
 
 
@@ -1323,7 +1334,7 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
         char str[200];
         sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
         errorToTerminalWindow(str);
-        fprintf(stderr,"*** SYNTAX ERROR: You must target a tower with this command ***\n");
+        fprintf(stderr,"ERROR: You must target a tower with this command \n");
         fprintf(stderr,"to target a tower enter t followed by a number 1 - %d \n",numberOfTowers);
         return 0;
     }
@@ -1334,7 +1345,7 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
             char str[200];
             sprintf(str,"ERROR: You must target a towers with this command\nTo target a tower enter t followed by a number or list of numbers 1 - %d",numberOfTowers);
             errorToTerminalWindow(str);
-            fprintf(stderr,"*** ERROR: You must target a towers with this command ***\n");
+            fprintf(stderr,"ERROR: You must target a towers with this command\n");
             fprintf(stderr,"to target a tower enter t followed by a number or list of numbers 1 - %d \n",numberOfTowers);
             return 0;
         }
@@ -1355,7 +1366,7 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
                 targetTower);
         errorToTerminalWindow(str);
         
-        fprintf(stderr,"*** ERROR: target tower does not exist ***\n");
+        fprintf(stderr,"ERROR: target tower does not exist \n");
         fprintf(stderr,"You have only %d towers you entered t%d\n",
                 numberOfTowers,targetTower);
         return 0;
@@ -1393,8 +1404,11 @@ unsigned int getTargetEnemy(const char * inputStringTargeting)
     if(targetEnemyID > numberOfEnemies || targetEnemyID<1)
     {
         char str[100];
+        fprintf(stderr,"ERROR: target enemy does not exist there are only %d enemies you entered e%d\n",
+                numberOfEnemies,targetEnemyID);
         sprintf(str,"ERROR: target enemy does not exist there are only %d enemies you entered e%d\n",
                 numberOfEnemies,targetEnemyID);
+        
         errorToTerminalWindow(str);
         return 0;
     }
@@ -1927,7 +1941,6 @@ void testStringToInt()
     
     sput_fail_unless(stringToInt("1")==1,"stringToInt(""1"")==1");
     sput_fail_unless(stringToInt("10")==10,"stringToInt(""10"")==10");
-    sput_fail_unless(stringToInt("19")==19,"stringToInt(""19"")==19");
     for(int i=0;i<=10000;i+=999)
     {
         char str[15];
@@ -1959,11 +1972,10 @@ void testGetTargetTower()
     
     sput_fail_unless(getTargetTower("t0",true)==0,"calling with t0  should return 0 and error message");
     sput_fail_unless(getTargetTower("t-1",true)==0,"calling with t-1  should return 0 and error message");
-    sput_fail_unless(getTargetTower("t99",true)==0,"calling with t0  should return 0 and error message");
+    sput_fail_unless(getTargetTower("t99",true)==0,"calling with t99  should return 0 and error message");
     sput_fail_unless(getTargetTower("t0",false)==0,"calling with t0  should return 0 and error message");
     sput_fail_unless(getTargetTower("t-1",false)==0,"calling with t-1  should return 0 and error message");
     sput_fail_unless(getTargetTower("t99",false)==0,"calling with t0  should return 0 and error message");
-    
     sput_fail_unless(getTargetTower("-1",false)==0,"calling with -1  should return 0 and error message");
     sput_fail_unless(getTargetTower("0",false)==0,"calling with 0  should return 0 and error message");
     sput_fail_unless(getTargetTower("99",false)==0,"calling with 99  should return 0 and error message");
@@ -1997,7 +2009,6 @@ void testGetTargetEnemy()
     
     sput_fail_unless(getTargetEnemy("1")==0,"calling with just 1 should return 0 and error message");
  
-    sput_fail_unless(getTargetEnemy("e1")==1,"calling with e1 should return 1");
     sput_fail_unless(getTargetEnemy("e2")==0,"calling with e2 should fail because there is only one enemy");
     
     for(int i=2; i<=100;++i)
@@ -2031,7 +2042,6 @@ void testGetCommandType()
     sput_fail_unless(getCommandType(strdup("-upgrade"))==cmd_commandError, "calling ""-upgrade"" should return error");
     sput_fail_unless(getCommandType(strdup("upgade"))==cmd_commandError, "calling ""upgade"" should return error");
     sput_fail_unless(getCommandType(strdup("upgrad"))==cmd_commandError, "calling ""upgrad"" should return error");
-
     sput_fail_unless(getCommandType(strdup(""))==cmd_commandError, "calling with empty string should return error");
     sput_fail_unless(getCommandType(strdup("random"))==cmd_commandError, "calling with random string should return error");
     sput_fail_unless(getCommandType(strdup("!@£)!)IR!@*£"))==cmd_commandError, "calling with random string should return error");
@@ -2073,7 +2083,6 @@ void testBreakUpStringAndFreeCommandArray()
     int numberOfTokesTest1=0;
     char ** test1 = breakUpString("break this,string up",&numberOfTokesTest1,", ");
     testCommandArray(test1,numberOfTokesTest1);
-
     sput_fail_unless(!strcmp(test1[0],"break")  &&
                      !strcmp(test1[1],"this")   &&
                      !strcmp(test1[2],"string") &&
@@ -2083,6 +2092,7 @@ void testBreakUpStringAndFreeCommandArray()
     freeCommandArray(test1,numberOfTokesTest1);
     
     test1 = breakUpString("{break}(this){string}(up)",&numberOfTokesTest1,"{}()");
+    testCommandArray(test1,numberOfTokesTest1);
     sput_fail_unless(!strcmp(test1[0],"break")  &&
                      !strcmp(test1[1],"this")   &&
                      !strcmp(test1[2],"string") &&
@@ -2092,6 +2102,7 @@ void testBreakUpStringAndFreeCommandArray()
     freeCommandArray(test1,numberOfTokesTest1);
 
     test1 = breakUpString("{break} (this),{string} (up)",&numberOfTokesTest1,"{}()");
+    testCommandArray(test1,numberOfTokesTest1);
     sput_fail_unless(!strcmp(test1[0],"break")  &&
                      !strcmp(test1[1],"this")   &&
                      !strcmp(test1[2],"string") &&
@@ -2108,15 +2119,20 @@ void testBreakUpStringAndFreeCommandArray()
 void testChmod()
 {
     sput_fail_unless( parse("chmod")==0, "parse(""chmod"")==0, not enough tokens -> error message and return 0");
+    
     sput_fail_unless( parse("chmod char")==0, "parse(""chmod char"")==0, not enough tokens -> error message and return 0");
+    
     for(int i=1;i<=maxTowerPosition();++i)
     {
         createTowerFromPositions(i);
     }
+    
     sput_fail_unless( parse("chmod p t1")==0, "parse(""chmod p t1"")==0, p is not a twr type -> error message and return 0");
+    
     sput_fail_unless( parse("chmod kill t1")==0, "parse(""chmod kill t1"")==0, kill is not a twr type -> error message and return 0");
     
     sput_fail_unless( parse("chmod int t")==0, "parse(""chmod int t"")==0, t does not specify a tower -> error message and return 0");
+    
     sput_fail_unless( parse("chmod char t")==0, "parse(""chmod char t"")==0, t does not specify a tower -> error message and return 0");
     
     sput_fail_unless( parse("chmod int t")==0, "parse(""chmod int t"")==0, t does not specify a tower -> error message and return 0");
@@ -2141,6 +2157,7 @@ void testChmod()
      sput_fail_unless( parse("chmod int 144 2 4")==0, "parse(""chmod int 144 2 4"")==0, 144 is larger than the number of towers -> error message and return 0");
     
     sput_fail_unless( parse("chmod int t1,t2,t4")==1, "parse(""chmod int t1,t2,t4"")==1, correct syntax  ->  execution message and return 1");
+    
      sput_fail_unless( parse("chmod int t1 t2 t4")==1, "parse(""chmod int t1 t2 t4"")==1, correct syntax  ->  execution message and return 1");
     
 }
@@ -2179,8 +2196,6 @@ void testParseMktwr()
 {
     //clear any towers so that we can make more
     freeAllTowers();
-    iprint(getNumberOfTowers());
-    cprint(maxTowerPositionChar());
 
     sput_fail_unless(parse("mktwr char")==0,
                      "parse(""mktwr char"")==0, too few arguments -> error message and return 0");
@@ -2201,7 +2216,6 @@ void testParseMktwr()
         sput_fail_unless(parse(str)==1,
                          "parse(""mktwr int %c"")==1, is valid command -> push 1 tower and return 1");
         createTowerFromPositions((int)tolower(twrPosition)-'a'+1);
-        iprint(isTowerPositionAvailable((int)tolower(twrPosition)-'a'+1));
         sput_fail_unless(parse(str)==0,
                          "parse(""mktwr int %c"")==0, building on same location again is invalid -> print error and return 0");
     }

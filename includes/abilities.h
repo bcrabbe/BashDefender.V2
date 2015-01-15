@@ -18,9 +18,10 @@ typedef enum AbilityID
 }AbilityID;
 
 
-//void kill_ability(int enemyID, Ability *kill);
-int is_valid_unlock(AbilityID id);
+
 int kill_ability(int enemyID);
+
+int is_valid_unlock(AbilityID id);
 
 int kill_all_ability();
 
