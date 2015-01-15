@@ -19,8 +19,8 @@
 
 //#defines for tower type weighting
 #define DAMAGE_MOD 9
-#define SPEED_MOD 6
-#define RANGE_MOD 3
+#define SPEED_MOD 8
+#define RANGE_MOD 4
 
 struct tower {
     int towerType;
