@@ -405,8 +405,13 @@ void present_enemy(Display d)
 
         if(!isDead(i))
         {
-            drawEnemy(e->x, e->y, e->width, e->height, 2010, 121, e->eType, 15, 200);
+			if(e->eType == charBasic || e->eType == charHeavy)	{
+            drawEnemy(e->x, e->y, e->width, e->height, 2331, 200, e->eType, 9, 200);
             drawRect(e->x, e->y -20, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
+			} else if(e->eType == intBasic || e->eType == intHeavy)	{
+			drawEnemy(e->x, e->y, e->width, e->height, 2010, 121, e->eType, 15, 200);
+            drawRect(e->x, e->y -20, 0, 0, 80, 10, (double)e->health, (double)e->maxHealth);
+			}
         }
     }
 }

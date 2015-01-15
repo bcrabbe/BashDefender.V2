@@ -501,7 +501,6 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
             if(pushToQueue(getQueue(NULL),cmd_mktwr,twrType,towerPosition)>=1)
             {
                 ++numberOfCommandsPushed;
-                printf("pushing tower %d to queue\n",towerPosition);
             }
         }
         else

@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 
 int main(int argc, char ** argv)
@@ -57,19 +57,6 @@ int main(int argc, char ** argv)
 		}
 	}	while(1);
 
-    /*while(started == 0){
-    	menu_screen(d, &state);
-    }*/
-/*
-	do	{
-		restart = 0;
-    	initLevel(1); //For tutorial level, change to 0, uncomment tutorial level, comment startlevel for tutorial
-		//tutorialLevel(d,&restart);
-		startLevel(d,&restart);
-		endLevel();
-	} while (restart);
-*/
-    
     shutSDL(d);
     quitGame();
     return 0;
@@ -126,7 +113,6 @@ void startLevel(Display d, int *restart)	{
         }
         
     } while(!terminal_window(d, pass, clear,&pause, *restart));
-		printf("finished\n");    
 }
 
 
@@ -490,6 +476,7 @@ void testing()	{
     parseToQueueTesting(); //!Working
 	parseToTowerTesting(); //!Working
     //towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working
+    testParserToInfoWindow();
 
 }
 
