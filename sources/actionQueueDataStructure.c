@@ -223,7 +223,11 @@ int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
     {
         case cmd_upgrade:
         {
-            return ((getTowerLevel(target))*(2*getCurrentStat(opt,target)));
+            if(opt == upgrade_slowPower) {
+                return 500 * getCurrentStat(opt,target);
+            } else {
+                return ((getTowerLevel(target))*(2*getCurrentStat(opt,target)));
+            }
         }
         case cmd_mktwr:
         {

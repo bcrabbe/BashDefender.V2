@@ -19,6 +19,8 @@ typedef struct towerPosNode *TowerPosNode;
 #define SLOW_POWER_UPGR_VAL 2
 #define SLOW_DUR_UPGR_VAL 20
 #define NUMBER_OF_TOWER_STATS 7
+
+
 // tower positon handling
 int isTowerPositionAvailable(int position);
 void createTowerPos();
@@ -28,6 +30,7 @@ int getSpecifiedTowerPosX(int postion);
 int maxTowerPosition();
 char maxTowerPositionChar();
 TowerPos getTowerPos(TowerPos tPos);
+void makeAllTowPosAvailable();
 void addTowerPosNode(int x, int y);
 int getNumOfTowerPositions();
 
@@ -37,28 +40,28 @@ TowerGroup getTowerGrp();
 tower getTowerID(int target);
 
 // tower creation
-int isTowerPositionAvailable(int position);
 int userCreateTower(int inputTowerPositionX, int inputTowerPositionY);
-int getTowerType(int towerID);
 void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY );
 int createTowerFromPositions(int position);
 void createTowerTypeFromPositions(int position, int tType);
 
 // tower info returning functions
+int getTowerType(int towerID);
 int getTowerRange(int towerID);
 int getTowerSpeed(int towerID);
 int getTowerDamage(int towerID);
 int getTowerAOErange(int towerID);
 int getTowerAOEpower(int towerID);
-int getTowerLevel(int towerID);
-int getNumberOfUpgradesSinceTowerLevelUp(int towerID);
 int getTowerSlowPower(int towerID);
 int getTowerSlowDuration(int towerID);
+int getTowerLevel(int towerID);
 int getTowerX(int towerID);
 int getTowerY(int towerID);
 unsigned int getNumberOfTowers();
 int getTowerWidth(int towerID);
 int getUpgradesCompleted(int target);
+void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID);
+int checkCharType();
 
 // upgrading tower functions
 int upgradeDmg(int target);
@@ -66,8 +69,8 @@ int upgradeRange(int target);
 int upgradeSpeed(int target);
 int upgradeAOEpower(int target);
 int upgradeAOErange(int target);
-int upgradeSlowDuration(int target);
 int upgradeSlowPower(int target);
+int upgradeSlowDuration(int target);
 int setTowerType(int towerID, int newType);
 void makePostUpgradeChanges(int TowerID);
 void assignCalculatedFiringType(int towerID);
@@ -76,7 +79,6 @@ void assignCalculatedFiringType(int towerID);
 void fire();
 void findTarget(tower currentTower);
 void launchProjectile(tower currentTower);
-void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID);
 
 // presentation functions
 void present_tower();
@@ -85,6 +87,7 @@ void drawAllTowerPositions();
 // freeing functions
 void freeTower(tower t);
 void freeAllTowers();
+void freeTowerGroupStructure();
 void freeAllTowerPositions();
 
 // tower testing functions
@@ -94,18 +97,11 @@ int setTowerRange(int towerID, int newRange);
 int setTowerDamage(int towerID, int newDamage);
 void testingTowerModule();
 void testGetTower();
-void testUpgradeTowerStat();
 int getLastTowerPositionY();
 int getLastTowerPositionX();
 void testTowerCreation();
-int createTowerFromPositions(int position);
-void drawAllTowerPositions();
-void createTowerTypeFromPositions(int position, int tType);
 int getTowerPositionX(int position);
 int getTowerPositionY(int position);
-void makeAllTowPosAvailable();
-void testingTowerPositions();
-int checkCharType();
 void testingProjectiles();
 void testProjectileHandling();
 void testTowerFiring();
