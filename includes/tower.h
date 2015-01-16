@@ -3,7 +3,7 @@
 
 #include "../includes/projectiles.h"
 
-typedef struct tower *tower;
+typedef struct tower *Tower;
 typedef struct towerGroup *TowerGroup;
 typedef struct towerPos *TowerPos;
 typedef struct towerPosNode *TowerPosNode;
@@ -37,11 +37,11 @@ int getNumOfTowerPositions();
 // tower pointer functions
 void createTowerGroup();
 TowerGroup getTowerGrp();
-tower getTowerID(int target);
+Tower getTowerID(int target);
 
 // tower creation
 int userCreateTower(int inputTowerPositionX, int inputTowerPositionY);
-void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY );
+void initialiseNewTower(Tower newTow, int TowerPositionX, int TowerPositionY );
 int createTowerFromPositions(int position);
 void createTowerTypeFromPositions(int position, int tType);
 
@@ -77,15 +77,15 @@ void assignCalculatedFiringType(int towerID);
 
 // tower actions
 void fire();
-void findTarget(tower currentTower);
-void launchProjectile(tower currentTower);
+void findTarget(Tower currentTower);
+void launchProjectile(Tower currentTower);
 
 // presentation functions
 void present_tower();
 void drawAllTowerPositions();
 
 // freeing functions
-void freeTower(tower t);
+void freeTower(Tower t);
 void freeAllTowers();
 void freeTowerGroupStructure();
 void freeAllTowerPositions();

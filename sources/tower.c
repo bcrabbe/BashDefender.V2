@@ -53,7 +53,7 @@ struct tower {
 
 struct towerGroup	{
 
-	tower *listOfTowers;
+	Tower *listOfTowers;
 	unsigned int numOfTowers;
 	
 };
@@ -204,7 +204,7 @@ void createTowerGroup()	{
 
 	TowerGroup Group = (TowerGroup) malloc(sizeof(*Group));
 	getTowerGrp(Group);
-	Group->listOfTowers=malloc(sizeof(tower));
+	Group->listOfTowers=malloc(sizeof(Tower));
 	Group->numOfTowers = 0;
 }
 
@@ -227,7 +227,7 @@ Returns pointer to specified tower
 @param int - target tower ID
 @return tower pointer
 */
-tower getTowerID(int target)	{
+Tower getTowerID(int target)	{
 	int i;
 	for( i = 1; i <= (getTowerGrp(NULL))->numOfTowers; i++)	{
 		if((getTowerGrp(NULL))->listOfTowers[i]->towerID == target)	{
@@ -252,13 +252,13 @@ int userCreateTower(int inputTowerPositionX, int inputTowerPositionY)
     TowerGroup TG = getTowerGrp(NULL);
 
     TG->numOfTowers++; //!increased number of towers when one is created
-    TG->listOfTowers = realloc(TG->listOfTowers, (TG->numOfTowers+1)*sizeof(tower));
+    TG->listOfTowers = realloc(TG->listOfTowers, (TG->numOfTowers+1)*sizeof(Tower));
     if(TG->listOfTowers==NULL)
     {
         fprintf(stderr,"ERROR: createTower() \n towergroup array realloc failed\n");
         return 0;
     }
-    tower t = malloc(sizeof(*t));
+    Tower t = malloc(sizeof(*t));
     if(t==NULL)
     {
         fprintf(stderr,"ERROR: createTower()\n tower  malloc failed\n");
@@ -276,7 +276,7 @@ int userCreateTower(int inputTowerPositionX, int inputTowerPositionY)
 Populates the specified tower structure with the default values and specified x and y coordinates
 @param new tower pointer, int new tower x, int new tower y
 */
-void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
+void initialiseNewTower(Tower newTow, int TowerPositionX, int TowerPositionY )
 {
     TowerGroup TG = getTowerGrp(NULL);
 
@@ -498,7 +498,7 @@ Upgrades specified tower's damage by a hash defined amount
 int upgradeDmg(int target)
 {
 	
-	tower upgradeT;
+	Tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->damage+=DAMAGE_UPGR_VAL;
     	makePostUpgradeChanges(target);
@@ -514,7 +514,7 @@ Upgrades specified tower's range by a hash defined amount
 int upgradeRange(int target)
 {
 	
-	tower upgradeT;
+	Tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->range+=RANGE_UPGR_VAL;
     	makePostUpgradeChanges(target);
@@ -530,7 +530,7 @@ Upgrades specified tower's firing speed by a hash defined amount
 int upgradeSpeed(int target)
 {
 	
-	  tower upgradeT;
+	  Tower upgradeT;
 	  if((upgradeT = getTowerID(target))!= NULL)	{
 	      if(upgradeT->speed + SPEED_UPGR_VAL < MAX_COOLDOWN) { //make sure speed doesn't overflow cooldown value
 		        upgradeT->speed+=SPEED_UPGR_VAL;
@@ -548,7 +548,7 @@ Upgrades specified tower's AOE power by a hash defined amount
 int upgradeAOEpower(int target)
 {
 	
-	tower upgradeT;
+	Tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->AOEpower+=AOE_POWER_UPGR_VAL;
     makePostUpgradeChanges(target);
@@ -564,7 +564,7 @@ Upgrades specified tower's AOE range by a hash defined amount
 int upgradeAOErange(int target)
 {
 	
-	tower upgradeT;
+	Tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->AOErange+=AOE_RANGE_UPGR_VAL;
     makePostUpgradeChanges(target);
@@ -580,7 +580,7 @@ Upgrades specified tower's slow effect power by a hash defined amount
 int upgradeSlowPower(int target)
 {
 	
-	tower upgradeT;
+	Tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->slowPower+=SLOW_POWER_UPGR_VAL;
     makePostUpgradeChanges(target);
@@ -596,7 +596,7 @@ Upgrades specified tower's slow effect duration by a hash defined amount
 int upgradeSlowDuration(int target)
 {
 	
-	tower upgradeT;
+	Tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
 		upgradeT->slowDuration+=SLOW_DUR_UPGR_VAL;
     makePostUpgradeChanges(target);
@@ -610,7 +610,7 @@ Changes the type of the specified tower to the specified type (int/char). Return
 */
 int setTowerType(int towerID, int newType)
 {
-  tower t;
+  Tower t;
   if((t = getTowerID(towerID)) == NULL) {
     return 0;
   }
@@ -625,7 +625,7 @@ Makes all changes that need to be done after upgrade for the specified tower (in
 */
 void makePostUpgradeChanges(int TowerID) {
   
-  tower t = getTowerGrp(NULL)->listOfTowers[TowerID];
+  Tower t = getTowerGrp(NULL)->listOfTowers[TowerID];
   
   assignCalculatedFiringType(TowerID);
   
@@ -640,7 +640,7 @@ Uses the statistics of the specified tower to calculate its firing type and assi
 */
 void assignCalculatedFiringType(int towerID) {
 
-  tower t = getTowerGrp(NULL)->listOfTowers[towerID];
+  Tower t = getTowerGrp(NULL)->listOfTowers[towerID];
   
   if((t->damage * DAMAGE_MOD) > (t->speed * SPEED_MOD) && (t->damage * DAMAGE_MOD) > (t->range * RANGE_MOD) ) {
     t->firingType = bullet;
@@ -666,7 +666,7 @@ void fire()
 	  int towerID;
 
 	  for(towerID = 1; towerID <= getNumberOfTowers(); towerID++)	{
-	      tower currentTower = getTowerID(towerID);
+	      Tower currentTower = getTowerID(towerID);
 	      currentTower->firing = 0;
 	    
 	      // check cooldown to see if tower is ready to fire
@@ -684,7 +684,7 @@ void fire()
 /**
 For the specified tower, scans through all enemies and assigns one as the tower's target (if any are in range) 
 */
-void findTarget(tower currentTower)
+void findTarget(Tower currentTower)
 {
     int enemyID;
     
@@ -710,7 +710,7 @@ void findTarget(tower currentTower)
 /**
 Launches the correct type of projectile at the specified tower's current target enemy from the specified tower's x and y coordinates
 */
-void launchProjectile(tower currentTower)
+void launchProjectile(Tower currentTower)
 {
     currentTower->firingCoolDown = MAX_COOLDOWN - currentTower->speed;
     towerGetTargetPos(currentTower->targetPosition, currentTower->targetID);
@@ -743,7 +743,7 @@ void present_tower()
     {
         for(int towerID=1; towerID<=TG->numOfTowers; ++towerID)
         {
-            tower currentTower = getTowerID(towerID);
+            Tower currentTower = getTowerID(towerID);
             drawTower(currentTower->x, currentTower->y, currentTower->width,currentTower->height, currentTower->towerType, currentTower->range,
                       8/*frames*/, 300/*anim_speed*/, 2080 /*pic_width*/, 258/*pic_height*/);
         }
@@ -774,7 +774,7 @@ void drawAllTowerPositions()	{
 /**
 Frees the specified tower structure
 */
-void freeTower(tower t) {
+void freeTower(Tower t) {
     free(t);
 }
 
@@ -955,7 +955,7 @@ void testProjectileHandling()
     int enemyOriginalHealth = getEnemyHealth(getNumberOfEnemies());
     
     int towerID = userCreateTower(5000,5000); //create standard tower at position 5000, 5000
-    tower t = getTowerID(towerID);
+    Tower t = getTowerID(towerID);
     
     t->towerType = INT_TYPE;
     t->firingType = bullet;
@@ -1005,7 +1005,7 @@ void testTowerFiring()
     setEnemyY(getNumberOfEnemies(), 40);
     
     userCreateTower(50,50);
-    tower t = TG->listOfTowers[TG->numOfTowers];
+    Tower t = TG->listOfTowers[TG->numOfTowers];
     t->range = 20;
     
     findTarget(t);
