@@ -224,7 +224,7 @@ int calculateCosts(cmdType cmd, cmdOption opt, int target)    {
         case cmd_upgrade:
         {
             if(opt == upgrade_slowPower) {
-                return 500 * getCurrentStat(opt,target);
+                return (500 * getCurrentStat(opt,target))+1;
             } else {
                 return ((getTowerLevel(target))*(2*getCurrentStat(opt,target)));
             }
