@@ -76,7 +76,7 @@ void assignCalculatedFiringType(int towerID);
 void fire();
 void findTarget(tower currentTower);
 void launchProjectile(tower currentTower);
-void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID);
+void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, int *sp, int *sd, unsigned int towerID);
 
 // presentation functions
 void present_tower();
