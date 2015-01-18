@@ -14,6 +14,7 @@
 #define TUTORIAL_LEVEL	"../data/tutorial.txt" //!Tutorial Level Settings
 #define EASY_LEVEL	"../data/easyLevel.txt"	//!Easy Level Settings
 #define HARD_LEVEL	"../data/hardLevel.txt" //!Hard Level Settings
+
 typedef enum levelCommand { makeTowerP= 0, 
 							totalWaves = 1, 
 							wave = 2,
