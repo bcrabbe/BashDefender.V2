@@ -41,22 +41,26 @@ int main(int argc, char ** argv)
 			    }
 				break;
 			case tutorial:
-					initLevel(0);
-					tutorialLevel(d,&restart);
+				initLevel(0);
+				tutorialLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
 				break;
 			case hardLevel:
-					initLevel(1);
-					startLevel(d,&restart);
+				initLevel(1);
+				startLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
 				break;
 			case easyLevel:
-					initLevel(2);
-					startLevel(d,&restart);
+				initLevel(2);
+				startLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
 				break;
 			default:
 				exit(1);	
 		}
-		endLevel(&restart);
-		state = menu;
 	}	while(1);
 
     shutSDL(d);
@@ -80,7 +84,6 @@ void startLevel(Display d, int *restart)	{
 		//enemySound(1);
         startFrame(d);
 		while(pause)	{
-			enemySound(1);
 			pause_screen(d,&pause,restart);
 		}
         ++steps;

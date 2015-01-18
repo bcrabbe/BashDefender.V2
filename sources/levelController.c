@@ -348,7 +348,7 @@ void initLevel(int level)    {
 	createTowerPos();
 	initialQueueReader();
 	createProjectileList();
-  createExplosionList();
+  	createExplosionList();
 	initialiseParser();
 	init_abilities();
     destroyCommandList();
@@ -500,7 +500,7 @@ void readLevelSettingsFile(char *file)	{
 			if(letter == ' ')	{
 				wordCount++;
 			}
-				currentLine = expandCBuffer(currentLine, currSize);
+			currentLine = expandCBuffer(currentLine, currSize);
 			if(letter == '\n')	{
 				currentLine[currSize] = ENDOFSTRING;
 				validateLine(currentLine,wordCount);
