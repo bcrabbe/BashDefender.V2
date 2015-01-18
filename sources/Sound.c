@@ -96,6 +96,8 @@ Sound getSoundPointer(Sound s){
     return sound;
 }
 
+
+
 void shutSound(){
     Sound s = getSoundPointer(NULL);
     Mix_FreeMusic(s->background_music);

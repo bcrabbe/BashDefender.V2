@@ -556,6 +556,13 @@ void tutorial_nineteen()	{
 	textToTowerMonitor("There is one more thing you need to know about. You can install new abilities with the apt-get command.  This command installs a new specified ability from a package repository to give you some more fire-power to fight off viruses - Just like in a Linux Environment when you need a new utility!.\ntype apt-get install");
 }
 
+void tutorial_twenty()	{
+	textToTowerMonitor("Well Done.  Now lets put the kill ability to use.  First, type \n ps -x\n to get the virus' ID.");
+}
+
+void tutorial_twentyOne()	{
+	textToTowerMonitor("Now Kill that enemy with kill -9 [enemyID]\n");
+}
 /*Test functions*/
 
 /**

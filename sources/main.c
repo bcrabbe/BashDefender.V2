@@ -76,6 +76,7 @@ void startLevel(Display d, int *restart)	{
     init_sound();
     //playBackgroundSound();
     do{
+		//enemySound(1);
         startFrame(d);
 		while(pause)	{
 			enemySound(1);
@@ -120,7 +121,8 @@ void startLevel(Display d, int *restart)	{
 
 void tutorialLevel(Display d,int *restart)	{
 
-    tutPhase tPhase = phaseOne;
+    tutPhase tPhase = phaseTwenty;
+	setCurrWaveNum(3);
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -337,13 +339,30 @@ void tutorialLevel(Display d,int *restart)	{
                     flag = 0;
 				}
 				tutorial_nineteen();
+				if(is_ability_unlocked(KILL))	{
+					tPhase++;
+				}
 				break;
 			case phaseTwentyTwo:
 				if(!flag)	{
                 	setCurrTime(findClock(tutorialClock));
                     flag = 1;
 				}
-				exit(1);	
+				tutorial_twenty();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                    tPhase++;
+                }
+				break;
+			case phaseTwentyThree:
+                    if(flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+					setCurrWaveNum(4);
+                    updateAllInfoWindow();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                    }
+                    break;
 			default:
                 break;
         }

@@ -21,7 +21,8 @@ typedef enum tutPhase {
 	phaseNineteen = 19,
 	phaseTwenty = 20,
 	phaseTwentyOne = 21,
-	phaseTwentyTwo = 22
+	phaseTwentyTwo = 22,
+	phaseTwentyThree = 23
 } tutPhase;
 
 void quitGame();

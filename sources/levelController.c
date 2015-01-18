@@ -353,9 +353,10 @@ void initLevel(int level)    {
 
 void createLevelClocks()	{
 		addClock(singleEnemyCreated);
-		printf("first clock\n");
 		addClock(lastCmdAction);
 		addClock(groupDelay);
+		addClock(killAll);
+		addClock(killSingle);
 }
 
 void createLevel()	{
