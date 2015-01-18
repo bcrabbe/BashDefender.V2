@@ -501,7 +501,7 @@ void tutorial_seven()	{
 
 void tutorial_eight()	{
 
-		textToTowerMonitor("Right!  No more losing.  Let's create a char tower with mktwr char c\nChar is a data type in computer science for storing characters");
+		textToTowerMonitor("Right!  No more losing.  Let's create a char tower with mktwr char f\nChar is a data type in computer science for storing characters");
 
 }
 

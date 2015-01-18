@@ -581,7 +581,7 @@ void damageEnemy(int damage, int enemyID, int damageType)
 void slowEnemy(int targetID, int slowPower, int slowDuration)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[targetID];
-    if(!isDead(targetID)) {
+    if(!isDead(targetID) && slowPower > e-> slowEffect) {
         e->slowEffect = slowPower;
         e->slowEffectStepsRemaining = slowDuration;
     }
