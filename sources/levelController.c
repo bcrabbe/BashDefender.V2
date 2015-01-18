@@ -321,17 +321,20 @@ KeywordQueue getKWQueue(KeywordQueue kwQueue)	{
 	return currKWQueue;
 }
 
-/*
+/*teLevel
  *Initializes all data structures required for level
  */
 void initLevel(int level)    {
     createKeywordQueue();
 	switch(level)	{
 		case 0:
-			readLevelSettingsFile("../data/tutorial.txt");
+			readLevelSettingsFile(TUTORIAL_LEVEL);
 			break;
 		case 1:
-			createLevel();
+			readLevelSettingsFile(HARD_LEVEL);
+			break;
+		case 2:
+			readLevelSettingsFile(EASY_LEVEL);
 			break;
 		default:
 			break;

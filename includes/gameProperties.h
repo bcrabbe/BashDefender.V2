@@ -118,6 +118,7 @@ void testingGameStructure();
 void CreateGameTest();
 void TestGetAvailableMemory();
 void setCurrWaveNum(int newWave);
+int checkIfOver();
 void TestAddMemory();
 void TestUseMemory();
 void setEnemyCreated1();

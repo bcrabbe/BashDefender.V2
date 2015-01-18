@@ -43,18 +43,20 @@ int main(int argc, char ** argv)
 			case tutorial:
 					initLevel(0);
 					tutorialLevel(d,&restart);
-					endLevel(&restart);
-					state = menu;
 				break;
-			case level1:
+			case hardLevel:
 					initLevel(1);
 					startLevel(d,&restart);
-					endLevel(&restart);
-					state = menu;
+				break;
+			case easyLevel:
+					initLevel(2);
+					startLevel(d,&restart);
 				break;
 			default:
 				exit(1);	
 		}
+		endLevel(&restart);
+		state = menu;
 	}	while(1);
 
     shutSDL(d);
@@ -69,7 +71,6 @@ void startLevel(Display d, int *restart)	{
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-    int ended = 0;
    	int pause = 0; 
     int steps=0;
 	//damageHealth(90);
@@ -106,14 +107,14 @@ void startLevel(Display d, int *restart)	{
         updateAllInfoWindow();
         endFrame(d);
         
-        ended = checkIfPlayerDead();
-        while (ended) {
-            //final screen returns 1 if restart button was pressed...
-            if (final_screen()){
-                *restart = 1;
-				ended = 0;
-            }
-        }
+		if(checkIfOver() || checkIfPlayerDead())	{
+       		while (!*restart) {
+      	      //final screen returns 1 if restart button was pressed...
+       			if (final_screen()){
+       	         *restart = 1;
+       			}
+        	}
+		}
         
     } while(!terminal_window(d, pass, clear,&pause, *restart));
 }
@@ -422,20 +423,20 @@ void testing()	{
     testLevelController(); //! Working
     testingProjectiles(); //! Working
     testingGameStructure(); //!Memory Tests Failing
-   /* testingActionQueue(); //! Working
+    testingActionQueue(); //! Working
     testEnemy(); // ! Working.
     testParser();
     testingTowerModule(); //! working
     testingInformationWindowModule();
     testTerminalWindowInput();
-    testAbilities();*/
+    testAbilities();
 
    	//! System Tests
-   /* enemyToGamePropertiesTesting();
+    enemyToGamePropertiesTesting();
     queueToTowerTesting();
     parseToQueueTesting(); //!Working
     parseToTowerTesting(); //!Working*/
-    towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working*/
+    towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be workin
     testParserToInfoWindow();
 }
 
