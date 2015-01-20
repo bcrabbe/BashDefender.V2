@@ -24,20 +24,21 @@ int main(int argc, char ** argv)
 {
     
 	Display d = init_SDL();
-
+    init_sound();
+    playBackgroundSound();
     if(TESTING) {
         testing();
         exit(EXIT_SUCCESS);
     }
 	int restart = 0;
     
-    srand(time(NULL));
+    srand((int)time(NULL));
 	gameState state = menu;
 	do{
 		switch(state)	{
 			case menu:
 			    while(state == menu){
-			        menu_screen(d, &state);
+			        menu_screen(&state);
 			    }
 				break;
 			case tutorial:
@@ -59,11 +60,13 @@ int main(int argc, char ** argv)
 				state = menu;
 				break;
 			default:
+                shutSDL();
+                quitGame();
 				exit(1);	
 		}
 	}	while(1);
 
-    shutSDL(d);
+    shutSDL();
     quitGame();
     return 0;
 }
@@ -77,21 +80,19 @@ void startLevel(Display d, int *restart)	{
     clear = empty;
    	int pause = 0; 
     int steps=0;
-	//damageHealth(90);
-    init_sound();
-    //playBackgroundSound();
+
     do{
-		//enemySound(1);
-        startFrame(d);
 		while(pause)	{
-			pause_screen(d,&pause,restart);
+			pause_screen(&pause,restart);
+
 		}
         ++steps;
         drawBackground();
+        presentAnimation();
 
     	startNextWave();
         levelQueueReader();
-        terminal_window(d, pass, clear,&pause, *restart);
+        terminal_window(pass, clear,&pause, *restart);
     	popToTower();
         if(inputCommand)
         {
@@ -99,18 +100,22 @@ void startLevel(Display d, int *restart)	{
         }
         present_enemy(d);
         present_tower();
-
+        
     	fire();
+      updateProjectiles();
+      updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);
         }
-        presentAnimation();
     	drawAllTowerPositions();
         updateAllInfoWindow();
-        endFrame(d);
+        presentFirewall();
+        presentHealth();
+        endFrame();
         
 		if(checkIfOver() || checkIfPlayerDead())	{
+		      freeAllProjectiles();
        		while (!*restart) {
       	      //final screen returns 1 if restart button was pressed...
        			if (final_screen()){
@@ -119,7 +124,7 @@ void startLevel(Display d, int *restart)	{
         	}
 		}
         
-    } while(!terminal_window(d, pass, clear,&pause, *restart));
+    } while(!terminal_window(pass, clear,&pause, *restart));
 }
 
 
@@ -139,12 +144,11 @@ void tutorialLevel(Display d,int *restart)	{
     //init_sound();
     //playBackgroundSound();
     addClock(tutorialClock);
-    int damage, range, speed, resetTime = 0, flag = 1;
-    int currMemory;
+    int damage = 0, range = 0, speed = 0, resetTime = 0, flag = 1;
+    int currMemory = 0;
     do{
-        startFrame(d);
         while(pause)	{
-            pause_screen(d,&pause,restart);
+            pause_screen(&pause,restart);
         }
         ++steps;
         drawBackground();
@@ -378,7 +382,7 @@ void tutorialLevel(Display d,int *restart)	{
         }
         
         levelQueueReader();
-        terminal_window(d, pass, clear,&pause, *restart);
+        terminal_window(pass, clear,&pause, *restart);
         popToTower();
         if(inputCommand)
         {
@@ -388,6 +392,8 @@ void tutorialLevel(Display d,int *restart)	{
         present_tower();
 
     	fire();
+      updateProjectiles();
+      updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);
@@ -395,17 +401,18 @@ void tutorialLevel(Display d,int *restart)	{
         presentAnimation();
         drawAllTowerPositions();
         tutorialUpdateAllInfoWindow();
-        endFrame(d);
+        endFrame();
         
         //ended = checkIfPlayerDead();
         while (ended) {
+            freeAllProjectiles();
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
                 ended = 0;
             }
         }
         
-    } while(!terminal_window(d, pass, clear,&pause, *restart));
+    } while(!terminal_window(pass, clear,&pause, *restart));
 }
 
 
@@ -423,6 +430,7 @@ void testing()	{
 
 	setUpTesting();
     //!Unit Tests
+
     testLevelController(); //! Working
     testingProjectiles(); //! Working
     testingGameStructure(); //!Memory Tests Failing
@@ -441,6 +449,7 @@ void testing()	{
     parseToTowerTesting(); //!Working*/
     towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be workin
     testParserToInfoWindow();
+
 }
 
 void queueToTowerTesting(){
@@ -529,6 +538,7 @@ void towerToEnemyTesting()	{
 
 void testEnemyInRange()	{
 
+  freeAllProjectiles();
 	freeAllEnemies();
 	createTestEnemy();
 	setEnemyHealth(1,100);
@@ -550,6 +560,7 @@ void testEnemyInRange()	{
 	fire();
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(getEnemyHealth(1) == 100 + getEnemyArmour(1) - (getTowerDamage(1)*TYPE_MATCH_MODIFIER),"In range type matched enemy has correct reduced health from tower damage");
 	for(int i = 0; i < 9; i++)	{
@@ -558,6 +569,7 @@ void testEnemyInRange()	{
 	}
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(isDead(1) == 1, "Enemy dead after being fired on 10 times");
 	
@@ -573,6 +585,7 @@ void testEnemyInRange()	{
 	fire();
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(getEnemyHealth(1) == 100 + getEnemyArmour(1) - (getTowerDamage(1)/TYPE_MISMATCH_MODIFIER),"In range type mismatched enemy has correct reduced health from tower damage");
 	

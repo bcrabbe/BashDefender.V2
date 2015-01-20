@@ -303,6 +303,12 @@ int getHealth(GameProperties game)	{
 	return game->health;
 }
 
+void presentHealth (){
+    int w, h;
+    getWindowSize(&w, &h);
+    drawRect((double)w/1.57, (double)h/4.4, 0, 0, (double)w/10.9, (double)h/68, getHealth(getGame(NULL)), TOTAL_P_HEALTH);
+}
+
 
 /*
  * Checks if health is 0
@@ -466,7 +472,7 @@ GameProperties createGame()	{
 	newGame->memoryUsed=0;
 	newGame->currWaveNo=0;
 	newGame->totalWaveNo = 0;
-    newGame->health=100;
+    newGame->health=TOTAL_P_HEALTH;
     newGame->costOfNewTower = 400;
 	newGame->deathCount = 0;
 	newGame->clock->start_t  = newGame->clock->lastAction = (double) clock()/CLOCKS_PER_SEC;

@@ -2,6 +2,7 @@
 #define TEST_Tower_h
 
 #include "../includes/projectiles.h"
+#include "../includes/Sound.h"
 
 typedef struct tower *Tower;
 typedef struct towerGroup *TowerGroup;
@@ -16,7 +17,7 @@ typedef struct towerPosNode *TowerPosNode;
 #define RANGE_UPGR_VAL 10
 #define AOE_RANGE_UPGR_VAL 10
 #define AOE_POWER_UPGR_VAL 10
-#define SLOW_POWER_UPGR_VAL 2
+#define SLOW_POWER_UPGR_VAL 1
 #define SLOW_DUR_UPGR_VAL 20
 #define NUMBER_OF_TOWER_STATS 7
 

@@ -128,7 +128,6 @@ char* towerMonitor(void) {
     }
     
     updateTowerMonitor(tm->string);
-    
     return tm->string;
 }
 

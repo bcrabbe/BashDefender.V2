@@ -57,56 +57,76 @@ typedef enum typeOfEnemy	{
 
 typedef enum BOOL {FALSE, TRUE} BOOL;
 
-void createEnemyGroup();
-void freeEnemyGroup();
-Enemy createEnemy();
-int createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum);
-int getNumberOfEnemies();
-void Test_createEnemy();
+// ENEMIES //
+
+// enemy group handling functions
+void       createEnemyGroup();
 EnemyGroup getEnemyGroup(EnemyGroup enemyList);
-int getEnemyHealth();
-void freeEnemy(int enemyID);
-void freeAllEnemies();
+void       freeEnemyGroup();
+
+// enemy handling functions
+Enemy createEnemy();
+int   createSpecificEnemy(TypeOfEnemy eType, int lvl, int entranceNum);
+void  initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width);
+void  freeEnemy(int enemyID);
+void  freeAllEnemies();
+
+// enemy movement/interaction functions
 void moveEnemy(int enemyID);
-int isDead(int enemyID);
-void killEnemy(int enemyID);
-int inRange(int tX, int tY, int tRange, int enemyID);
-void damageEnemy(int damage, int enemyID, int damageType);
 void slowEnemy(int targetID, int slowPower, int slowDuration);
-void towerGetTargetPos(int * towerTargetPosition, int enemyID);
-void printEnemy(int enemyID);
-void createPath();
-void freePath(Path p);
-void freeLevelPaths();
-int **getPathPointer(int **newPath);
-void testEnemy();
-int setEnemyX(int enemyID, int newX);
-int setEnemyY(int enemyID, int newY);
-void setEnemyType(int enemyID, int newType);
-int setEnemyHealth(int enemyID, int newHealth);
-int setEnemyArmour(int enemyID, int newArmour);
-int getEnemyArmour(int enemyID);
+void damageEnemy(int damage, int enemyID, int damageType);
+void killEnemy(int enemyID);
 void present_enemy(Display d);
-void createLevelPaths();
+
+// enemy information returning functions
+int  getNumberOfEnemies();
+int  isDead(int enemyID);
+int  inRange(int tX, int tY, int tRange, int enemyID);
+void getProjectileTargetPos(int enemyID, int *targetCoords, int bulletMoves);
+int  getEnemyHealth();
+int  getEnemyArmour(int enemyID);
+
+
+// PATHS //
+
+// level paths structure handling functions
+void       createLevelPaths();
 LevelPaths getLevelPaths(LevelPaths pathList);
+void       freeLevelPaths();
+
+// path handling functions
 void assignMemoryForPaths(int numberOfPaths);
-
 void layPaths(int numberOfPaths, int levelNum);
-char *getFilePath(int levelNum, int pathNum);
 void readInPath(int levelNum, int pathNum);
-int getNumberOfPaths();
+char *getFilePath(int levelNum, int pathNum);
+void freePath(Path p);
 
-void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int health, int armour, int speed, int damage, int height, int width);
+// path information returning functions
+int getNumberOfPaths();
 int distanceToEndOfPath(int enemyID);
 
-void getBulletTargetPos(int enemyID, int *targetCoords, int bulletMoves);
-void layTestPath();
 
+// TESTING //
+
+// testing functions
+void  Test_createEnemy();
 Enemy createTestEnemy();
-void testInitialiseEnemy();
-void testEnemyMovement();
-void testSetEnemyPathNum(int enemyID, int pathNum);
-void test_KillAnEnemy();
+void  testInitialiseEnemy();
+void  testEnemyMovement();
+void  testSetEnemyPathNum(int enemyID, int pathNum);
+void  test_KillAnEnemy();
+void  layTestPath();
+void  testEnemy();
+int   setEnemyX(int enemyID, int newX);
+int   setEnemyY(int enemyID, int newY);
+void  setEnemyType(int enemyID, int newType);
+int   setEnemyHealth(int enemyID, int newHealth);
+int   setEnemyArmour(int enemyID, int newArmour);
+void  printEnemy(int enemyID);
+
+
+
+
 
 
 #endif

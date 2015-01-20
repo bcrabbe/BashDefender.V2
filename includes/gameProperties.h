@@ -4,6 +4,8 @@
 
 #include "./../includes/debug.h"
 #include "../includes/tower.h"
+#include "../includes/Display.h"
+
 
 /*----------Enumerated Types-----------*/
 enum cmdType
@@ -59,6 +61,7 @@ typedef enum clockType	{
 } clockType;
 
 /*----------Symbolic Constants-----------*/
+#define TOTAL_P_HEALTH 100 //! Total Player health
 
 #define ACTIONCOOLDOWN	10	//! minimum time between actions being removed from queue
 
@@ -83,6 +86,7 @@ typedef struct gameClock *GameClock;
 typedef struct clockNode *ClockNode;
 
 /*----------Function Prototypes-----------*/
+void presentHealth ();
 GameProperties createGame();
 int getAvailableMemory();
 int useMemory(GameProperties game,int mem);
