@@ -21,7 +21,6 @@ towerPos x 730 y 130
 towerPos x 570 y 70
 towerPos x 500 y 250
 totalWaves total 3
-wave waveNum 1 enemyType 1 numberOfEnemies 0 entrance 2 delay 200 level 1
 wave waveNum 1 enemyType 1 numberOfEnemies 1 entrance 2 delay 150 level 1
 wave waveNum 1 enemyType 1 numberOfEnemies 1 entrance 2 delay 150 level 1
 wave waveNum 1 enemyType 1 numberOfEnemies 1 entrance 2 delay 150 level 1
