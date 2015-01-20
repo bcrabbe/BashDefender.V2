@@ -293,7 +293,8 @@ void killEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
 	  if(e->dead != 1)	{
-    	  e->dead = 1;
+			enemyDeathSound();
+    		e->dead = 1;
 		    e->health = 0;
 		    addMemory(e->maxHealth);
 		    increaseDeathCnt();

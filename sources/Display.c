@@ -14,8 +14,8 @@
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 struct display {
     /* 
@@ -806,17 +806,20 @@ void menu_screen(gameState *state)
 				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
                         && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6
                         && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 - (SCREEN_HEIGHT_GLOBAL/6) 
-                        &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
+                        &&  d->event.button.y < (SCREEN_HEIGHT_GLOBAL/3)*2)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
 							//!Start Level
+							printf("easy\n");
+							printf("Y greater than: %d y less than:%d \n",((SCREEN_HEIGHT_GLOBAL/3)*2 - (SCREEN_HEIGHT_GLOBAL/6)),((SCREEN_HEIGHT_GLOBAL/3)*2 + (SCREEN_HEIGHT_GLOBAL/6)));
                             *state = easyLevel;
                         }
 				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
 						&& d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
-						&& d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 
+						&& d->event.button.y > (SCREEN_HEIGHT_GLOBAL/3)*2 
 						&&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
 							//!Start Level
+							printf("hard level \n");
                             *state = hardLevel;
                         }
 				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
