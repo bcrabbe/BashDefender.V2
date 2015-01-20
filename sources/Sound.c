@@ -18,20 +18,23 @@
 
 struct sound{
     Mix_Music *background_music;
-    Mix_Chunk *tower_sound;
+    Mix_Chunk *tower_sound[2];
     Mix_Chunk *enemy_sound;
 
 };
 
 typedef struct sound *Sound;
 
-//internal functions
+/* 
+ *internal Sound functions 
+ */
 Sound getSoundPointer(Sound s);
 void check_load_sound(void *music, char *sound_name);
+void load_sound_effect (Mix_Chunk **effect, char *effect_name);
 
-
-Sound getSoundPointer(Sound s);
-
+/*
+ * initialize the sound
+ */
 void init_sound(){
     
     Sound s = (Sound)malloc(sizeof(struct sound));
@@ -42,44 +45,58 @@ void init_sound(){
     }
     
     s->background_music = Mix_LoadMUS("sound.mp3");
-    s->enemy_sound = Mix_LoadWAV("enemy_sound.wav");
-    s->tower_sound = Mix_LoadWAV("laser_sound.wav");
-    
     check_load_sound((Mix_Music*)s->background_music, "sound.mp3");
-    check_load_sound((Mix_Chunk*)s->enemy_sound, "enemy_sound.wav");
-    check_load_sound((Mix_Chunk*)s->tower_sound, "laser_sound.wav");
-    
-    Mix_VolumeMusic(90);
+
+    load_sound_effect(&s->enemy_sound, "death.wav");
+    load_sound_effect(&s->tower_sound[0], "laser_sound1.wav");
+    load_sound_effect(&s->tower_sound[1], "laser_sound2.wav");
+
+    Mix_VolumeMusic(50);
 
     getSoundPointer(s);
 }
 
-void enemySound(int type){
-    Sound s = getSoundPointer(NULL);
-    switch (type) {
-        case 1:
-                Mix_PlayChannel(-1, s->enemy_sound, 0);
-                Mix_VolumeChunk(s->enemy_sound, 50);
-        break;
-    }
+/*
+ *Load sound effect
+ */
+void load_sound_effect (Mix_Chunk **effect, char *effect_name) {
+    *effect = Mix_LoadWAV(effect_name);
+    check_load_sound((Mix_Chunk *)effect, effect_name);
+    
 }
 
+/*
+ *play tower sound by types (i.e laser or bullet...) 
+ */
 void towerSound(int type){
     Sound s = getSoundPointer(NULL);
-    switch (type) {
-        case 1:
-            Mix_PlayChannel(-1, s->tower_sound, 0);
-            Mix_VolumeChunk(s->tower_sound, 50);
-            break;
-    }
+    Mix_PlayChannel(-1, s->tower_sound[type], 0);
+    Mix_VolumeChunk(s->tower_sound[type], 50);
 }
 
+
+/*
+ *play enemy death sound 
+ */
+void enemyDeathSound(){
+    Sound s = getSoundPointer(NULL);
+    Mix_PlayChannel(-1, s->enemy_sound, 0);
+    Mix_VolumeChunk(s->enemy_sound, 50);
+}
+
+
+/*
+ *play background sound
+ */
 void playBackgroundSound(){
     SDL_Delay(20);
     Sound s = getSoundPointer(NULL);
     Mix_PlayMusic(s->background_music, -1);
 }
 
+/*
+*check that sound was loaded correctly
+*/
 void check_load_sound(void *music, char *sound_name){
     if(music == NULL){
         printf("Cannot find %s\n", sound_name);
@@ -88,6 +105,9 @@ void check_load_sound(void *music, char *sound_name){
     }
 }
 
+/*
+ *singleton..
+*/
 Sound getSoundPointer(Sound s){
     static Sound sound;
     if(s != NULL)	{
@@ -96,11 +116,15 @@ Sound getSoundPointer(Sound s){
     return sound;
 }
 
+/*
+ *destroy everything
+ */
 void shutSound(){
     Sound s = getSoundPointer(NULL);
     Mix_FreeMusic(s->background_music);
     Mix_FreeChunk(s->enemy_sound);
-    Mix_FreeChunk(s->tower_sound);
+    Mix_FreeChunk(s->tower_sound[0]);
+    Mix_FreeChunk(s->tower_sound[1]);
     Mix_CloseAudio();
     Mix_Quit();
 }

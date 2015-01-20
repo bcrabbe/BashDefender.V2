@@ -345,6 +345,7 @@ void initLevel(int level)    {
 	createTowerPos();
 	initialQueueReader();
 	createProjectileList();
+  createExplosionList();
 	initialiseParser();
 	init_abilities();
     destroyCommandList();
@@ -541,9 +542,9 @@ void setUpTesting()	{
     createEnemyGroup();
     createTowerPos();
     createProjectileList();
+    createExplosionList();
     initialiseParser();
     init_abilities();
-    initialQueueReader();
 }
 
 void testLevelController()	{
@@ -560,6 +561,7 @@ void testLevelController()	{
 }
 
 void testReadLevelSettingsFile()	{
+	iprint(countKeywords());
 	sput_fail_unless(countKeywords() == 9,"9 Keywords Should Exist in the level settings queue");
 	initialQueueReader();	//! Removing set up commands
 	sput_fail_unless(countKeywords() == 3,"Valid: 3 Keywords Should Exist in the level settings queue");

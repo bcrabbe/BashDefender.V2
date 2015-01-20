@@ -43,4 +43,5 @@ void testEnemyDeath();
 void testParseToTower();
 void testValidParses();
 void testEnemyInRange();
+void testkillall();
 

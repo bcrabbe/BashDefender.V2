@@ -10,33 +10,34 @@
 
 // enemy initial characteristics
 #define DELAY_BETWEEN_ENEMIES	1
-#define INT_BASIC_HEALTH 100
+
+#define INT_BASIC_HEALTH 150
 #define INT_BASIC_ARMOUR 0
 #define INT_BASIC_SPEED	2 
 #define INT_BASIC_DAMAGE 10
-#define INT_BASIC_HEIGHT 50
-#define INT_BASIC_WIDTH 50
+#define INT_BASIC_HEIGHT 90
+#define INT_BASIC_WIDTH 90
 
-#define INT_HEAVY_HEALTH 1000
+#define INT_HEAVY_HEALTH 700
 #define INT_HEAVY_ARMOUR 1
 #define INT_HEAVY_SPEED 1
-#define INT_HEAVY_DAMAGE 100
-#define INT_HEAVY_HEIGHT 50
-#define INT_HEAVY_WIDTH 50
+#define INT_HEAVY_DAMAGE 30
+#define INT_HEAVY_HEIGHT 120
+#define INT_HEAVY_WIDTH 120
 
-#define CHAR_BASIC_HEALTH 100
+#define CHAR_BASIC_HEALTH 150
 #define CHAR_BASIC_ARMOUR 0
 #define CHAR_BASIC_SPEED 2 
 #define CHAR_BASIC_DAMAGE 10
-#define CHAR_BASIC_HEIGHT 100
-#define CHAR_BASIC_WIDTH 100
+#define CHAR_BASIC_HEIGHT 90
+#define CHAR_BASIC_WIDTH 90
 
-#define CHAR_HEAVY_HEALTH 1000
+#define CHAR_HEAVY_HEALTH 700
 #define CHAR_HEAVY_ARMOUR 1
 #define CHAR_HEAVY_SPEED 1
-#define CHAR_HEAVY_DAMAGE 100
-#define CHAR_HEAVY_HEIGHT 100
-#define CHAR_HEAVY_WIDTH 100
+#define CHAR_HEAVY_DAMAGE 30
+#define CHAR_HEAVY_HEIGHT 120
+#define CHAR_HEAVY_WIDTH 120
 
 typedef struct path *Path;
 typedef struct levelPaths *LevelPaths;
@@ -71,6 +72,7 @@ int isDead(int enemyID);
 void killEnemy(int enemyID);
 int inRange(int tX, int tY, int tRange, int enemyID);
 void damageEnemy(int damage, int enemyID, int damageType);
+void slowEnemy(int targetID, int slowPower, int slowDuration);
 void towerGetTargetPos(int * towerTargetPosition, int enemyID);
 void printEnemy(int enemyID);
 void createPath();
@@ -80,8 +82,10 @@ int **getPathPointer(int **newPath);
 void testEnemy();
 int setEnemyX(int enemyID, int newX);
 int setEnemyY(int enemyID, int newY);
+void setEnemyType(int enemyID, int newType);
 int setEnemyHealth(int enemyID, int newHealth);
 int setEnemyArmour(int enemyID, int newArmour);
+int getEnemyArmour(int enemyID);
 void present_enemy(Display d);
 void createLevelPaths();
 LevelPaths getLevelPaths(LevelPaths pathList);

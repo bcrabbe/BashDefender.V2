@@ -8,16 +8,19 @@
 
 #define MAX_COOLDOWN 100 //  the longest number of ticks that a tower can take between shots
 
+//#defines for starting tower stats
+#define TOWER_STARTING_DAMAGE 20
+#define TOWER_STARTING_RANGE 100
+#define TOWER_STARTING_SPEED 50
+#define TOWER_STARTING_AOE_POWER 10
+#define TOWER_STARTING_AOE_RANGE 40
+#define TOWER_STARTING_SLOW_POWER 0
+#define TOWER_STARTING_SLOW_DURATION 40
+
 //#defines for tower type weighting
 #define DAMAGE_MOD 9
-#define SPEED_MOD 6
-#define RANGE_MOD 3
-
-//#defines for upgrade amounts
-#define DAMAGE_UPGR_VAL 5
-#define SPEED_UPGR_VAL 5
-#define RANGE_UPGR_VAL 10
-
+#define SPEED_MOD 8
+#define RANGE_MOD 4
 
 struct tower {
     int towerType;
@@ -26,11 +29,15 @@ struct tower {
     int damage;
     int range;
     int speed;
-    int AOErange; //! not yet implemented
-    int AOEpower; //!not yet implemented
     int targetID;
     int firing;
     int targetPosition[2];
+    
+    int AOErange;
+    int AOEpower;
+    
+    int slowPower;
+    int slowDuration;
     
     int level;
     int height;
@@ -271,6 +278,19 @@ int getTowerLevel(int towerID)	{
 	return 0;
 }
 
+int getTowerSlowPower(int towerID) {
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->slowPower;     
+	}
+	return 0;
+}
+int getTowerSlowDuration(int towerID) {
+	if(getNumberOfTowers() >=towerID)	{
+		return getTowerID(towerID)->slowDuration;     
+	}
+	return 0;
+}
+
 void testingTowerModule()	{
 	sput_start_testing();
 	sput_set_output_stream(NULL);	
@@ -358,7 +378,7 @@ void testTowerFiring()
     }
     
     sput_fail_unless(test_numOfProjectiles() == 3, "Valid: tower has created three projectiles after firing three times");
-    sput_fail_unless(test_checkStartingProjectileTarget() == 1, "Valid: created projrctiles are targetting correct enemy");
+    sput_fail_unless(test_checkStartingProjectileTarget() == 1, "Valid: created projectiles are targetting correct enemy");
 }
     
 
@@ -470,7 +490,6 @@ int userCreateTower(int inputTowerPositionX, int inputTowerPositionY)
 }
 
 
-
 void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
 {
     TowerGroup TG = getTowerGrp(NULL);
@@ -482,13 +501,15 @@ void initialiseNewTower(tower newTow, int TowerPositionX, int TowerPositionY )
 
     newTow->upgradesCompleted = 0;
 
-    newTow->damage = 20;
-    newTow->range = 100;
+    newTow->damage = TOWER_STARTING_DAMAGE;
+    newTow->range = TOWER_STARTING_RANGE;
     newTow->firing = 0;
 	  newTow->level = 1;
-    newTow->speed = 50;
-    newTow->AOEpower = 10;
-    newTow->AOErange = 10;
+    newTow->speed = TOWER_STARTING_SPEED;
+    newTow->AOEpower = TOWER_STARTING_AOE_POWER;
+    newTow->AOErange = TOWER_STARTING_AOE_RANGE;
+    newTow->slowPower = TOWER_STARTING_SLOW_POWER;
+    newTow->slowDuration = TOWER_STARTING_SLOW_DURATION;
     newTow->height = 50;
     newTow->width = 50;
     newTow->gunX = 23;
@@ -583,7 +604,7 @@ int upgradeAOEpower(int target)
 	
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
-		upgradeT->AOEpower++;
+		upgradeT->AOEpower+=AOE_POWER_UPGR_VAL;
     makePostUpgradeChanges(target);
     return upgradeT->AOEpower;
 	}
@@ -594,13 +615,36 @@ int upgradeAOErange(int target)
 	
 	tower upgradeT;
 	if((upgradeT = getTowerID(target))!= NULL)	{
-		upgradeT->AOErange++;
+		upgradeT->AOErange+=AOE_RANGE_UPGR_VAL;
     makePostUpgradeChanges(target);
     return upgradeT->AOErange;
 	}
 	return 0;
 }
 
+int upgradeSlowPower(int target)
+{
+	
+	tower upgradeT;
+	if((upgradeT = getTowerID(target))!= NULL)	{
+		upgradeT->slowPower+=SLOW_POWER_UPGR_VAL;
+    makePostUpgradeChanges(target);
+    return upgradeT->slowPower;
+	}
+	return 0;
+}
+
+int upgradeSlowDuration(int target)
+{
+	
+	tower upgradeT;
+	if((upgradeT = getTowerID(target))!= NULL)	{
+		upgradeT->slowDuration+=SLOW_DUR_UPGR_VAL;
+    makePostUpgradeChanges(target);
+    return upgradeT->slowDuration;
+	}
+	return 0;
+}
 
 unsigned int getNumberOfTowers()	{
 	return ((getTowerGrp(NULL))->numOfTowers);
@@ -625,10 +669,7 @@ void freeAllTowers()	{
 		i++;
 	}
 
-	if(getTowerGrp(NULL)->numOfTowers != 0)	{
-        i--;
-        getTowerGrp(NULL)->numOfTowers -=i;
-	}
+	getTowerGrp(NULL)->numOfTowers = 0;	
 }
 
 void testGetTower()	{
@@ -645,6 +686,14 @@ void testGetTower()	{
 	  sput_fail_unless(createTowerFromPositions(99) == 0, "Invalid: no tower position 99");
 	  sput_fail_unless(createTowerFromPositions(0) == 0, "Invalid: no tower position 0");
 	  sput_fail_unless(getNumberOfTowers() == 0,"valid: No Towers: previous attempts were invalid");
+}
+
+/*
+* manually reset a tower's firing cooldown. Used in testing
+*/
+void resetTowerCooldown(int towerID)
+{
+    getTowerGrp(NULL)->listOfTowers[towerID]->firingCoolDown = 0;
 }
 
 /*
@@ -739,9 +788,9 @@ void fire()
 	          currentTower->firingCoolDown--;
 	      } else {
 	          findTarget(currentTower);
-            if(currentTower->firing == 1) {
-	              launchProjectile(currentTower);
-            }   
+              if(currentTower->firing == 1) {
+                launchProjectile(currentTower);
+            }
         }
     }
 }
@@ -776,16 +825,16 @@ void launchProjectile(tower currentTower)
     
     switch (currentTower->firingType) {
         case laser :
-            fireLaser(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
+            fireLaser(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange, currentTower->slowPower, currentTower->slowDuration);
             break;
         case missile :
-            launchMissile(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
+            launchMissile(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange, currentTower->slowPower, currentTower->slowDuration);
+            towerSound(0);
             break;
         case bullet :
-            launchBullet(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType);
+            launchBullet(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange, currentTower->slowPower, currentTower->slowDuration);
             break;
     }
-
 }
   
 
@@ -802,6 +851,6 @@ void present_tower()
         }
     }
     // bullets added here temporarily
-    moveProjectiles();
-    drawProjectiles();
+    updateProjectiles();
+    updateExplosions();
 }

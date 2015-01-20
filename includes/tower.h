@@ -2,14 +2,24 @@
 #define TEST_Tower_h
 
 #include "../includes/projectiles.h"
+#include "../includes/Sound.h"
 
 typedef struct tower *tower;
 typedef struct towerGroup *TowerGroup;
 typedef struct towerPos *TowerPos;
 typedef struct towerPosNode *TowerPosNode;
 
+/*needed to move these hash defines here for costOfUpgradeFactoringInTheUpgradesOnTheQueue in actionQueue mod - ben */
 #define UPGRADES_PER_LEVEL 5 // the number of upgrades that can be done to a tower before its level increases
-
+//#defines for upgrade amounts
+#define DAMAGE_UPGR_VAL 5
+#define SPEED_UPGR_VAL 5
+#define RANGE_UPGR_VAL 10
+#define AOE_RANGE_UPGR_VAL 10
+#define AOE_POWER_UPGR_VAL 10
+#define SLOW_POWER_UPGR_VAL 2
+#define SLOW_DUR_UPGR_VAL 20
+#define NUMBER_OF_TOWER_STATS 7
 // tower positon handling
 int isTowerPositionAvailable(int position);
 void createTowerPos();
@@ -42,6 +52,9 @@ int getTowerDamage(int towerID);
 int getTowerAOErange(int towerID);
 int getTowerAOEpower(int towerID);
 int getTowerLevel(int towerID);
+int getNumberOfUpgradesSinceTowerLevelUp(int towerID);
+int getTowerSlowPower(int towerID);
+int getTowerSlowDuration(int towerID);
 int getTowerX(int towerID);
 int getTowerY(int towerID);
 unsigned int getNumberOfTowers();
@@ -54,6 +67,8 @@ int upgradeRange(int target);
 int upgradeSpeed(int target);
 int upgradeAOEpower(int target);
 int upgradeAOErange(int target);
+int upgradeSlowDuration(int target);
+int upgradeSlowPower(int target);
 int setTowerType(int towerID, int newType);
 void makePostUpgradeChanges(int TowerID);
 void assignCalculatedFiringType(int towerID);
@@ -95,6 +110,7 @@ int checkCharType();
 void testingProjectiles();
 void testProjectileHandling();
 void testTowerFiring();
+void resetTowerCooldown(int towerID);
 
 
 
