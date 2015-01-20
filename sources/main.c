@@ -84,6 +84,7 @@ void startLevel(Display d, int *restart)	{
     do{
 		while(pause)	{
 			pause_screen(&pause,restart);
+
 		}
         ++steps;
         drawBackground();

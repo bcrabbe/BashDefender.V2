@@ -663,8 +663,8 @@ int terminal_window(char *pass, char *clear, int *pause,int restart)
 					{
 						pass[strlen(pass) - 1] = '\0';
 					}
-
-                    display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid, d->font, d->white);
+                    display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),
+					TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass, solid, d->font, d->white);
 				}
                 switch(d->event.key.keysym.sym)
                 {
