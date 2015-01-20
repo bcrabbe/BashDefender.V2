@@ -42,16 +42,22 @@ int main(int argc, char ** argv)
 			    }
 				break;
 			case tutorial:
-					initLevel(0);
-					tutorialLevel(d,&restart);
-					endLevel(&restart);
-					state = menu;
+				initLevel(0);
+				tutorialLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
 				break;
-			case level1:
-					initLevel(1);
-					startLevel(d,&restart);
-					endLevel(&restart);
-					state = menu;
+			case hardLevel:
+				initLevel(1);
+				startLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
+				break;
+			case easyLevel:
+				initLevel(2);
+				startLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
 				break;
 			default:
                 shutSDL();
@@ -72,13 +78,13 @@ void startLevel(Display d, int *restart)	{
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-    int ended = 0;
    	int pause = 0; 
     int steps=0;
 
     do{
 		while(pause)	{
 			pause_screen(&pause,restart);
+
 		}
         ++steps;
         drawBackground();
@@ -96,6 +102,8 @@ void startLevel(Display d, int *restart)	{
         present_tower();
         
     	fire();
+      updateProjectiles();
+      updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);
@@ -106,14 +114,15 @@ void startLevel(Display d, int *restart)	{
         presentHealth();
         endFrame();
         
-        ended = checkIfPlayerDead();
-        while (ended) {
-            //final screen returns 1 if restart button was pressed...
-            if (final_screen()){
-                *restart = 1;
-				ended = 0;
-            }
-        }
+		if(checkIfOver() || checkIfPlayerDead())	{
+		      freeAllProjectiles();
+       		while (!*restart) {
+      	      //final screen returns 1 if restart button was pressed...
+       			if (final_screen()){
+       	         *restart = 1;
+       			}
+        	}
+		}
         
     } while(!terminal_window(pass, clear,&pause, *restart));
 }
@@ -121,7 +130,8 @@ void startLevel(Display d, int *restart)	{
 
 void tutorialLevel(Display d,int *restart)	{
 
-    tutPhase tPhase = phaseOne;
+    tutPhase tPhase = phaseTwenty;
+	setCurrWaveNum(3);
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -337,13 +347,30 @@ void tutorialLevel(Display d,int *restart)	{
                     flag = 0;
 				}
 				tutorial_nineteen();
+				if(is_ability_unlocked(KILL))	{
+					tPhase++;
+				}
 				break;
 			case phaseTwentyTwo:
 				if(!flag)	{
                 	setCurrTime(findClock(tutorialClock));
                     flag = 1;
 				}
-				exit(1);	
+				tutorial_twenty();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                    tPhase++;
+                }
+				break;
+			case phaseTwentyThree:
+                    if(flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+					setCurrWaveNum(4);
+                    updateAllInfoWindow();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                    }
+                    break;
 			default:
                 break;
         }
@@ -365,6 +392,8 @@ void tutorialLevel(Display d,int *restart)	{
         present_tower();
 
     	fire();
+      updateProjectiles();
+      updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);
@@ -376,6 +405,7 @@ void tutorialLevel(Display d,int *restart)	{
         
         //ended = checkIfPlayerDead();
         while (ended) {
+            freeAllProjectiles();
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
                 ended = 0;
@@ -400,7 +430,7 @@ void testing()	{
 
 	setUpTesting();
     //!Unit Tests
-    
+
     testLevelController(); //! Working
     testingProjectiles(); //! Working
     testingGameStructure(); //!Memory Tests Failing
@@ -412,14 +442,14 @@ void testing()	{
     testTerminalWindowInput();
     testAbilities();
 
-   	//! System Tests 
+   	//! System Tests
     enemyToGamePropertiesTesting();
-    testParserToInfoWindow();
     queueToTowerTesting();
     parseToQueueTesting(); //!Working
-    parseToTowerTesting(); //!Working
-    towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working*/
-    //testParserToInfoWindow();
+    parseToTowerTesting(); //!Working*/
+    towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be workin
+    testParserToInfoWindow();
+
 }
 
 void queueToTowerTesting(){
@@ -508,6 +538,7 @@ void towerToEnemyTesting()	{
 
 void testEnemyInRange()	{
 
+  freeAllProjectiles();
 	freeAllEnemies();
 	createTestEnemy();
 	setEnemyHealth(1,100);
@@ -529,6 +560,7 @@ void testEnemyInRange()	{
 	fire();
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(getEnemyHealth(1) == 100 + getEnemyArmour(1) - (getTowerDamage(1)*TYPE_MATCH_MODIFIER),"In range type matched enemy has correct reduced health from tower damage");
 	for(int i = 0; i < 9; i++)	{
@@ -537,6 +569,7 @@ void testEnemyInRange()	{
 	}
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(isDead(1) == 1, "Enemy dead after being fired on 10 times");
 	
@@ -552,6 +585,7 @@ void testEnemyInRange()	{
 	fire();
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(getEnemyHealth(1) == 100 + getEnemyArmour(1) - (getTowerDamage(1)/TYPE_MISMATCH_MODIFIER),"In range type mismatched enemy has correct reduced health from tower damage");
 	

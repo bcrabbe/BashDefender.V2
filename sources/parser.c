@@ -24,7 +24,7 @@
 #include "../includes/gameProperties.h"
 #include "../includes/abilities.h"
 
-#define TERMINAL_OUTPUT_ON 0
+#define TERMINAL_OUTPUT_ON 1
 #pragma mark ProtoTypes
 //top level command parser:
 int parseCommands(char ** commandArray, int numberOfTokens);
@@ -1023,7 +1023,6 @@ int parseWhile(char *inputString)
         }
         operator op = getOperatorFromString( bracketTokenArray[1] );
         int numberOfOperands=0;
-        //envVarList * envsListStruct = getEnvsList(NULL);
         envVar * variable;
         if(op==none || op==not)
         {
@@ -1127,6 +1126,7 @@ int parseWhile(char *inputString)
                 }
                 conditionTokenIs=0;
             }
+            variable->value = variable->getValueFunc();
             int condition = stringToInt(conditionArray[conditionTokenIs]);
             if(conditionTokenIs==0)//for now must have var on LHS
             {

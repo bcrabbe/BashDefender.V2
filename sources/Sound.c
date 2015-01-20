@@ -45,6 +45,7 @@ void init_sound(){
     }
     
     s->background_music = Mix_LoadMUS("sound.wav");
+
     check_load_sound((Mix_Music*)s->background_music, "sound.mp3");
 
     load_sound_effect(&s->enemy_sound, "death.wav");

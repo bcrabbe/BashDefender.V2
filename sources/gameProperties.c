@@ -323,6 +323,14 @@ int checkIfPlayerDead()   {
 
 }
 
+int checkIfOver()	{
+
+	if((getWave(getGame(NULL))  ==  getTotalWaveNo()) && (getTotalCurrentWaveEnemies() == getDeathCnt()))	{
+		return 1;
+	}
+	return 0;
+}
+
 /*
  *Returns cost of new tower
  */

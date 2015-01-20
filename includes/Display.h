@@ -99,7 +99,10 @@ typedef enum	{
 typedef enum gameState  {
     menu,
     tutorial,
-    level1,
+    hardLevel,
+	easyLevel
+    //pause
+
 } gameState;
 
 Display init_SDL();
@@ -124,7 +127,7 @@ void drawTowerPosition(int x, int y, int w, int h,tPosIcon tIcon);
  * projectiles
  */
 void drawBullet(int x, int y, int w, int h, int bulletType);
-void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType);
+void drawLaser(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType, int drawCount, int maxDrawCount);
 
 /*
  * AOE

@@ -12,7 +12,7 @@ typedef struct Ability
 {
 	int unlocked;
 	int cost;
-	
+	clockType cType;	
 }Ability;
 
 typedef struct Abilities
@@ -36,8 +36,9 @@ void init_abilities()
 	abl->kill.cost = KILL_COST;
 }
 	
-void unlock_ability(AbilityID id)
+int unlock_ability(AbilityID id)
 {
+	int success = 0;
 	char unlockstring[17] = "Ability unlocked";
 	Abilities *abl = get_abilities();
 	switch(id)
@@ -45,12 +46,14 @@ void unlock_ability(AbilityID id)
 		case PSX:
 		{
 			abl->psx.unlocked = 1;
+			success = 1;
 			break;
 		}
 		case KILL:
 		{
 			abl->kill.unlocked = 1;
 			useMemory(getGame(NULL), KILL_UNLOCK_COST);
+			success = 1;
 			break;
 		}
 		default: 
@@ -59,7 +62,12 @@ void unlock_ability(AbilityID id)
 			exit(1);
 		}
 	}
-	textToTowerMonitor(unlockstring);		
+	textToTowerMonitor(unlockstring);	
+	if(success == 1)
+	{
+		return 1;
+	}
+	return 0;	
 }
 
 int get_ability_cost(AbilityID id)
@@ -184,8 +192,9 @@ int is_available_ability(AbilityID id)
 	return 0;
 }
 
-void apt_get_query()
+int apt_get_query()
 {
+	int success = 0;
 	char *statuslist = (char*) calloc(200, sizeof(char));
 	char template[100] = {"APT_GET_QUERY\n\n"};
 	char psxlocked[50] = "PSX ability is locked\n";
@@ -221,7 +230,16 @@ void apt_get_query()
 	sprintf(killunlockcost, "Kill ability unlock cost = %d", KILL_UNLOCK_COST);
 	strcat(statuslist, killunlockcost);
 	textToTowerMonitor(statuslist);
+	if(statuslist[0] != '\0')
+	{
+		success = 1;
+	}
 	statuslist[0] = '\0';
+	if(success == 1)
+	{
+		return 1;
+	}
+	return 0;
 } 
 	
 
@@ -239,7 +257,7 @@ void psx_ability()
 	char *psxlist = (char*) calloc(500,sizeof(char));	
 	char line[32];
 	int enemy_number = getNumberOfEnemies();
-	int health = 0, ID = 0, i, j;
+	int health = 0, ID = 0, i, j, count = 0;
 	printf("%d\n", enemy_number);
 
 
@@ -255,30 +273,36 @@ void psx_ability()
 		strcpy(psxlist, "EnemyID Health\n");
 		for(i = 1; i <= enemy_number; i++)
 		{
-			if(!isDead(i))
+			if(count < 10)
 			{
-				ID = e_health[i].id;
-				health = e_health[i].health;
-				sprintf(line, "%d                %d\n", ID, health);
-				strcat(psxlist, line);
+				if(isDead(e_health[i].id) == 0)
+				{
+					ID = e_health[i].id;
+					health = e_health[i].health;
+					sprintf(line, "%d                %d\n", ID, health);
+					strcat(psxlist, line);
+					count++;
+				}
 			}
 		}
         textToTowerMonitor(psxlist);
 		test_psx_string(psxlist);
-		printf("%s\n", psxlist);
-		psxlist[0] = '\0';
 	}
+	free(e_health);
+	free(psxlist);
 }
 
 int kill_ability(int enemyID)
 {
-	if(is_available_ability(KILL) == 1)
+	if(is_available_ability(KILL))
 	{
-		{
+		if(checkClock(killSingle,KILL_SINGLE_COOLDOWN))	{
 			killEnemy(enemyID);
+			useMemory(getGame(NULL), KILL_COST);
+			return 1;
+		} else	{
+			errorToTerminalWindow("Cooldown not yet ready");			
 		}
-		useMemory(getGame(NULL), KILL_COST);
-		return 1;
 	}
 	return 0;
 }
@@ -288,15 +312,20 @@ int kill_all_ability()
 	int i;
 	int enemy_number = getNumberOfEnemies();
 
-	if(is_available_ability(KILL) == 1)
+	if(is_available_ability(KILL))
 	{
-		for(i = 1; i <= enemy_number; i++)
-		{
-			drawKillAll();
-			killEnemy(i);
-		}
-		useMemory(getGame(NULL), KILL_ALL_COST);
-		return 1;
+		if(checkClock(killAll, KILL_ALL_COOLDOWN))	{
+			for(i = 1; i <= enemy_number; i++)
+			{
+				drawKillAll();
+				killEnemy(i);
+			}
+			useMemory(getGame(NULL), KILL_ALL_COST);
+			return 1;
+		} else {
+			errorToTerminalWindow("Cooldown not yet ready");			
+			return 0;	
+		}	
 	}
 	return 0;
 }
@@ -316,9 +345,9 @@ void testAbilities()
 	sput_start_testing();
 	sput_set_output_stream(NULL);
 	
-	//sput_enter_suite("psx_ability():Testing Abilities - Info window");
-	//sput_run_test(testAbilitiestoInfoWindow);
-	//sput_leave_suite();
+	sput_enter_suite("Testing Unlock Functions");
+	sput_run_test(testunlocks);
+	sput_leave_suite();
 
 	sput_enter_suite("psx_ability(): Testing PSX");
 	sput_run_test(testpsx);
@@ -348,12 +377,21 @@ void testkillall()
 	createEnemy();
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
+	printf("%d\n", enemy_number);
 
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
 	unlock_ability(KILL);
-	kill_all_ability();
-	sput_fail_unless(getEnemyHealth(1) == 0, "Enemy should be killed");
+	sput_fail_unless(kill_all_ability() == 1, "Enemy should be killed");
 	freeAllEnemies();
 }
 
+void testunlocks()
+{
+	init_abilities();
+	sput_fail_unless(get_ability_cost(PSX) == 0, "PSX cost should be 0 after initialization");
+	sput_fail_unless(get_ability_cost(KILL) > 0, "KILL cost should be greater than 0 after initialization");
+	sput_fail_unless(is_valid_unlock(KILL) == 1, "Valid unlock should return 1 after kill initialization");
+	sput_fail_unless(apt_get_query() == 1, "apt_get_query should return 1 on successful string creation");
+	sput_fail_unless(unlock_ability(KILL) == 1, "On successful unlock, function should return 1");
+}
 

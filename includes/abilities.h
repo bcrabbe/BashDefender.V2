@@ -17,10 +17,10 @@ typedef enum AbilityID
 	KILL
 }AbilityID;
 
-
-
 int kill_ability(int enemyID);
+
 int is_ability_unlocked(AbilityID id);
+
 int is_valid_unlock(AbilityID id);
 
 int kill_all_ability();
@@ -29,7 +29,7 @@ void psx_ability();
 
 int is_available_ability(AbilityID id);
 
-void unlock_ability(AbilityID id);
+int unlock_ability(AbilityID id);
 
 void init_abilities();
 
@@ -43,6 +43,8 @@ void testpsx();
 
 void testkillall();
 
-void apt_get_query();
+int apt_get_query();
+
+void testunlocks();
 
 #endif

@@ -9,7 +9,7 @@
 #include "../includes/parser.h"
 #include <stdbool.h>
 #include "../includes/sput.h"
-
+#include"../includes/Sound.h"
 
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
@@ -45,7 +45,8 @@ struct display {
     SDL_Texture *finalBackgroundTexture;
 
 
-	SDL_Texture *startButton;
+	SDL_Texture *easyButton;
+	SDL_Texture *hardButton;
     SDL_Texture *reStartButton;
    	SDL_Texture *returnButton; 
 	SDL_Texture *tutorialButton;
@@ -130,7 +131,8 @@ Display init_SDL(){
     init_pic(&d->statsBarTexture, "Images/blackBar.png");
     init_pic(&d->towerInfoTexture, "Images/towerInfoBackground.png");
     init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
-    init_pic(&d->startButton, "Images/start-button.png");
+    init_pic(&d->easyButton, "Images/easyLevel.png");
+    init_pic(&d->hardButton, "Images/HardLevel.png");
 	init_pic(&d->returnButton,"Images/returnButton.png");
 	init_pic(&d->tutorialButton,"Images/tutorialButton.png");
     init_pic(&d->terminalWindowTexture, "Images/terminalwindow.png");
@@ -313,9 +315,25 @@ void getWindowSize(int *w, int *h){
     SDL_GetWindowSize(d->window, w, h);
 }
 
-/*
- * draw damage line from X & Y to target X & Y
- */
+
+/*draw damage line from X & Y to target X & Y*/
+void drawLaser(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType, int drawCount, int maxDrawCount){
+      // choose laser colour depending on type
+      int sat = 250 - (int) (((double) drawCount/ (double) maxDrawCount) * 250.0);
+      SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
+      if(laserType == INT_TYPE) {
+            SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, sat);
+        } else {
+            SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, sat);
+        }
+      for(int i = -2; i < 3; i++) {
+          for(int j = -1; j < 2; j++) {
+              SDL_RenderDrawLine(d->renderer, X_from+i, Y_from+j, X_target, Y_target);
+          }
+      }
+}
+
+
 void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType){
       // choose laser colour depending on type
       int sat = 5;
@@ -338,6 +356,7 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int
         }
     }
 }
+
 
 /*
  * draw an enemy at x and y coor with the health bar above it
@@ -488,14 +507,16 @@ void shutSDL() {
     SDL_DestroyTexture(d->map);
     SDL_DestroyTexture(d->towerMonitorTexture);
     SDL_DestroyTexture(d->startBackgroundTexture);
-    SDL_DestroyTexture(d->startButton);
+    SDL_DestroyTexture(d->easyButton);
+    SDL_DestroyTexture(d->hardButton);
     SDL_DestroyTexture(d->newtexture);
     SDL_DestroyTexture(d->terminalWindowTexture);
     SDL_DestroyTexture(d->actionQueueTexture);
+
     for (int i = 0; i < 26; i++) {
         SDL_DestroyTexture(d->towerPositionTexture[i]);
     }
-    SDL_DestroyTexture(d->startButton);
+    SDL_DestroyTexture(d->reStartButton);
     SDL_DestroyTexture(d->startBackgroundTexture);
 
     SDL_DestroyRenderer(d->renderer);
@@ -650,8 +671,8 @@ int terminal_window(char *pass, char *clear, int *pause,int restart)
 					{
 						pass[strlen(pass) - 1] = '\0';
 					}
-
-                    display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass,solid, d->font, d->white);
+                    display_text(TERMINAL_WINDOW_X + (TERMINAL_WINDOW_WIDTH / 10),
+					TERMINAL_WINDOW_Y + (TERMINAL_WINDOW_HEIGHT - (TERMINAL_WINDOW_HEIGHT / 7)), pass, solid, d->font, d->white);
 				}
                 switch(d->event.key.keysym.sym)
                 {
@@ -750,9 +771,19 @@ void menu_screen(gameState *state)
     //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
     animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
 
-    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
+    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), 
+			(SCREEN_HEIGHT_GLOBAL/3)*2-(SCREEN_HEIGHT_GLOBAL/6), 
+			SCREEN_HEIGHT_GLOBAL/6, 
+			SCREEN_HEIGHT_GLOBAL/6};
 
-    SDL_RenderCopy(d->renderer, d->startButton, NULL, &d->rect);
+    SDL_RenderCopy(d->renderer, d->easyButton, NULL, &d->rect);
+
+    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), 
+			(SCREEN_HEIGHT_GLOBAL/3)*2, 
+			SCREEN_HEIGHT_GLOBAL/6, 
+			SCREEN_HEIGHT_GLOBAL/6};
+
+    SDL_RenderCopy(d->renderer, d->hardButton, NULL, &d->rect);
 
     d->rect = (SDL_Rect) {
             (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),  //!x
@@ -772,14 +803,21 @@ void menu_screen(gameState *state)
 		{
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
+				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
+                        && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6
+                        && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 - (SCREEN_HEIGHT_GLOBAL/6) 
+                        &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+							//!Start Level
+                            *state = easyLevel;
+                        }
+				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
 						&& d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
 						&& d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 
 						&&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
 							//!Start Level
-                            *state = level1;
-							printf("level1\n");
+                            *state = hardLevel;
                         }
 				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
                              && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6

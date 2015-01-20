@@ -321,17 +321,20 @@ KeywordQueue getKWQueue(KeywordQueue kwQueue)	{
 	return currKWQueue;
 }
 
-/*
+/*teLevel
  *Initializes all data structures required for level
  */
 void initLevel(int level)    {
     createKeywordQueue();
 	switch(level)	{
 		case 0:
-			readLevelSettingsFile("../data/tutorial.txt");
+			readLevelSettingsFile(TUTORIAL_LEVEL);
 			break;
 		case 1:
-			createLevel();
+			readLevelSettingsFile(HARD_LEVEL);
+			break;
+		case 2:
+			readLevelSettingsFile(EASY_LEVEL);
 			break;
 		default:
 			break;
@@ -345,7 +348,7 @@ void initLevel(int level)    {
 	createTowerPos();
 	initialQueueReader();
 	createProjectileList();
-  createExplosionList();
+  	createExplosionList();
 	initialiseParser();
 	init_abilities();
     destroyCommandList();
@@ -353,9 +356,10 @@ void initLevel(int level)    {
 
 void createLevelClocks()	{
 		addClock(singleEnemyCreated);
-		printf("first clock\n");
 		addClock(lastCmdAction);
 		addClock(groupDelay);
+		addClock(killAll);
+		addClock(killSingle);
 }
 
 void createLevel()	{
@@ -496,7 +500,7 @@ void readLevelSettingsFile(char *file)	{
 			if(letter == ' ')	{
 				wordCount++;
 			}
-				currentLine = expandCBuffer(currentLine, currSize);
+			currentLine = expandCBuffer(currentLine, currSize);
 			if(letter == '\n')	{
 				currentLine[currSize] = ENDOFSTRING;
 				validateLine(currentLine,wordCount);
