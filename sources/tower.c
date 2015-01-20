@@ -677,9 +677,9 @@ void fire()
 	          currentTower->firingCoolDown--;
 	      } else {
 	          findTarget(currentTower);
-            if(currentTower->firing == 1) {
-	              launchProjectile(currentTower);
-            }   
+              if(currentTower->firing == 1) {
+                launchProjectile(currentTower);
+            }
         }
     }
 }
@@ -724,6 +724,7 @@ void launchProjectile(Tower currentTower)
             break;
         case missile :
             launchMissile(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange, currentTower->slowPower, currentTower->slowDuration);
+            towerSound(0);
             break;
         case bullet :
             launchBullet(currentTower->x+currentTower->gunX, currentTower->y+currentTower->gunY, currentTower->damage, currentTower->targetID, currentTower->towerType, currentTower->AOEpower, currentTower->AOErange, currentTower->slowPower, currentTower->slowDuration);

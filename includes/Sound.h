@@ -12,7 +12,8 @@
 
 void init_sound();
 void playBackgroundSound();
+void towerSound(int type);
+void enemyDeathSound();
 void shutSound();
-void enemySound(int type);
 
 #endif

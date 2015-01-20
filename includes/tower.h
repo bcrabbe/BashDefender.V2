@@ -2,6 +2,7 @@
 #define TEST_Tower_h
 
 #include "../includes/projectiles.h"
+#include "../includes/Sound.h"
 
 typedef struct tower *Tower;
 typedef struct towerGroup *TowerGroup;
