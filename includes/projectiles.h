@@ -25,6 +25,7 @@ typedef struct explosionNode *ExplosionNode;
 void createProjectileList();
 ProjectileList getProjectileList(ProjectileList pL);
 ProjectileNode newProjectileNode();
+void initialiseProjectile(ProjectileNode newNode, int gunX, int gunY, int damage, int targetID, int firingType, int aoeDamage, int aoeRange, int slowPower, int slowDuration);
 void addToProjectileList(ProjectileNode newNode);
 void updateProjectiles();
 void moveProjectiles();

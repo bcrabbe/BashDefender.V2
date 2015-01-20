@@ -380,12 +380,17 @@ void getProjectileTargetPos(int enemyID, int *targetCoords, int bulletMoves)
 {
   Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
   
+  int adjustedSpeed = e->speed - e->slowEffect;
+  if(adjustedSpeed <= 0) {
+      adjustedSpeed = 1;
+  }
+  
     //if it's not gonna hit it, target the end of the enemy's path
-  if(distanceToEndOfPath(enemyID) <= bulletMoves*e->speed) {
+  if(distanceToEndOfPath(enemyID) <= bulletMoves*adjustedSpeed) {
     targetCoords[0] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][0];
     targetCoords[1] = e->enemyPath->pathCoords[e->enemyPath->pathLength-1][1];
   } else {
-    int impactProgress = e->pathProgress + (e->speed * bulletMoves);
+    int impactProgress = e->pathProgress + (adjustedSpeed * bulletMoves);
     targetCoords[0] = e->enemyPath->pathCoords[impactProgress][0];
     targetCoords[1] = e->enemyPath->pathCoords[impactProgress][1];
   }

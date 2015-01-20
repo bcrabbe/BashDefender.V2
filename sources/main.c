@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 1
+#define TESTING 0
 
 
 
@@ -101,6 +101,8 @@ void startLevel(Display d, int *restart)	{
         present_tower();
 
     	fire();
+      updateProjectiles();
+      updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);
@@ -388,6 +390,8 @@ void tutorialLevel(Display d,int *restart)	{
         present_tower();
 
     	fire();
+      updateProjectiles();
+      updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);

@@ -20,7 +20,7 @@
 //#defines for tower type weighting
 #define DAMAGE_MOD 9
 #define SPEED_MOD 8
-#define RANGE_MOD 4
+#define RANGE_MOD 3
 
 struct tower {
     int towerType;
@@ -750,9 +750,6 @@ void present_tower()
                       8/*frames*/, 300/*anim_speed*/, 2080 /*pic_width*/, 258/*pic_height*/);
         }
     }
-    // bullets added here temporarily
-    updateProjectiles();
-    updateExplosions();
 }
 
 /**
@@ -1006,7 +1003,7 @@ void testTowerFiring()
     
     userCreateTower(50,50);
     Tower t = TG->listOfTowers[TG->numOfTowers];
-    t->range = 20;
+    t->range = 50;
     
     findTarget(t);
     sput_fail_unless(t->firing == 1, "Valid: tower fires at enemy in range");
