@@ -113,6 +113,7 @@ void startLevel(Display d, int *restart)	{
         endFrame(d);
         
 		if(checkIfOver() || checkIfPlayerDead())	{
+		      freeAllProjectiles();
        		while (!*restart) {
       	      //final screen returns 1 if restart button was pressed...
        			if (final_screen()){
@@ -403,6 +404,7 @@ void tutorialLevel(Display d,int *restart)	{
         
         //ended = checkIfPlayerDead();
         while (ended) {
+            freeAllProjectiles();
             //final screen returns 1 if restart button was pressed...
             if (final_screen()){
                 ended = 0;
