@@ -20,7 +20,7 @@
 //#defines for tower type weighting
 #define DAMAGE_MOD 9
 #define SPEED_MOD 8
-#define RANGE_MOD 4
+#define RANGE_MOD 3
 
 struct tower {
     int towerType;
@@ -716,7 +716,6 @@ Launches the correct type of projectile at the specified tower's current target 
 void launchProjectile(Tower currentTower)
 {
     currentTower->firingCoolDown = MAX_COOLDOWN - currentTower->speed;
-    towerGetTargetPos(currentTower->targetPosition, currentTower->targetID);
     
     switch (currentTower->firingType) {
         case laser :
@@ -752,9 +751,6 @@ void present_tower()
                       8/*frames*/, 300/*anim_speed*/, 2080 /*pic_width*/, 258/*pic_height*/);
         }
     }
-    // bullets added here temporarily
-    updateProjectiles();
-    updateExplosions();
 }
 
 /**
@@ -963,7 +959,6 @@ void testProjectileHandling()
     t->towerType = INT_TYPE;
     t->firingType = bullet;
     t->targetID = 1;
-    towerGetTargetPos(t->targetPosition, t->targetID); //target the enemy
     
     for(int i = 0; i < 1000; i++) { // fire 1000 projectiles
       launchProjectile(t);
@@ -1009,7 +1004,7 @@ void testTowerFiring()
     
     userCreateTower(50,50);
     Tower t = TG->listOfTowers[TG->numOfTowers];
-    t->range = 20;
+    t->range = 50;
     
     findTarget(t);
     sput_fail_unless(t->firing == 1, "Valid: tower fires at enemy in range");

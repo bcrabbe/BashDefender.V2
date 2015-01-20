@@ -307,9 +307,25 @@ void getWindowSize(int *w, int *h){
     SDL_GetWindowSize(d->window, w, h);
 }
 
-/*
- * draw damage line from X & Y to target X & Y
- */
+
+/*draw damage line from X & Y to target X & Y*/
+void drawLaser(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType, int drawCount, int maxDrawCount){
+      // choose laser colour depending on type
+      int sat = 250 - (int) (((double) drawCount/ (double) maxDrawCount) * 250.0);
+      SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
+      if(laserType == INT_TYPE) {
+            SDL_SetRenderDrawColor(d->renderer, 0, 252, 0, sat);
+        } else {
+            SDL_SetRenderDrawColor(d->renderer, 252, 0, 0, sat);
+        }
+      for(int i = -2; i < 3; i++) {
+          for(int j = -1; j < 2; j++) {
+              SDL_RenderDrawLine(d->renderer, X_from+i, Y_from+j, X_target, Y_target);
+          }
+      }
+}
+
+
 void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int laserType){
       // choose laser colour depending on type
       int sat = 5;
@@ -332,6 +348,7 @@ void drawLine(Display d, int X_from, int Y_from, int X_target, int Y_target, int
         }
     }
 }
+
 
 /*
  * draw an enemy at x and y coor with the health bar above it
