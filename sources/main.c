@@ -16,7 +16,7 @@
 #include "../includes/abilities.h"
 #include "../includes/Information_Window.h"
 
-#define TESTING 0
+#define TESTING 1
 
 
 
@@ -78,7 +78,7 @@ void startLevel(Display d, int *restart)	{
    	int pause = 0; 
     int steps=0;
 	//damageHealth(90);
-    init_sound();
+    //init_sound();
     //playBackgroundSound();
     do{
 		//enemySound(1);
@@ -529,6 +529,7 @@ void towerToEnemyTesting()	{
 
 void testEnemyInRange()	{
 
+  freeAllProjectiles();
 	freeAllEnemies();
 	createTestEnemy();
 	setEnemyHealth(1,100);
@@ -550,6 +551,7 @@ void testEnemyInRange()	{
 	fire();
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(getEnemyHealth(1) == 100 + getEnemyArmour(1) - (getTowerDamage(1)*TYPE_MATCH_MODIFIER),"In range type matched enemy has correct reduced health from tower damage");
 	for(int i = 0; i < 9; i++)	{
@@ -558,6 +560,7 @@ void testEnemyInRange()	{
 	}
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(isDead(1) == 1, "Enemy dead after being fired on 10 times");
 	
@@ -573,6 +576,7 @@ void testEnemyInRange()	{
 	fire();
 	for(int i = 0; i < 100; i++) {
 	    moveProjectiles();
+      removeProjectiles();
 	}
 	sput_fail_unless(getEnemyHealth(1) == 100 + getEnemyArmour(1) - (getTowerDamage(1)/TYPE_MISMATCH_MODIFIER),"In range type mismatched enemy has correct reduced health from tower damage");
 	

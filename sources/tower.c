@@ -716,7 +716,6 @@ Launches the correct type of projectile at the specified tower's current target 
 void launchProjectile(Tower currentTower)
 {
     currentTower->firingCoolDown = MAX_COOLDOWN - currentTower->speed;
-    towerGetTargetPos(currentTower->targetPosition, currentTower->targetID);
     
     switch (currentTower->firingType) {
         case laser :
@@ -962,7 +961,6 @@ void testProjectileHandling()
     t->towerType = INT_TYPE;
     t->firingType = bullet;
     t->targetID = 1;
-    towerGetTargetPos(t->targetPosition, t->targetID); //target the enemy
     
     for(int i = 0; i < 1000; i++) { // fire 1000 projectiles
       launchProjectile(t);

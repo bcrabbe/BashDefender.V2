@@ -516,7 +516,7 @@ void launchBullet(int firedX, int firedY, int damage, int targetID, int firingTy
     newNode->slowDuration = slowDuration;
     
     newNode->targetID = targetID;
-    getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
+    getProjectileTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
     newNode->targetCoords[0] = newNode->targetCoords[0] - (newNode->w/2);
     newNode->targetCoords[1] = newNode->targetCoords[1] - (newNode->h/2);
     
@@ -532,7 +532,7 @@ void moveBullet(ProjectileNode bullet) {
     bullet->movesMade++;
     
     //recalculate target position (in case of slowed enemy)
-    getBulletTargetPos(bullet->targetID, bullet->targetCoords, bullet->movesToTarget - bullet->movesMade);
+    getProjectileTargetPos(bullet->targetID, bullet->targetCoords, bullet->movesToTarget - bullet->movesMade);
   
     if(bullet->movesMade == bullet->movesToTarget) {
         damageEnemy(bullet->damage, bullet->targetID, bullet->damageType);
@@ -585,7 +585,7 @@ void launchMissile(int firedX, int firedY, int damage, int targetID, int firingT
     newNode->slowDuration = slowDuration;
     
     newNode->targetID = targetID;
-    getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget+newNode->movesForBuildUp);
+    getProjectileTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget+newNode->movesForBuildUp);
     
     
     getBuildUpCoords(newNode->originX, newNode->originY, &newNode->buildUpX, &newNode->buildUpY);
@@ -658,7 +658,7 @@ void moveMissile(ProjectileNode missile) {
     missile->movesMade++;
     
     //recalculate target position (in case of slowed enemy)
-    getBulletTargetPos(missile->targetID, missile->targetCoords, (missile->movesToTarget+missile->movesForBuildUp) - missile->movesMade);
+    getProjectileTargetPos(missile->targetID, missile->targetCoords, (missile->movesToTarget+missile->movesForBuildUp) - missile->movesMade);
     
     
     if(missile->movesMade == missile->movesToTarget+missile->movesForBuildUp) {
@@ -708,7 +708,7 @@ void fireLaser(int gunX, int gunY, int damage, int targetID, int firingType, int
     newNode->originY = gunY;
     
     newNode->targetID = targetID;
-    getBulletTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
+    getProjectileTargetPos(targetID, newNode->targetCoords, newNode->movesToTarget);
     
     newNode->aoeDamage = aoeDamage;
     newNode->aoeRange = aoeRange;
