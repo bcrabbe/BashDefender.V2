@@ -530,6 +530,9 @@ void launchBullet(int firedX, int firedY, int damage, int targetID, int firingTy
 void moveBullet(ProjectileNode bullet) {
 
     bullet->movesMade++;
+    
+    //recalculate target position (in case of slowed enemy)
+    getBulletTargetPos(bullet->targetID, bullet->targetCoords, bullet->movesToTarget - bullet->movesMade);
   
     if(bullet->movesMade == bullet->movesToTarget) {
         damageEnemy(bullet->damage, bullet->targetID, bullet->damageType);
@@ -653,6 +656,10 @@ void getBuildUpCoords(int firedX, int firedY, int *buildUpX, int *buildUpY)
 void moveMissile(ProjectileNode missile) {
 
     missile->movesMade++;
+    
+    //recalculate target position (in case of slowed enemy)
+    getBulletTargetPos(missile->targetID, missile->targetCoords, (missile->movesToTarget+missile->movesForBuildUp) - missile->movesMade);
+    
     
     if(missile->movesMade == missile->movesToTarget+missile->movesForBuildUp) {
         damageEnemy(missile->damage, missile->targetID, missile->damageType);

@@ -360,6 +360,9 @@ void initialiseEnemy(Enemy newEnemy, int lvl, int fam, TypeOfEnemy eType, int he
     newEnemy->height = height;
     newEnemy->width = width;
     newEnemy->damage = damage*lvl;
+    
+    newEnemy->slowEffect = 0;
+    newEnemy->slowEffectStepsRemaining = 0;
 
 }
 
