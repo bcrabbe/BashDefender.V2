@@ -222,10 +222,18 @@ void drawKillAll(){
  * call fucntion in the while loop to present all the animations
  */
 void presentAnimation(){
+    int w, h;
+    getWindowSize(&w, &h);
     Display d = getDisplayPointer(NULL);
     presentCircuit(d->circ1_Texture,100, 100, 30, 100, 6,385, 324, 600);
     presentCircuit(d->circ2_Texture,300, 300, 30, 60, 7,386, 195, 350);
-    animateAnyPic(200, 200, 80, 50, 1036, 130, 4, 200, d->firewall);
+}
+
+void presentFirewall() {
+    int w, h;
+    Display d = getDisplayPointer(NULL);
+    getWindowSize(&w, &h);
+    animateAnyPic((double)w/1.57, (double)h/4.4, (double)w/10.9, (double)h/13, 1036, 130, 4, 200, d->firewall);
 }
 
 /*

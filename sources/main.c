@@ -102,6 +102,8 @@ void startLevel(Display d, int *restart)	{
         }
     	drawAllTowerPositions();
         updateAllInfoWindow();
+        presentFirewall();
+        presentHealth();
         endFrame();
         
         ended = checkIfPlayerDead();

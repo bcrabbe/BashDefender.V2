@@ -15,9 +15,8 @@ extern int SCREEN_HEIGHT_GLOBAL;
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   700
 
-/*
- *define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN 
- */
+
+//#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
 #define FULLSCREEN_YN 0
 
 /* 
@@ -88,16 +87,13 @@ typedef struct display *Display;
 enum font_types{solid, blended, blended_wrapped};
 
 typedef enum	{
-
 	towerPosA = 1,
 	towerPosB = 2,
 	towerPosC = 3,
 	towerPosD = 4,
 	towerPosE = 5,
 	towerPosF = 6,
-	towerPosG = 7
-
-
+	towerPosG = 7,
 } tPosIcon;
 
 typedef enum gameState  {
@@ -109,7 +105,6 @@ typedef enum gameState  {
 Display init_SDL();
 
 Display getDisplayPointer(Display d);
-
 
 void endFrame();
 void shutSDL();
@@ -143,7 +138,9 @@ void getBackgroundDimensions(int *w, int *h);
 void drawEnemy(int x, int y, int w, int h, int pic_width, int pic_height, int type, int frames, int anim_speed);
 
 void presentAnimation();
+void presentFirewall();
 void drawBackground();
+void getWindowSize(int *w, int *h);
 
 void drawKillAll();
 
@@ -170,9 +167,7 @@ void testtermwin();
 char *test_string_1(char *pass2);
 char *test_string_2(char *clear);
 
-
 int final_screen();
-
 int getBackgroundWidth();
 int getBackgroundHeight();
 
