@@ -53,7 +53,9 @@ typedef enum clockType	{
 	singleEnemyCreated = 3,	//!delay between single enemies being created
 	groupDelay = 4, 	//!Delay between groups of enemies being created
 	testClock = 5, //! dummy clock type for testing
-	tutorialClock =6
+	tutorialClock =6,
+	killAll = 7,
+	killSingle = 8
 } clockType;
 
 /*----------Symbolic Constants-----------*/
@@ -66,6 +68,8 @@ typedef enum clockType	{
 #define TUTORIALCOOLDOWN_SHORT	30 //!time between tutorial segments
 #define TUTORIALCOOLDOWN	100 //!time between tutorial segments
 #define TUTORIALCOOLDOWN_LONG 300 //!Time betwen tutorial segments
+#define KILL_ALL_COOLDOWN	600 	//! Time between kill all actions
+#define KILL_SINGLE_COOLDOWN	200	//!Time Between Single kill actions
 #define INT_TYPE 1 //hasdefine to avoid enums when dealing with int and char enemies
 #define CHAR_TYPE 2
 #define MULTIPLIER 100 //Multiplier used to calculate player score
@@ -114,6 +118,7 @@ void testingGameStructure();
 void CreateGameTest();
 void TestGetAvailableMemory();
 void setCurrWaveNum(int newWave);
+int checkIfOver();
 void TestAddMemory();
 void TestUseMemory();
 void setEnemyCreated1();

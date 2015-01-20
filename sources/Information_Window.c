@@ -426,9 +426,9 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     static char towerString[MAX_OUTPUT_STRING];
     char type[10];
     
-    int towerType, range, damage, speed, AOEpower, AOErange;
+    int towerType, range, damage, speed, AOEpower, AOErange, slowP, slowD;
 
-    getStats(&towerType, &range, &damage, &speed, &AOEpower, &AOErange, targetTower);
+    getStats(&towerType, &range, &damage, &speed, &AOEpower, &AOErange, &slowP, &slowD, targetTower);
     
     switch(towerType) {
         case INT_TYPE:
@@ -440,11 +440,14 @@ char *getTowerString(unsigned int targetTower, TowerMonitor *tm) {
     }
 
 
-    sprintf(towerString, "TOWER %d\n\nRange: %d Cost to Upgrade: %d \nDamage: %d Cost to Upgrade: %d\nSpeed: %d Cost to Upgrade: %d \nAOE Power: %d\nAOE Range: %d", targetTower, 
+    sprintf(towerString,"TOWER %d\n\n Range: %d Cost to Upgrade: %d\n Damage: %d Cost to Upgrade: %d\n Speed: %d Cost to Upgrade: %d\n AOE Power: %d Cost to Upgrade: %d\n AOE Range: %d Cost to Upgrade: %d\n Slow Power: %d Cost to Upgrade: %d\n Slow Duration: %d Cost to Upgrade: %d",targetTower, 
 					range, calculateCosts(cmd_upgrade,upgrade_range,targetTower), 
 					damage, calculateCosts(cmd_upgrade,upgrade_power,targetTower), 
 					speed, calculateCosts(cmd_upgrade,upgrade_speed,targetTower),
-					AOEpower, AOErange);
+					AOEpower,calculateCosts(cmd_upgrade,upgrade_AOEpower,targetTower), 
+					AOErange,calculateCosts(cmd_upgrade,upgrade_AOErange,targetTower),
+					slowP,calculateCosts(cmd_upgrade,upgrade_slowPower,targetTower),
+					slowD,calculateCosts(cmd_upgrade,upgrade_slowDuration,targetTower));
 
     strcpy(tm->string, towerString);
     
@@ -553,6 +556,13 @@ void tutorial_nineteen()	{
 	textToTowerMonitor("There is one more thing you need to know about. You can install new abilities with the apt-get command.  This command installs a new specified ability from a package repository to give you some more fire-power to fight off viruses - Just like in a Linux Environment when you need a new utility!.\ntype apt-get install");
 }
 
+void tutorial_twenty()	{
+	textToTowerMonitor("Well Done.  Now lets put the kill ability to use.  First, type \n ps -x\n to get the virus' ID.");
+}
+
+void tutorial_twentyOne()	{
+	textToTowerMonitor("Now Kill that enemy with kill -9 [enemyID]\n");
+}
 /*Test functions*/
 
 /**

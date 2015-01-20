@@ -41,16 +41,22 @@ int main(int argc, char ** argv)
 			    }
 				break;
 			case tutorial:
-					initLevel(0);
-					tutorialLevel(d,&restart);
-					endLevel(&restart);
-					state = menu;
+				initLevel(0);
+				tutorialLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
 				break;
-			case level1:
-					initLevel(1);
-					startLevel(d,&restart);
-					endLevel(&restart);
-					state = menu;
+			case hardLevel:
+				initLevel(1);
+				startLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
+				break;
+			case easyLevel:
+				initLevel(2);
+				startLevel(d,&restart);
+				endLevel(&restart);
+				state = menu;
 				break;
 			default:
 				exit(1);	
@@ -69,12 +75,13 @@ void startLevel(Display d, int *restart)	{
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-    int ended = 0;
    	int pause = 0; 
     int steps=0;
-    //init_sound();
+	//damageHealth(90);
+    init_sound();
     //playBackgroundSound();
     do{
+		//enemySound(1);
         startFrame(d);
 		while(pause)	{
 			pause_screen(d,&pause,restart);
@@ -103,14 +110,14 @@ void startLevel(Display d, int *restart)	{
         updateAllInfoWindow();
         endFrame(d);
         
-        ended = checkIfPlayerDead();
-        while (ended) {
-            //final screen returns 1 if restart button was pressed...
-            if (final_screen()){
-                *restart = 1;
-				ended = 0;
-            }
-        }
+		if(checkIfOver() || checkIfPlayerDead())	{
+       		while (!*restart) {
+      	      //final screen returns 1 if restart button was pressed...
+       			if (final_screen()){
+       	         *restart = 1;
+       			}
+        	}
+		}
         
     } while(!terminal_window(d, pass, clear,&pause, *restart));
 }
@@ -118,7 +125,8 @@ void startLevel(Display d, int *restart)	{
 
 void tutorialLevel(Display d,int *restart)	{
 
-    tutPhase tPhase = phaseOne;
+    tutPhase tPhase = phaseTwenty;
+	setCurrWaveNum(3);
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -335,13 +343,30 @@ void tutorialLevel(Display d,int *restart)	{
                     flag = 0;
 				}
 				tutorial_nineteen();
+				if(is_ability_unlocked(KILL))	{
+					tPhase++;
+				}
 				break;
 			case phaseTwentyTwo:
 				if(!flag)	{
                 	setCurrTime(findClock(tutorialClock));
                     flag = 1;
 				}
-				exit(1);	
+				tutorial_twenty();
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))  {
+                    tPhase++;
+                }
+				break;
+			case phaseTwentyThree:
+                    if(flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+					setCurrWaveNum(4);
+                    updateAllInfoWindow();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+                    }
+                    break;
 			default:
                 break;
         }
@@ -401,20 +426,20 @@ void testing()	{
     testLevelController(); //! Working
     testingProjectiles(); //! Working
     testingGameStructure(); //!Memory Tests Failing
-   /* testingActionQueue(); //! Working
+    testingActionQueue(); //! Working
     testEnemy(); // ! Working.
     testParser();
     testingTowerModule(); //! working
     testingInformationWindowModule();
     testTerminalWindowInput();
-    testAbilities();*/
+    testAbilities();
 
    	//! System Tests
-   /* enemyToGamePropertiesTesting();
+    enemyToGamePropertiesTesting();
     queueToTowerTesting();
     parseToQueueTesting(); //!Working
     parseToTowerTesting(); //!Working*/
-    towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be working*/
+    towerToEnemyTesting(); //! Doesnt work.  Firing and range dont seem to be workin
     testParserToInfoWindow();
 }
 

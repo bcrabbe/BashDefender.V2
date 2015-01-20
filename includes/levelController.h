@@ -11,6 +11,9 @@
 #define ENDOFSTRING '\0'
 #define READCHAR	'/'
 #define TESTLEVEL	"../data/testingLevel.txt" //!holds test data for level settings
+#define TUTORIAL_LEVEL	"../data/tutorial.txt" //!Tutorial Level Settings
+#define EASY_LEVEL	"../data/easyLevel.txt"	//!Easy Level Settings
+#define HARD_LEVEL	"../data/hardLevel.txt" //!Hard Level Settings
 
 typedef enum levelCommand { makeTowerP= 0, 
 							totalWaves = 1, 

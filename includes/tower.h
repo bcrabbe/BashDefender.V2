@@ -60,7 +60,7 @@ int getTowerY(int towerID);
 unsigned int getNumberOfTowers();
 int getTowerWidth(int towerID);
 int getUpgradesCompleted(int target);
-void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID);
+void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, int *sp, int *sd, unsigned int towerID);
 int checkCharType();
 
 // upgrading tower functions
@@ -77,8 +77,10 @@ void assignCalculatedFiringType(int towerID);
 
 // tower actions
 void fire();
+
 void findTarget(Tower currentTower);
 void launchProjectile(Tower currentTower);
+
 
 // presentation functions
 void present_tower();

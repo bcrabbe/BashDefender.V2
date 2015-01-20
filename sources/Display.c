@@ -9,13 +9,13 @@
 #include "../includes/parser.h"
 #include <stdbool.h>
 #include "../includes/sput.h"
-
+#include"../includes/Sound.h"
 
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 struct display {
     //main objects
@@ -47,7 +47,8 @@ struct display {
     SDL_Texture *finalBackgroundTexture;
 
 
-	SDL_Texture *startButton;
+	SDL_Texture *easyButton;
+	SDL_Texture *hardButton;
     SDL_Texture *reStartButton;
    	SDL_Texture *returnButton; 
 	SDL_Texture *tutorialButton;
@@ -123,7 +124,8 @@ Display init_SDL(){
     init_pic(&d->statsBarTexture, "Images/blackBar.png");
     init_pic(&d->towerInfoTexture, "Images/towerInfoBackground.png");
     init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
-    init_pic(&d->startButton, "Images/start-button.png");
+    init_pic(&d->easyButton, "Images/easyLevel.png");
+    init_pic(&d->hardButton, "Images/HardLevel.png");
 	init_pic(&d->returnButton,"Images/returnButton.png");
 	init_pic(&d->tutorialButton,"Images/tutorialButton.png");
     init_pic(&d->terminalWindowTexture, "Images/terminalwindow.png");
@@ -419,12 +421,12 @@ void shutSDL() {
     SDL_DestroyTexture(d->map);
     SDL_DestroyTexture(d->towerMonitorTexture);
     SDL_DestroyTexture(d->startBackgroundTexture);
-    SDL_DestroyTexture(d->startButton);
+    SDL_DestroyTexture(d->easyButton);
+    SDL_DestroyTexture(d->hardButton);
     SDL_DestroyTexture(d->newtexture);
     SDL_DestroyTexture(d->terminalWindowTexture);
     SDL_DestroyTexture(d->actionQueueTexture);
     SDL_DestroyTexture(d->towerPositionTexture[0]);
-    SDL_DestroyTexture(d->startButton);
     SDL_DestroyTexture(d->startBackgroundTexture);
 
     SDL_DestroyRenderer(d->renderer);
@@ -651,9 +653,19 @@ void menu_screen(Display d, gameState *state)
     //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
     animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
 
-    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), (SCREEN_HEIGHT_GLOBAL/3)*2, SCREEN_HEIGHT_GLOBAL/6, SCREEN_HEIGHT_GLOBAL/6};
+    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), 
+			(SCREEN_HEIGHT_GLOBAL/3)*2-(SCREEN_HEIGHT_GLOBAL/6), 
+			SCREEN_HEIGHT_GLOBAL/6, 
+			SCREEN_HEIGHT_GLOBAL/6};
 
-    SDL_RenderCopy(d->renderer, d->startButton, NULL, &d->rect);
+    SDL_RenderCopy(d->renderer, d->easyButton, NULL, &d->rect);
+
+    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), 
+			(SCREEN_HEIGHT_GLOBAL/3)*2, 
+			SCREEN_HEIGHT_GLOBAL/6, 
+			SCREEN_HEIGHT_GLOBAL/6};
+
+    SDL_RenderCopy(d->renderer, d->hardButton, NULL, &d->rect);
 
     d->rect = (SDL_Rect) {
             (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),  //!x
@@ -673,14 +685,21 @@ void menu_screen(Display d, gameState *state)
 		{
 			case SDL_MOUSEBUTTONDOWN:
 			{
-				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
+				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
+                        && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6
+                        && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 - (SCREEN_HEIGHT_GLOBAL/6) 
+                        &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+							//!Start Level
+                            *state = easyLevel;
+                        }
+				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
 						&& d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
 						&& d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 
 						&&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
 							//!Start Level
-                            *state = level1;
-							printf("level1\n");
+                            *state = hardLevel;
                         }
 				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
                              && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6

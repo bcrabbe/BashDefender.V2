@@ -12,7 +12,7 @@ typedef struct Ability
 {
 	int unlocked;
 	int cost;
-	
+	clockType cType;	
 }Ability;
 
 typedef struct Abilities
@@ -272,13 +272,15 @@ void psx_ability()
 
 int kill_ability(int enemyID)
 {
-	if(is_available_ability(KILL) == 1)
+	if(is_available_ability(KILL))
 	{
-		{
+		if(checkClock(killSingle,KILL_SINGLE_COOLDOWN))	{
 			killEnemy(enemyID);
+			useMemory(getGame(NULL), KILL_COST);
+			return 1;
+		} else	{
+			errorToTerminalWindow("Cooldown not yet ready");			
 		}
-		useMemory(getGame(NULL), KILL_COST);
-		return 1;
 	}
 	return 0;
 }
@@ -288,15 +290,20 @@ int kill_all_ability()
 	int i;
 	int enemy_number = getNumberOfEnemies();
 
-	if(is_available_ability(KILL) == 1)
+	if(is_available_ability(KILL))
 	{
-		for(i = 1; i <= enemy_number; i++)
-		{
-			drawKillAll();
-			killEnemy(i);
-		}
-		useMemory(getGame(NULL), KILL_ALL_COST);
-		return 1;
+		if(checkClock(killAll, KILL_ALL_COOLDOWN))	{
+			for(i = 1; i <= enemy_number; i++)
+			{
+				drawKillAll();
+				killEnemy(i);
+			}
+			useMemory(getGame(NULL), KILL_ALL_COST);
+			return 1;
+		} else {
+			errorToTerminalWindow("Cooldown not yet ready");			
+			return 0;	
+		}	
 	}
 	return 0;
 }

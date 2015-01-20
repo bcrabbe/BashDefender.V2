@@ -53,7 +53,8 @@ void tutorial_sixteen();
 void tutorial_seventeen();
 void tutorial_eighteen();
 void tutorial_nineteen();
-
+void tutorial_twenty();
+void tutorial_twentyOne();
 void tutorialUpdateAllInfoWindow(void);
 void tutorialTowerMonitor();
 #endif

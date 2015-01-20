@@ -462,16 +462,19 @@ int getUpgradesCompleted(int target)
 Populates passed int pointers with specified tower stats. used in cat command (Information_Window.c)
 @param int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID
 */
-void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, unsigned int towerID)
+void getStats(int *towerType, int *range, int *damage, int *speed, int *AOEpower, int *AOErange, int *sp, int *sd, unsigned int towerID)
 {
     TowerGroup towers = getTowerGrp(NULL);
-     *range = towers->listOfTowers[towerID]->range;
-     *damage = towers->listOfTowers[towerID]->damage;
-     *speed = towers->listOfTowers[towerID]->speed;
-     *AOEpower = towers->listOfTowers[towerID]->AOEpower;
-     *AOErange = towers->listOfTowers[towerID]->AOErange;
-     *towerType = towers->listOfTowers[towerID]->towerType;
+    *range = towers->listOfTowers[towerID]->range;
+    *damage = towers->listOfTowers[towerID]->damage;
+    *speed = towers->listOfTowers[towerID]->speed;
+    *AOEpower = towers->listOfTowers[towerID]->AOEpower;
+    *AOErange = towers->listOfTowers[towerID]->AOErange;
+    *towerType = towers->listOfTowers[towerID]->towerType;
+    *sp = towers->listOfTowers[towerID]->slowPower;
+    *sd = towers->listOfTowers[towerID]->slowDuration;
 }
+
 
 /**
 Runs through all towers and checks to see if any one of them is of type CHAR. Used in tutorial
@@ -923,9 +926,8 @@ int getTowerPositionX(int position)	{
 	return getTowerPos(NULL)->towerPositions[position]->x;
 }
 
-/**
-Returns the Y coordinate of the most specified tower position (used in testing)
-*/
+
+
 int getTowerPositionY(int position)	{
 	return getTowerPos(NULL)->towerPositions[position]->y;
 }
