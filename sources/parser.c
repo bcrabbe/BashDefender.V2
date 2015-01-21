@@ -24,7 +24,7 @@
 #include "../includes/gameProperties.h"
 #include "../includes/abilities.h"
 
-#define TERMINAL_OUTPUT_ON 1
+#define TERMINAL_OUTPUT_ON 0
 #pragma mark ProtoTypes
 //top level command parser:
 int parseCommands(char ** commandArray, int numberOfTokens);
@@ -170,10 +170,11 @@ void testParseWhile();
 
 #pragma mark mainFuntion
 
-/*
- * Parse called with string of user input from terminal window.
- * reads the first token and calls the relevant command function 
- * returns zero if syntax error.
+
+/**
+ Front end interface for the parser.
+ @param user input string
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
 int parse(char *inputString)
 {
@@ -214,8 +215,11 @@ int parse(char *inputString)
     freeCommandArray(commandArray, numberOfTokens);
     return specificReturns;//0 for error
 }
-/*
- *
+/**
+ Provides parsing of the command part of the user input, does some error checking
+ and calls the individual command parsing function.
+ @param a space & comma seperated command array and the number of tokens in the array, (built using breakUpString)
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
 int parseCommands(char ** commandArray, int numberOfTokens)
 {
@@ -389,7 +393,11 @@ int parseCommands(char ** commandArray, int numberOfTokens)
 }
 
 #pragma mark individualCommandParsers
-
+/**
+ Parses Chmod command.
+ @param a space & comma seperated command array and the number of tokens in the array, (built using breakUpString)
+ @returns nonzero if command was valid and actioned, 0 if invalid.
+ */
 int parseChmod(char ** commandArray,int numberOfTokens)
 {
     cmdOption twrType = getCommandOption(commandArray[1]);
@@ -480,8 +488,10 @@ int parseChmod(char ** commandArray,int numberOfTokens)
 
     return 1;
 }
-/*
- *
+/**
+ Parses kill command.
+ @param a space & comma seperated command array and the number of tokens in the array, (built using breakUpString)
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
 int parseKill(char ** commandArray,int numberOfTokens)
 {
@@ -566,8 +576,10 @@ int parseKill(char ** commandArray,int numberOfTokens)
     }
     return 0;
 }
-/*
- *
+/**
+ Parses ps command.
+ @param a string containing the first argument to ps command
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
 int parsePs(char * optionString)
 {
@@ -588,8 +600,10 @@ int parsePs(char * optionString)
     }
 }
 
-/*
- *
+/**
+ Parses apt-get command.
+ @param a string containing the first argument to apt-get command
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
 int parseAptget(char * aptToGetString)
 {
@@ -628,11 +642,11 @@ int parseAptget(char * aptToGetString)
 }
 
 
-/*
- *  Called when we read mktwr cmd.
- *  gets tower position and pushes to queue
- *  returns 1 if cmd was probably successfully pushed to queue
- *  returns 0 if definately not succesful or if target or stat call failed
+
+ /**
+ Parses mktwr command.
+ @param a space & comma seperated command array and the number of tokens in the array, (built using breakUpString)
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
 int parseMktwr(char ** commandArray, int numberOfTokens)
 {
@@ -700,9 +714,10 @@ int parseMktwr(char ** commandArray, int numberOfTokens)
     return numberOfCommandsPushed;
 }
 
-/*  calls man printing functions
- *  returns 1 if ok
- returns 0 if error and prints message
+/**
+ Parses man command.
+ @param a string containing the first argument to command
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
 int parseMan(char * inputStringCommandMan)
 {
@@ -771,12 +786,12 @@ int parseMan(char * inputStringCommandMan)
 
 
 
-/*
- *  Called when we read cat cmd.
- *  gets target and pushes to info window.
- *  returns 1 if cmd was probably successfully pushed.
- *  returns 0 if definately not succesful or if target call failed.
+/**
+ Parses cat command.
+ @param a string containing the first argument to cat command
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
+
 int parseCat(char * inputStringTargeting)
 {
     //looks for tower type target:
@@ -822,12 +837,10 @@ int parseCat(char * inputStringTargeting)
                                
                                
 #pragma mark parseUpgrade
-
-/*
- *  Called when we read upgrade cmd.
- *  gets stat and target and pushes to queue
- *  returns 1 if cmd was probably successfully pushed to queue
- *  returns 0 if definately not succesful or if target or stat call failed
+/**
+ Parses mktwr command.
+ @param a space & comma seperated command array and the number of tokens in the array, (built using breakUpString)
+ @returns nonzero if command was valid and actioned, 0 if invalid.
  */
 int parseUpgrade(char ** commandArray, int numberOfChunks)
 {
@@ -938,14 +951,29 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     }
     
     targetArrayStruct * pushedTargetArray = malloc(sizeof(targetArrayStruct));
+    if(pushedTargetArray==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     pushedTargetArray->array = targetArray;
     pushedTargetArray->numberOfElements = numberOfTargets;
     
     statArrayStruct * pushedStatArray = malloc(sizeof(statArrayStruct));
+    if(pushedStatArray==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     pushedStatArray->array = statsToUpgradeArray;
     pushedStatArray->numberOfElements = numberOfStatsBeingUpgraded;
     
     upgradeArraysStruct * upgradeStruct = malloc(sizeof(upgradeArraysStruct));
+    if(upgradeStruct==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     upgradeStruct->statArray = pushedStatArray;
     upgradeStruct->tarArray = pushedTargetArray;
 
@@ -953,7 +981,11 @@ int parseUpgrade(char ** commandArray, int numberOfChunks)
     return 1;
 }
                                
-
+/**
+frees the malloc'd arrays in parseUpgrade. Call if exiting the function for error.
+ @param the malloc'd pointers, or NULL if they had not been allocated at the point of exit, if null no action is taken.
+ @returns void.
+ */
 void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray)
 {
     if(statsToUpgradeArray)
@@ -965,7 +997,11 @@ void cleanUpParseUpgrade(cmdOption * statsToUpgradeArray,int * targetArray)
         free(targetArray);
     }
 }
-
+/**
+ Stores / gets the stats and targets upgraded in a successful parseUpgrade, this is accesed in update memValue fucntion in parse while.
+ @param pointer to the malloc'd upgradeArraysStruct when storing. NULL when retrieving.
+ @returns the stored pointer.
+ */
 upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct * upgradeStruct)
 {
     static upgradeArraysStruct * storedUpgradeStuct = NULL;
@@ -987,8 +1023,10 @@ upgradeArraysStruct * getStatsToUpgradeArrayAndTargetArray(upgradeArraysStruct *
 
 
 #pragma mark parseWhile
-/*
- *  while(mem>0){ command }
+/**
+ ParseWhile function, called if first word of user input is "while"
+ @param the same user input string sent to parse()
+ @returns 1 if successful 0 if not.
  */
 int parseWhile(char *inputString)
 {
@@ -1294,29 +1332,45 @@ int parseWhile(char *inputString)
     freeCommandArray(bracketTokenArray,numberOfBracketsTokens);
     return 1;
 }
-char *trimwhitespace(char *str)
+/**
+ deletes white space from the beging and end of a string.
+ @param string to be trimmed
+ @returns the trimmed string
+ */
+char *trimWhiteSpace(char *str)
 {
-    char *end;
-    
+    int trimmedFromStart=0;
     // Trim leading space
-    while(isspace(*str)) str++;
-    
-    if(*str == 0)  // All spaces?
-        return str;
+    while(isspace(*str))
+    {
+        ++trimmedFromStart;
+    }
+    char * newString = strdup(str+trimmedFromStart);
+    free(str);
+
+    if(*newString == '\0')  // All spaces?
+        return newString;
     
     // Trim trailing space
-    end = str + strlen(str) - 1;
-    while(end > str && isspace(*end)) end--;
+    char * end = newString + strlen(newString) - 1;
+    while(end > newString && isspace(*end))
+    {
+       --end;
+    }
     
     // Write new null terminator
-    *(end+1) = 0;
-    
-    return str;
+    *(end+1) = '\0';
+    return newString;
 }
+/**
+ used to access Environment variables
+ @param string containing the name of the variable
+ @returns  pointer to the envVar struct if the name matches a envVar, 0 if not.
+ */
 envVar * returnEnvVar(char * stringToMatch)
 {
     char * editableString = strdup(stringToMatch);
-    editableString = trimwhitespace(editableString);
+    editableString = trimWhiteSpace(editableString);
     stringToMatch = editableString;
     envVarList * envsListStruct = getEnvsList(NULL);
     for(int i=0; i<envsListStruct->numberOfElements; ++i)
@@ -1329,7 +1383,11 @@ envVar * returnEnvVar(char * stringToMatch)
     }
     return 0;
 }
-
+/**
+ extracts a operator (!, >, >=, < etc.. ) from a string.
+ @param string containing the operator
+ @returns  that operators enum operator type
+ */
 operator getOperatorFromString(char * conditionString)
 {
     int i=0;
@@ -1357,7 +1415,9 @@ operator getOperatorFromString(char * conditionString)
     }
     return 0;
 }
-
+/**
+ used by getOperatorFromString
+ */
 operator combineOperators(operator firstOp, operator secondOp)
 {
     int combinedOpInt;
@@ -1370,7 +1430,9 @@ operator combineOperators(operator firstOp, operator secondOp)
     }
     else return firstOp;
 }
-
+/**
+ used by getOperatorFromString
+ */
 operator matchesOperator(char isThisAnOperator)
 {
     switch (isThisAnOperator)
@@ -1382,7 +1444,11 @@ operator matchesOperator(char isThisAnOperator)
         default:                            return 0;
     }
 }
-
+/**
+ given a oeprator type makes a string containing the operator
+ @param enum operator type, and a pointer to a string to hold the charecters
+ @returns void.
+ */
 void makeStringForOperator(operator op, char * string)
 {
     switch (op)
@@ -1439,7 +1505,11 @@ void makeStringForOperator(operator op, char * string)
     }
 }
 
-
+/**
+ Called in parseWhile, checks the condition and command to see if it is valid and non infinte
+ @param envVar * variable, operator op, char ** commandArray
+ @returns 1 if it is bad, 0 if ok.
+ */
 int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
 {
     cmdType command = getCommandType(commandArray[0]);
@@ -1492,7 +1562,13 @@ int isThisInfiniteLoop(envVar * variable, operator op, char ** commandArray)
     }
     return 0;
 }
-
+/**
+ Called in parseWhile when tows is the var in the condition and cmd is mktwr, 
+ increments the variable for a tower pushed.
+ @param command type enum.
+ @returns the new incremented value ( this means you can call like tows->value=tows->updateValueFunc() or 
+ just tows->updateValueFunc())
+ */
 int updateTowsValue(cmdType command)
 {
     envVar * tows = returnEnvVar("tows");
@@ -1506,7 +1582,12 @@ int updateTowsValue(cmdType command)
         return tows->value;
     }
 }
-
+/**
+ Called in parseWhile when mem is the var in the condition. updates the value with the cost of the last pushed commands
+ @param command type enum.
+ @returns the new incremented value ( this means you can call like mem->value=mem->updateValueFunc() or
+ just mem->updateValueFunc())
+ */
 int updateMemValue(cmdType command)
 {
     envVar * mem = returnEnvVar("mem");
@@ -1522,12 +1603,21 @@ int updateMemValue(cmdType command)
     }
     return mem->value;//stops warnings
 }
-
+/**
+returns the mem cost of a mktwr cmd
+ @param void
+ @returns the mem cost of a mktwr cmd
+ */
 int getCostOfMktwr()
 {
     return calculateCosts(cmd_mktwr,0,0);
 }
-
+/**
+ returns the mem cost the last upgrade command factoring in upgrades on the queue through 
+ costOfUpgradeFactoringInTheUpgradesOnTheQueue.
+ @param upgradeArraysStruct of the last upgrade, can be retrieved from store/getter function
+ @returns the mem cost of last upgrade command.
+ */
 int getCostOfUpgrade(upgradeArraysStruct * upgradeStruct)
 {
     int costs=0;
@@ -1557,13 +1647,13 @@ int getCostOfUpgrade(upgradeArraysStruct * upgradeStruct)
 #pragma mark genericFunctions
 
                                
-/* 
- *  Called on cat and upgrade commands with the target specifying token.
-    looks at the 2nd char in the string to find an int 1-9 to be the target.
-    Note, wont work for anything > 9, would just see 1.
-    Will print its own error message.
-    Returns TargetTowerID if sucessful
-    Returns 0 if error
+
+/**
+ returns a target tower if valid target string.
+ @param string containing the supposed targeting token. and a true/false as to
+ wether we require the number to be preceded by a t. usually the first target of 
+ a list should have this, the rest do not have to.
+ @returns the tower ID of the targeted tower.
  */
 unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentifier)
 {
@@ -1625,8 +1715,10 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     return targetTower;
 }
 
-/*
- *  Called on cat and upgrade commands with the target specifying token.
+/**
+ returns a target enemy if valid target string.
+ @param string containing the supposed targeting token. 
+ @returns the enemyID of the targeted enemy.
  */
 unsigned int getTargetEnemy(const char * inputStringTargeting)
 {
@@ -1676,7 +1768,12 @@ unsigned int getTargetEnemy(const char * inputStringTargeting)
 
 
 
-
+/**
+ Converts a string of digits representing an int to their integer value.
+ Function only handles +ve numbers and digits, otherwise it returns 0.
+ @param string containing the number.
+ @returns the converted value if valid string, 0 if not.
+ */
 unsigned long int stringToInt(const char * string)
 {
     unsigned long int converted=0;
@@ -1699,15 +1796,24 @@ unsigned long int stringToInt(const char * string)
     }
     for(int i=0; i<length; ++i)
     {
+        if(!isdigit(string[i]))
+        {
+            if(TERMINAL_OUTPUT_ON)
+            {
+                fprintf(stderr,"stringToInt was called with a string containing non digit charecters. returning 0\n");
+            }
+            return 0;
+        }
         converted += (unsigned int)(string[i]-'0') * pow( 10, (length-i-1));
     }
     return converted;
 }
-/*
- *  Takes the first string of the input command and tests it against the correct
- syntax to find which command they want to execute then returns that command
- as a enum cmdType variable. Returns cmdType correspodning to the
- validated command or a commandError cmdType
+
+/**
+ Converts a string of digits representing an int to their integer value.
+ Function only handles +ve numbers and digits, otherwise it returns 0.
+ @param string containing the number.
+ @returns the converted value if valid string, 0 if not.
  */
 cmdType getCommandType(char * firstToken)
 {
@@ -1764,9 +1870,10 @@ cmdType getCommandType(char * firstToken)
     return command;
 }
 
-/*  Called when after we read a command, tests the next token against the
- *  possible options returns the corresponding cmdOption Or
-    returns optionError  and calls the optUsageError function
+/**
+ returns a cmdOption of the string.
+ @param string containing the cmd option.
+ @returns cmdOpt enum.
  */
 cmdOption getCommandOption(char * secondToken)
 {
@@ -1844,9 +1951,12 @@ cmdOption getCommandOption(char * secondToken)
 
 
 
-/*
- *   If there was a syntax error in the users command call this function which
-     will print usage advice to the terminal window.
+
+/**
+ If there was a unreadable command call this function which
+ will print usage advice to the terminal window.
+ @param string containing the cmd token.
+ @returns void;
  */
 void actionUsageError(const char * firstToken)
 {
@@ -1871,10 +1981,12 @@ void actionUsageError(const char * firstToken)
     }
 }
 
-/*
- *  Takes the input string and breaks into separate words (where there is a 
-    space and new string starts) each of these words is stored in the 
-    commandArray which is an array of strings
+/**
+Takes the input string and breaks into separate words separated by any chars
+in the delimiter string each of these words is stored in the commandArray which is an array of strings.
+ Arrays returned should be free'd using the freeCommandArray function.
+ @param string to be broken up, a address of the int to store the number of strings in the array and a string containing each of the charecters to be separated along.
+ @returns the string array.
  */
 char **breakUpString(const char * inputString, int *numberOfChunksPtr, const char * delimiter)
 {
@@ -1891,13 +2003,26 @@ char **breakUpString(const char * inputString, int *numberOfChunksPtr, const cha
     {
         if(strcmp(stringChunk," ")==0 || strcmp(stringChunk,",")==0)
         {
-            goto skipToken;
+            //do nothing
         }
-        ++numberOfChunks;
-        commandArray=(char **)realloc(commandArray,numberOfChunks*sizeof(char*));//array of strings
-        commandArray[numberOfChunks-1]=(char *)malloc((size_t)(strlen(stringChunk)*sizeof(char)+1));
-        strcpy(commandArray[numberOfChunks-1],stringChunk);
-    skipToken:
+        else
+        {
+            ++numberOfChunks;
+            char ** tmp = (char **)realloc(commandArray,numberOfChunks*sizeof(char*));//array of strings
+            if(tmp==NULL)
+            {
+                fprintf(stderr,"%s:%s:%d realloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+                exit(1);
+            }
+            commandArray=tmp;
+            commandArray[numberOfChunks-1]=(char *)malloc((size_t)(strlen(stringChunk)*sizeof(char)+1));
+            if(commandArray[numberOfChunks-1]==NULL)
+            {
+                fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+                exit(1);
+            }
+            strcpy(commandArray[numberOfChunks-1],stringChunk);
+        }
         stringChunk = strtok(NULL, delimiter);
     }
     free(inputStringDuplicate);//frees the malloc made in strdup()
@@ -1906,19 +2031,27 @@ char **breakUpString(const char * inputString, int *numberOfChunksPtr, const cha
     return commandArray;
 }
 
-/*
- *  Duplicates a string
+/**
+ Duplicates a string. returned string should be free'd after use.
+ @param string to be duplicated.
+ @returns the duplicated string.
  */
 char *strdup(const char * s)
 {
-    size_t len = 1+strlen(s);//gets the size of s
-    char *p = malloc(len);//allocates a block big enough to hold s
-    
-    return p ? memcpy(p, s, len) : NULL;//if p is non 0 ie malloc worked, then copy everything in s into p and return p. if p is NULL malloc didnt work so return NULL
+    size_t len = 1+strlen(s);
+    char *p = malloc(len);
+    if(p==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
+    return memcpy(p, s, len);
 }
 
-/*
- *  frees the memory allocated in breakup string funct
+/**
+frees a string array allocated in bbreakUpString func
+ @param the string array and the number of strings
+ @returns void
  */
 void freeCommandArray(char **commandArray,int numberOfChunks)
 {
@@ -1931,7 +2064,12 @@ void freeCommandArray(char **commandArray,int numberOfChunks)
 
 
 #pragma mark commandLists
-
+/**
+ Call at start up.
+ Builds the command list option list and environment variables and stores their addresses.
+ @param void
+ @returns void
+ */
 void initialiseParser()
 {
     stringList * commandList = intialiseCommandList();
@@ -1943,14 +2081,23 @@ void initialiseParser()
 
 }
 
-
-
+/**
+ Called by initialiseParser().
+ Builds the command list.
+ @param void
+ @returns stringList * to the built list
+ */
 stringList * intialiseCommandList()
 {
     /* make an array of strings to hold all the possible action commands*/
     char **validActions;
     int numberOfActions=9;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validActions=malloc((numberOfActions)*sizeof(char*));//array of $[numberOfActions] strings
+    if(validActions==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     validActions-=1;
     validActions[1]=strdup("upgrade");
     validActions[2]=strdup("execute");
@@ -1969,6 +2116,11 @@ stringList * intialiseCommandList()
     
     return commandList;
 }
+/**
+ when called with a non null pointer stores the address of the list for access. call with NULL to retreive,
+ @param void
+ @returns stringList * to the list
+ */
 stringList * getCommandList(stringList * commandList)
 {
     static stringList * storedCommandList = NULL;
@@ -1977,12 +2129,23 @@ stringList * getCommandList(stringList * commandList)
     }
     return storedCommandList;
 }
+/**
+ Called by initialiseParser().
+ Builds the option list.
+ @param void
+ @returns stringList * to the built list
+ */
 stringList * intialiseOptionList()
 {
     /*first lets make an array of strings to hold all the possible action commands*/
     char **validOptions;
     int numberOfOptions=14;//have 5 action commands at this time: upgrade, execute, set, man, cat
     validOptions=malloc((numberOfOptions)*sizeof(char*));    //upgrade opts
+    if(validOptions==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     validOptions-=1;
     validOptions[1]=strdup("p");
     validOptions[2]=strdup("r");
@@ -2009,7 +2172,11 @@ stringList * intialiseOptionList()
     
     return optionsList;
 }
-
+/**
+ when called with a non null pointer stores the address of the list for access. call with NULL to retreive,
+ @param void
+ @returns stringList * to the list
+ */
 stringList *  getOptionList(stringList * optionList)
 {
     static stringList * storedOptionList = NULL;
@@ -2018,6 +2185,11 @@ stringList *  getOptionList(stringList * optionList)
     }
     return storedOptionList;
 }
+/**
+ frees the stored stingList structs.
+ @param void
+ @returns void
+ */
 void freeParseLists()
 {
     stringList * commandList = getCommandList(NULL);
@@ -2043,13 +2215,34 @@ void freeParseLists()
 }
 
 #pragma mark environmentVariables
+/**
+ Called by initialiseParser().
+ Builds the envVarList struct.
+ @param void
+ @returns envVarList * to the built list
+ */
 envVarList * intialiseEnvVarsList()
 {
     envVarList * envsListStruct = malloc(sizeof(envVarList));
+    if(envsListStruct==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     envsListStruct->numberOfElements = 2;
     envsListStruct->array = malloc(envsListStruct->numberOfElements*sizeof(envVar *));
+    if(envsListStruct->array==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     
     envsListStruct->array[0] = malloc(sizeof(envVar));
+    if(envsListStruct->array[0]==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     envsListStruct->array[0]->varIs = var_mem;
     envsListStruct->array[0]->name = strdup("memory");
     envsListStruct->array[0]->name2 = strdup("mem");
@@ -2057,7 +2250,13 @@ envVarList * intialiseEnvVarsList()
     envsListStruct->array[0]->updateValueFunc = &updateMemValue;
     envsListStruct->array[0]->value = getAvailableMemory();
     
+    
     envsListStruct->array[1] =  malloc(sizeof(envVar));
+    if(envsListStruct->array[1]==NULL)
+    {
+        fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
+        exit(1);
+    }
     envsListStruct->array[1]->varIs = var_tows;
     envsListStruct->array[1]->name = strdup("tows");
     envsListStruct->array[1]->name2 = strdup("towers");
@@ -2068,7 +2267,11 @@ envVarList * intialiseEnvVarsList()
     return envsListStruct;
 }
 
-
+/**
+ frees the stored envVarList struct.
+ @param void
+ @returns void
+ */
 void destroyEnvVarList()
 {
     envVarList * envsListStruct = getEnvsList(NULL);
@@ -2082,7 +2285,11 @@ void destroyEnvVarList()
     free(envsListStruct->array);
     free(envsListStruct);
 }
-
+/**
+ when called with a non null pointer stores the address of the list for access. call with NULL to retreive,
+ @param envVarList * to be stored or NULL
+ @returns envVarList * to the list
+ */
 envVarList * getEnvsList(envVarList * envsList)
 {
     static envVarList * storedEnvsList = NULL;
@@ -2096,8 +2303,11 @@ envVarList * getEnvsList(envVarList * envsList)
 #pragma mark developementTests
 
 
-/*
- *  Test function for developement. Prints contents of a commandArray
+
+/**
+ Test function for developement. Prints contents of a commandArray
+ @param command array
+ @returns void
  */
 void testCommandArray(char ** commandArray, int numberOfChunks)
 {
@@ -2110,7 +2320,11 @@ void testCommandArray(char ** commandArray, int numberOfChunks)
         printf("\n");
     }
 }
-
+/**
+ Test function for developement. Prints contents of a stringList
+ @param stringList *
+ @returns void
+ */
 void testStringLists(stringList * list)
 {
     if(TERMINAL_OUTPUT_ON)
@@ -2130,7 +2344,11 @@ void testStringLists(stringList * list)
 
 
 #pragma mark unitTests
-
+/**
+ Parse unit test suite caller. Call from main unit testing function.
+ @param void
+ @returns void
+ */
 void testParser()
 {
     sput_start_testing();
@@ -2228,7 +2446,11 @@ void testParser()
     sput_finish_testing();
 }
 #pragma mark unitTests_genericFunctions
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testInitialiseParseLists()
 {
     //initialiseParser(); this is called in setUpTesting()
@@ -2245,7 +2467,11 @@ void testInitialiseParseLists()
     sput_fail_unless(returnEnvVar("tows"),"returnEnvVar(""tows"") should return the envVar tows");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testStringToInt()
 {
     
@@ -2263,7 +2489,11 @@ void testStringToInt()
 }
 
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetTargetTower()
 {
     createTowerFromPositions(1);
@@ -2311,7 +2541,11 @@ void testGetTargetTower()
     }
     
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetTargetEnemy()
 {
     freeAllEnemies();
@@ -2345,7 +2579,11 @@ void testGetTargetEnemy()
         }
     }
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetCommandType()
 {
     //should work for all the actual commands:
@@ -2370,7 +2608,11 @@ void testGetCommandType()
     sput_fail_unless(getCommandType(strdup("UPGRADE"))==cmd_upgrade, "calling ""UPGRADE"" should return cmd_upgrade");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetCommandOption()
 {
     //should work for all the actual options:
@@ -2398,7 +2640,11 @@ void testGetCommandOption()
     sput_fail_unless(getCommandOption(strdup("P"))==upgrade_power, "calling ""P"" should return upgrade_power");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testBreakUpStringAndFreeCommandArray()
 {
     int numberOfTokesTest1=0;
@@ -2436,7 +2682,11 @@ void testBreakUpStringAndFreeCommandArray()
 #pragma mark unitTests_individualCommandParses
 
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testChmod()
 {
     sput_fail_unless( parse("chmod")==0, "parse(""chmod"")==0, not enough tokens -> error message and return 0");
@@ -2485,7 +2735,11 @@ void testChmod()
 
 
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testParsePs()
 {
     sput_fail_unless(parse("ps")==0, "parse(""ps"")==0, no argument -> error message and return 0");
@@ -2497,7 +2751,11 @@ void testParsePs()
     sput_fail_unless(parse("ps -x s")==0, "parse(""ps -x s"")==0, too many arguments -> error message and return 0");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testAptget()
 {
     init_abilities();
@@ -2509,7 +2767,11 @@ void testAptget()
     unlock_ability(KILL);
     sput_fail_unless(parse("apt-get kill")==0, "parse(""apt-get kill"")==0, kill is already installed -> error message and return 0");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testKill()
 {
     init_abilities();
@@ -2527,7 +2789,11 @@ void testKill()
     sput_fail_unless(parse("kill all aoep")==2,"""kill all aoep"" is invalid, too many tokens -> error message return 0");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testParseMktwr()
 {
     //clear any towers so that we can make more
@@ -2574,7 +2840,11 @@ void testParseMktwr()
     sput_fail_unless(parse(cmd)==maxTowerPosition(),
                      "parse(""mktwr int a b c d e f g...maxTowerPositionChar()"")==maxTowerPosition(), is valid command -> psuh maxTowerPosition() towers and return maxTowerPosition()");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testMan()
 {
     sput_fail_unless(parse("man s sd")==0,"parse(""man s sd"")=0, too many arguments -> error message and return 0");
@@ -2590,7 +2860,11 @@ void testMan()
     }
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testCat()
 {
     sput_fail_unless(parse("cat foo bar")==0,"too many arguments -> error message and return 0");
@@ -2600,7 +2874,11 @@ void testCat()
     createTowerFromPositions(1);
     sput_fail_unless(parse("cat t1")==1,"cat t1 is valid -> return 1");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testUpgrade()
 {
     freeAllTowers();
@@ -2642,7 +2920,11 @@ void testUpgrade()
 
 
 #pragma mark unitTests_parseWhileAndAssociatedfunctions
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testReturnEnvVar()
 {
     envVar * returned = returnEnvVar("tows");
@@ -2677,7 +2959,11 @@ void testReturnEnvVar()
     }
     sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""   memory    "") is called. the white space should be trimmed in the function.");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetOperatorFromString()
 {
     char str[20];
@@ -2754,7 +3040,11 @@ void testGetOperatorFromString()
     }
     sput_fail_unless(op==greaterThan,"check that bad input wont cause an issue");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetCostOfUpgrade()
 {
     clearQueue();
@@ -2787,7 +3077,11 @@ void testGetCostOfUpgrade()
     }
  
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testMemValueFunctions()
 {
     envVar * mem = returnEnvVar("mem");
@@ -2813,7 +3107,11 @@ void testMemValueFunctions()
 
     sput_fail_unless(mem->value==1000-getCostOfUpgrade(getStatsToUpgradeArrayAndTargetArray(NULL)),"    mem->updateValueFunc(cmd_upgrade) should subtract the cost of the last upgrade from the value");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testIsThisInfiniteLoop()
 {
     int numberOfTokens=0;
@@ -2850,10 +3148,14 @@ void testIsThisInfiniteLoop()
     sput_fail_unless(!isThisInfiniteLoop(var,op,commandArray),"while(tows<x)(mktwr) -> not infinite return 0");
 
     freeCommandArray(commandArray,numberOfTokens);
-    
-
 
 }
+
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testParseWhile()
 {
     freeAllTowers();
