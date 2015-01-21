@@ -2344,7 +2344,11 @@ void testStringLists(stringList * list)
 
 
 #pragma mark unitTests
-
+/**
+ Parse unit test suite caller. Call from main unit testing function.
+ @param void
+ @returns void
+ */
 void testParser()
 {
     sput_start_testing();
@@ -2442,7 +2446,11 @@ void testParser()
     sput_finish_testing();
 }
 #pragma mark unitTests_genericFunctions
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testInitialiseParseLists()
 {
     //initialiseParser(); this is called in setUpTesting()
@@ -2459,7 +2467,11 @@ void testInitialiseParseLists()
     sput_fail_unless(returnEnvVar("tows"),"returnEnvVar(""tows"") should return the envVar tows");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testStringToInt()
 {
     
@@ -2477,7 +2489,11 @@ void testStringToInt()
 }
 
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetTargetTower()
 {
     createTowerFromPositions(1);
@@ -2525,7 +2541,11 @@ void testGetTargetTower()
     }
     
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetTargetEnemy()
 {
     freeAllEnemies();
@@ -2559,7 +2579,11 @@ void testGetTargetEnemy()
         }
     }
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetCommandType()
 {
     //should work for all the actual commands:
@@ -2584,7 +2608,11 @@ void testGetCommandType()
     sput_fail_unless(getCommandType(strdup("UPGRADE"))==cmd_upgrade, "calling ""UPGRADE"" should return cmd_upgrade");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetCommandOption()
 {
     //should work for all the actual options:
@@ -2612,7 +2640,11 @@ void testGetCommandOption()
     sput_fail_unless(getCommandOption(strdup("P"))==upgrade_power, "calling ""P"" should return upgrade_power");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testBreakUpStringAndFreeCommandArray()
 {
     int numberOfTokesTest1=0;
@@ -2650,7 +2682,11 @@ void testBreakUpStringAndFreeCommandArray()
 #pragma mark unitTests_individualCommandParses
 
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testChmod()
 {
     sput_fail_unless( parse("chmod")==0, "parse(""chmod"")==0, not enough tokens -> error message and return 0");
@@ -2699,7 +2735,11 @@ void testChmod()
 
 
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testParsePs()
 {
     sput_fail_unless(parse("ps")==0, "parse(""ps"")==0, no argument -> error message and return 0");
@@ -2711,7 +2751,11 @@ void testParsePs()
     sput_fail_unless(parse("ps -x s")==0, "parse(""ps -x s"")==0, too many arguments -> error message and return 0");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testAptget()
 {
     init_abilities();
@@ -2723,7 +2767,11 @@ void testAptget()
     unlock_ability(KILL);
     sput_fail_unless(parse("apt-get kill")==0, "parse(""apt-get kill"")==0, kill is already installed -> error message and return 0");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testKill()
 {
     init_abilities();
@@ -2741,7 +2789,11 @@ void testKill()
     sput_fail_unless(parse("kill all aoep")==2,"""kill all aoep"" is invalid, too many tokens -> error message return 0");
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testParseMktwr()
 {
     //clear any towers so that we can make more
@@ -2788,7 +2840,11 @@ void testParseMktwr()
     sput_fail_unless(parse(cmd)==maxTowerPosition(),
                      "parse(""mktwr int a b c d e f g...maxTowerPositionChar()"")==maxTowerPosition(), is valid command -> psuh maxTowerPosition() towers and return maxTowerPosition()");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testMan()
 {
     sput_fail_unless(parse("man s sd")==0,"parse(""man s sd"")=0, too many arguments -> error message and return 0");
@@ -2804,7 +2860,11 @@ void testMan()
     }
 }
 
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testCat()
 {
     sput_fail_unless(parse("cat foo bar")==0,"too many arguments -> error message and return 0");
@@ -2814,7 +2874,11 @@ void testCat()
     createTowerFromPositions(1);
     sput_fail_unless(parse("cat t1")==1,"cat t1 is valid -> return 1");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testUpgrade()
 {
     freeAllTowers();
@@ -2856,7 +2920,11 @@ void testUpgrade()
 
 
 #pragma mark unitTests_parseWhileAndAssociatedfunctions
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testReturnEnvVar()
 {
     envVar * returned = returnEnvVar("tows");
@@ -2891,7 +2959,11 @@ void testReturnEnvVar()
     }
     sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""   memory    "") is called. the white space should be trimmed in the function.");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetOperatorFromString()
 {
     char str[20];
@@ -2968,7 +3040,11 @@ void testGetOperatorFromString()
     }
     sput_fail_unless(op==greaterThan,"check that bad input wont cause an issue");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testGetCostOfUpgrade()
 {
     clearQueue();
@@ -3001,7 +3077,11 @@ void testGetCostOfUpgrade()
     }
  
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testMemValueFunctions()
 {
     envVar * mem = returnEnvVar("mem");
@@ -3027,7 +3107,11 @@ void testMemValueFunctions()
 
     sput_fail_unless(mem->value==1000-getCostOfUpgrade(getStatsToUpgradeArrayAndTargetArray(NULL)),"    mem->updateValueFunc(cmd_upgrade) should subtract the cost of the last upgrade from the value");
 }
-
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testIsThisInfiniteLoop()
 {
     int numberOfTokens=0;
@@ -3064,10 +3148,14 @@ void testIsThisInfiniteLoop()
     sput_fail_unless(!isThisInfiniteLoop(var,op,commandArray),"while(tows<x)(mktwr) -> not infinite return 0");
 
     freeCommandArray(commandArray,numberOfTokens);
-    
-
 
 }
+
+/**
+ Parse unit test suite.
+ @param void
+ @returns void
+ */
 void testParseWhile()
 {
     freeAllTowers();
