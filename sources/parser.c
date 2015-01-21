@@ -1341,7 +1341,8 @@ char *trimWhiteSpace(char *str)
 {
     int trimmedFromStart=0;
     // Trim leading space
-    while(isspace(*str))
+	sprint(str);
+    while(isspace(str[trimmedFromStart]))
     {
         ++trimmedFromStart;
     }
@@ -2951,7 +2952,6 @@ void testReturnEnvVar()
         printf("returned = %s\n",returned->name);
     }
     sput_fail_unless(strcmp(returned->name,"memory")==0,"check that it returns mem correctly when  returnEnvVar(""memory"") is called");
-    
     returned = returnEnvVar("   memory    ");
     if(TERMINAL_OUTPUT_ON)
     {
