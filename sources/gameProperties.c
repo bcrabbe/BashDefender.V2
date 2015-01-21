@@ -211,6 +211,15 @@ void damageHealth(int damage)	{
 	getGame(NULL)->health -= damage;
 }
 
+/**
+ *Sets Player's Health to specified amount
+ */
+void setHealth(int h)	{
+	if(h>= 0 && h < 1000)	{
+		getGame(NULL)->health = h;
+	}
+}
+
 
 
 void testlastAction()	{

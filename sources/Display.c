@@ -46,6 +46,7 @@ struct display {
 
 
 	SDL_Texture *easyButton;
+	SDL_Texture *practiseButton;
 	SDL_Texture *hardButton;
     SDL_Texture *reStartButton;
    	SDL_Texture *returnButton; 
@@ -132,6 +133,7 @@ Display init_SDL(){
     init_pic(&d->towerInfoTexture, "Images/towerInfoBackground.png");
     init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
     init_pic(&d->easyButton, "Images/easyLevel.png");
+    init_pic(&d->practiseButton, "Images/practiseMode.png");
     init_pic(&d->hardButton, "Images/HardLevel.png");
 	init_pic(&d->returnButton,"Images/returnButton.png");
 	init_pic(&d->tutorialButton,"Images/tutorialButton.png");
@@ -508,6 +510,7 @@ void shutSDL() {
     SDL_DestroyTexture(d->towerMonitorTexture);
     SDL_DestroyTexture(d->startBackgroundTexture);
     SDL_DestroyTexture(d->easyButton);
+    SDL_DestroyTexture(d->practiseButton);
     SDL_DestroyTexture(d->hardButton);
     SDL_DestroyTexture(d->newtexture);
     SDL_DestroyTexture(d->terminalWindowTexture);
@@ -786,13 +789,23 @@ void menu_screen(gameState *state)
     SDL_RenderCopy(d->renderer, d->hardButton, NULL, &d->rect);
 
     d->rect = (SDL_Rect) {
-            (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),  //!x
+            (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) - (SCREEN_HEIGHT_GLOBAL/6),  //!x
         ((SCREEN_HEIGHT_GLOBAL/3)*2)+(SCREEN_HEIGHT_GLOBAL/6),      //!y
             SCREEN_HEIGHT_GLOBAL/6,         //!Width
             SCREEN_HEIGHT_GLOBAL/6      //!height
     };
 
     SDL_RenderCopy(d->renderer, d->tutorialButton, NULL, &d->rect);
+
+    d->rect = (SDL_Rect) {
+            (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + (SCREEN_HEIGHT_GLOBAL/6),  //!x
+        ((SCREEN_HEIGHT_GLOBAL/3)*2)+(SCREEN_HEIGHT_GLOBAL/6),      //!y
+            SCREEN_HEIGHT_GLOBAL/6,         //!Width
+            SCREEN_HEIGHT_GLOBAL/6      //!height
+    };
+
+    SDL_RenderCopy(d->renderer, d->practiseButton, NULL, &d->rect);
+
 	SDL_RenderPresent(d->renderer);
 
     int check = 0;
@@ -806,25 +819,31 @@ void menu_screen(gameState *state)
 				if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
                         && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6
                         && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 - (SCREEN_HEIGHT_GLOBAL/6) 
-                        &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
+                        &&  d->event.button.y < (SCREEN_HEIGHT_GLOBAL/3)*2)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
 							//!Start Level
                             *state = easyLevel;
                         }
 				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) 
 						&& d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6 
-						&& d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 
+						&& d->event.button.y > (SCREEN_HEIGHT_GLOBAL/3)*2 
 						&&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + SCREEN_HEIGHT_GLOBAL/6)	{
                         if(d->event.button.button == SDL_BUTTON_LEFT){
-							//!Start Level
                             *state = hardLevel;
                         }
-				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2)
-                             && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + SCREEN_WIDTH_GLOBAL/6
+				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) - (SCREEN_HEIGHT_GLOBAL/6) 
+                             && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) /*+ SCREEN_HEIGHT_GLOBAL/6*/
                              && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 + ((SCREEN_HEIGHT_GLOBAL/6)+5)
                              &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + (2*(SCREEN_HEIGHT_GLOBAL/6)))    {
                         if(d->event.button.button == SDL_BUTTON_LEFT){
 							*state = tutorial; 
+                        }
+				}	else if(d->event.button.x >= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + (SCREEN_HEIGHT_GLOBAL/6) 
+                             && d->event.button.x <= (SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2) + (2*(SCREEN_HEIGHT_GLOBAL/6))
+                             && d->event.button.y >= (SCREEN_HEIGHT_GLOBAL/3)*2 + ((SCREEN_HEIGHT_GLOBAL/6)+5)
+                             &&  d->event.button.y <= (SCREEN_HEIGHT_GLOBAL/3)*2 + (2*(SCREEN_HEIGHT_GLOBAL/6)))    {
+                        if(d->event.button.button == SDL_BUTTON_LEFT){
+							*state = practise;
                         }
                 } 
 			}

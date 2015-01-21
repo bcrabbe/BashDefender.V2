@@ -467,7 +467,7 @@ void tutorial_two()	{
 
 void tutorial_three()	{
 
-		textToTowerMonitor("Well done!  You have made a tower of type integer.\nYou should use this tower type against integer enemies - those are the ones with numbers.\n\n In Computer Science, an integer is a data type for storing whole numbers.\n");
+		textToTowerMonitor("Well done!  You have made a tower of type integer.\nYou should use this tower type against integer enemies - those are the green ones with numbers.\n\n In Computer Science, an integer is a data type for storing whole numbers.\n");
 
 }
 void tutorial_four()	{
@@ -529,12 +529,12 @@ void tutorial_thirteen()	{
 
 void tutorial_fourteen()	{
 
-		textToTowerMonitor("That command doesn't seem to have worked...  It's because you have been using all your memory on upgrades and towers!\n Check your memory (top left) and check the amount needed to do the upgrade you are attempting by typing:\ncat t1\n In the field, you'd need to kill more enemies to get more memory. Since this is training, we will give you some for free.\n");
+		textToTowerMonitor("That command doesn't seem to have worked...  It's because you have been using all your memory on upgrades and towers!\n Check your memory (top left)In the field, you'd need to kill more enemies to get more memory. Since this is training, we will give you some for free.\n");
 
 }
 
 void tutorial_fifteen()	{
-		textToTowerMonitor("You should think carefully about what commands you try to use. If you place a very expensive command in your action queue, you will not be able to do anything else until this command gets actioned!\n  There is also a limit to how quickly you can execute a command: commands that aren't ready yet will also be placed in the queue.\n");
+		textToTowerMonitor("You should think carefully about what commands you try to use. If you place a very expensive command in your action queue, you will not be able to do anything else until this command gets actioned! As towers become more powerful, it becomes more expensive to upgrade them.\n  There is also a limit to how quickly you can execute a command: commands that aren't ready yet will also be placed in the queue.\n");
 
 }
 
@@ -552,15 +552,30 @@ void tutorial_eighteen()	{
 }
 
 void tutorial_nineteen()	{
-	textToTowerMonitor("There is one more thing you need to know about. You can install new abilities with the apt-get command.  This command installs a new specified ability from a package repository to give you some more fire-power to fight off viruses - Just like in a Linux Environment when you need a new utility!.\ntype apt-get install");
+	textToTowerMonitor("There is one more thing you need to know about. You can install new abilities with the apt-get command.  This command installs a new specified ability from a package repository to give you some more fire-power to fight off viruses - Just like in a Linux Environment when you need a new utility!.\ntype apt-get kill");
 }
 
 void tutorial_twenty()	{
-	textToTowerMonitor("Well Done.  Now lets put the kill ability to use.  First, type \n ps -x\n to get the virus' ID.");
+	textToTowerMonitor("Well Done.  Now lets put the kill ability to use.  When you see an enemy appear, type\n ps -x\n to get the virus' ID.  Then, type \n kill -9 e[ID] \n to kill the enemy.  E.g. \n kill -9 e3");
 }
 
 void tutorial_twentyOne()	{
-	textToTowerMonitor("Now Kill that enemy with kill -9 [enemyID]\n");
+	textToTowerMonitor("Well done.  Notice that that Virus was particularly nasty - it was bigger than normal.  You are going to want to use the kill ability in situations like that. You can also type \n kill all\n to kill ALL enemies on the screen.  That is really expensive though...\n");
+}
+
+void tutorial_twentyTwo()	{
+textToTowerMonitor("That concludes your training.  But, here are some advanced hints that may help you:\n1. You can select multiple targets and upgrade multiple stats with one command: e.g.\n upgrade p s r t1 2 3 \n -this would upgrade the power, speed and range stats of towers 1, 2 and 3 in one command!\n");
+}
+
+void tutorial_twentyThree()	{
+	textToTowerMonitor("2. Use the while loop for more speed in executing commands:\n while(mem>0)(upgrade p t1)\n This will spend all your current memory upgrade the power of tower 1!  Neat huh?\n");
+}
+
+void tutorial_twentyFour()	{
+	textToTowerMonitor("3. Use the in game help system! \nman [command] \n will provide you with more information about how to use commands.  \n man man \n will provide more information about how to use the manual!  Check the user documentation for a full list of statistics that you can upgrade.  Good luck!\n");
+}
+void tutorial_twentyFive()	{
+	textToTowerMonitor("That concludes the tutorial.  Feel free to mess around and make some more towers and play with upgrades: we will keep you stocked up with memory.  When you are done, pause the game and return to the main menu to start some levels!\n");
 }
 /*Test functions*/
 
