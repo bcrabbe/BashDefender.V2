@@ -251,6 +251,42 @@ void doAOEDamage(int damageType, int damage, int targetID, int range, int x, int
     }
 }
 
+void freeAllExplosions()
+{
+    ExplosionList eL = getExplosionList(NULL);
+    if(eL->start != NULL) { //if start is null, none to be freed
+        int finished = 0;
+        eL->current = eL->start;
+        ExplosionNode tmp;
+        while(!finished) {
+            if(eL->current->next != NULL) {
+                tmp = eL->current;
+                eL->current = eL->current->next;
+                free(tmp);
+            } else {
+                free(eL->current);
+                finished = 1;
+            }
+        }
+    }
+    
+    // once all freed, reset explosion list
+    eL->start = NULL;
+    eL->current = NULL;
+    eL->last = NULL;
+}
+              
+/**
+frees all projectile nodes, then frees the projectile list structure itself
+*/
+void freeExplosionList()
+{
+    freeAllExplosions();
+    ExplosionList eL = getExplosionList(NULL);
+    free(eL);
+}  
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 /* PROJECTILE LINKED LIST FUNCTIONS */

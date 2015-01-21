@@ -60,6 +60,8 @@ void makeExplosion(int dmgType, int targetX, int targetY, int range);
 void advanceExplosions();
 void drawExplosions();
 void doAOEDamage(int damageType, int damage, int targetID, int range, int x, int y);
+void freeAllExplosions();
+void freeExplosionList();
 
 // testing functions
 int test_numOfProjectiles();
