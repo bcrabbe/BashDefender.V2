@@ -1951,9 +1951,12 @@ cmdOption getCommandOption(char * secondToken)
 
 
 
-/*
- *   If there was a syntax error in the users command call this function which
-     will print usage advice to the terminal window.
+
+/**
+ If there was a unreadable command call this function which
+ will print usage advice to the terminal window.
+ @param string containing the cmd token.
+ @returns void;
  */
 void actionUsageError(const char * firstToken)
 {
@@ -1978,10 +1981,12 @@ void actionUsageError(const char * firstToken)
     }
 }
 
-/*
- *  Takes the input string and breaks into separate words (where there is a 
-    space and new string starts) each of these words is stored in the 
-    commandArray which is an array of strings
+/**
+Takes the input string and breaks into separate words separated by any chars
+in the delimiter string each of these words is stored in the commandArray which is an array of strings.
+ Arrays returned should be free'd using the freeCommandArray function.
+ @param string to be broken up, a address of the int to store the number of strings in the array and a string containing each of the charecters to be separated along.
+ @returns the string array.
  */
 char **breakUpString(const char * inputString, int *numberOfChunksPtr, const char * delimiter)
 {
@@ -2026,8 +2031,10 @@ char **breakUpString(const char * inputString, int *numberOfChunksPtr, const cha
     return commandArray;
 }
 
-/*
- *  Duplicates a string
+/**
+ Duplicates a string. returned string should be free'd after use.
+ @param string to be duplicated.
+ @returns the duplicated string.
  */
 char *strdup(const char * s)
 {
@@ -2041,8 +2048,10 @@ char *strdup(const char * s)
     return memcpy(p, s, len);
 }
 
-/*
- *  frees the memory allocated in breakup string funct
+/**
+frees a string array allocated in bbreakUpString func
+ @param the string array and the number of strings
+ @returns void
  */
 void freeCommandArray(char **commandArray,int numberOfChunks)
 {
@@ -2055,7 +2064,12 @@ void freeCommandArray(char **commandArray,int numberOfChunks)
 
 
 #pragma mark commandLists
-
+/**
+ Call at start up.
+ Builds the command list option list and environment variables and stores their addresses.
+ @param void
+ @returns void
+ */
 void initialiseParser()
 {
     stringList * commandList = intialiseCommandList();
@@ -2067,8 +2081,12 @@ void initialiseParser()
 
 }
 
-
-
+/**
+ Called by initialiseParser().
+ Builds the command list.
+ @param void
+ @returns stringList * to the built list
+ */
 stringList * intialiseCommandList()
 {
     /* make an array of strings to hold all the possible action commands*/
@@ -2098,6 +2116,11 @@ stringList * intialiseCommandList()
     
     return commandList;
 }
+/**
+ when called with a non null pointer stores the address of the list for access. call with NULL to retreive,
+ @param void
+ @returns stringList * to the list
+ */
 stringList * getCommandList(stringList * commandList)
 {
     static stringList * storedCommandList = NULL;
@@ -2106,6 +2129,12 @@ stringList * getCommandList(stringList * commandList)
     }
     return storedCommandList;
 }
+/**
+ Called by initialiseParser().
+ Builds the option list.
+ @param void
+ @returns stringList * to the built list
+ */
 stringList * intialiseOptionList()
 {
     /*first lets make an array of strings to hold all the possible action commands*/
@@ -2143,7 +2172,11 @@ stringList * intialiseOptionList()
     
     return optionsList;
 }
-
+/**
+ when called with a non null pointer stores the address of the list for access. call with NULL to retreive,
+ @param void
+ @returns stringList * to the list
+ */
 stringList *  getOptionList(stringList * optionList)
 {
     static stringList * storedOptionList = NULL;
@@ -2152,6 +2185,11 @@ stringList *  getOptionList(stringList * optionList)
     }
     return storedOptionList;
 }
+/**
+ frees the stored stingList structs.
+ @param void
+ @returns void
+ */
 void freeParseLists()
 {
     stringList * commandList = getCommandList(NULL);
@@ -2177,6 +2215,12 @@ void freeParseLists()
 }
 
 #pragma mark environmentVariables
+/**
+ Called by initialiseParser().
+ Builds the envVarList struct.
+ @param void
+ @returns envVarList * to the built list
+ */
 envVarList * intialiseEnvVarsList()
 {
     envVarList * envsListStruct = malloc(sizeof(envVarList));
@@ -2192,6 +2236,7 @@ envVarList * intialiseEnvVarsList()
         fprintf(stderr,"%s:%s:%d malloc failed. Exiting.\n",__FILE__,__FUNCTION__,__LINE__);
         exit(1);
     }
+    
     envsListStruct->array[0] = malloc(sizeof(envVar));
     if(envsListStruct->array[0]==NULL)
     {
@@ -2222,7 +2267,11 @@ envVarList * intialiseEnvVarsList()
     return envsListStruct;
 }
 
-
+/**
+ frees the stored envVarList struct.
+ @param void
+ @returns void
+ */
 void destroyEnvVarList()
 {
     envVarList * envsListStruct = getEnvsList(NULL);
@@ -2236,7 +2285,11 @@ void destroyEnvVarList()
     free(envsListStruct->array);
     free(envsListStruct);
 }
-
+/**
+ when called with a non null pointer stores the address of the list for access. call with NULL to retreive,
+ @param envVarList * to be stored or NULL
+ @returns envVarList * to the list
+ */
 envVarList * getEnvsList(envVarList * envsList)
 {
     static envVarList * storedEnvsList = NULL;
@@ -2250,8 +2303,11 @@ envVarList * getEnvsList(envVarList * envsList)
 #pragma mark developementTests
 
 
-/*
- *  Test function for developement. Prints contents of a commandArray
+
+/**
+ Test function for developement. Prints contents of a commandArray
+ @param command array
+ @returns void
  */
 void testCommandArray(char ** commandArray, int numberOfChunks)
 {
@@ -2264,7 +2320,11 @@ void testCommandArray(char ** commandArray, int numberOfChunks)
         printf("\n");
     }
 }
-
+/**
+ Test function for developement. Prints contents of a stringList
+ @param stringList *
+ @returns void
+ */
 void testStringLists(stringList * list)
 {
     if(TERMINAL_OUTPUT_ON)
