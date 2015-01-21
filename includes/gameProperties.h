@@ -102,6 +102,7 @@ GameClock getClock(GameClock clock);
 int checkUniqueClockType(clockType type);
 ClockNode createClockNode(clockType type);
 void damageHealth(int damage);
+void setHealth(int h);
 int addMemory(int mem);
 int setCreateEnemyGroupDelay(int delay);
 int getCostOfNewTower();

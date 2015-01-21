@@ -100,8 +100,8 @@ typedef enum gameState  {
     menu,
     tutorial,
     hardLevel,
-	easyLevel
-    //pause
+	easyLevel,
+	practise
 
 } gameState;
 
