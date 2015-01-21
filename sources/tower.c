@@ -7,6 +7,7 @@
 #include "../includes/debug.h"
 
 #define MAX_COOLDOWN 100 //  the longest number of ticks that a tower can take between shots
+#define MAX_SPEED 80 // the highest speed of a tower
 
 //#defines for starting tower stats
 #define TOWER_STARTING_DAMAGE 20
@@ -301,7 +302,7 @@ void initialiseNewTower(Tower newTow, int TowerPositionX, int TowerPositionY )
     newTow->gunX = 23;
     newTow->gunY = 18;
     newTow->firingCoolDown = 0;
-    assignCalculatedFiringType(newTow->towerID);
+    newTow->firingType = laser;
     
 }
 
@@ -535,7 +536,7 @@ int upgradeSpeed(int target)
 	
 	  Tower upgradeT;
 	  if((upgradeT = getTowerID(target))!= NULL)	{
-	      if(upgradeT->speed + SPEED_UPGR_VAL < MAX_COOLDOWN) { //make sure speed doesn't overflow cooldown value
+	      if(upgradeT->speed + SPEED_UPGR_VAL <= MAX_SPEED) { //make sure speed doesn't overflow cooldown value
 		        upgradeT->speed+=SPEED_UPGR_VAL;
             makePostUpgradeChanges(target);
             return upgradeT->speed;
@@ -644,14 +645,19 @@ Uses the statistics of the specified tower to calculate its firing type and assi
 void assignCalculatedFiringType(int towerID) {
 
   Tower t = getTowerGrp(NULL)->listOfTowers[towerID];
+  int damageUpgrades = (t->damage - TOWER_STARTING_DAMAGE)/DAMAGE_UPGR_VAL;
+  int speedUpgrades = (t->speed - TOWER_STARTING_SPEED)/SPEED_UPGR_VAL;
+  int rangeUpgrades = (t->range - TOWER_STARTING_RANGE)/RANGE_UPGR_VAL;
   
-  if((t->damage * DAMAGE_MOD) > (t->speed * SPEED_MOD) && (t->damage * DAMAGE_MOD) > (t->range * RANGE_MOD) ) {
+  if(damageUpgrades > rangeUpgrades && damageUpgrades > speedUpgrades) {
     t->firingType = bullet;
   } else {
-    if ((t->speed * SPEED_MOD) > (t->damage * DAMAGE_MOD) && (t->speed * SPEED_MOD) > (t->range * RANGE_MOD) ) {
+    if (speedUpgrades > rangeUpgrades && speedUpgrades > damageUpgrades) {
       t->firingType = laser;
     } else {
-      t->firingType = missile;
+      if (rangeUpgrades > speedUpgrades && rangeUpgrades > damageUpgrades) {
+        t->firingType = missile;
+      }
     }
   }
 }

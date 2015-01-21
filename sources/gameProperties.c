@@ -477,7 +477,7 @@ GameProperties createGame()	{
 	GameProperties newGame = (GameProperties) malloc(sizeof(*newGame));
 	newGame->clock = createClock();
 
-	newGame->totalMemory=10000;
+	newGame->totalMemory=3000;
 	newGame->memoryUsed=0;
 	newGame->currWaveNo=0;
 	newGame->totalWaveNo = 0;

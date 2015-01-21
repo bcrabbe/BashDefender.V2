@@ -343,7 +343,7 @@ int getCurrentStat(cmdOption stat,int target)	{
 				return getTowerDamage(target);
 				break;
 		case upgrade_range:
-				return getTowerRange(target);
+				return getTowerRange(target)/2;
 				break;	
 		case upgrade_speed:
 				return getTowerSpeed(target);	
