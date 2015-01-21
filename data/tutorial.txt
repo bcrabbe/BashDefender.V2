@@ -26,4 +26,4 @@ wave waveNum 1 enemyType 1 numberOfEnemies 1 entrance 2 delay 1 level 3
 wave waveNum 2 enemyType 1 numberOfEnemies 0 entrance 2 delay 50 level 3
 wave waveNum 2 enemyType 3 numberOfEnemies 1 entrance 2 delay 1 level 3
 wave waveNum 3 enemyType 3 numberOfEnemies 1 entrance 2 delay 1 level 1
-wave waveNum 4 enemyType 3 numberOfEnemies 1 entrance 2 delay 1 level 1
+wave waveNum 4 enemyType 2 numberOfEnemies 1 entrance 2 delay 1 level 3

@@ -3,6 +3,7 @@
 
 #include "../includes/gameProperties.h"
 #include "../includes/Display.h"
+#include "../includes/Sound.h"
 
 // damage modifiers for types
 #define TYPE_MATCH_MODIFIER 2  // multiply the damage by this much if the damage and enemy types match

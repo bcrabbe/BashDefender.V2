@@ -43,12 +43,13 @@ int main(int argc, char ** argv)
 				break;
 			case tutorial:
 				initLevel(0);
-				tutorialLevel(d,&restart);
+				tutorialLevel(d,&restart,phaseOne);
 				endLevel(&restart);
 				state = menu;
 				break;
 			case hardLevel:
 				initLevel(1);
+				printf("hard level \n");
 				startLevel(d,&restart);
 				endLevel(&restart);
 				state = menu;
@@ -59,10 +60,17 @@ int main(int argc, char ** argv)
 				endLevel(&restart);
 				state = menu;
 				break;
+			case practise:
+				initLevel(0);
+				tutorialLevel(d,&restart,phaseTwentyNine);
+				endLevel(&restart);
+				state = menu;
+				break;
 			default:
                 shutSDL();
                 quitGame();
 				exit(1);	
+				break;
 		}
 	}	while(1);
 
@@ -128,23 +136,21 @@ void startLevel(Display d, int *restart)	{
 }
 
 
-void tutorialLevel(Display d,int *restart)	{
+void tutorialLevel(Display d,int *restart, tutPhase sPhase)	{
 
-    tutPhase tPhase = phaseTwenty;
-	setCurrWaveNum(3);
+    tutPhase tPhase = sPhase;
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
     pass = text;
     clear = empty;
-    int ended = 0;
    	int pause = 0;
     int steps=0;
     
     //init_sound();
     //playBackgroundSound();
     addClock(tutorialClock);
-    int damage = 0, range = 0, speed = 0, resetTime = 0, flag = 1;
+    int damage = 0, range = 0, speed = 0, resetTime = 0, flag = 1, eDth, eType = 1;
     int currMemory = 0;
     do{
         while(pause)	{
@@ -230,18 +236,18 @@ void tutorialLevel(Display d,int *restart)	{
                     setCurrTime(findClock(tutorialClock));
                     flag = 1;
                 }
-                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))	{
                     tPhase++;
                 }
                 break;
             case phaseNine:
                 tutorial_eight();
                 if(checkCharType())  {
+                	startNextWave();
                     tPhase++;
                 }
                 break;
             case phaseTen:
-                startNextWave();
                 if(getDeathCnt() > 0)	{
                     tPhase++;
                 }
@@ -290,8 +296,12 @@ void tutorialLevel(Display d,int *restart)	{
                 }
                 break;
             case phaseFifteen:
-                if(checkClock(tutorialClock,TUTORIALCOOLDOWN))	{
-                    tutorial_fifteen();	
+                if(flag)	{
+                    setCurrTime(findClock(tutorialClock));
+                    flag = 0;
+                }
+                tutorial_fifteen();	
+                if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))	{
                     tPhase++;
                 }
                 break;
@@ -366,11 +376,80 @@ void tutorialLevel(Display d,int *restart)	{
                         setCurrTime(findClock(tutorialClock));
                         flag = 0;
                     }
-					setCurrWaveNum(4);
+					startNextWave();
+					//setCurrWaveNum(4);
                     updateAllInfoWindow();
                     if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+						tPhase++;
                     }
                     break;
+			case phaseTwentyFour:
+                    if(!flag)    {
+						eDth = getDeathCnt(); //!getting current death count of enemies
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+					if(getDeathCnt() > eDth)	{ //User has killed the enemy
+						tutorial_twentyOne();
+					}
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+						tPhase++;
+                    }
+			case phaseTwentyFive:
+                    if(!flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 1;
+                    }
+					tutorial_twentyTwo();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+						tPhase++;
+                    }
+					break;
+			case phaseTwentySix:
+                    if(!flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 1;
+                    }
+					tutorial_twentyThree();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+						tPhase++;
+                    }
+					break;
+			case phaseTwentySeven:
+                    if(flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+					tutorial_twentyFour();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+						tPhase++;
+                    }
+					break;
+			case phaseTwentyEight:
+                    if(!flag)    {
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 1;
+                    }
+					tutorial_twentyFour();
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+						tPhase++;
+                    }
+					break;
+			case phaseTwentyNine:
+                    if(flag)    {
+						setHealth(100);
+						createSpecificEnemy((eType+(rand()%ETYPE_MOD)),(eType+(rand()%RND_MAX_LEVEL)),1);
+                        setCurrTime(findClock(tutorialClock));
+                        flag = 0;
+                    }
+					updateAllInfoWindow();
+					if(getAvailableMemory() < 5000)	{
+						addMemory(10000);
+					}
+                    if(checkClock(tutorialClock,TUTORIALCOOLDOWN_LONG))  {
+						flag = 1;
+                    }
+					break;
 			default:
                 break;
         }
@@ -392,8 +471,8 @@ void tutorialLevel(Display d,int *restart)	{
         present_tower();
 
     	fire();
-      updateProjectiles();
-      updateExplosions();
+      	updateProjectiles();
+      	updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);
@@ -402,15 +481,6 @@ void tutorialLevel(Display d,int *restart)	{
         drawAllTowerPositions();
         tutorialUpdateAllInfoWindow();
         endFrame();
-        
-        //ended = checkIfPlayerDead();
-        while (ended) {
-            freeAllProjectiles();
-            //final screen returns 1 if restart button was pressed...
-            if (final_screen()){
-                ended = 0;
-            }
-        }
         
     } while(!terminal_window(pass, clear,&pause, *restart));
 }
