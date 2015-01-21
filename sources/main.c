@@ -25,7 +25,7 @@ int main(int argc, char ** argv)
     
 	Display d = init_SDL();
     init_sound();
-    playBackgroundSound();
+ //   playBackgroundSound();
     if(TESTING) {
         testing();
         exit(EXIT_SUCCESS);
@@ -72,7 +72,8 @@ int main(int argc, char ** argv)
 }
 
 void startLevel(Display d, int *restart)	{
-
+    
+    generalSounds(start_gameSound);
     char text[128] = {'>', '>'};
     char empty[128] = {'>', '>'};
     char *pass, *clear, *inputCommand=NULL;
@@ -102,8 +103,8 @@ void startLevel(Display d, int *restart)	{
         present_tower();
         
     	fire();
-      updateProjectiles();
-      updateExplosions();
+        updateProjectiles();
+        updateExplosions();
         for(int i=1; i<=getNumberOfEnemies(); ++i)
         {
             moveEnemy(i);
