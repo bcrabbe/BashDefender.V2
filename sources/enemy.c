@@ -293,10 +293,10 @@ void killEnemy(int enemyID)
 {
     Enemy e = getEnemyGroup(NULL)->enemyArray[enemyID];
 	  if(e->dead != 1)	{
-			enemyDeathSound();
+			//enemyDeathSound();
     		e->dead = 1;
 		    e->health = 0;
-		    addMemory(e->maxHealth);
+		    addMemory(e->maxHealth/2);
 		    increaseDeathCnt();
 		    updatePlayerScore(e->level);
 	  }
