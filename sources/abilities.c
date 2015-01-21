@@ -314,7 +314,8 @@ int kill_all_ability()
 
 	if(is_available_ability(KILL))
 	{
-		if(checkClock(killAll, KILL_ALL_COOLDOWN))	{
+		if(checkClock(killAll, KILL_ALL_COOLDOWN))
+		{
 			for(i = 1; i <= enemy_number; i++)
 			{
 				drawKillAll();
@@ -322,7 +323,9 @@ int kill_all_ability()
 			}
 			useMemory(getGame(NULL), KILL_ALL_COST);
 			return 1;
-		} else {
+		} 
+		else 
+		{
 			errorToTerminalWindow("Cooldown not yet ready");			
 			return 0;	
 		}	
@@ -363,10 +366,11 @@ void testAbilities()
 
 void testpsx()
 {
+	getGame(NULL);
 	createEnemy();
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
-	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
+	sput_fail_if(enemy_number == 0, "Enemies found should = 1");
 	psx_ability();
 	sput_fail_if(strlen(test_psx_string(NULL)) == 0, "String not created");
 	freeAllEnemies();
@@ -374,11 +378,12 @@ void testpsx()
 
 void testkillall()
 {
+	getGame(NULL);
 	createEnemy();
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
 	printf("%d\n", enemy_number);
-
+	delayGame(600);
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
 	unlock_ability(KILL);
 	sput_fail_unless(kill_all_ability() == 1, "Enemy should be killed");

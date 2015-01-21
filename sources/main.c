@@ -25,6 +25,7 @@ int main(int argc, char ** argv)
     
 	Display d = init_SDL();
     init_sound();
+
     //playBackgroundSound();
     if(TESTING) {
         testing();
