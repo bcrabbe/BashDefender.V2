@@ -49,7 +49,6 @@ int main(int argc, char ** argv)
 				break;
 			case hardLevel:
 				initLevel(1);
-				printf("hard level \n");
 				startLevel(d,&restart);
 				endLevel(&restart);
 				state = menu;

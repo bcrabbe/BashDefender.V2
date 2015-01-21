@@ -530,6 +530,8 @@ void endLevel(int *restart) {
 	freeLevelPaths();
 	freeClocks();
 	freeActionQueue();
+	freeProjectileList();
+	//freeExplosionList();
 	*restart = 0;
 }
 
