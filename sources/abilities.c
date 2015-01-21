@@ -255,7 +255,7 @@ int compare_health(const void*a, const void*b)
 void psx_ability()
 {
 	char *psxlist = (char*) calloc(500,sizeof(char));	
-	char line[32];
+	char line[400];
 	int enemy_number = getNumberOfEnemies();
 	int health = 0, ID = 0, i, j, count = 0;
 	printf("%d\n", enemy_number);
@@ -335,7 +335,7 @@ int kill_all_ability()
 
 char *test_psx_string(char *psxlist)
 {
-	static char list[100];
+	static char list[500];
 	if(psxlist != NULL)
 	{
 		strcpy(list, psxlist);
