@@ -8,7 +8,7 @@
 
 #define PSX_COST 0
 #define KILL_COST 100
-#define KILL_ALL_COST 300
+#define KILL_ALL_COST 800
 #define KILL_UNLOCK_COST 500
 
 typedef enum AbilityID 

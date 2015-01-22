@@ -14,8 +14,8 @@
 int SCREEN_WIDTH_GLOBAL;
 int SCREEN_HEIGHT_GLOBAL;
 
-#include <SDL2_image/SDL_image.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 struct display {
     /* 
@@ -69,6 +69,7 @@ struct display {
     SDL_Texture *circ2_Texture[2];
     
     SDL_Texture *firewall;
+	int count;
 };
 
 /** Functions prototypes for functions only used internally*/
@@ -181,8 +182,13 @@ Display init_SDL(){
     init_pic(&d->circ2_Texture[1], "Images/circ3_light.png");
     init_pic(&d->bulletTexture[0], "Images/greenBullet2.png");
     init_pic(&d->bulletTexture[1], "Images/redBullet2.png");
-
+	finalCountInit();
     return d;
+}
+
+void finalCountInit()	{
+
+		getDisplayPointer(NULL)->count = 0;
 }
 
 /*
@@ -217,7 +223,7 @@ void drawKillAll(){
     SDL_SetRenderDrawBlendMode(d->renderer, SDL_BLENDMODE_BLEND);
     int saturation = 0;
     while (saturation < 255) {
-        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 8);
+        SDL_SetRenderDrawColor(d->renderer, 255, 255, 255, saturation += 6);
         SDL_RenderFillRect(d->renderer, &d->rect);
         SDL_RenderPresent(d->renderer);
     }
@@ -946,11 +952,19 @@ int final_screen()
 	
 		if(getHealth(getGame(NULL)) > 0)
 		{
+			if(!d->count)	{
+				generalSounds(game_wonSound);
+				d->count++;
+			}
 			displayMonitor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, d->winBackgroundTexture);
 			display_text(SCREEN_WIDTH_GLOBAL / 2 - scoreStringWidth / 2, SCREEN_HEIGHT_GLOBAL / 4, score, blended, d->playerScoreFont, d->red);
 		}
 		else
 		{
+			if(!d->count)	{
+				generalSounds(game_lostSound);
+				d->count++;
+			}
         	animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 3072, 645, 3, 150, d->finalBackgroundTexture);
 			display_text(SCREEN_WIDTH_GLOBAL / 2 - scoreStringWidth / 2, SCREEN_HEIGHT_GLOBAL / 4, score, blended, d->playerScoreFont, d->white);
 		}

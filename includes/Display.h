@@ -7,7 +7,7 @@
 #define TEST_Display_h
 
 #include <SDL2/SDL.h>
-#include <SDL2_ttf/SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 
 extern int SCREEN_WIDTH_GLOBAL;
 extern int SCREEN_HEIGHT_GLOBAL;
@@ -17,7 +17,7 @@ extern int SCREEN_HEIGHT_GLOBAL;
 
 
 //#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
-#define FULLSCREEN_YN 0
+#define FULLSCREEN_YN 1
 
 /* 
  *Tower monitor dimensions 
@@ -145,6 +145,7 @@ void presentAnimation();
 void presentFirewall();
 void drawBackground();
 void getWindowSize(int *w, int *h);
+void finalCountInit();
 
 void drawKillAll();
 

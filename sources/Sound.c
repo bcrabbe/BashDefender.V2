@@ -10,7 +10,7 @@
 #include <time.h>
 #include "../includes/Sound.h"
 
-#include <SDL2_mixer/SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL.h>
 
 struct sound{

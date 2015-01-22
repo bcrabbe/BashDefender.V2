@@ -316,9 +316,9 @@ int kill_all_ability()
 	{
 		if(checkClock(killAll, KILL_ALL_COOLDOWN))
 		{
+			drawKillAll();
 			for(i = 1; i <= enemy_number; i++)
 			{
-				drawKillAll();
 				killEnemy(i);
 			}
 			useMemory(getGame(NULL), KILL_ALL_COST);
@@ -383,7 +383,7 @@ void testkillall()
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
 
-	addMemory(1000);
+	addMemory(2000);
 
 	delayGame(600);
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
