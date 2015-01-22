@@ -22,7 +22,6 @@
 
 int main(int argc, char ** argv)
 {
-    
 	Display d = init_SDL();
 
     init_sound();
@@ -161,6 +160,9 @@ void tutorialLevel(Display d,int *restart, tutPhase sPhase)	{
         ++steps;
         drawBackground();
         
+        presentFirewall();
+        presentHealth();
+
         switch(tPhase)	{
                 
             case phaseOne:

@@ -20,7 +20,7 @@ typedef struct towerPosNode *TowerPosNode;
 #define SLOW_POWER_UPGR_VAL 1
 #define SLOW_DUR_UPGR_VAL 20
 #define NUMBER_OF_TOWER_STATS 7
-
+#define TOWER_RANGE_SCALING_FACTOR 800.0
 
 // tower positon handling
 int isTowerPositionAvailable(int position);

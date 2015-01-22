@@ -699,7 +699,7 @@ void findTarget(Tower currentTower)
     
     for(enemyID = 1; enemyID <= getNumberOfEnemies(); enemyID++)	{
         if (!isDead(enemyID) ) {
-            if(inRange(currentTower->x + (currentTower->width/2), currentTower->y + (currentTower->height/2), currentTower->range, enemyID) == 1) {
+            if(inRange(currentTower->x + (currentTower->width/2), currentTower->y + (currentTower->height/2), (int) (((double)currentTower->range/TOWER_RANGE_SCALING_FACTOR)*(double)SCREEN_WIDTH_GLOBAL), enemyID) == 1) {
                 // if first enemy encountered, fire at it
                 if(currentTower->firing == 0) {
                     currentTower->firing = 1;
@@ -756,7 +756,7 @@ void present_tower()
         for(int towerID=1; towerID<=TG->numOfTowers; ++towerID)
         {
             Tower currentTower = getTowerID(towerID);
-            drawTower(currentTower->x, currentTower->y, currentTower->width,currentTower->height, currentTower->towerType, currentTower->range,
+            drawTower(currentTower->x, currentTower->y, currentTower->width,currentTower->height, currentTower->towerType, (int) (((double)currentTower->range/TOWER_RANGE_SCALING_FACTOR)*(double)SCREEN_WIDTH_GLOBAL),
                       8/*frames*/, 300/*anim_speed*/, 2080 /*pic_width*/, 258/*pic_height*/);
         }
     }
