@@ -754,10 +754,9 @@ void testParserErrorMessages(void) {
     strcpy(tw->errorString, "");
     
     parse("mktwr int a");
-    popToTower();
     delayGame(20);
     addMemory(1000);
-    printf("Michael Testing: Towers: %d\n", getNumberOfTowers());
+    popToTower();
     parse("cat t1");
     printf("...%s...\n", tw->errorString);
     sput_fail_if(strlen(tw->errorString) != 0, "Testing parse cat with recognized and existing target, should NOT send an error message to terminal window");
@@ -791,6 +790,7 @@ void testParserInfoMessages(void) {
     strcpy(tm->string, "");
 
     parse("cat t1");
+	sprint(tm->string);
     sput_fail_if(strlen(tm->string) != 0, "Testing parse cat with non-existing target, should NOT send an info message to tower monitor");
     
 }
