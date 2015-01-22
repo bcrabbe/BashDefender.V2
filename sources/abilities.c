@@ -312,7 +312,7 @@ int kill_all_ability()
 	int i;
 	int enemy_number = getNumberOfEnemies();
 
-	if(is_available_ability(KILL))
+	if(is_available_ability(KILL) && getAvailableMemory() >= KILL_ALL_COST)
 	{
 		if(checkClock(killAll, KILL_ALL_COOLDOWN))
 		{
@@ -335,7 +335,7 @@ int kill_all_ability()
 
 char *test_psx_string(char *psxlist)
 {
-	static char list[500];
+	static char list[2000];
 	if(psxlist != NULL)
 	{
 		strcpy(list, psxlist);
@@ -383,6 +383,7 @@ void testkillall()
 	setEnemyHealth(1,100);
 	int enemy_number = getNumberOfEnemies();
 	printf("%d\n", enemy_number);
+	addMemory(1000);
 	delayGame(600);
 	sput_fail_if(enemy_number != 1, "Enemies found should = 1");
 	unlock_ability(KILL);
