@@ -273,7 +273,7 @@ void CreateGameTest()	{
 
 	GameProperties testGame;
 	testGame = getGame(NULL);
-	sput_fail_unless(getAvailableMemory() == 1000,"Initializing Memory");
+	sput_fail_unless(getAvailableMemory() == 3000,"Initializing Memory");
 	sput_fail_unless(getWave(testGame) == 3,"Initializing WaveNo");
 	sput_fail_unless(getTotalWaveNo() == 3,"Total Wave Number set to 3 from level file");
 	sput_fail_unless(getHealth(testGame) == 100,"Initializing Health");
