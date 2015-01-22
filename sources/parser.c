@@ -1127,7 +1127,7 @@ int parseWhile(char *inputString)
                 conditionTokenIs=0;
             }
             variable->value = variable->getValueFunc();
-            int condition = stringToInt(conditionArray[conditionTokenIs]);
+            int condition = (int)stringToInt(conditionArray[conditionTokenIs]);
             if(conditionTokenIs==0)//for now must have var on LHS
             {
                 char termErrString[100];
@@ -1601,11 +1601,11 @@ unsigned int getTargetTower(const char * inputStringTargeting, bool needsIdentif
     unsigned int targetTower = 0;
     if( inputStringTargeting[0]=='t' || inputStringTargeting[0]=='T' )
     {
-        targetTower = stringToInt(inputStringTargeting+1);
+        targetTower = (int)stringToInt(inputStringTargeting+1);
     }
     else
     {
-        targetTower = stringToInt(inputStringTargeting);
+        targetTower = (int)stringToInt(inputStringTargeting);
     }
     if(targetTower > numberOfTowers || targetTower < 1 )
     {

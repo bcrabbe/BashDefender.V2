@@ -17,7 +17,7 @@ extern int SCREEN_HEIGHT_GLOBAL;
 
 
 //#define FULLSCREEN_YN SDL_WINDOW_FULLSCREEN
-#define FULLSCREEN_YN 0
+#define FULLSCREEN_YN 1
 
 /* 
  *Tower monitor dimensions 

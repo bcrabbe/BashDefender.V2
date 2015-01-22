@@ -66,8 +66,8 @@ int main(int argc, char ** argv)
 		}
 	}	while(1);
 
-    shutSDL();
-    quitGame();
+//    shutSDL();
+//    quitGame();
     return 0;
 }
 
