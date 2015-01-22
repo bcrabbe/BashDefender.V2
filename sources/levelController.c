@@ -449,7 +449,6 @@ int checkProperty(char *token)	{
 	} else if(!strcmp(token,"numberOfPaths"))	{
 		addProperty(numberOfPaths);		
 	}else {
-		fprintf(stderr,"Unrecognised Property has been read\n");
 		return 0;
 	}
 
