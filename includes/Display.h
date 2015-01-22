@@ -7,7 +7,7 @@
 #define TEST_Display_h
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 extern int SCREEN_WIDTH_GLOBAL;
 extern int SCREEN_HEIGHT_GLOBAL;
@@ -115,6 +115,7 @@ void shutSDL();
 
 void draw_filled_range(int cx, int cy, int r);
 void drawRect(int x, int y, int red, int blue, int max_width, int max_height, int current, int total);
+void drawRectVertical(int x, int y, int red, int blue, int max_width, int max_height, int current, int total);
 
 
 /*

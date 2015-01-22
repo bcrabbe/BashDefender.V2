@@ -67,6 +67,9 @@ clock_t delayGame(int delayN)	{
 int startNextWave()	{
 	if(getTotalCurrentWaveEnemies() == getDeathCnt())	{
 		if(getWave(getGame(NULL))  < getTotalWaveNo())	{
+            if(getWave(getGame(NULL)) != 0) {
+                generalSounds(new_waveSound);
+            }
 			resetEnemyCounts();
 			setCurrWaveNum(getGame(NULL)->currWaveNo+1);
 		} else {
@@ -207,7 +210,7 @@ int lastAction(GameProperties Game)	{
  *Damages play health with specified amount of damage
  */
 void damageHealth(int damage)	{
-
+    generalSounds(playerTakesDamageSound);
 	getGame(NULL)->health -= damage;
 }
 
@@ -315,7 +318,9 @@ int getHealth(GameProperties game)	{
 void presentHealth (){
     int w, h;
     getWindowSize(&w, &h);
-    drawRect((double)w/1.57, (double)h/4.4, 0, 0, (double)w/10.9, (double)h/68, getHealth(getGame(NULL)), TOTAL_P_HEALTH);
+  //  drawRect((double)w/1.57, (double)h/4.4, 0, 0, (double)w/10.9, (double)h/68, getHealth(getGame(NULL)), TOTAL_P_HEALTH);
+    drawRectVertical(730.0*(double)w/1000, 280.0*(double)h/1000.0, 0, 0, (double)w/120, (double)h/21, getHealth(getGame(NULL)), TOTAL_P_HEALTH);
+
 }
 
 
