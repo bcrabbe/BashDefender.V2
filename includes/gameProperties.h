@@ -69,7 +69,7 @@ typedef enum clockType	{
 
 #define ENEMYSPAWNCOOLDOWN 10 	//!minimum time between enemy spawns
 #define TUTORIALCOOLDOWN_SHORT	30 //!time between tutorial segments
-#define TUTORIALCOOLDOWN 	150 //!time between tutorial segments
+#define TUTORIALCOOLDOWN 	120 //!time between tutorial segments
 #define TUTORIALCOOLDOWN_LONG 300 //!Time betwen tutorial segments
 #define KILL_ALL_COOLDOWN	600 	//! Time between kill all actions
 #define KILL_SINGLE_COOLDOWN	200	//!Time Between Single kill actions

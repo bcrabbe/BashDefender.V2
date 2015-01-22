@@ -159,7 +159,8 @@ void tutorialLevel(Display d,int *restart, tutPhase sPhase)	{
         }
         ++steps;
         drawBackground();
-        
+        presentFirewall();
+        presentHealth();
         switch(tPhase)	{
                 
             case phaseOne:
