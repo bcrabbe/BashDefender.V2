@@ -684,7 +684,7 @@ int terminal_window(char *pass, char *clear, int *pause,int restart)
                  */
 				if(event->key.keysym.sym == SDLK_BACKSPACE)
 				{
-					if(pass[strlen(pass) - 1] != '>')
+					if(pass[strlen(pass) - 1] != '~')
 					{
 						pass[strlen(pass) - 1] = '\0';
 					}
@@ -946,7 +946,7 @@ int final_screen()
 	
 		if(getHealth(getGame(NULL)) > 0)
 		{
-			displayMonitor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, d->winBackgroundTexture);
+			displayMonitor(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, d->winBackgroundTexture);
 			display_text(SCREEN_WIDTH_GLOBAL / 2 - scoreStringWidth / 2, SCREEN_HEIGHT_GLOBAL / 4, score, blended, d->playerScoreFont, d->red);
 		}
 		else
