@@ -133,7 +133,7 @@ Display init_SDL(){
     init_pic(&d->actionQueueTexture, "Images/action_queue-monitor.png");
     init_pic(&d->statsBarTexture, "Images/blackBar.png");
     init_pic(&d->towerInfoTexture, "Images/towerInfoBackground.png");
-    init_pic(&d->startBackgroundTexture, "Images/anistrip_menu.png");
+    init_pic(&d->startBackgroundTexture, "Images/anistrip_menu_smaller.png");
     init_pic(&d->easyButton, "Images/easyLevel.png");
     init_pic(&d->practiseButton, "Images/practiseMode.png");
     init_pic(&d->hardButton, "Images/HardLevel.png");
@@ -786,9 +786,9 @@ void menu_screen(gameState *state)
 {
     Display d = getDisplayPointer(NULL);
     //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
-    animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
+    animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 4060, 156, 14, 170, d->startBackgroundTexture);
 
-    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), 
+    d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2),
 			(SCREEN_HEIGHT_GLOBAL/3)*2-(SCREEN_HEIGHT_GLOBAL/6), 
 			SCREEN_HEIGHT_GLOBAL/6, 
 			SCREEN_HEIGHT_GLOBAL/6};
@@ -877,7 +877,7 @@ void pause_screen(int *pause, int *restart)
 {
     Display d = getDisplayPointer(NULL);
     //SDL_RenderCopy(d->renderer, d->startBackgroundTexture, NULL, NULL);
-    animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 7602, 292, 14, 170, d->startBackgroundTexture);
+    animateAnyPic(0, 0, SCREEN_WIDTH_GLOBAL, SCREEN_HEIGHT_GLOBAL, 4060, 156, 14, 170, d->startBackgroundTexture);
 
     d->rect = (SDL_Rect) {(SCREEN_WIDTH_GLOBAL/2) - ((SCREEN_HEIGHT_GLOBAL/6)/2), 
 				(SCREEN_HEIGHT_GLOBAL/3)*2, 
