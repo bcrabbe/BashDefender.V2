@@ -11,3 +11,6 @@ appropriately to deal with increasingly difficult waves of enemies..
 This is the release for OSX. 
 
 run sources/makefile. 
+
+You may have to add the SDL frameworks in sources/ to /Library/Frameworks.
+
