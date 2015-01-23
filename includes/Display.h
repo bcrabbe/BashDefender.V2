@@ -7,7 +7,7 @@
 #define TEST_Display_h
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2_ttf/SDL_ttf.h>
 
 extern int SCREEN_WIDTH_GLOBAL;
 extern int SCREEN_HEIGHT_GLOBAL;
