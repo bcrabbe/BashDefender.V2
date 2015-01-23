@@ -314,7 +314,6 @@ Wrapper to pass in allowed tower positions to useCreateTower function
 int createTowerFromPositions(int position)	{
 	TowerPos tPos = getTowerPos(NULL);
 	if((position > 0) && (position <= tPos->numberOfPositions) && (tPos->towerPositions[position]->empty == TRUE))	{
-		printf("###can create tower###\n");
 		userCreateTower(tPos->towerPositions[position]->x,tPos->towerPositions[position]->y);
 		tPos->towerPositions[position]->empty = FALSE;
 		return 1;
