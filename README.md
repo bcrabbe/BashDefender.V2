@@ -11,9 +11,10 @@ appropriately to deal with increasingly difficult waves of enemies..
 This is the release for OSX. 
 
 To install:
-  1. Open Terminal 
-  2. Type cd Downloads/SoftwareGroupProject_BashDefender-OSXinstall/sources/
-  3. Type make 
+  1. Download Zip
+  2. Open Terminal 
+  3. Type cd Downloads/SoftwareGroupProject_BashDefender-OSXinstall/sources/
+  4. Type make 
 
 Then to run type:
   ./BASHdefender
