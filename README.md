@@ -10,7 +10,14 @@ appropriately to deal with increasingly difficult waves of enemies..
 
 This is the release for OSX. 
 
-run sources/makefile. 
+To install:
+  1. Open Terminal 
+  2. Type cd Downloads/SoftwareGroupProject_BashDefender-OSXinstall/sources/
+  3. Type make 
+
+Then to run type:
+  ./BASHdefender
 
 You may have to add the SDL frameworks in sources/ to /Library/Frameworks.
-
+To do this type 
+  mv SDL2* /Library/Frameworks
