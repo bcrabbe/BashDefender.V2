@@ -20,5 +20,6 @@ Then to run type:
   ./BASHdefender
 
 You may have to add the SDL frameworks in sources/ to /Library/Frameworks.
-To do this type 
+To do this type:
+
   mv SDL2* /Library/Frameworks
