@@ -64,6 +64,7 @@ typedef enum varIdentifier {
     var_mem,
     var_tows
 } varIdentifier;
+
 typedef struct  environmentVariable {
     varIdentifier varIs;
     char * name;
